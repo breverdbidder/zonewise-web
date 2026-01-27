@@ -115,3 +115,6 @@ Information provided by ZoneWise.AI is for general guidance only. Always verify 
 ---
 
 **Data is the moat. ZoneWise is the truth.** 🏰
+
+<!-- Build trigger: 2026-01-27T22:47:13Z -->
+
