@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe/server'
 import { createClient } from '@/lib/supabase/server'
 
+// Dynamic import to avoid build-time initialization
+async function getStripe() {
+  const Stripe = (await import('stripe')).default
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-02-24.acacia',
+  })
+}
+
 export async function POST(request: NextRequest) {
+  // Check if Stripe is configured
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
+  }
+
   try {
     const { priceId } = await request.json()
     const supabase = createClient()
@@ -12,6 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const stripe = await getStripe()
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       line_items: [{ price: priceId, quantity: 1 }],
@@ -22,7 +35,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ url: session.url })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
