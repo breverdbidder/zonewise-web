@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   images: {
-    unoptimized: true,
-  },
-  trailingSlash: true,
+    remotePatterns: [
+      { protocol: 'https', hostname: 'www.bcpao.us' },
+      { protocol: 'https', hostname: '*.supabase.co' }
+    ]
+  }
 }
 
 export default nextConfig
