@@ -38,7 +38,7 @@ export default function PrivacyPage() {
           <h2 className="text-xl font-semibold mt-8 mb-4">Contact</h2>
           <p>Privacy inquiries: privacy@zonewise.ai</p>
         </div>
-        <p className="mt-12 text-sm text-gray-500">© 2026 Everest Capital USA. All rights reserved.</p>
+        <p className="mt-12 text-sm text-gray-500">© 2026 ZoneWise.AI 2026. All rights reserved.</p>
       </div>
     </div>
   )
