@@ -156,4 +156,4 @@ zonewise-web/
 
 **Checkpoint Created:** Ready to resume with zero context loss.
 
-*© 2026 Everest Capital USA - ZoneWise.AI*
+*© 2026 ZoneWise.AI 2026 - ZoneWise.AI*
