@@ -122,7 +122,7 @@ export default function Home() {
       <footer className="py-12 bg-slate-900 text-slate-400">
         <div className="max-w-5xl mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>© 2026 Everest Capital USA</p>
+            <p>© 2026 ZoneWise.AI 2026</p>
             <div className="flex gap-6 text-sm">
               <Link href="/terms" className="hover:text-white">Terms</Link>
               <Link href="/privacy" className="hover:text-white">Privacy</Link>
