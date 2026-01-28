@@ -1,37 +1,44 @@
-// Build: 1769562253
 'use client'
 
-import { useState } from 'react'
+import { useState, ChangeEvent, FormEvent } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
+  const [acceptTerms, setAcceptTerms] = useState<boolean>(false)
   const router = useRouter()
   const supabase = createClient()
 
-  const handleSignup = async (e: React.FormEvent) => {
+  function handleEmailChange(e: ChangeEvent<HTMLInputElement>) {
+    setEmail(e.target.value)
+  }
+
+  function handlePasswordChange(e: ChangeEvent<HTMLInputElement>) {
+    setPassword(e.target.value)
+  }
+
+  async function handleSignup(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!acceptTerms) {
-      setError('Please accept the terms and disclaimer')
+      setError('Please accept the terms')
       return
     }
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signUp({
+    const { error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
     })
     
-    if (error) {
-      setError(error.message)
+    if (signupError) {
+      setError(signupError.message)
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -39,77 +46,75 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">Z</span>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '400px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <div style={{ width: '40px', height: '40px', backgroundColor: '#0d9488', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>Z</span>
             </div>
-            <span className="text-2xl font-bold text-slate-800">ZoneWise.AI</span>
+            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>ZoneWise.AI</span>
           </Link>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border">
-          <h1 className="text-2xl font-bold text-center mb-2">Create your account</h1>
-          <p className="text-center text-gray-600 mb-6">Start with 25 free queries</p>
+        <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '8px' }}>Create your account</h1>
+          <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '24px' }}>Start with 25 free queries</p>
 
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">{error}</div>
+            <div style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '12px', borderRadius: '8px', fontSize: '14px', marginBottom: '16px' }}>{error}</div>
           )}
 
-          <form onSubmit={handleSignup} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+          <form onSubmit={handleSignup}>
+            <div style={{ marginBottom: '16px' }}>
+              <label htmlFor="signup-email" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Email</label>
               <input
-                id="email"
-                name="email"
+                id="signup-email"
                 type="email"
-                autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                onChange={handleEmailChange}
+                style={{ width: '100%', padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '16px', boxSizing: 'border-box' }}
                 placeholder="you@example.com"
                 required
               />
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+            <div style={{ marginBottom: '16px' }}>
+              <label htmlFor="signup-password" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Password</label>
               <input
-                id="password"
-                name="password"
+                id="signup-password"
                 type="password"
-                autoComplete="new-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                onChange={handlePasswordChange}
+                style={{ width: '100%', padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '16px', boxSizing: 'border-box' }}
                 placeholder="Min 8 characters"
                 minLength={8}
                 required
               />
             </div>
-            <label className="flex items-start gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={acceptTerms}
-                onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-1 w-4 h-4"
-              />
-              <span className="text-gray-600">
-                I understand ZoneWise.AI provides information for <strong>general guidance only</strong> and is not legal advice. I will verify with the appropriate Planning Department.
-              </span>
-            </label>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  style={{ marginTop: '4px', width: '16px', height: '16px' }}
+                />
+                <span style={{ color: '#64748b' }}>
+                  I understand ZoneWise.AI provides information for <strong>general guidance only</strong> and is not legal advice.
+                </span>
+              </label>
+            </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors"
+              style={{ width: '100%', padding: '12px', backgroundColor: '#0d9488', color: 'white', fontWeight: '500', borderRadius: '8px', border: 'none', fontSize: '16px', cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account? <Link href="/login" className="text-teal-600 hover:underline font-medium">Sign in</Link>
+          <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px' }}>
+            Already have an account? <Link href="/login" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: '500' }}>Sign in</Link>
           </p>
         </div>
       </div>
