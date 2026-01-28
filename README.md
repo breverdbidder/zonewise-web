@@ -110,7 +110,7 @@ Information provided by ZoneWise.AI is for general guidance only. Always verify 
 
 ## 📄 License
 
-© 2026 Everest Capital USA. All rights reserved.
+© 2026 ZoneWise.AI 2026. All rights reserved.
 
 ---
 
