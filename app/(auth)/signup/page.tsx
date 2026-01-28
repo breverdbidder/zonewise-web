@@ -45,6 +45,19 @@ export default function SignupPage() {
     }
   }
 
+  const inputStyle = {
+    width: '100%',
+    padding: '12px 16px',
+    border: '1px solid #d1d5db',
+    borderRadius: '8px',
+    fontSize: '16px',
+    boxSizing: 'border-box' as const,
+    color: '#000000',
+    backgroundColor: '#ffffff',
+    WebkitTextFillColor: '#000000',
+    opacity: 1
+  }
+
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
@@ -58,7 +71,7 @@ export default function SignupPage() {
         </div>
 
         <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e2e8f0' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '8px' }}>Create your account</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center', marginBottom: '8px', color: '#1e293b' }}>Create your account</h1>
           <p style={{ textAlign: 'center', color: '#64748b', marginBottom: '24px' }}>Start with 25 free queries</p>
 
           {error && (
@@ -67,26 +80,28 @@ export default function SignupPage() {
 
           <form onSubmit={handleSignup}>
             <div style={{ marginBottom: '16px' }}>
-              <label htmlFor="signup-email" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Email</label>
+              <label htmlFor="signup-email" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#1e293b' }}>Email</label>
               <input
                 id="signup-email"
                 type="email"
                 value={email}
                 onChange={handleEmailChange}
-                style={{ width: '100%', padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '16px', boxSizing: 'border-box' }}
+                style={inputStyle}
                 placeholder="you@example.com"
+                autoComplete="off"
                 required
               />
             </div>
             <div style={{ marginBottom: '16px' }}>
-              <label htmlFor="signup-password" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>Password</label>
+              <label htmlFor="signup-password" style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#1e293b' }}>Password</label>
               <input
                 id="signup-password"
                 type="password"
                 value={password}
                 onChange={handlePasswordChange}
-                style={{ width: '100%', padding: '12px 16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '16px', boxSizing: 'border-box' }}
+                style={inputStyle}
                 placeholder="Min 8 characters"
+                autoComplete="off"
                 minLength={8}
                 required
               />
