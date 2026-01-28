@@ -30,7 +30,7 @@ export default function DisclaimerPage() {
           </ul>
           
           <h2 className="text-xl font-semibold mt-8 mb-4">Limitation of Liability</h2>
-          <p>Under no circumstances shall ZoneWise.AI, Everest Capital USA, or their affiliates be liable for any damages whatsoever arising from the use of information provided by this service.</p>
+          <p>Under no circumstances shall ZoneWise.AI, ZoneWise.AI 2026, or their affiliates be liable for any damages whatsoever arising from the use of information provided by this service.</p>
           
           <h2 className="text-xl font-semibold mt-8 mb-4">User Acknowledgment</h2>
           <p>By using ZoneWise.AI, you acknowledge and agree that:</p>
@@ -41,7 +41,7 @@ export default function DisclaimerPage() {
             <li>You understand zoning interpretations may vary</li>
           </ul>
         </div>
-        <p className="mt-12 text-sm text-gray-500">© 2026 Everest Capital USA. All rights reserved.</p>
+        <p className="mt-12 text-sm text-gray-500">© 2026 ZoneWise.AI 2026. All rights reserved.</p>
       </div>
     </div>
   )
