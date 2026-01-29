@@ -8,7 +8,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'zw-navy': '#1E3A5F',
+        'zw-navy': '#03B3CB',
         'zw-teal': '#0D9488',
         'zw-amber': '#F59E0B',
       }
