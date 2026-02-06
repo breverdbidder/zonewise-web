@@ -130,23 +130,27 @@ export default function SplitScreenPreview() {
 }
 
 function MapTab() {
-  return (
-    <div className="h-full relative rounded-lg overflow-hidden bg-gradient-to-br from-[#E8F4FD] via-[#C5DFEF] to-[#9DC6E0] min-h-[400px]">
-      {/* Heatmap overlay zones */}
-      <div className="absolute inset-0">
-        <div className="absolute top-[15%] left-[20%] w-24 h-20 bg-red-500/30 rounded-full blur-xl" />
-        <div className="absolute top-[30%] left-[45%] w-32 h-24 bg-orange-500/25 rounded-full blur-xl" />
-        <div className="absolute top-[55%] left-[25%] w-20 h-16 bg-yellow-500/20 rounded-full blur-xl" />
-        <div className="absolute top-[40%] right-[15%] w-28 h-20 bg-red-500/20 rounded-full blur-xl" />
-        <div className="absolute bottom-[20%] left-[50%] w-24 h-18 bg-green-500/20 rounded-full blur-xl" />
-      </div>
+  const mapboxToken = 'pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw'
+  const markers = 'pin-s+FF0000(-81.60,30.35),pin-s+F59E0B(-81.55,30.30),pin-s+1E3A5F(-81.70,30.28),pin-s+FF0000(-81.50,30.40),pin-s+1E3A5F(-81.65,30.25)'
+  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${markers}/-81.60,30.32,10.5,0/800x500@2x?access_token=${mapboxToken}`
 
-      {/* Property pins */}
-      <div className="absolute top-[22%] left-[28%] w-3 h-3 bg-[#1E3A5F] rounded-full border-2 border-white shadow" />
-      <div className="absolute top-[38%] left-[52%] w-3 h-3 bg-[#F59E0B] rounded-full border-2 border-white shadow" />
-      <div className="absolute top-[50%] left-[35%] w-3 h-3 bg-[#1E3A5F] rounded-full border-2 border-white shadow" />
-      <div className="absolute top-[45%] right-[22%] w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow" />
-      <div className="absolute bottom-[30%] left-[55%] w-3 h-3 bg-[#1E3A5F] rounded-full border-2 border-white shadow" />
+  return (
+    <div className="h-full relative rounded-lg overflow-hidden min-h-[400px]">
+      {/* Real Mapbox static map */}
+      <img
+        src={mapUrl}
+        alt="Duval County foreclosure distress map"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+      />
+
+      {/* Semi-transparent heatmap overlay */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[15%] left-[20%] w-28 h-24 bg-red-500/20 rounded-full blur-2xl" />
+        <div className="absolute top-[35%] left-[50%] w-36 h-28 bg-orange-500/15 rounded-full blur-2xl" />
+        <div className="absolute top-[55%] left-[25%] w-24 h-20 bg-green-500/15 rounded-full blur-2xl" />
+        <div className="absolute top-[40%] right-[15%] w-32 h-24 bg-red-500/15 rounded-full blur-2xl" />
+      </div>
 
       {/* Legend */}
       <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur p-3 rounded-lg shadow-sm text-xs">
