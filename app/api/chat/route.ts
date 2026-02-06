@@ -149,7 +149,7 @@ async function fetchRelevantZoningData(messages: Message[]): Promise<string | nu
   if (!zoneCodeMatch && !jurisdiction) return null
   
   try {
-    let query = supabase.from('zoning_districts').select('*')
+    let query = getSupabase().from('zoning_districts').select('*')
     
     if (zoneCodeMatch) {
       query = query.ilike('zone_code', `%${zoneCodeMatch[1]}%`)
