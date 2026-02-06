@@ -1,0 +1,125 @@
+name: Switch DNS to Vercel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  switch-dns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add custom domain to Vercel
+        run: |
+          # Add zonewise.ai domain to Vercel project
+          curl -s -X POST "https://api.vercel.com/v10/projects/zonewise-web/domains" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name": "zonewise.ai"}' | tee /tmp/vercel_domain.json
+          
+          echo ""
+          echo "=== Vercel domain response ==="
+          cat /tmp/vercel_domain.json | python3 -m json.tool || true
+
+      - name: Get Cloudflare Zone ID
+        id: zone
+        run: |
+          ZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          zones = data.get('result', [])
+          if zones:
+              print(zones[0]['id'])
+          else:
+              print('NOT_FOUND')
+          ")
+          echo "zone_id=$ZONE_ID" >> $GITHUB_OUTPUT
+          echo "Zone ID: $ZONE_ID"
+
+      - name: List existing DNS records
+        id: records
+        run: |
+          echo "=== Current DNS records ==="
+          curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${{ steps.zone.outputs.zone_id }}/dns_records?type=CNAME,A&name=zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          records = data.get('result', [])
+          for r in records:
+              print(f'ID: {r[\"id\"]} | Type: {r[\"type\"]} | Name: {r[\"name\"]} | Content: {r[\"content\"]} | Proxied: {r[\"proxied\"]}')
+          if not records:
+              print('No A/CNAME records found for zonewise.ai root')
+          " | tee /tmp/dns_records.txt
+          
+          # Also check www
+          echo ""
+          echo "=== WWW records ==="
+          curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${{ steps.zone.outputs.zone_id }}/dns_records?name=www.zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          for r in data.get('result', []):
+              print(f'ID: {r[\"id\"]} | Type: {r[\"type\"]} | Name: {r[\"name\"]} | Content: {r[\"content\"]}')
+          "
+
+      - name: Update or create CNAME to Vercel
+        run: |
+          ZONE_ID="${{ steps.zone.outputs.zone_id }}"
+          
+          # Get existing root record ID
+          RECORD_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          records = data.get('result', [])
+          # Find root A or CNAME record
+          for r in records:
+              if r['name'] == 'zonewise.ai' and r['type'] in ('A', 'CNAME'):
+                  print(r['id'])
+                  break
+          ")
+          
+          if [ -n "$RECORD_ID" ]; then
+            echo "Updating existing record $RECORD_ID → cname.vercel-dns.com"
+            curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "type": "CNAME",
+                "name": "zonewise.ai",
+                "content": "cname.vercel-dns.com",
+                "ttl": 1,
+                "proxied": true
+              }' | python3 -m json.tool
+          else
+            echo "Creating new CNAME record → cname.vercel-dns.com"
+            curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "type": "CNAME",
+                "name": "zonewise.ai",
+                "content": "cname.vercel-dns.com",
+                "ttl": 1,
+                "proxied": true
+              }' | python3 -m json.tool
+          fi
+
+      - name: Verify DNS propagation
+        run: |
+          echo "Waiting 30s for DNS propagation..."
+          sleep 30
+          
+          echo "=== Checking zonewise.ai ==="
+          curl -sI https://zonewise.ai 2>/dev/null | head -15
+          
+          echo ""
+          echo "=== Checking page title ==="
+          curl -s https://zonewise.ai | grep -o "<title>[^<]*</title>" || echo "Could not fetch title yet"
+          
+          echo ""
+          echo "=== Checking for navy color ==="
+          curl -s https://zonewise.ai | grep -c "1E3A5F" || echo "Navy color not found yet — DNS may still be propagating"
