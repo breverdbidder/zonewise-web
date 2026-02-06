@@ -1,22 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Teal accent colors */
-  --teal-50: #f0fdfa;
-  --teal-100: #ccfbf1;
-  --teal-200: #99f6e4;
-  --teal-300: #5eead4;
-  --teal-400: #2dd4bf;
-  --teal-500: #14b8a6;
-  --teal-600: #0d9488;
-  --teal-700: #0f766e;
-  --teal-800: #115e59;
-  --teal-900: #134e4a;
-  
+  /* Navy accent colors */
+  --navy-50: #E8F4FD;
+  --navy-100: #C5DFEF;
+  --navy-200: #9DC6E0;
+  --navy-300: #7099C0;
+  --navy-400: #4A6F9A;
+  --navy-500: #2A4F7A;
+  --navy-600: #1E3A5F;
+  --navy-700: #162D4A;
+  --navy-800: #0F2035;
+  --navy-900: #07111C;
+
+  /* Orange accent colors */
+  --orange-50: #FEF3C7;
+  --orange-100: #FDE68A;
+  --orange-200: #FCD34D;
+  --orange-300: #FBBF24;
+  --orange-400: #F59E0B;
+  --orange-500: #D97706;
+  --orange-600: #B45309;
+
   /* Slate colors for dark theme */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
@@ -29,16 +38,16 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
   --slate-950: #020617;
-  
+
   /* Semantic colors */
   --background: var(--slate-950);
   --foreground: var(--slate-100);
-  --primary: var(--teal-600);
+  --primary: var(--navy-600);
   --primary-foreground: white;
   --muted: var(--slate-800);
   --muted-foreground: var(--slate-400);
   --border: var(--slate-800);
-  --ring: var(--teal-500);
+  --ring: var(--navy-500);
 }
 
 * {
@@ -51,7 +60,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--background);
   color: var(--foreground);
 }
@@ -77,13 +86,13 @@ body {
 
 /* Selection */
 ::selection {
-  background: var(--teal-600);
+  background: var(--navy-600);
   color: white;
 }
 
 /* Focus ring */
 *:focus-visible {
-  outline: 2px solid var(--teal-500);
+  outline: 2px solid var(--navy-500);
   outline-offset: 2px;
 }
 
@@ -126,7 +135,7 @@ code, pre, .font-mono {
 }
 
 .prose strong {
-  color: var(--teal-400);
+  color: var(--navy-400);
   font-weight: 600;
 }
 
@@ -137,22 +146,22 @@ code, pre, .font-mono {
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(10px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes slideIn {
-  from { 
+  from {
     opacity: 0;
     transform: translateX(-10px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateX(0);
   }
@@ -187,7 +196,7 @@ code, pre, .font-mono {
 
 /* Map container */
 .mapboxgl-map {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .mapboxgl-ctrl-group {
@@ -247,7 +256,7 @@ button {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--teal-400), var(--teal-600));
+  background: linear-gradient(135deg, var(--navy-400), var(--navy-600));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -267,7 +276,7 @@ button {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.15);
+  box-shadow: 0 4px 20px rgba(30, 58, 95, 0.25);
 }
 
 /* Status indicator */
@@ -282,7 +291,7 @@ button {
   right: 0;
   width: 10px;
   height: 10px;
-  background: var(--teal-500);
+  background: var(--navy-500);
   border: 2px solid var(--slate-900);
   border-radius: 50%;
 }
@@ -298,7 +307,7 @@ button {
     transform: translateX(100%);
     transition: transform 0.3s ease;
   }
-  
+
   .artifact-panel.open {
     transform: translateX(0);
   }
@@ -314,7 +323,7 @@ button {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .session-sidebar.open {
     transform: translateX(0);
   }
@@ -326,16 +335,16 @@ button {
     background: white;
     color: black;
   }
-  
+
   .no-print {
     display: none !important;
   }
-  
+
   .prose {
     color: black;
   }
-  
+
   .prose strong {
-    color: var(--teal-700);
+    color: var(--navy-700);
   }
 }

@@ -25,28 +25,28 @@ export default function ArtifactPanel({
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
-  
+
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || map.current) return
-    
+
     mapboxgl.accessToken = MAPBOX_TOKEN
-    
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-80.7, 28.3], // Brevard County center
-      zoom: 10,
+      center: [-81.5, 27.6], // Florida center
+      zoom: 6,
       pitch: 0,
       bearing: 0
     })
-    
+
     map.current.on('load', () => {
       setMapLoaded(true)
-      
+
       // Add navigation controls
       map.current?.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      
+
       // Add zoning layer source (will be populated with data)
       map.current?.addSource('zoning-polygons', {
         type: 'geojson',
@@ -55,7 +55,7 @@ export default function ArtifactPanel({
           features: []
         }
       })
-      
+
       // Add fill layer for polygons
       map.current?.addLayer({
         id: 'zoning-fill',
@@ -65,7 +65,7 @@ export default function ArtifactPanel({
           'fill-color': [
             'match',
             ['get', 'zone_type'],
-            'residential', '#14b8a6',
+            'residential', '#1E3A5F',
             'commercial', '#f59e0b',
             'industrial', '#8b5cf6',
             'agricultural', '#22c55e',
@@ -75,41 +75,41 @@ export default function ArtifactPanel({
           'fill-opacity': 0.4
         }
       })
-      
+
       // Add outline layer
       map.current?.addLayer({
         id: 'zoning-outline',
         type: 'line',
         source: 'zoning-polygons',
         paint: {
-          'line-color': '#14b8a6',
+          'line-color': '#1E3A5F',
           'line-width': 2
         }
       })
-      
+
       // Add highlight layer
       map.current?.addLayer({
         id: 'zoning-highlight',
         type: 'fill',
         source: 'zoning-polygons',
         paint: {
-          'fill-color': '#14b8a6',
+          'fill-color': '#2A4F7A',
           'fill-opacity': 0.6
         },
         filter: ['==', ['get', 'id'], '']
       })
     })
-    
+
     return () => {
       map.current?.remove()
       map.current = null
     }
   }, [])
-  
+
   // Update map when artifact changes
   useEffect(() => {
     if (!mapLoaded || !map.current || !artifact) return
-    
+
     if (artifact.type === 'map' && artifact.data?.geometry) {
       // Update source with new geometry
       const source = map.current.getSource('zoning-polygons') as mapboxgl.GeoJSONSource
@@ -127,7 +127,7 @@ export default function ArtifactPanel({
           }]
         })
       }
-      
+
       // Fly to bounds if available
       if (artifact.metadata?.bounds) {
         map.current.fitBounds(artifact.metadata.bounds, {
@@ -143,7 +143,7 @@ export default function ArtifactPanel({
       }
     }
   }, [artifact, mapLoaded])
-  
+
   // Default view when no artifact
   if (!artifact && artifacts.length === 0) {
     return (
@@ -152,7 +152,7 @@ export default function ArtifactPanel({
         <div className="h-14 px-4 flex items-center justify-between border-b border-slate-800">
           <h3 className="font-medium text-slate-200">Artifact Panel</h3>
         </div>
-        
+
         {/* Empty State */}
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <div className="w-20 h-20 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 border border-slate-700">
@@ -165,18 +165,18 @@ export default function ArtifactPanel({
             Ask a zoning question to see maps, tables, and data visualizations here.
           </p>
         </div>
-        
+
         {/* Map Preview (always visible) */}
         <div className="h-64 border-t border-slate-800 relative">
           <div ref={mapContainer} className="absolute inset-0" />
           <div className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700">
-            <span className="text-xs text-slate-400">Brevard County, FL</span>
+            <span className="text-xs text-slate-400">Florida</span>
           </div>
         </div>
       </div>
     )
   }
-  
+
   return (
     <div className="w-[480px] bg-slate-900 border-l border-slate-800 flex flex-col">
       {/* Header */}
@@ -193,7 +193,7 @@ export default function ArtifactPanel({
             <button
               onClick={() => setViewMode('map')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                viewMode === 'map' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                viewMode === 'map' ? 'bg-zw-navy-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Map
@@ -201,7 +201,7 @@ export default function ArtifactPanel({
             <button
               onClick={() => setViewMode('data')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                viewMode === 'data' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                viewMode === 'data' ? 'bg-zw-navy-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Data
@@ -209,7 +209,7 @@ export default function ArtifactPanel({
             <button
               onClick={() => setViewMode('report')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                viewMode === 'report' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                viewMode === 'report' ? 'bg-zw-navy-600 text-white' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               Report
@@ -225,13 +225,13 @@ export default function ArtifactPanel({
           </button>
         </div>
       </div>
-      
+
       {/* Content Area */}
       <div className="flex-1 overflow-hidden">
         {viewMode === 'map' && (
           <div className="h-full relative">
             <div ref={mapContainer} className="absolute inset-0" />
-            
+
             {/* Map Overlay Info */}
             {artifact?.metadata?.jurisdiction && (
               <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur px-4 py-2 rounded-lg border border-slate-700">
@@ -239,13 +239,13 @@ export default function ArtifactPanel({
                 <p className="text-sm font-medium text-slate-200">{artifact.metadata.jurisdiction}</p>
               </div>
             )}
-            
+
             {/* Legend */}
             <div className="absolute bottom-3 left-3 bg-slate-900/90 backdrop-blur p-3 rounded-lg border border-slate-700">
               <p className="text-xs text-slate-400 mb-2">Zone Types</p>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-teal-500 rounded-sm" />
+                  <div className="w-3 h-3 bg-zw-navy-500 rounded-sm" />
                   <span className="text-xs text-slate-300">Residential</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -260,20 +260,20 @@ export default function ArtifactPanel({
             </div>
           </div>
         )}
-        
+
         {viewMode === 'data' && artifact && (
           <div className="h-full overflow-y-auto p-4">
             <DataView artifact={artifact} />
           </div>
         )}
-        
+
         {viewMode === 'report' && artifact && (
           <div className="h-full overflow-y-auto p-4">
             <ReportView artifact={artifact} />
           </div>
         )}
       </div>
-      
+
       {/* Artifacts List */}
       {artifacts.length > 1 && (
         <div className="border-t border-slate-800 p-3">
@@ -285,7 +285,7 @@ export default function ArtifactPanel({
                 onClick={() => onSelectArtifact(a)}
                 className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
                   artifact?.id === a.id
-                    ? 'bg-teal-600/20 border-teal-500/50 text-teal-100'
+                    ? 'bg-zw-navy-600/20 border-zw-navy-500/50 text-slate-100'
                     : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:border-slate-600'
                 }`}
               >
@@ -296,10 +296,10 @@ export default function ArtifactPanel({
           </div>
         </div>
       )}
-      
+
       {/* Action Bar */}
       <div className="p-3 border-t border-slate-800 flex items-center gap-2">
-        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-sm font-medium transition-colors">
+        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-zw-navy-600 hover:bg-zw-navy-700 text-white rounded-lg text-sm font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
@@ -322,8 +322,8 @@ export default function ArtifactPanel({
 
 function ArtifactTypeIcon({ type, small = false }: { type: string; small?: boolean }) {
   const size = small ? 'w-4 h-4' : 'w-5 h-5'
-  const color = 'text-teal-500'
-  
+  const color = 'text-zw-navy-500'
+
   switch (type) {
     case 'map':
       return (
@@ -354,7 +354,7 @@ function ArtifactTypeIcon({ type, small = false }: { type: string; small?: boole
 
 function DataView({ artifact }: { artifact: Artifact }) {
   const data = artifact.data || {}
-  
+
   return (
     <div className="space-y-4">
       {/* Zone Info Card */}
@@ -367,7 +367,7 @@ function DataView({ artifact }: { artifact: Artifact }) {
           <InfoItem label="Zone Type" value={data.zoneType || '-'} />
         </div>
       </div>
-      
+
       {/* Setbacks Card */}
       {data.setbacks && (
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
@@ -380,7 +380,7 @@ function DataView({ artifact }: { artifact: Artifact }) {
           </div>
         </div>
       )}
-      
+
       {/* Building Standards */}
       {(data.maxHeight || data.maxDensity || data.coverage) && (
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
@@ -393,14 +393,14 @@ function DataView({ artifact }: { artifact: Artifact }) {
           </div>
         </div>
       )}
-      
+
       {/* Permitted Uses */}
       {data.permittedUses && data.permittedUses.length > 0 && (
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
           <h4 className="text-sm font-medium text-slate-300 mb-3">Permitted Uses</h4>
           <div className="flex flex-wrap gap-2">
             {data.permittedUses.map((use: string, i: number) => (
-              <span key={i} className="px-2 py-1 bg-teal-600/20 text-teal-300 text-xs rounded-md border border-teal-500/20">
+              <span key={i} className="px-2 py-1 bg-zw-navy-600/20 text-zw-navy-300 text-xs rounded-md border border-zw-navy-500/20">
                 {use}
               </span>
             ))}
@@ -415,28 +415,28 @@ function InfoItem({ label, value, highlight = false }: { label: string; value: s
   return (
     <div>
       <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-      <p className={`text-sm font-medium ${highlight ? 'text-teal-400' : 'text-slate-200'}`}>{value}</p>
+      <p className={`text-sm font-medium ${highlight ? 'text-zw-navy-400' : 'text-slate-200'}`}>{value}</p>
     </div>
   )
 }
 
 function ReportView({ artifact }: { artifact: Artifact }) {
   const data = artifact.data || {}
-  
+
   return (
     <div className="space-y-6">
       {/* Report Header */}
       <div className="text-center pb-4 border-b border-slate-700">
         <h3 className="text-lg font-semibold text-slate-100">{artifact.title}</h3>
         <p className="text-sm text-slate-400 mt-1">
-          Generated {new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+          Generated {new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
           })}
         </p>
       </div>
-      
+
       {/* Report Content */}
       <div className="prose prose-invert prose-sm max-w-none">
         <h4>Zone Summary</h4>
@@ -444,7 +444,7 @@ function ReportView({ artifact }: { artifact: Artifact }) {
           The <strong>{data.zoneCode}</strong> zone in <strong>{data.jurisdiction}</strong> is classified as{' '}
           <strong>{data.zoneName || data.zoneType}</strong>.
         </p>
-        
+
         {data.setbacks && (
           <>
             <h4>Setback Requirements</h4>
@@ -455,17 +455,17 @@ function ReportView({ artifact }: { artifact: Artifact }) {
             </ul>
           </>
         )}
-        
+
         {data.maxHeight && (
           <>
             <h4>Building Height</h4>
             <p>Maximum building height is <strong>{data.maxHeight} feet</strong>.</p>
           </>
         )}
-        
+
         <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
           <p className="text-amber-200 text-xs m-0">
-            <strong>⚠️ Disclaimer:</strong> This information is for guidance only. Always verify with the local Planning Department before making development decisions.
+            <strong>Disclaimer:</strong> This information is for guidance only. Always verify with the local Planning Department before making development decisions.
           </p>
         </div>
       </div>

@@ -22,52 +22,52 @@ export default function ChatPanel({
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
-  
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px'
     }
   }, [input])
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isTyping) return
-    
+
     onSendMessage(input.trim())
     setInput('')
     setIsTyping(true)
-    
+
     // Simulate typing indicator
     setTimeout(() => setIsTyping(false), 2000)
   }
-  
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSubmit(e)
     }
   }
-  
+
   const exampleQueries = [
-    { icon: '🏠', text: 'What are the setbacks for R-1 in Satellite Beach?' },
-    { icon: '🏢', text: 'Can I build a 4-story building in Melbourne Beach?' },
-    { icon: '📊', text: 'Compare C-1 and C-2 zones in Palm Bay' },
-    { icon: '🏘️', text: 'What zones allow multi-family housing in Cocoa Beach?' },
-    { icon: '📍', text: 'Show me all residential zones in Brevard County' },
-    { icon: '📋', text: 'What permits do I need for a home addition in Titusville?' }
+    { icon: '\u{1F3E0}', text: 'What are the setbacks for R-1 in Jacksonville?' },
+    { icon: '\u{1F3E2}', text: 'Can I build a 4-story building in Miami Beach?' },
+    { icon: '\u{1F4CA}', text: 'Compare C-1 and C-2 zones in Tampa' },
+    { icon: '\u{1F3D8}\uFE0F', text: 'What zones allow multi-family housing in Orlando?' },
+    { icon: '\u{1F4CD}', text: 'Show me all residential zones in Florida' },
+    { icon: '\u{1F4CB}', text: 'What permits do I need for a home addition in Fort Lauderdale?' }
   ]
-  
+
   return (
     <div className="flex-1 flex flex-col min-w-0 border-r border-slate-800">
       {/* Chat Header */}
       <div className="h-14 px-6 flex items-center justify-between border-b border-slate-800 bg-slate-900/50">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-zw-navy-500 rounded-full animate-pulse" />
           <h2 className="font-medium text-slate-200">
             {activeSession?.title || 'New Conversation'}
           </h2>
@@ -78,31 +78,31 @@ export default function ChatPanel({
           </span>
         </div>
       </div>
-      
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-8">
             <div className="max-w-lg text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-teal-500/20 to-teal-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-teal-500/20">
-                <svg className="w-8 h-8 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-gradient-to-br from-zw-navy-500/20 to-zw-navy-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-zw-navy-500/20">
+                <svg className="w-8 h-8 text-zw-navy-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
               <h2 className="text-2xl font-semibold text-slate-100 mb-2">
-                Brevard County Zoning Intelligence
+                Florida Real Estate Intelligence
               </h2>
               <p className="text-slate-400 mb-8">
-                Query setbacks, building heights, permitted uses, and more across all 17 jurisdictions.
+                Query zoning, foreclosures, tax deeds, and more across all 67 Florida counties.
               </p>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 {exampleQueries.map((query, i) => (
                   <button
                     key={i}
                     onClick={() => setInput(query.text)}
-                    className="flex items-start gap-3 p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-teal-500/30 rounded-xl text-left transition-all group"
+                    className="flex items-start gap-3 p-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-zw-navy-500/30 rounded-xl text-left transition-all group"
                   >
                     <span className="text-xl">{query.icon}</span>
                     <span className="text-sm text-slate-300 group-hover:text-slate-100">
@@ -111,19 +111,19 @@ export default function ChatPanel({
                   </button>
                 ))}
               </div>
-              
+
               <div className="mt-8 flex items-center justify-center gap-6 text-xs text-slate-500">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full" />
-                  <span>301 Districts</span>
+                  <div className="w-2 h-2 bg-zw-navy-500 rounded-full" />
+                  <span>67 Counties</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full" />
-                  <span>10,092 Polygons</span>
+                  <div className="w-2 h-2 bg-zw-navy-500 rounded-full" />
+                  <span>298 KPIs</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full" />
-                  <span>17 Jurisdictions</span>
+                  <div className="w-2 h-2 bg-zw-navy-500 rounded-full" />
+                  <span>10.8M Parcels</span>
                 </div>
               </div>
             </div>
@@ -138,17 +138,17 @@ export default function ChatPanel({
                 <div className={`max-w-[85%] ${message.role === 'user' ? 'order-2' : ''}`}>
                   {message.role === 'assistant' && (
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg flex items-center justify-center">
+                      <div className="w-6 h-6 bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 rounded-lg flex items-center justify-center">
                         <span className="text-white text-xs font-bold">Z</span>
                       </div>
                       <span className="text-xs text-slate-500">ZoneWise.AI</span>
                     </div>
                   )}
-                  
+
                   <div
                     className={`px-4 py-3 rounded-2xl ${
                       message.role === 'user'
-                        ? 'bg-teal-600 text-white rounded-br-md'
+                        ? 'bg-zw-navy-600 text-white rounded-br-md'
                         : 'bg-slate-800 text-slate-100 rounded-bl-md border border-slate-700'
                     }`}
                   >
@@ -156,7 +156,7 @@ export default function ChatPanel({
                       {message.content}
                     </div>
                   </div>
-                  
+
                   {/* Artifact indicators */}
                   {message.artifacts && message.artifacts.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -172,36 +172,36 @@ export default function ChatPanel({
                       ))}
                     </div>
                   )}
-                  
+
                   <div className={`mt-1 text-xs text-slate-500 ${message.role === 'user' ? 'text-right' : ''}`}>
                     {formatTime(message.timestamp)}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg flex items-center justify-center">
+                  <div className="w-6 h-6 bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 rounded-lg flex items-center justify-center">
                     <span className="text-white text-xs font-bold">Z</span>
                   </div>
                 </div>
                 <div className="bg-slate-800 border border-slate-700 px-4 py-3 rounded-2xl rounded-bl-md">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
         )}
       </div>
-      
+
       {/* Input Area */}
       <div className="p-4 border-t border-slate-800 bg-slate-900/50">
         <form onSubmit={handleSubmit} className="relative">
@@ -210,9 +210,9 @@ export default function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about zoning in Brevard County..."
+            placeholder="Ask about real estate across Florida..."
             rows={1}
-            className="w-full px-4 py-3 pr-24 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all"
+            className="w-full px-4 py-3 pr-24 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-zw-navy-500/50 focus:border-zw-navy-500 transition-all"
           />
           <div className="absolute right-2 bottom-2 flex items-center gap-2">
             <button
@@ -227,7 +227,7 @@ export default function ChatPanel({
             <button
               type="submit"
               disabled={!input.trim() || isTyping}
-              className="p-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="p-2 bg-zw-navy-600 hover:bg-zw-navy-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -236,7 +236,7 @@ export default function ChatPanel({
           </div>
         </form>
         <p className="text-center text-xs text-slate-500 mt-2">
-          ⚠️ Information for guidance only. Always verify with the local Planning Department.
+          Information for guidance only. Always verify with the local Planning Department.
         </p>
       </div>
     </div>
