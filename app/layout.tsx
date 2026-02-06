@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'ZoneWise.AI - Brevard County Zoning Intelligence',
-  description: 'Query zoning regulations, setbacks, and building heights for all 17 Brevard County jurisdictions using AI.',
+  title: 'ZoneWise.AI - Florida Real Estate Intelligence',
+  description: 'AI-powered real estate intelligence across all 67 Florida counties. Distressed assets decoded.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0D9488',
+  themeColor: '#1E3A5F',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       .eq('zoning_district_id', parcelData.zoning_districts?.id)
       .single();
 
-    // 3. Fetch property details from County API (BCPAO for Brevard)
+    // 3. Fetch property details from County API
     const taxAccount = parcelData.tax_account;
     let propertyData = null;
     

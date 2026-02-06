@@ -63,7 +63,7 @@ export default function SignupPage() {
       <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-            <div style={{ width: '40px', height: '40px', backgroundColor: '#0d9488', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', backgroundColor: '#1E3A5F', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>Z</span>
             </div>
             <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e293b' }}>ZoneWise.AI</span>
@@ -122,14 +122,14 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: '100%', padding: '12px', backgroundColor: '#0d9488', color: 'white', fontWeight: '500', borderRadius: '8px', border: 'none', fontSize: '16px', cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
+              style={{ width: '100%', padding: '12px', backgroundColor: '#1E3A5F', color: 'white', fontWeight: '500', borderRadius: '8px', border: 'none', fontSize: '16px', cursor: 'pointer', opacity: loading ? 0.5 : 1 }}
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginTop: '24px' }}>
-            Already have an account? <Link href="/login" style={{ color: '#0d9488', textDecoration: 'none', fontWeight: '500' }}>Sign in</Link>
+            Already have an account? <Link href="/login" style={{ color: '#1E3A5F', textDecoration: 'none', fontWeight: '500' }}>Sign in</Link>
           </p>
         </div>
       </div>
