@@ -27,13 +27,16 @@ import { createClient } from '@supabase/supabase-js';
  * }
  */
 
-const supabase = createClient(
+function getSupabase() {
+  return createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabase();
     const { parcelId, jurisdictionId } = await request.json();
 
     if (!parcelId) {
