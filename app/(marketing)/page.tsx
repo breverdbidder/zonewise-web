@@ -3,7 +3,7 @@ import SplitScreenPreview from '@/components/SplitScreenPreview'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-slate-800">
       {/* Header */}
       <header className="border-b sticky top-0 bg-white/95 backdrop-blur z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -15,8 +15,8 @@ export default function Home() {
             <span className="text-xl font-bold text-slate-800">ZoneWise.AI</span>
           </div>
           <nav className="flex items-center gap-6">
-            <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block">Pricing</a>
-            <Link href="/login" className="text-gray-600 hover:text-slate-800">Login</Link>
+            <a href="#pricing" className="text-gray-700 hover:text-slate-800 hidden sm:block">Pricing</a>
+            <Link href="/login" className="text-gray-700 hover:text-slate-800">Login</Link>
             <Link href="/signup" className="bg-[#1E3A5F] text-white px-4 py-2 rounded-lg hover:bg-[#162D4A]">
               Get Started
             </Link>
@@ -31,7 +31,7 @@ export default function Home() {
             Florida&apos;s AI-Powered Real Estate
             <span className="text-[#1E3A5F] block mt-2">Intelligence</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-4">
+          <p className="text-xl text-gray-700 mb-4">
             Distressed Assets Decoded. For Everyone. Everywhere.
           </p>
           <p className="text-sm text-gray-500 mb-2">
@@ -69,7 +69,7 @@ export default function Home() {
       {/* Our Edge - Feature Cards */}
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Edge</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">Our Edge</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-[#1E3A5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -77,8 +77,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h3 className="font-semibold mb-2">Foreclosure Intelligence</h3>
-              <p className="text-gray-600 text-sm">Real-time tracking of lis pendens, default judgments, and auction schedules across all 67 counties.</p>
+              <h3 className="font-semibold mb-2 text-slate-800">Foreclosure Intelligence</h3>
+              <p className="text-gray-700 text-sm">Real-time tracking of lis pendens, default judgments, and auction schedules across all 67 counties.</p>
             </div>
             <div className="text-center p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-[#1E3A5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -86,8 +86,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" />
                 </svg>
               </div>
-              <h3 className="font-semibold mb-2">Tax Deed Analysis</h3>
-              <p className="text-gray-600 text-sm">Automated due diligence on tax deed sales with title search integration and lien analysis.</p>
+              <h3 className="font-semibold mb-2 text-slate-800">Tax Deed Analysis</h3>
+              <p className="text-gray-700 text-sm">Automated due diligence on tax deed sales with title search integration and lien analysis.</p>
             </div>
             <div className="text-center p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-[#1E3A5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -95,8 +95,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
               </div>
-              <h3 className="font-semibold mb-2">Zoning Coverage</h3>
-              <p className="text-gray-600 text-sm">Comprehensive zoning data with setbacks, permitted uses, and building envelope calculations statewide.</p>
+              <h3 className="font-semibold mb-2 text-slate-800">Zoning Coverage</h3>
+              <p className="text-gray-700 text-sm">Comprehensive zoning data with setbacks, permitted uses, and building envelope calculations statewide.</p>
             </div>
             <div className="text-center p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-[#1E3A5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -104,8 +104,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="font-semibold mb-2">ML Predictions</h3>
-              <p className="text-gray-600 text-sm">Machine learning models predict property values, market trends, and investment opportunities.</p>
+              <h3 className="font-semibold mb-2 text-slate-800">ML Predictions</h3>
+              <p className="text-gray-700 text-sm">Machine learning models predict property values, market trends, and investment opportunities.</p>
             </div>
           </div>
         </div>
@@ -114,8 +114,8 @@ export default function Home() {
       {/* Platform Preview */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Platform Preview</h2>
-          <p className="text-center text-gray-600 mb-12">See how ZoneWise.AI brings real estate intelligence to life</p>
+          <h2 className="text-3xl font-bold text-center mb-4 text-slate-900">Platform Preview</h2>
+          <p className="text-center text-gray-700 mb-12">See how ZoneWise.AI brings real estate intelligence to life</p>
           <SplitScreenPreview />
         </div>
       </section>
@@ -123,8 +123,8 @@ export default function Home() {
       {/* Origin Story */}
       <section className="py-20">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">The Origin Story</h2>
-          <div className="prose prose-lg max-w-none text-gray-600">
+          <h2 className="text-3xl font-bold text-center mb-8 text-slate-900">The Origin Story</h2>
+          <div className="prose prose-lg max-w-none text-gray-700">
             <p>
               Ariel Shapira spent years navigating Florida&apos;s distressed asset markets&mdash;from tax deed auctions in rural counties to foreclosure dockets in metropolitan courthouses. The process was fragmented: county clerks used different systems, auction calendars were buried in PDFs, and critical zoning data required manual lookups across dozens of municipal websites.
             </p>
@@ -145,23 +145,23 @@ export default function Home() {
       {/* Pricing */}
       <section id="pricing" className="py-20 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">Simple Pricing</h2>
-          <p className="text-center text-gray-600 mb-12">Start free, upgrade when you need more</p>
+          <h2 className="text-3xl font-bold text-center mb-4 text-slate-900">Simple Pricing</h2>
+          <p className="text-center text-gray-700 mb-12">Start free, upgrade when you need more</p>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-xl border">
-              <h3 className="font-semibold text-lg">Free</h3>
-              <p className="text-3xl font-bold my-4">$0<span className="text-base font-normal text-gray-500">/mo</span></p>
-              <ul className="space-y-2 text-sm text-gray-600 mb-6">
+              <h3 className="font-semibold text-lg text-slate-800">Free</h3>
+              <p className="text-3xl font-bold my-4 text-slate-900">$0<span className="text-base font-normal text-gray-500">/mo</span></p>
+              <ul className="space-y-2 text-sm text-gray-700 mb-6">
                 <li>&#10003; 25 queries/month</li>
                 <li>&#10003; Basic zoning lookup</li>
               </ul>
-              <Link href="/signup" className="block text-center py-2 border rounded-lg hover:bg-slate-50">Get Started</Link>
+              <Link href="/signup" className="block text-center py-2 border rounded-lg hover:bg-slate-50 text-slate-700">Get Started</Link>
             </div>
             <div className="bg-white p-6 rounded-xl border-2 border-[#1E3A5F] relative">
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1E3A5F] text-white text-xs px-3 py-1 rounded-full">Popular</span>
-              <h3 className="font-semibold text-lg">Pro</h3>
-              <p className="text-3xl font-bold my-4">$29<span className="text-base font-normal text-gray-500">/mo</span></p>
-              <ul className="space-y-2 text-sm text-gray-600 mb-6">
+              <h3 className="font-semibold text-lg text-slate-800">Pro</h3>
+              <p className="text-3xl font-bold my-4 text-slate-900">$29<span className="text-base font-normal text-gray-500">/mo</span></p>
+              <ul className="space-y-2 text-sm text-gray-700 mb-6">
                 <li>&#10003; 500 queries/month</li>
                 <li>&#10003; Interactive map</li>
                 <li>&#10003; PDF exports</li>
@@ -169,14 +169,14 @@ export default function Home() {
               <Link href="/signup?plan=pro" className="block text-center py-2 bg-[#1E3A5F] text-white rounded-lg hover:bg-[#162D4A]">Start Trial</Link>
             </div>
             <div className="bg-white p-6 rounded-xl border">
-              <h3 className="font-semibold text-lg">Team</h3>
-              <p className="text-3xl font-bold my-4">$99<span className="text-base font-normal text-gray-500">/mo</span></p>
-              <ul className="space-y-2 text-sm text-gray-600 mb-6">
+              <h3 className="font-semibold text-lg text-slate-800">Team</h3>
+              <p className="text-3xl font-bold my-4 text-slate-900">$99<span className="text-base font-normal text-gray-500">/mo</span></p>
+              <ul className="space-y-2 text-sm text-gray-700 mb-6">
                 <li>&#10003; 2,000 queries/month</li>
                 <li>&#10003; 5 team members</li>
                 <li>&#10003; Priority support</li>
               </ul>
-              <Link href="/signup?plan=team" className="block text-center py-2 border rounded-lg hover:bg-slate-50">Start Trial</Link>
+              <Link href="/signup?plan=team" className="block text-center py-2 border rounded-lg hover:bg-slate-50 text-slate-700">Start Trial</Link>
             </div>
           </div>
         </div>
