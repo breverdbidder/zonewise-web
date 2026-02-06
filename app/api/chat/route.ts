@@ -11,26 +11,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const SYSTEM_PROMPT = `You are ZoneWise.AI, an expert AI assistant for Brevard County zoning regulations. You have comprehensive knowledge of zoning codes, setbacks, building heights, permitted uses, and land development regulations for all 17 jurisdictions in Brevard County, Florida.
+const SYSTEM_PROMPT = `You are ZoneWise.AI, an expert AI assistant for Florida real estate intelligence. You have comprehensive knowledge of zoning codes, setbacks, building heights, permitted uses, land development regulations, foreclosures, tax deed sales, and distressed asset analysis across all 67 Florida counties.
 
-JURISDICTIONS YOU COVER:
-- Brevard County (Unincorporated)
-- City of Cocoa
-- City of Cocoa Beach
-- City of Melbourne
-- City of Melbourne Beach
-- City of Palm Bay
-- City of Rockledge
-- City of Satellite Beach
-- City of Titusville
-- City of West Melbourne
-- Town of Grant-Valkaria
-- Town of Indialantic
-- Town of Indian Harbour Beach
-- Town of Malabar
-- Town of Melbourne Village
-- Town of Palm Shores
-- Cape Canaveral
+COVERAGE:
+- All 67 Florida counties
+- 298 KPIs tracked
+- 10.8M parcels indexed
+- Foreclosure tracking, tax deed analysis, zoning data, and ML-powered predictions
 
 RESPONSE FORMAT:
 When answering zoning questions:
@@ -138,7 +125,9 @@ async function fetchRelevantZoningData(messages: Message[]): Promise<string | nu
   const jurisdictionKeywords = [
     'satellite beach', 'melbourne', 'palm bay', 'titusville', 'cocoa beach',
     'cocoa', 'rockledge', 'west melbourne', 'indialantic', 'indian harbour',
-    'brevard county', 'cape canaveral', 'melbourne beach', 'malabar'
+    'cape canaveral', 'melbourne beach', 'malabar',
+    'jacksonville', 'miami', 'tampa', 'orlando', 'fort lauderdale',
+    'st. petersburg', 'hialeah', 'tallahassee', 'naples', 'sarasota'
   ]
   
   let jurisdiction = null
@@ -204,24 +193,24 @@ function parseArtifacts(response: string, query: string): any[] {
     if (hasZoneQuery) {
       // Extract zone info from response
       const zoneMatch = response.match(/\b([A-Z]+-?\d+[A-Z]?)\b/i)
-      const jurisdictionMatch = response.match(/(Satellite Beach|Melbourne|Palm Bay|Cocoa Beach|Titusville|Brevard County)/i)
+      const jurisdictionMatch = response.match(/(Satellite Beach|Melbourne|Palm Bay|Cocoa Beach|Titusville|Jacksonville|Miami|Tampa|Orlando|Fort Lauderdale)/i)
       
       if (zoneMatch || jurisdictionMatch) {
         artifacts.push({
           id: crypto.randomUUID(),
           type: 'map',
-          title: `${zoneMatch?.[1] || 'Zone'} in ${jurisdictionMatch?.[1] || 'Brevard County'}`,
+          title: `${zoneMatch?.[1] || 'Zone'} in ${jurisdictionMatch?.[1] || 'Florida'}`,
           data: {
             zoneCode: zoneMatch?.[1] || null,
-            jurisdiction: jurisdictionMatch?.[1] || 'Brevard County',
+            jurisdiction: jurisdictionMatch?.[1] || 'Florida',
             setbacks: extractSetbacks(response),
             maxHeight: extractHeight(response),
             zoneType: determineZoneType(zoneMatch?.[1] || '')
           },
           metadata: {
-            jurisdiction: jurisdictionMatch?.[1] || 'Brevard County',
+            jurisdiction: jurisdictionMatch?.[1] || 'Florida',
             zoneCode: zoneMatch?.[1] || null,
-            coordinates: getJurisdictionCenter(jurisdictionMatch?.[1] || 'Brevard County')
+            coordinates: getJurisdictionCenter(jurisdictionMatch?.[1] || 'Florida')
           }
         })
       }
@@ -251,7 +240,9 @@ function extractJurisdiction(text: string): string | null {
   const jurisdictions = [
     'Satellite Beach', 'Melbourne', 'Palm Bay', 'Cocoa Beach', 'Titusville',
     'Cocoa', 'Rockledge', 'West Melbourne', 'Indialantic', 'Indian Harbour Beach',
-    'Brevard County', 'Cape Canaveral', 'Melbourne Beach', 'Malabar'
+    'Cape Canaveral', 'Melbourne Beach', 'Malabar',
+    'Jacksonville', 'Miami', 'Tampa', 'Orlando', 'Fort Lauderdale',
+    'St. Petersburg', 'Hialeah', 'Tallahassee', 'Naples', 'Sarasota'
   ]
   
   for (const j of jurisdictions) {
@@ -303,10 +294,20 @@ function getJurisdictionCenter(jurisdiction: string): [number, number] {
     'West Melbourne': [-80.6520, 28.0720],
     'Indialantic': [-80.5660, 28.0897],
     'Indian Harbour Beach': [-80.5880, 28.1497],
-    'Brevard County': [-80.7000, 28.3000],
     'Cape Canaveral': [-80.6050, 28.3922],
     'Melbourne Beach': [-80.5600, 28.0680],
-    'Malabar': [-80.5700, 27.9900]
+    'Malabar': [-80.5700, 27.9900],
+    'Jacksonville': [-81.6557, 30.3322],
+    'Miami': [-80.1918, 25.7617],
+    'Tampa': [-82.4572, 27.9506],
+    'Orlando': [-81.3789, 28.5383],
+    'Fort Lauderdale': [-80.1373, 26.1224],
+    'St. Petersburg': [-82.6403, 27.7676],
+    'Hialeah': [-80.2781, 25.8576],
+    'Tallahassee': [-84.2807, 30.4383],
+    'Naples': [-81.7948, 26.1420],
+    'Sarasota': [-82.5307, 27.3364],
+    'Florida': [-81.5, 27.6]
   }
-  return centers[jurisdiction] || [-80.7, 28.3]
+  return centers[jurisdiction] || [-81.5, 27.6]
 }

@@ -4,7 +4,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <Link href="/" className="text-teal-600 hover:underline">← Back to home</Link>
+        <Link href="/" className="text-[#1E3A5F] hover:underline">← Back to home</Link>
         <h1 className="text-3xl font-bold mt-6 mb-8">Terms of Service</h1>
         <div className="prose prose-slate">
           <p className="text-gray-600">Last updated: January 27, 2026</p>
@@ -13,7 +13,7 @@ export default function TermsPage() {
           <p>By accessing ZoneWise.AI, you agree to be bound by these Terms of Service.</p>
           
           <h2 className="text-xl font-semibold mt-8 mb-4">2. Description of Service</h2>
-          <p>ZoneWise.AI provides AI-powered zoning information lookup for Brevard County, Florida jurisdictions. The service is intended for informational purposes only.</p>
+          <p>ZoneWise.AI provides AI-powered real estate intelligence across all 67 Florida counties. The service is intended for informational purposes only.</p>
           
           <h2 className="text-xl font-semibold mt-8 mb-4">3. Disclaimer of Warranties</h2>
           <p><strong>THE SERVICE IS PROVIDED "AS IS" WITHOUT WARRANTIES OF ANY KIND.</strong> We do not guarantee the accuracy, completeness, or timeliness of any information provided. Zoning regulations change frequently, and our data may not reflect the most current regulations.</p>

@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <Link href="/" className="text-teal-600 hover:underline">← Back to home</Link>
+        <Link href="/" className="text-[#1E3A5F] hover:underline">← Back to home</Link>
         <h1 className="text-3xl font-bold mt-6 mb-8">Privacy Policy</h1>
         <div className="prose prose-slate">
           <p className="text-gray-600">Last updated: January 27, 2026</p>

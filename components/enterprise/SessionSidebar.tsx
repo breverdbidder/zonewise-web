@@ -26,13 +26,13 @@ export default function SessionSidebar({
   onSignOut
 }: SessionSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  
-  const filteredSessions = sessions.filter(s => 
+
+  const filteredSessions = sessions.filter(s =>
     s.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
-  
+
   const groupedSessions = groupSessionsByDate(filteredSessions)
-  
+
   if (collapsed) {
     return (
       <div className="w-16 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-4 gap-4">
@@ -45,19 +45,19 @@ export default function SessionSidebar({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
           </svg>
         </button>
-        
+
         <button
           onClick={onNewSession}
-          className="p-2 bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+          className="p-2 bg-zw-navy-600 hover:bg-zw-navy-700 rounded-lg transition-colors"
           title="New chat"
         >
           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
-        
+
         <div className="flex-1" />
-        
+
         <Link
           href="/"
           className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
@@ -70,14 +70,14 @@ export default function SessionSidebar({
       </div>
     )
   }
-  
+
   return (
     <div className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-slate-800">
         <div className="flex items-center justify-between mb-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg flex items-center justify-center shadow-lg shadow-teal-500/20">
+            <div className="w-8 h-8 bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 rounded-lg flex items-center justify-center shadow-lg shadow-zw-navy-500/20">
               <span className="text-white font-bold text-sm">Z</span>
             </div>
             <span className="font-semibold text-slate-100">ZoneWise.AI</span>
@@ -91,10 +91,10 @@ export default function SessionSidebar({
             </svg>
           </button>
         </div>
-        
+
         <button
           onClick={onNewSession}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-teal-500/20"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-zw-navy-600 hover:bg-zw-navy-700 text-white rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-zw-navy-500/20"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -102,7 +102,7 @@ export default function SessionSidebar({
           New Chat
         </button>
       </div>
-      
+
       {/* Search */}
       <div className="px-4 py-3">
         <div className="relative">
@@ -114,11 +114,11 @@ export default function SessionSidebar({
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500"
+            className="w-full pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-zw-navy-500/50 focus:border-zw-navy-500"
           />
         </div>
       </div>
-      
+
       {/* Sessions List */}
       <div className="flex-1 overflow-y-auto px-2 pb-4">
         {Object.entries(groupedSessions).map(([group, groupSessions]) => (
@@ -133,12 +133,12 @@ export default function SessionSidebar({
                   onClick={() => onSelectSession(session)}
                   className={`w-full text-left px-3 py-2.5 rounded-lg transition-all group ${
                     activeSession?.id === session.id
-                      ? 'bg-teal-600/20 text-teal-100 border border-teal-500/30'
+                      ? 'bg-zw-navy-600/20 text-slate-100 border border-zw-navy-500/30'
                       : 'hover:bg-slate-800/70 text-slate-300'
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <svg className={`w-4 h-4 mt-0.5 flex-shrink-0 ${activeSession?.id === session.id ? 'text-teal-400' : 'text-slate-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className={`w-4 h-4 mt-0.5 flex-shrink-0 ${activeSession?.id === session.id ? 'text-zw-navy-400' : 'text-slate-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
                     <div className="min-w-0 flex-1">
@@ -153,7 +153,7 @@ export default function SessionSidebar({
             </div>
           </div>
         ))}
-        
+
         {filteredSessions.length === 0 && (
           <div className="text-center py-8">
             <svg className="w-12 h-12 text-slate-700 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +164,7 @@ export default function SessionSidebar({
           </div>
         )}
       </div>
-      
+
       {/* User Section */}
       <div className="p-4 border-t border-slate-800">
         <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ export default function SessionSidebar({
             </svg>
           </button>
         </div>
-        
+
         {/* Usage indicator */}
         <div className="mt-3">
           <div className="flex items-center justify-between text-xs mb-1">
@@ -195,8 +195,8 @@ export default function SessionSidebar({
             <span className="text-slate-400">{user?.queryCount || 0} / {user?.queryLimit || 500}</span>
           </div>
           <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all"
+            <div
+              className="h-full bg-gradient-to-r from-zw-navy-500 to-zw-navy-400 rounded-full transition-all"
               style={{ width: `${Math.min(((user?.queryCount || 0) / (user?.queryLimit || 500)) * 100, 100)}%` }}
             />
           </div>
@@ -211,14 +211,14 @@ function groupSessionsByDate(sessions: Session[]): Record<string, Session[]> {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
   const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-  
+
   const groups: Record<string, Session[]> = {
     'Today': [],
     'Yesterday': [],
     'Previous 7 Days': [],
     'Older': []
   }
-  
+
   sessions.forEach(session => {
     const sessionDate = new Date(session.updatedAt)
     if (sessionDate >= today) {
@@ -231,7 +231,7 @@ function groupSessionsByDate(sessions: Session[]): Record<string, Session[]> {
       groups['Older'].push(session)
     }
   })
-  
+
   // Remove empty groups
   return Object.fromEntries(
     Object.entries(groups).filter(([_, sessions]) => sessions.length > 0)
