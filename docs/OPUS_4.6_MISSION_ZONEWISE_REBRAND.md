@@ -26,7 +26,7 @@ Opus 4.6 Agent Teams enables parallel sub-agent execution. The @main agent orche
 @main (Orchestrator)
   ├── @brand-agent      → Brand system + globals.css + tailwind + layout.tsx
   ├── @marketing-agent  → Landing page rewrite (page.tsx) + new sections
-  ├── @splitscreen-agent → Split-screen preview component + panel mockups
+  ├── @splitscreen-agent → Split-screen PREVIEW MOCKUP component + panel mockups (essential)
   ├── @data-agent       → Reverse engineering data integration + stats
   └── @qa-agent         → Build verification + responsive testing + Lighthouse
 ```
@@ -364,7 +364,15 @@ Replace every `teal-*` with `navy-*` / `brand-orange`. Keep tier structure ($0/$
 
 **Agent: @splitscreen-agent**
 
-Build a visual preview component for the marketing page showing the 4-panel architecture. This is a **static showcase** (not the working app) that demonstrates the interface.
+Build a visual preview **mockup** component for the marketing page showing the 4-panel architecture. This is a **static/animated showcase** — NOT a functional app — that demonstrates the interface to visitors and drives signups. It is an essential part of this rebrand; visitors clicking from everestcapitalusa.com need to immediately see what ZoneWise.AI does.
+
+**Implementation approach:**
+- Static images or CSS illustrations for the map panel (NOT live Mapbox tiles)
+- Hardcoded sample conversation for the chat panel (NOT live Claude API)
+- Static calendar grid with sample auction dates (NOT live RealForeclose data)
+- Hardcoded metric cards with real Florida numbers (NOT live Supabase queries)
+- Framer Motion or CSS transitions for tab switching and entrance animations
+- Think of it as an **interactive hero image** — polished, animated, credibility-building
 
 ### 4.1 Architecture: Craft Agents Fork + 4 Panels
 
