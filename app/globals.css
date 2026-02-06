@@ -65,6 +65,35 @@ body {
   color: var(--foreground);
 }
 
+/* ── Light-mode overrides for white-background pages ── */
+/* Prevents invisible white-on-white text on marketing & legal pages */
+.bg-white,
+.bg-slate-50 {
+  color: #1e293b; /* slate-800 — strong readable dark text */
+}
+
+.bg-white h1, .bg-white h2, .bg-white h3, .bg-white h4,
+.bg-slate-50 h1, .bg-slate-50 h2, .bg-slate-50 h3 {
+  color: #0f172a; /* slate-900 — max contrast headings */
+}
+
+/* Tailwind prose overrides for light pages */
+.bg-white .prose p,
+.bg-white .prose li,
+.bg-white .prose td,
+.bg-white .prose blockquote {
+  color: #374151; /* gray-700 — readable body text */
+}
+
+.bg-white .prose strong {
+  color: #111827; /* gray-900 — bold stands out */
+}
+
+.bg-white .prose h2,
+.bg-white .prose h3 {
+  color: #0f172a; /* slate-900 */
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
