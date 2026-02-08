@@ -457,7 +457,7 @@ export default function Home() {
             </div>
           </div>
           <p className="text-center text-xs mt-8 text-slate-500">
-            &copy; 2026 ZoneWise.AI &mdash; Florida&apos;s AI-Powered Real Estate Intelligence.
+            &copy; 2026 ZoneWise.AI &mdash; The AI for Real Estate Intelligence.
             Information for guidance only. Not legal, financial, or investment advice.
             Always verify with local authorities and licensed professionals before making real estate decisions.
           </p>
