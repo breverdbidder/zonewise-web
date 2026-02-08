@@ -1,0 +1,60 @@
+name: "🧹 One-Time: Vercel Cleanup"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List all Vercel projects
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          echo "=== All Vercel Projects ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?limit=20")
+          
+          echo "$PROJECTS" | jq -r ".projects[] | \"\(.name) | \(.id) | \(.link.type // \"no-link\") | \(.link.repo // \"no-repo\")\""
+          
+          # Identify projects to delete
+          echo ""
+          echo "=== Projects to DELETE ==="
+          
+          DELETE_NAMES="zonewise-moat zonewise-data zonewise-mvp"
+          
+          for NAME in $DELETE_NAMES; do
+            PROJECT_ID=$(echo "$PROJECTS" | jq -r ".projects[] | select(.name==\"$NAME\") | .id")
+            if [ -n "$PROJECT_ID" ] && [ "$PROJECT_ID" != "null" ]; then
+              echo "Deleting: $NAME ($PROJECT_ID)"
+              RESULT=$(curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+                "https://api.vercel.com/v9/projects/$PROJECT_ID")
+              echo "  Result: $(echo $RESULT | jq -r .error.message // \"SUCCESS\")"
+            else
+              echo "Not found: $NAME (may already be deleted or different name)"
+            fi
+          done
+          
+          echo ""
+          echo "=== Remaining Projects ==="
+          REMAINING=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?limit=20")
+          echo "$REMAINING" | jq -r ".projects[] | \"✅ \(.name) | \(.id)\""
+
+      - name: Verify zonewise.ai domain
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          echo "=== Checking zonewise.ai domain assignment ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?limit=20")
+          
+          echo "$PROJECTS" | jq -r ".projects[] | select(.alias[] // [] | contains([\"zonewise.ai\"]) or .name==\"zonewise-web\" or .name==\"zonewise-ai\") | \"\(.name): \(.alias // [])\"" 2>/dev/null || true
+          
+          # Direct domain check
+          echo ""
+          echo "=== Domain verification ==="
+          curl -sI "https://zonewise.ai" | head -5
+          echo ""
+          curl -s "https://zonewise.ai" | grep -o "The AI for[^<]*" | head -1 || echo "Homepage content check..."
+
