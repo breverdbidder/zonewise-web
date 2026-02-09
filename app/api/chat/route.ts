@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
 function getAnthropic() {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
@@ -13,6 +14,67 @@ function getSupabase() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+}
+
+/**
+ * SEC-001: Authenticate the request using Supabase auth.
+ * Checks the Authorization header for a Bearer token, or falls back to cookie-based auth.
+ * Returns the authenticated user or null.
+ */
+async function authenticateRequest(request: NextRequest): Promise<{ userId: string; email?: string } | null> {
+  // Try Bearer token first (API clients)
+  const authHeader = request.headers.get('Authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.slice(7)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
+    )
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+    if (error || !user) return null
+    return { userId: user.id, email: user.email }
+  }
+
+  // Fall back to cookie-based auth (browser clients)
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return request.cookies.get(name)?.value },
+        set() {},
+        remove() {},
+      },
+    }
+  )
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) return null
+  return { userId: user.id, email: user.email }
+}
+
+/**
+ * SEC-001: Check and decrement the user's query limit.
+ * Returns remaining queries or -1 if unlimited, null if limit exceeded.
+ */
+async function checkAndDecrementQueryLimit(userId: string): Promise<number | null> {
+  const supabase = getSupabase()
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('query_limit, queries_used')
+    .eq('user_id', userId)
+    .single()
+
+  // If no subscription record, allow with default limit
+  if (!subscription) return 100
+
+  // -1 means unlimited
+  if (subscription.query_limit === -1) return -1
+
+  const remaining = subscription.query_limit - subscription.queries_used
+  if (remaining <= 0) return null
+
+  return remaining
 }
 
 // Florida jurisdiction coordinates for map centering
@@ -102,6 +164,24 @@ Always include at least one artifact marker when discussing specific zones or ju
 interface Message { role: 'user' | 'assistant'; content: string }
 
 export async function POST(request: NextRequest) {
+  // SEC-001: Authenticate the request — reject unauthenticated callers
+  const authUser = await authenticateRequest(request)
+  if (!authUser) {
+    return NextResponse.json(
+      { error: 'Authentication required. Please sign in to use the chat API.' },
+      { status: 401 }
+    )
+  }
+
+  // SEC-001: Check query limit before calling Claude API
+  const remaining = await checkAndDecrementQueryLimit(authUser.userId)
+  if (remaining === null) {
+    return NextResponse.json(
+      { error: 'Query limit exceeded. Please upgrade your plan.' },
+      { status: 429 }
+    )
+  }
+
   const anthropic = getAnthropic();
   const supabase = getSupabase();
   try {
@@ -127,16 +207,24 @@ export async function POST(request: NextRequest) {
       .replace(/\[REPORT:[^\]]+\]/g, '')
       .trim()
     
+    // SEC-001: Increment query count for the authenticated user
+    try {
+      await supabase
+        .from('subscriptions')
+        .update({ queries_used: supabase.rpc ? undefined : undefined })
+      // Use RPC to atomically increment
+      await supabase.rpc('increment_query_count', { p_user_id: authUser.userId })
+    } catch (_) { /* non-fatal: don't block response if counter fails */ }
+
     if (sessionId) {
       try {
         await supabase.from('zw_chat_messages').insert([
           { session_id: sessionId, role: 'user', content: messages[messages.length - 1]?.content || '' },
           { session_id: sessionId, role: 'assistant', content: cleanedResponse, artifacts }
         ])
-        try { await supabase.rpc('increment_query_count', { session_uuid: sessionId }) } catch (_) { /* ignore */ }
       } catch (logError) { console.error('Log error:', logError) }
     }
-    
+
     return NextResponse.json({ response: cleanedResponse, artifacts })
   } catch (error) {
     console.error('Chat API error:', error)
