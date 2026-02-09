@@ -1,0 +1,85 @@
+# Upstream Connection Health Check
+# Validates zonewise.ai/app is serving Craft Agents viewer
+# Runs every 6 hours (aligned with desktop sync schedule)
+
+name: Upstream Connection Health
+
+on:
+  schedule:
+    - cron: '30 */6 * * *'  # 30 min after desktop sync
+  workflow_dispatch:
+  repository_dispatch:
+    types: [upstream-synced]
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Upstream Chain
+        run: |
+          echo "========================================="
+          echo "UPSTREAM CONNECTION HEALTH CHECK"
+          echo "========================================="
+          echo ""
+
+          # 1. Check Craft Agents upstream version
+          UPSTREAM_TAG=$(curl -s "https://api.github.com/repos/lukilabs/craft-agents-oss/releases/latest" | jq -r '.tag_name')
+          echo "1. Upstream (lukilabs/craft-agents-oss): $UPSTREAM_TAG"
+
+          # 2. Check fork sync status
+          FORK_BEHIND=$(curl -s "https://api.github.com/repos/breverdbidder/zonewise-desktop/compare/main...lukilabs:craft-agents-oss:main" | jq -r '.ahead_by // 0')
+          echo "2. Fork (zonewise-desktop) behind upstream by: $FORK_BEHIND commits"
+
+          # 3. Check viewer is serving
+          VIEWER_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://zonewise-desktop-viewer.vercel.app/")
+          echo "3. Viewer (zonewise-desktop-viewer.vercel.app): HTTP $VIEWER_STATUS"
+
+          # 4. Check zonewise.ai/app proxy
+          APP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/app")
+          echo "4. Proxy (zonewise.ai/app): HTTP $APP_STATUS"
+
+          # 5. Check JS assets load through proxy
+          JS_CHECK=$(curl -s "https://www.zonewise.ai/app" | grep -c 'assets/index-' || echo "0")
+          echo "5. JS bundle via proxy: $JS_CHECK found"
+
+          # 6. Check backend
+          BACKEND=$(curl -s "https://zonewise-agents.onrender.com/health" | jq -r '.status' 2>/dev/null || echo "unreachable")
+          echo "6. Backend (zonewise-agents.onrender.com): $BACKEND"
+
+          echo ""
+          echo "========================================="
+
+          PASS=true
+          [ "$VIEWER_STATUS" != "200" ] && echo "❌ FAIL: Viewer not serving" && PASS=false
+          [ "$APP_STATUS" != "200" ] && echo "❌ FAIL: Proxy not working" && PASS=false
+          [ "$JS_CHECK" = "0" ] && echo "❌ FAIL: JS not loading through proxy" && PASS=false
+          [ "$FORK_BEHIND" -gt "5" ] && echo "⚠️ WARNING: Fork $FORK_BEHIND commits behind" && PASS=false
+          [ "$BACKEND" != "healthy" ] && echo "⚠️ WARNING: Backend not healthy" && PASS=false
+
+          if [ "$PASS" = "true" ]; then
+            echo "✅ ALL CHECKS PASSED — upstream chain healthy"
+          else
+            echo "❌ SOME CHECKS FAILED"
+            exit 1
+          fi
+
+      - name: Log to Supabase
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_KEY" ]; then
+            curl -s -X POST "$SUPABASE_URL/rest/v1/insights" \
+              -H "apikey: $SUPABASE_KEY" \
+              -H "Authorization: Bearer $SUPABASE_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"type\": \"upstream_health_check\",
+                \"data\": {
+                  \"source\": \"zonewise-web\",
+                  \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
+                  \"status\": \"${{ job.status }}\"
+                }
+              }" > /dev/null 2>&1
+          fi
