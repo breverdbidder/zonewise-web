@@ -85,7 +85,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 
 
     const coords = artifact.metadata.coordinates
-    const zoom = artifact.metadata?.zoom || 13
+    const zoom = (artifact.metadata as any)?.zoom || 13
 
     // Create custom marker
     const el = document.createElement('div')
