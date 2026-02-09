@@ -15,6 +15,63 @@ function getSupabase() {
   );
 }
 
+// Florida jurisdiction coordinates for map centering
+const JURISDICTION_COORDS: Record<string, [number, number]> = {
+  'satellite beach': [-80.5901, 28.1761],
+  'melbourne': [-80.6081, 28.0836],
+  'palm bay': [-80.5887, 28.0345],
+  'titusville': [-80.8076, 28.6122],
+  'cocoa beach': [-80.6048, 28.3200],
+  'cocoa': [-80.7420, 28.3861],
+  'rockledge': [-80.7253, 28.3506],
+  'west melbourne': [-80.6520, 28.0719],
+  'indialantic': [-80.5665, 28.0897],
+  'indian harbour beach': [-80.5882, 28.1492],
+  'cape canaveral': [-80.6048, 28.3922],
+  'melbourne beach': [-80.5615, 28.0683],
+  'malabar': [-80.5687, 27.9900],
+  'jacksonville': [-81.6557, 30.3322],
+  'miami': [-80.1918, 25.7617],
+  'miami beach': [-80.1300, 25.7907],
+  'tampa': [-82.4572, 27.9506],
+  'orlando': [-81.3789, 28.5383],
+  'fort lauderdale': [-80.1373, 26.1224],
+  'st. petersburg': [-82.6403, 27.7676],
+  'hialeah': [-80.2781, 25.8576],
+  'tallahassee': [-84.2807, 30.4383],
+  'naples': [-81.7948, 26.1420],
+  'sarasota': [-82.5308, 27.3364],
+  'fort myers': [-81.8723, 26.6406],
+  'pensacola': [-87.2169, 30.4213],
+  'panama city': [-85.6602, 30.1588],
+  'daytona beach': [-81.0228, 29.2108],
+  'gainesville': [-82.3248, 29.6516],
+  'lakeland': [-81.9498, 28.0395],
+  'clearwater': [-82.8001, 27.9659],
+  'coral springs': [-80.2706, 26.2712],
+  'pompano beach': [-80.1247, 26.2379],
+  'west palm beach': [-80.0534, 26.7153],
+  'boca raton': [-80.0831, 26.3587],
+  'deerfield beach': [-80.0987, 26.3184],
+  'kissimmee': [-81.4076, 28.2920],
+  'ocala': [-82.1401, 29.1872],
+  'winter haven': [-81.7328, 28.0222],
+  'new smyrna beach': [-80.9270, 29.0258],
+  'key west': [-81.7826, 24.5551],
+  'brevard county': [-80.7214, 28.2639],
+  'orange county': [-81.3089, 28.4747],
+  'miami-dade county': [-80.3893, 25.5516],
+  'broward county': [-80.2594, 26.1901],
+  'palm beach county': [-80.2694, 26.6868],
+  'hillsborough county': [-82.3012, 27.9904],
+  'pinellas county': [-82.7401, 27.8764],
+  'duval county': [-81.6557, 30.3322],
+  'lee county': [-81.8723, 26.6406],
+  'polk county': [-81.7109, 27.9947],
+  'volusia county': [-81.1637, 29.0280],
+  'seminole county': [-81.2362, 28.7163],
+};
+
 const SYSTEM_PROMPT = `You are ZoneWise.AI, an expert AI assistant for Florida real estate intelligence across all 67 counties.
 
 DATABASE: You have access to a comprehensive Florida zoning database with:
@@ -25,15 +82,7 @@ DATABASE: You have access to a comprehensive Florida zoning database with:
 - 24,243 parcel zone records
 - 68 overlay districts, 92 development bonuses
 
-SKILLS:
-1. Zoning Lookup - Setbacks, heights, FAR, permitted uses by zone code
-2. District Compare - Side-by-side zoning district comparison
-3. Parcel Research - Owner, zoning, tax history, liens for a parcel
-4. Permit Check - Is a use permitted, conditional, or prohibited
-5. Foreclosure Scanner - Search auctions by county, date, property type
-6. Tax Deed Analyzer - Tax deed sales and certificate histories
-7. Due Diligence Report - 63-KPI development analysis
-8. Market Intelligence - ML-powered comps, ARV, investment scoring
+CRITICAL: ONLY use data values provided in the RELEVANT DATA section below. NEVER substitute with your training data. If a value is not in the database context, say "not available in database" rather than guessing.
 
 RESPONSE FORMAT:
 - Always specify jurisdiction and zone code
@@ -42,7 +91,13 @@ RESPONSE FORMAT:
 - Note overlay districts if applicable
 - End zoning answers with: "⚠️ Verify with [Jurisdiction] Planning Department before making development decisions."
 
-For visual data include: [ARTIFACT:MAP|TABLE|REPORT:Title]`
+ARTIFACT MARKERS - Use these when the query warrants visual output:
+- For map-related responses: [MAP:Zone Title]
+- For tabular data: [TABLE:Table Title]
+- For reports: [REPORT:Report Title]
+- For comparisons: [TABLE:Comparison Title]
+
+Always include at least one artifact marker when discussing specific zones or jurisdictions.`
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -51,7 +106,7 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabase();
   try {
     const { messages, sessionId } = await request.json()
-    const zoningContext = await fetchRelevantZoningData(supabase, messages)
+    const { context: zoningContext, zoneData } = await fetchRelevantZoningData(supabase, messages)
     
     const claudeMessages = messages.map((m: Message) => ({ role: m.role, content: m.content }))
     let systemPrompt = SYSTEM_PROMPT
@@ -65,8 +120,12 @@ export async function POST(request: NextRequest) {
     })
     
     const assistantContent = response.content[0].type === 'text' ? response.content[0].text : ''
-    const artifacts = parseArtifacts(assistantContent)
-    const cleanedResponse = assistantContent.replace(/\[ARTIFACT:(MAP|TABLE|REPORT):([^\]]+)\]/g, '').trim()
+    const artifacts = buildArtifacts(assistantContent, zoneData)
+    const cleanedResponse = assistantContent
+      .replace(/\[MAP:[^\]]+\]/g, '')
+      .replace(/\[TABLE:[^\]]+\]/g, '')
+      .replace(/\[REPORT:[^\]]+\]/g, '')
+      .trim()
     
     if (sessionId) {
       try {
@@ -74,7 +133,7 @@ export async function POST(request: NextRequest) {
           { session_id: sessionId, role: 'user', content: messages[messages.length - 1]?.content || '' },
           { session_id: sessionId, role: 'assistant', content: cleanedResponse, artifacts }
         ])
-        await supabase.rpc('increment_query_count', { session_uuid: sessionId })
+        await supabase.rpc('increment_query_count', { session_uuid: sessionId }).catch(() => {})
       } catch (logError) { console.error('Log error:', logError) }
     }
     
@@ -85,40 +144,46 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function fetchRelevantZoningData(supabase: any, messages: Message[]): Promise<string | null> {
+interface ZoneDataResult {
+  context: string | null;
+  zoneData: {
+    districts: any[];
+    uses: any[];
+    jurisdiction: string | null;
+    coordinates: [number, number] | null;
+  };
+}
+
+async function fetchRelevantZoningData(supabase: any, messages: Message[]): Promise<ZoneDataResult> {
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || ''
+  const emptyResult: ZoneDataResult = { context: null, zoneData: { districts: [], uses: [], jurisdiction: null, coordinates: null } }
   
-  // Extract zone codes - match patterns like R-1, C-2, PUD, GU, BU-1, PCN-1, etc.
+  // Extract zone codes
   const zoneCodeMatch = lastMessage.match(/\b([a-z]{1,4}-?\d{0,3}[a-z]?)\b/i)
   
-  // Match Florida jurisdictions
-  const jurisdictionKeywords = [
-    'satellite beach', 'melbourne', 'palm bay', 'titusville', 'cocoa beach',
-    'cocoa', 'rockledge', 'west melbourne', 'indialantic', 'indian harbour beach',
-    'cape canaveral', 'melbourne beach', 'malabar', 'grant-valkaria',
-    'jacksonville', 'miami', 'tampa', 'orlando', 'fort lauderdale',
-    'st. petersburg', 'hialeah', 'tallahassee', 'naples', 'sarasota',
-    'fort myers', 'pensacola', 'panama city', 'brooksville', 'new smyrna beach',
-    'winter haven', 'palatka', 'crestview', 'deland', 'safety harbor',
-    'cutler bay', 'keystone heights', 'baldwin', 'alachua', 'archer',
-    'defuniak springs', 'fort walton beach', 'frostproof'
-  ]
-  let jurisdiction = null
-  for (const kw of jurisdictionKeywords) {
-    if (lastMessage.includes(kw)) { jurisdiction = kw; break }
+  // Match jurisdictions
+  let jurisdiction: string | null = null
+  let coordinates: [number, number] | null = null
+  for (const [name, coords] of Object.entries(JURISDICTION_COORDS)) {
+    if (lastMessage.includes(name)) {
+      jurisdiction = name
+      coordinates = coords
+      break
+    }
   }
   
-  if (!zoneCodeMatch && !jurisdiction) return null
+  if (!zoneCodeMatch && !jurisdiction) return emptyResult
   
   const results: string[] = []
+  const allDistricts: any[] = []
+  const allUses: any[] = []
   
   try {
-    // 1. Query zoning districts with standards
     let query = supabase
       .from('zoning_districts')
       .select(`
         id, code, name, category, description,
-        jurisdictions!inner(name, county),
+        jurisdictions!inner(id, name, county, state),
         zone_standards(front_setback_ft, side_setback_ft, rear_setback_ft, max_height_ft, max_stories, min_lot_sqft, max_lot_coverage_pct, max_far, max_density_du_acre, min_open_space_pct)
       `)
     
@@ -132,10 +197,32 @@ async function fetchRelevantZoningData(supabase: any, messages: Message[]): Prom
         const j = Array.isArray(d.jurisdictions) ? d.jurisdictions[0] : d.jurisdictions
         const zs = Array.isArray(d.zone_standards) ? d.zone_standards[0] : d.zone_standards
         
+        // Build display data
+        const districtData: any = {
+          id: d.id,
+          zoneCode: d.code,
+          zoneName: d.name,
+          zoneType: d.category || 'general',
+          jurisdiction: j?.name || 'N/A',
+          county: j?.county || 'N/A',
+        }
+        
         let entry = `ZONE: ${d.code} — ${d.name}\nJurisdiction: ${j?.name || 'N/A'}, ${j?.county || 'N/A'} County\nCategory: ${d.category || 'N/A'}`
         if (d.description) entry += `\nDescription: ${d.description}`
         
         if (zs) {
+          districtData.setbacks = {
+            front: zs.front_setback_ft,
+            side: zs.side_setback_ft,
+            rear: zs.rear_setback_ft,
+          }
+          districtData.maxHeight = zs.max_height_ft
+          districtData.maxStories = zs.max_stories
+          districtData.coverage = zs.max_lot_coverage_pct
+          districtData.far = zs.max_far
+          districtData.lotSize = { min: zs.min_lot_sqft }
+          districtData.maxDensity = zs.max_density_du_acre
+          
           entry += `\nDimensional Standards:`
           if (zs.front_setback_ft) entry += `\n  Front Setback: ${zs.front_setback_ft} ft`
           if (zs.side_setback_ft) entry += `\n  Side Setback: ${zs.side_setback_ft} ft`
@@ -147,24 +234,34 @@ async function fetchRelevantZoningData(supabase: any, messages: Message[]): Prom
           if (zs.max_far) entry += `\n  FAR: ${zs.max_far}`
           if (zs.max_density_du_acre) entry += `\n  Max Density: ${zs.max_density_du_acre} du/acre`
         }
+        
+        allDistricts.push(districtData)
         results.push(entry)
       }
-    }
-    
-    // 2. Query permitted uses for matched districts
-    if (districts && districts.length > 0) {
+      
+      // Get jurisdiction coords from first result if not already set
+      if (!coordinates && districts[0]) {
+        const jName = (Array.isArray(districts[0].jurisdictions) ? districts[0].jurisdictions[0] : districts[0].jurisdictions)?.name?.toLowerCase()
+        if (jName && JURISDICTION_COORDS[jName]) {
+          coordinates = JURISDICTION_COORDS[jName]
+          jurisdiction = jName
+        }
+      }
+      
+      // Query permitted uses
       const districtIds = districts.map((d: any) => d.id)
       const { data: uses } = await supabase
         .from('permitted_uses')
         .select('use_type, use_category, use_description, requires_special_permit, special_conditions, zoning_district_id')
         .in('zoning_district_id', districtIds)
-        .limit(20)
+        .limit(25)
       
       if (uses && uses.length > 0) {
         const grouped: Record<number, any[]> = {}
         for (const u of uses) {
           if (!grouped[u.zoning_district_id]) grouped[u.zoning_district_id] = []
           grouped[u.zoning_district_id].push(u)
+          allUses.push(u)
         }
         
         for (const [dId, useList] of Object.entries(grouped)) {
@@ -181,12 +278,11 @@ async function fetchRelevantZoningData(supabase: any, messages: Message[]): Prom
       }
     }
     
-    // 3. Check for ordinance matches if query mentions ordinance/code/regulation
-    if (lastMessage.match(/ordinance|code|regulation|section|chapter/i) && jurisdiction) {
+    // Ordinance lookup
+    if (lastMessage.match(/ordinance|code|regulation|section|chapter/i)) {
       const { data: ordinances } = await supabase
         .from('ordinances')
         .select('ordinance_number, title, chapter, section, summary, source_url')
-        .eq('jurisdiction_id', districts?.[0]?.jurisdictions?.id || 0)
         .limit(3)
       
       if (ordinances && ordinances.length > 0) {
@@ -202,23 +298,84 @@ async function fetchRelevantZoningData(supabase: any, messages: Message[]): Prom
     
   } catch (error) {
     console.error('Failed to fetch zoning data:', error)
-    return null
+    return emptyResult
   }
   
-  return results.length > 0 ? results.join('\n\n---\n\n') : null
+  return {
+    context: results.length > 0 ? results.join('\n\n---\n\n') : null,
+    zoneData: { districts: allDistricts, uses: allUses, jurisdiction, coordinates }
+  }
 }
 
-function parseArtifacts(response: string): any[] {
+function buildArtifacts(response: string, zoneData: ZoneDataResult['zoneData']): any[] {
   const artifacts: any[] = []
-  const artifactRegex = /\[ARTIFACT:(MAP|TABLE|REPORT):([^\]]+)\]/g
-  let match
-  while ((match = artifactRegex.exec(response)) !== null) {
+  
+  // Parse markers from response
+  const mapMatch = response.match(/\[MAP:([^\]]+)\]/)
+  const tableMatch = response.match(/\[TABLE:([^\]]+)\]/)
+  const reportMatch = response.match(/\[REPORT:([^\]]+)\]/)
+  
+  const primaryDistrict = zoneData.districts[0] || null
+  
+  // Build map artifact if there's zone data
+  if (mapMatch || (primaryDistrict && zoneData.coordinates)) {
+    const title = mapMatch ? mapMatch[1] : `${primaryDistrict?.zoneCode} — ${primaryDistrict?.jurisdiction}`
     artifacts.push({
       id: crypto.randomUUID(),
-      type: match[1].toLowerCase(),
-      title: match[2],
-      data: {}
+      type: 'map',
+      title,
+      data: primaryDistrict || {},
+      metadata: {
+        coordinates: zoneData.coordinates || [-81.5, 27.6],
+        jurisdiction: primaryDistrict?.jurisdiction || zoneData.jurisdiction,
+        county: primaryDistrict?.county,
+        zoom: 13
+      }
     })
   }
+  
+  // Build table artifact
+  if (tableMatch || zoneData.districts.length > 1) {
+    const title = tableMatch ? tableMatch[1] : 'Zone Comparison'
+    artifacts.push({
+      id: crypto.randomUUID(),
+      type: 'table',
+      title,
+      data: {
+        districts: zoneData.districts,
+        permittedUses: zoneData.uses.map(u => u.use_description || u.use_type),
+        ...primaryDistrict
+      },
+      metadata: { jurisdiction: primaryDistrict?.jurisdiction }
+    })
+  }
+  
+  // Build report artifact
+  if (reportMatch) {
+    artifacts.push({
+      id: crypto.randomUUID(),
+      type: 'report',
+      title: reportMatch[1],
+      data: { ...primaryDistrict, permittedUses: zoneData.uses.map(u => u.use_description || u.use_type) },
+      metadata: { jurisdiction: primaryDistrict?.jurisdiction }
+    })
+  }
+  
+  // If we have zone data but no explicit markers, auto-generate a map artifact
+  if (artifacts.length === 0 && primaryDistrict) {
+    artifacts.push({
+      id: crypto.randomUUID(),
+      type: 'map',
+      title: `${primaryDistrict.zoneCode} — ${primaryDistrict.jurisdiction}`,
+      data: primaryDistrict,
+      metadata: {
+        coordinates: zoneData.coordinates || [-81.5, 27.6],
+        jurisdiction: primaryDistrict.jurisdiction,
+        county: primaryDistrict.county,
+        zoom: 13
+      }
+    })
+  }
+  
   return artifacts
 }
