@@ -225,7 +225,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
             <a
-              href="https://github.com/breverdbidder/zonewise-desktop/releases/latest"
+              href="https://github.com/breverdbidder/zonewise-desktop/releases/download/v2.5.0/ZoneWise-AI-x64.exe"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white text-zw-navy px-6 py-3 rounded-lg font-semibold hover:bg-slate-100 transition-colors"
@@ -234,7 +234,7 @@ export default function Home() {
               Download for Windows
             </a>
             <a
-              href="https://github.com/breverdbidder/zonewise-desktop/releases/latest"
+              href="https://github.com/breverdbidder/zonewise-desktop/releases/download/v2.5.0/ZoneWise-AI-arm64.dmg"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 border border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
