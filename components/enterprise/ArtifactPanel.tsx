@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Artifact } from '@/types'
 import { useTheme } from '@/lib/theme-context'
 
+import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
+
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
 interface ArtifactPanelProps {
@@ -27,14 +30,6 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
     if (!mapContainer.current || mapRef.current) return
     if (!MAPBOX_TOKEN) {
       setMapError('Mapbox token not configured')
-      return
-    }
-
-    let mapboxgl: any
-    try {
-      mapboxgl = require('mapbox-gl')
-    } catch {
-      setMapError('Mapbox not available')
       return
     }
 
@@ -88,7 +83,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 
     if (!artifact?.metadata?.coordinates) return
 
-    const mapboxgl = require('mapbox-gl')
+
     const coords = artifact.metadata.coordinates
     const zoom = artifact.metadata?.zoom || 13
 
