@@ -33,16 +33,36 @@ jobs:
         if: ${{ github.event.inputs.dry_run == 'true' }}
         run: cat "supabase/migrations/${{ github.event.inputs.migration_file }}"
 
+      - name: Verify secret is set
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          if [ -z "${{ secrets.SUPABASE_DB_URL }}" ] && [ -z "${{ secrets.SUPABASE_DB_PASSWORD }}" ]; then
+            echo "::error::Neither SUPABASE_DB_URL nor SUPABASE_DB_PASSWORD secret is set."
+            echo "Set SUPABASE_DB_URL to your Supabase Session Mode connection string from:"
+            echo "  Supabase Dashboard → Project Settings → Database → Connection string → Session mode (port 5432)"
+            echo "Format: postgresql://postgres.[ref]:[password]@[region].pooler.supabase.com:5432/postgres"
+            exit 1
+          fi
+
       - name: Deploy migration
         if: ${{ github.event.inputs.dry_run != 'true' }}
         env:
-          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           echo "Deploying: supabase/migrations/${{ github.event.inputs.migration_file }}"
-          # Use Supabase connection pooler (IPv4-compatible, session mode on port 5432)
-          # Session mode is required for DDL/multi-statement migrations
-          psql \
-            "postgresql://postgres.mocerqjnksmhcjzxrewo:${PGPASSWORD}@aws-0-us-east-1.pooler.supabase.com:5432/postgres" \
+
+          # Prefer SUPABASE_DB_URL (full connection string from dashboard)
+          # Fall back to constructing URL from SUPABASE_DB_PASSWORD
+          if [ -n "$SUPABASE_DB_URL" ]; then
+            echo "Using SUPABASE_DB_URL secret"
+            DB_URL="$SUPABASE_DB_URL"
+          else
+            echo "Using SUPABASE_DB_PASSWORD secret with pooler"
+            DB_URL="postgresql://postgres.mocerqjnksmhcjzxrewo:${SUPABASE_DB_PASSWORD}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+          fi
+
+          psql "$DB_URL" \
             -v ON_ERROR_STOP=1 \
             -f "supabase/migrations/${{ github.event.inputs.migration_file }}"
           echo "Migration deployed successfully."
