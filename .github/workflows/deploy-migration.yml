@@ -33,17 +33,6 @@ jobs:
         if: ${{ github.event.inputs.dry_run == 'true' }}
         run: cat "supabase/migrations/${{ github.event.inputs.migration_file }}"
 
-      - name: Verify secret is set
-        if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: |
-          if [ -z "${{ secrets.SUPABASE_DB_URL }}" ] && [ -z "${{ secrets.SUPABASE_DB_PASSWORD }}" ]; then
-            echo "::error::Neither SUPABASE_DB_URL nor SUPABASE_DB_PASSWORD secret is set."
-            echo "Set SUPABASE_DB_URL to your Supabase Session Mode connection string from:"
-            echo "  Supabase Dashboard → Project Settings → Database → Connection string → Session mode (port 5432)"
-            echo "Format: postgresql://postgres.[ref]:[password]@[region].pooler.supabase.com:5432/postgres"
-            exit 1
-          fi
-
       - name: Deploy migration
         if: ${{ github.event.inputs.dry_run != 'true' }}
         env:
@@ -52,17 +41,30 @@ jobs:
         run: |
           echo "Deploying: supabase/migrations/${{ github.event.inputs.migration_file }}"
 
-          # Prefer SUPABASE_DB_URL (full connection string from dashboard)
-          # Fall back to constructing URL from SUPABASE_DB_PASSWORD
+          # Debug: check which secrets are available (without revealing values)
+          [ -n "$SUPABASE_DB_URL" ] && echo "SUPABASE_DB_URL is set (${#SUPABASE_DB_URL} chars)" || echo "SUPABASE_DB_URL is NOT set"
+          [ -n "$SUPABASE_DB_PASSWORD" ] && echo "SUPABASE_DB_PASSWORD is set (${#SUPABASE_DB_PASSWORD} chars)" || echo "SUPABASE_DB_PASSWORD is NOT set"
+
           if [ -n "$SUPABASE_DB_URL" ]; then
-            echo "Using SUPABASE_DB_URL secret"
-            DB_URL="$SUPABASE_DB_URL"
+            echo "Using SUPABASE_DB_URL"
+            psql "$SUPABASE_DB_URL" \
+              -v ON_ERROR_STOP=1 \
+              -f "supabase/migrations/${{ github.event.inputs.migration_file }}"
+          elif [ -n "$SUPABASE_DB_PASSWORD" ]; then
+            echo "Using SUPABASE_DB_PASSWORD with pooler"
+            PGPASSWORD="$SUPABASE_DB_PASSWORD" psql \
+              -h aws-0-us-east-1.pooler.supabase.com \
+              -p 5432 \
+              -U "postgres.mocerqjnksmhcjzxrewo" \
+              -d postgres \
+              -v ON_ERROR_STOP=1 \
+              -f "supabase/migrations/${{ github.event.inputs.migration_file }}"
           else
-            echo "Using SUPABASE_DB_PASSWORD secret with pooler"
-            DB_URL="postgresql://postgres.mocerqjnksmhcjzxrewo:${SUPABASE_DB_PASSWORD}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+            echo "::error::No database credentials found."
+            echo "Please add one of these repository secrets (Settings → Secrets → Actions):"
+            echo "  SUPABASE_DB_URL — Full connection string from Supabase Dashboard → Database → Connection string → URI (Session mode)"
+            echo "  SUPABASE_DB_PASSWORD — Just the database password"
+            exit 1
           fi
 
-          psql "$DB_URL" \
-            -v ON_ERROR_STOP=1 \
-            -f "supabase/migrations/${{ github.event.inputs.migration_file }}"
           echo "Migration deployed successfully."
