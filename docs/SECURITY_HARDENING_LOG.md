@@ -120,18 +120,89 @@ Verified objects:
 
 ## npm audit Results
 
-### zonewise-web
-- 1 high-severity: Next.js framework vulnerabilities (fix: upgrade to `next@14.2.35`)
+### zonewise-web (post-hardening)
+- ~~1 high-severity: Next.js framework vulnerabilities~~ — RESOLVED: upgraded to `next@14.2.35`
+- 1 high remaining: Next.js 10.0.0–15.5.9 advisories (GHSA-9g9p-9gw9-jx7f, GHSA-h25m-26qc-wcjf) — requires Next.js 16 breaking change, not viable for v14 app
+- 4 low: transitive deps (`cookie` via `@supabase/ssr`, `@supabase/auth-js`) — requires major Supabase SDK upgrade
 - 0 application-code vulnerabilities
 
-### zonewise-desktop
+### zonewise-desktop (post-hardening)
 - Uses bun workspaces (no npm lockfile for audit)
+- Pinned: electron 39.2.7, electron-builder 26.0.12, @anthropic-ai/sdk 0.71.1
+- Updated: @sentry/electron 7.7.0 → ^10.36.0 (matches @sentry/react)
 - 0 application-code vulnerabilities introduced
+
+---
+
+## Testing & Dependency Hardening Sprint (2026-02-09)
+
+### Dependency Security (Phase 1)
+
+| Action | Repo | Details |
+|--------|------|---------|
+| Next.js upgrade | zonewise-web | 14.2.28 → 14.2.35 (6 high-severity advisories fixed) |
+| Pin critical deps | zonewise-web | @anthropic-ai/sdk, @supabase/supabase-js, @supabase/ssr, stripe, next |
+| Pin critical deps | zonewise-desktop | electron, electron-builder, @anthropic-ai/sdk, @anthropic-ai/claude-agent-sdk, @modelcontextprotocol/sdk, openai |
+| Sentry upgrade | zonewise-desktop | @sentry/electron 7.7.0 → ^10.36.0 |
+| Lockfile committed | zonewise-web | package-lock.json added to git |
+| Dependabot enabled | both repos | Weekly npm scanning, auto-PRs, security labels |
+| .env.example cleaned | zonewise-web | Removed hardcoded Mapbox token and Supabase URL |
+| Env validation | zonewise-web | `lib/env.ts` — fail-fast on missing required vars |
+
+### Security Test Suite (Phase 2)
+
+**53 tests, 4 test files, 100% pass rate**
+
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `auth.test.ts` | 14 | SEC-001 (Chat API auth) + SEC-002 (OAuth CSRF) |
+| `input-validation.test.ts` | 18 | SEC-008 (CORS/headers) + SEC-009 (rate limiting) |
+| `database.test.ts` | 17 | SEC-004 (SQL injection) + SEC-005 (RLS policies) |
+| `secrets.test.ts` | 4 | Hardcoded secrets scanning + .gitignore validation |
+
+Infrastructure: vitest 4.x, @testing-library/jest-dom, v8 coverage provider
+
+### CI/CD Security Pipeline (Phase 3)
+
+**Workflow**: `.github/workflows/security-checks.yml`
+
+Runs on push to `main` and all PRs. Checks:
+1. `npm audit` (high severity threshold)
+2. Security test suite (53 tests)
+3. Hardcoded secrets scanning (API keys, tokens, JWTs)
+4. Security headers verification
+5. Rate limiting verification
+6. API authentication verification
+
+### Updated Security Scorecard
+
+| Category | Before Sprint | After Sprint | Delta |
+|----------|---------------|--------------|-------|
+| Authentication | 18/20 | 18/20 | — |
+| Authorization (RLS) | 14/15 | 14/15 | — |
+| Input Validation | 14/15 | 14/15 | — |
+| Encryption | 9/10 | 9/10 | — |
+| CORS / Headers | 9/10 | 9/10 | — |
+| Rate Limiting | 9/10 | 9/10 | — |
+| Filesystem Security | 9/10 | 9/10 | — |
+| Audit Logging | 8/10 | 8/10 | — |
+| **Dependencies** | **5/10** | **9/10** | **+4** |
+| **Testing** | **4/10** | **9/10** | **+5** |
+| **CI/CD Security** | **3/10** | **8/10** | **+5** |
+| **Secrets Management** | **5/10** | **8/10** | **+3** |
+| **TOTAL** | **107/150** | **124/150** | **+17** |
+| **Normalized** | **~71%** | **~83%** | — |
+
+*Target categories improved: Dependencies 50% → 90%, Testing 40% → 90%, CI/CD 30% → 80%, Secrets 50% → 80%*
 
 ## Remaining Recommendations
 
-1. **Upgrade Next.js** to 14.2.35+ to resolve framework advisory
+1. ~~**Upgrade Next.js** to 14.2.35+~~ — DONE (2026-02-09)
 2. **Add Content-Security-Policy header** in `next.config.js`
 3. ~~**Deploy migration** `002_security_hardening.sql`~~ — DONE (2026-02-09)
 4. **Add WAF rules** at Cloudflare/Vercel edge for additional DDoS protection
 5. **Rotate any exposed API keys** that may have been used via unauthenticated chat API
+6. **Upgrade to Next.js 15+** when ready for breaking changes (resolves remaining high audit)
+7. **Upgrade @supabase/supabase-js** to 2.50+ (resolves auth-js + cookie low-severity advisories)
+8. **Replace bash-parser** (abandoned since 2019) — upstream dependency from Craft Agents
+9. **Add SAST tooling** (e.g., CodeQL, Semgrep) to CI pipeline
