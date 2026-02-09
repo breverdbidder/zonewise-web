@@ -25,9 +25,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero — Claude-style: bold claim + trust statement */}
+      {/* Hero */}
       <section className="py-24 sm:py-32 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
-        {/* Subtle grid background */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: 'linear-gradient(to right, #1E3A5F 1px, transparent 1px), linear-gradient(to bottom, #1E3A5F 1px, transparent 1px)',
           backgroundSize: '60px 60px'
@@ -58,8 +57,6 @@ export default function Home() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </a>
           </div>
-
-          {/* Trust Statement — Claude's "No ads" equivalent */}
           <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-full px-6 py-3 shadow-sm">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span className="text-sm text-gray-600">
@@ -69,7 +66,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats — hard numbers, not features */}
+      {/* Stats */}
       <section className="py-10 bg-zw-navy">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
           <div>
@@ -95,16 +92,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Use Cases — Claude-style: Analyze / Research / Build */}
+      {/* How It Works */}
       <section id="how" className="py-24">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">How you can use ZoneWise</h2>
           <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
             Ask anything about Florida real estate. ZoneWise reasons through zoning codes, lien structures, and market data — so you don&apos;t have to.
           </p>
-
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Analyze */}
             <div className="group">
               <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
                 <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
@@ -122,8 +117,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Research */}
             <div className="group">
               <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
                 <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
@@ -141,8 +134,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Build */}
             <div className="group">
               <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
                 <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
@@ -175,220 +166,94 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The Intelligence Layer — what makes ZoneWise different */}
+      {/* Agent & Skill Showcase */}
       <section className="py-24">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">The intelligence layer</h2>
-          <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
-            ZoneWise doesn&apos;t just search — it reasons. Every answer draws from structured data pipelines that cover the entire state.
-          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">AI Agents &amp; Skills</h2>
+          <p className="text-center text-gray-500 mb-12">Specialized agents backed by real Florida data</p>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {[
+              { name: 'Zoning Lookup', desc: 'Find zoning districts in any Florida city', icon: (
+                <svg className="w-6 h-6 text-zw-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              )},
+              { name: 'District Compare', desc: 'Compare districts across jurisdictions', icon: (
+                <svg className="w-6 h-6 text-zw-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+              )},
+              { name: 'Research', desc: 'Open-ended zoning intelligence queries', icon: (
+                <svg className="w-6 h-6 text-zw-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+              )},
+              { name: 'Permit Check', desc: 'Check what uses are permitted in any zone', icon: (
+                <svg className="w-6 h-6 text-zw-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+              )},
+            ].map((agent, i) => (
+              <div key={i} className="border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-zw-navy/20 transition-all">
+                <div className="w-10 h-10 bg-zw-navy/10 rounded-lg flex items-center justify-center mb-4">
+                  {agent.icon}
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-2">Foreclosure Intelligence</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">Real-time tracking of lis pendens, default judgments, and auction schedules. Lien priority analysis tells you what survives — not what you hope survives.</p>
-                </div>
+                <h3 className="font-bold text-slate-800 mb-1">{agent.name}</h3>
+                <p className="text-gray-500 text-sm">{agent.desc}</p>
               </div>
-            </div>
+            ))}
+          </div>
 
-            <div className="border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-2">Tax Deed Analysis</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">Automated due diligence on tax deed sales with title search integration, surplus fund tracking, and redemption period monitoring.</p>
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { name: '67 FL Counties', value: '369 jurisdictions' },
+              { name: '5,395 Districts', value: 'Indexed & searchable' },
+              { name: 'District Lookup', value: 'Instant regex path' },
+              { name: 'Density Compare', value: 'Claude Sonnet 4.5' },
+              { name: 'Setback Analysis', value: 'Front/side/rear' },
+              { name: 'Permitted Uses', value: 'By-right & conditional' },
+            ].map((skill, i) => (
+              <div key={i} className="bg-slate-50 border rounded-lg p-3 text-center">
+                <p className="text-sm font-medium text-slate-700">{skill.name}</p>
+                <p className="text-xs text-gray-400 mt-1">{skill.value}</p>
               </div>
-            </div>
-
-            <div className="border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-2">Statewide Zoning Coverage</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">Setbacks, permitted uses, building envelope calculations, and height restrictions for 1,542 zoning districts across 808+ jurisdictions.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 mb-2">ML Predictions</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">Machine learning models trained on historical auction data predict property values, third-party purchase probability, and optimal bid strategies.</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing — Claude-model: capability tiers, NOT query limits */}
-      <section id="pricing" className="py-24 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Choose your plan</h2>
-          <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
-            Every plan includes full AI access. Upgrade for deeper intelligence, not more messages.
+      {/* Desktop Download + Try in Browser */}
+      <section className="py-20 bg-zw-navy">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Get ZoneWise Desktop</h2>
+          <p className="text-slate-300 mb-8 max-w-xl mx-auto">
+            Full-featured desktop app powered by Craft Agents with offline caching,
+            3D building envelopes, and local session persistence.
           </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Free */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <h3 className="font-bold text-lg text-slate-800">Free</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$0</p>
-              <p className="text-sm text-gray-400 mb-6">Explore the intelligence</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  AI-powered zoning lookups
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Basic property intelligence
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  7-language support
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Interactive map
-                </li>
-              </ul>
-              <Link href="/signup" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">
-                Get Started
-              </Link>
-            </div>
-
-            {/* Pro — the sweet spot */}
-            <div className="bg-white rounded-2xl p-8 border-2 border-zw-navy relative shadow-lg shadow-zw-navy/5">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zw-navy text-white text-xs px-4 py-1 rounded-full font-medium">Most Popular</span>
-              <h3 className="font-bold text-lg text-slate-800">Pro</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$29<span className="text-base font-normal text-gray-400">/mo</span></p>
-              <p className="text-sm text-gray-400 mb-6">Full intelligence access</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Everything in Free
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Foreclosure &amp; tax deed tracking
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  3D building envelopes
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  PDF &amp; DOCX report exports
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Lien priority analysis
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Priority access
-                </li>
-              </ul>
-              <Link href="/signup?plan=pro" className="block text-center py-3 bg-zw-navy text-white rounded-xl hover:bg-zw-navy-700 font-medium transition-colors">
-                Start Free Trial
-              </Link>
-            </div>
-
-            {/* Investor */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <h3 className="font-bold text-lg text-slate-800">Investor</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$79<span className="text-base font-normal text-gray-400">/mo</span></p>
-              <p className="text-sm text-gray-400 mb-6">Professional-grade tools</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Everything in Pro
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  ML auction predictions
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Portfolio tracking &amp; alerts
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  API access
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Bulk property analysis
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Maximum priority
-                </li>
-              </ul>
-              <Link href="/signup?plan=investor" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">
-                Start Free Trial
-              </Link>
-            </div>
-
-            {/* Enterprise */}
-            <div className="bg-zw-navy rounded-2xl p-8 text-white">
-              <h3 className="font-bold text-lg">Enterprise</h3>
-              <p className="text-4xl font-bold my-4">Custom</p>
-              <p className="text-sm text-slate-300 mb-6">For teams &amp; institutions</p>
-              <ul className="space-y-3 text-sm text-slate-300 mb-8">
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Everything in Investor
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Multi-seat workspaces
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  White-label reports
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Custom data pipelines
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  SSO &amp; admin controls
-                </li>
-                <li className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Dedicated support
-                </li>
-              </ul>
-              <a href="mailto:ariel@everestcapitalusa.com" className="block text-center py-3 bg-white text-zw-navy rounded-xl hover:bg-slate-100 font-medium transition-colors">
-                Contact Sales
-              </a>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <a
+              href="https://github.com/breverdbidder/zonewise-desktop/releases/latest"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-white text-zw-navy px-6 py-3 rounded-lg font-semibold hover:bg-slate-100 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.66-.22.66-.48v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.93 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0112 6.8c.85.004 1.71.115 2.51.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.16.58.67.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+              Download for Windows
+            </a>
+            <a
+              href="https://github.com/breverdbidder/zonewise-desktop/releases/latest"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 border border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 17.607c-.786 2.28-3.139 6.317-5.563 6.361-1.608.031-2.125-.953-3.963-.953-1.837 0-2.412.923-3.932.983-2.572.099-6.542-5.827-6.542-10.995 0-4.747 3.308-7.1 6.198-7.143 1.55-.028 3.014 1.045 3.959 1.045.949 0 2.727-1.29 4.596-1.101.782.033 2.979.316 4.389 2.377-3.741 2.442-3.158 7.549.858 9.426zm-5.222-17.607c-2.826.114-5.132 3.079-4.81 5.531 2.612.203 5.118-2.725 4.81-5.531z"/></svg>
+              Download for macOS
+            </a>
           </div>
-
-          <p className="text-center text-xs text-gray-400 mt-8">
-            All plans include full AI access with no per-query limits. Upgrade for deeper capabilities, not more messages.
-          </p>
+          <a
+            href="https://zonewise-desktop-viewer.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-zw-orange hover:text-zw-orange-300 text-sm font-medium transition-colors"
+          >
+            Or try in your browser
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
         </div>
       </section>
 
@@ -411,6 +276,70 @@ export default function Home() {
               , the platform combines proprietary data pipelines, machine learning models, and a multilingual conversational interface to make distressed asset intelligence accessible to everyone&mdash;from first-time investors to institutional funds.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-24 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Choose your plan</h2>
+          <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
+            Every plan includes full AI access. Upgrade for deeper intelligence, not more messages.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-2xl p-8 border border-gray-200">
+              <h3 className="font-bold text-lg text-slate-800">Free</h3>
+              <p className="text-4xl font-bold my-4 text-slate-900">$0</p>
+              <p className="text-sm text-gray-400 mb-6">Explore the intelligence</p>
+              <ul className="space-y-3 text-sm text-gray-600 mb-8">
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>AI-powered zoning lookups</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Basic property intelligence</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>7-language support</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Interactive map</li>
+              </ul>
+              <Link href="/signup" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">Get Started</Link>
+            </div>
+            <div className="bg-white rounded-2xl p-8 border-2 border-zw-navy relative shadow-lg shadow-zw-navy/5">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zw-navy text-white text-xs px-4 py-1 rounded-full font-medium">Most Popular</span>
+              <h3 className="font-bold text-lg text-slate-800">Pro</h3>
+              <p className="text-4xl font-bold my-4 text-slate-900">$29<span className="text-base font-normal text-gray-400">/mo</span></p>
+              <p className="text-sm text-gray-400 mb-6">Full intelligence access</p>
+              <ul className="space-y-3 text-sm text-gray-600 mb-8">
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Free</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Foreclosure &amp; tax deed tracking</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>3D building envelopes</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>PDF &amp; DOCX exports</li>
+              </ul>
+              <Link href="/signup?plan=pro" className="block text-center py-3 bg-zw-navy text-white rounded-xl hover:bg-zw-navy-700 font-medium transition-colors">Start Free Trial</Link>
+            </div>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200">
+              <h3 className="font-bold text-lg text-slate-800">Investor</h3>
+              <p className="text-4xl font-bold my-4 text-slate-900">$79<span className="text-base font-normal text-gray-400">/mo</span></p>
+              <p className="text-sm text-gray-400 mb-6">Professional-grade tools</p>
+              <ul className="space-y-3 text-sm text-gray-600 mb-8">
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Pro</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>ML auction predictions</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Portfolio tracking &amp; alerts</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>API access</li>
+              </ul>
+              <Link href="/signup?plan=investor" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">Start Free Trial</Link>
+            </div>
+            <div className="bg-zw-navy rounded-2xl p-8 text-white">
+              <h3 className="font-bold text-lg">Enterprise</h3>
+              <p className="text-4xl font-bold my-4">Custom</p>
+              <p className="text-sm text-slate-300 mb-6">For teams &amp; institutions</p>
+              <ul className="space-y-3 text-sm text-slate-300 mb-8">
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Investor</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Multi-seat workspaces</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>White-label reports</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Custom data pipelines</li>
+              </ul>
+              <a href="mailto:ariel@everestcapitalusa.com" className="block text-center py-3 bg-white text-zw-navy rounded-xl hover:bg-slate-100 font-medium transition-colors">Contact Sales</a>
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-400 mt-8">
+            All plans include full AI access with no per-query limits. Upgrade for deeper capabilities, not more messages.
+          </p>
         </div>
       </section>
 
