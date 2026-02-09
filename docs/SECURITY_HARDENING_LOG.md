@@ -8,7 +8,7 @@
 ## Summary
 
 10 security vulnerabilities fixed across 2 repositories (`zonewise-web` and `zonewise-desktop`).
-All fixes committed individually and pushed to `main`.
+All fixes committed individually and pushed to `main`. Database migration deployed to production.
 
 ## Fixes Applied
 
@@ -105,6 +105,19 @@ All fixes committed individually and pushed to `main`.
 
 *Note: Remaining gaps are dependency-level (Next.js advisory) and infrastructure (WAF, CSP headers), not application code.*
 
+## Database Migration Deployment
+
+**Migration**: `002_security_hardening.sql`
+**Deployed**: 2026-02-09 via Supabase Management API
+**Status**: SUCCESS
+
+Verified objects:
+- `increment_query_count(UUID)` — `prosecdef=true`, `search_path=public`
+- `zoning_districts` RLS policies — INSERT, UPDATE, DELETE (service_role only)
+- `zoning_audit_log` table — 7 columns (id, table_name, record_id, operation, old_data, new_data, changed_by, changed_at)
+- `trg_zoning_districts_audit` trigger — active on zoning_districts
+- `subscriptions.queries_used` column — INTEGER, default 0
+
 ## npm audit Results
 
 ### zonewise-web
@@ -119,6 +132,6 @@ All fixes committed individually and pushed to `main`.
 
 1. **Upgrade Next.js** to 14.2.35+ to resolve framework advisory
 2. **Add Content-Security-Policy header** in `next.config.js`
-3. **Deploy migration** `002_security_hardening.sql` via `deploy-schema.yml` GitHub Action
+3. ~~**Deploy migration** `002_security_hardening.sql`~~ — DONE (2026-02-09)
 4. **Add WAF rules** at Cloudflare/Vercel edge for additional DDoS protection
 5. **Rotate any exposed API keys** that may have been used via unauthenticated chat API
