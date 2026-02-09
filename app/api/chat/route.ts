@@ -4,6 +4,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { addCorsHeaders, handlePreflight } from '@/lib/api/cors'
+
+/**
+ * SEC-008: Handle preflight CORS requests.
+ */
+export async function OPTIONS(request: NextRequest) {
+  return handlePreflight(request)
+}
 
 function getAnthropic() {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
@@ -167,19 +175,19 @@ export async function POST(request: NextRequest) {
   // SEC-001: Authenticate the request — reject unauthenticated callers
   const authUser = await authenticateRequest(request)
   if (!authUser) {
-    return NextResponse.json(
+    return addCorsHeaders(request, NextResponse.json(
       { error: 'Authentication required. Please sign in to use the chat API.' },
       { status: 401 }
-    )
+    ))
   }
 
   // SEC-001: Check query limit before calling Claude API
   const remaining = await checkAndDecrementQueryLimit(authUser.userId)
   if (remaining === null) {
-    return NextResponse.json(
+    return addCorsHeaders(request, NextResponse.json(
       { error: 'Query limit exceeded. Please upgrade your plan.' },
       { status: 429 }
-    )
+    ))
   }
 
   const anthropic = getAnthropic();
@@ -225,10 +233,10 @@ export async function POST(request: NextRequest) {
       } catch (logError) { console.error('Log error:', logError) }
     }
 
-    return NextResponse.json({ response: cleanedResponse, artifacts })
+    return addCorsHeaders(request, NextResponse.json({ response: cleanedResponse, artifacts }))
   } catch (error) {
     console.error('Chat API error:', error)
-    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 })
+    return addCorsHeaders(request, NextResponse.json({ error: 'Failed to process request' }, { status: 500 }))
   }
 }
 
