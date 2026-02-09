@@ -17,6 +17,14 @@ function getSupabase() {
 
 const SYSTEM_PROMPT = `You are ZoneWise.AI, an expert AI assistant for Florida real estate intelligence across all 67 counties.
 
+DATABASE: You have access to a comprehensive Florida zoning database with:
+- 67 counties, 369 jurisdictions, 5,395 zoning districts
+- 10,202 permitted uses, 700 conditional uses
+- 1,931 zone standards with setbacks, heights, lot sizes, FAR
+- 2,190 ordinances with full text
+- 24,243 parcel zone records
+- 68 overlay districts, 92 development bonuses
+
 SKILLS:
 1. Zoning Lookup - Setbacks, heights, FAR, permitted uses by zone code
 2. District Compare - Side-by-side zoning district comparison
@@ -28,15 +36,13 @@ SKILLS:
 8. Market Intelligence - ML-powered comps, ARV, investment scoring
 
 RESPONSE FORMAT:
-- Identify jurisdiction and zone code
-- Provide specific dimensional standards
-- List permitted and conditional uses
-- Include overlay districts if applicable
-- Remind users to verify with local Planning Department
+- Always specify jurisdiction and zone code
+- Include specific dimensional standards when available
+- Show permitted vs conditional uses clearly
+- Note overlay districts if applicable
+- End zoning answers with: "⚠️ Verify with [Jurisdiction] Planning Department before making development decisions."
 
-For visual data include: [ARTIFACT:MAP|TABLE|REPORT:Title]
-
-Always accurate, always include disclaimer for guidance only.`
+For visual data include: [ARTIFACT:MAP|TABLE|REPORT:Title]`
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -45,21 +51,21 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabase();
   try {
     const { messages, sessionId } = await request.json()
-    const zoningContext = await fetchRelevantZoningData(messages)
+    const zoningContext = await fetchRelevantZoningData(supabase, messages)
     
     const claudeMessages = messages.map((m: Message) => ({ role: m.role, content: m.content }))
     let systemPrompt = SYSTEM_PROMPT
-    if (zoningContext) systemPrompt += `\n\nRELEVANT ZONING DATA:\n${zoningContext}`
+    if (zoningContext) systemPrompt += `\n\nRELEVANT DATA FROM DATABASE:\n${zoningContext}`
     
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: systemPrompt,
       messages: claudeMessages
     })
     
     const assistantContent = response.content[0].type === 'text' ? response.content[0].text : ''
-    const artifacts = parseArtifacts(assistantContent, messages[messages.length - 1]?.content || '')
+    const artifacts = parseArtifacts(assistantContent)
     const cleanedResponse = assistantContent.replace(/\[ARTIFACT:(MAP|TABLE|REPORT):([^\]]+)\]/g, '').trim()
     
     if (sessionId) {
@@ -79,32 +85,130 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function fetchRelevantZoningData(messages: Message[]): Promise<string | null> {
+async function fetchRelevantZoningData(supabase: any, messages: Message[]): Promise<string | null> {
   const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || ''
-  const zoneCodeMatch = lastMessage.match(/\b([a-z]+-?\d+|r-1|r-2|r-3|c-1|c-2|m-1|pd|pud)\b/i)
+  
+  // Extract zone codes - match patterns like R-1, C-2, PUD, GU, BU-1, PCN-1, etc.
+  const zoneCodeMatch = lastMessage.match(/\b([a-z]{1,4}-?\d{0,3}[a-z]?)\b/i)
+  
+  // Match Florida jurisdictions
   const jurisdictionKeywords = [
     'satellite beach', 'melbourne', 'palm bay', 'titusville', 'cocoa beach',
-    'cocoa', 'rockledge', 'west melbourne', 'indialantic', 'indian harbour',
-    'cape canaveral', 'melbourne beach', 'malabar',
+    'cocoa', 'rockledge', 'west melbourne', 'indialantic', 'indian harbour beach',
+    'cape canaveral', 'melbourne beach', 'malabar', 'grant-valkaria',
     'jacksonville', 'miami', 'tampa', 'orlando', 'fort lauderdale',
-    'st. petersburg', 'hialeah', 'tallahassee', 'naples', 'sarasota'
+    'st. petersburg', 'hialeah', 'tallahassee', 'naples', 'sarasota',
+    'fort myers', 'pensacola', 'panama city', 'brooksville', 'new smyrna beach',
+    'winter haven', 'palatka', 'crestview', 'deland', 'safety harbor',
+    'cutler bay', 'keystone heights', 'baldwin', 'alachua', 'archer',
+    'defuniak springs', 'fort walton beach', 'frostproof'
   ]
   let jurisdiction = null
   for (const kw of jurisdictionKeywords) {
     if (lastMessage.includes(kw)) { jurisdiction = kw; break }
   }
+  
   if (!zoneCodeMatch && !jurisdiction) return null
+  
+  const results: string[] = []
+  
   try {
-    let query = getSupabase().from('zoning_districts').select('*')
-    if (zoneCodeMatch) query = query.ilike('zone_code', `%${zoneCodeMatch[1]}%`)
-    if (jurisdiction) query = query.ilike('jurisdiction', `%${jurisdiction}%`)
-    const { data, error } = await query.limit(5)
-    if (error || !data || data.length === 0) return null
-    return data.map(d => `Zone: ${d.zone_code} (${d.jurisdiction})\nName: ${d.zone_name || 'N/A'}\nSetbacks: Front ${d.front_setback || 'N/A'}ft, Side ${d.side_setback || 'N/A'}ft, Rear ${d.rear_setback || 'N/A'}ft\nMax Height: ${d.max_height || 'N/A'}ft\nPermitted Uses: ${d.permitted_uses || 'See local code'}`).join('\n---\n')
-  } catch { return null }
+    // 1. Query zoning districts with standards
+    let query = supabase
+      .from('zoning_districts')
+      .select(`
+        id, code, name, category, description,
+        jurisdictions!inner(name, county),
+        zone_standards(front_setback_ft, side_setback_ft, rear_setback_ft, max_height_ft, max_stories, min_lot_sqft, max_lot_coverage_pct, max_far, max_density_du_acre, min_open_space_pct)
+      `)
+    
+    if (zoneCodeMatch) query = query.ilike('code', `%${zoneCodeMatch[1]}%`)
+    if (jurisdiction) query = query.ilike('jurisdictions.name', `%${jurisdiction}%`)
+    
+    const { data: districts, error } = await query.limit(5)
+    
+    if (!error && districts && districts.length > 0) {
+      for (const d of districts) {
+        const j = Array.isArray(d.jurisdictions) ? d.jurisdictions[0] : d.jurisdictions
+        const zs = Array.isArray(d.zone_standards) ? d.zone_standards[0] : d.zone_standards
+        
+        let entry = `ZONE: ${d.code} — ${d.name}\nJurisdiction: ${j?.name || 'N/A'}, ${j?.county || 'N/A'} County\nCategory: ${d.category || 'N/A'}`
+        if (d.description) entry += `\nDescription: ${d.description}`
+        
+        if (zs) {
+          entry += `\nDimensional Standards:`
+          if (zs.front_setback_ft) entry += `\n  Front Setback: ${zs.front_setback_ft} ft`
+          if (zs.side_setback_ft) entry += `\n  Side Setback: ${zs.side_setback_ft} ft`
+          if (zs.rear_setback_ft) entry += `\n  Rear Setback: ${zs.rear_setback_ft} ft`
+          if (zs.max_height_ft) entry += `\n  Max Height: ${zs.max_height_ft} ft`
+          if (zs.max_stories) entry += `\n  Max Stories: ${zs.max_stories}`
+          if (zs.min_lot_sqft) entry += `\n  Min Lot Size: ${zs.min_lot_sqft} sq ft`
+          if (zs.max_lot_coverage_pct) entry += `\n  Max Lot Coverage: ${zs.max_lot_coverage_pct}%`
+          if (zs.max_far) entry += `\n  FAR: ${zs.max_far}`
+          if (zs.max_density_du_acre) entry += `\n  Max Density: ${zs.max_density_du_acre} du/acre`
+        }
+        results.push(entry)
+      }
+    }
+    
+    // 2. Query permitted uses for matched districts
+    if (districts && districts.length > 0) {
+      const districtIds = districts.map((d: any) => d.id)
+      const { data: uses } = await supabase
+        .from('permitted_uses')
+        .select('use_type, use_category, use_description, requires_special_permit, special_conditions, zoning_district_id')
+        .in('zoning_district_id', districtIds)
+        .limit(20)
+      
+      if (uses && uses.length > 0) {
+        const grouped: Record<number, any[]> = {}
+        for (const u of uses) {
+          if (!grouped[u.zoning_district_id]) grouped[u.zoning_district_id] = []
+          grouped[u.zoning_district_id].push(u)
+        }
+        
+        for (const [dId, useList] of Object.entries(grouped)) {
+          const dist = districts.find((d: any) => d.id === parseInt(dId))
+          if (!dist) continue
+          let usesEntry = `\nPERMITTED USES for ${dist.code}:`
+          for (const u of useList) {
+            const status = u.requires_special_permit ? '⚠️ Special Permit' : '✅ Permitted'
+            usesEntry += `\n  ${status}: ${u.use_description || u.use_type}`
+            if (u.special_conditions) usesEntry += ` (${u.special_conditions})`
+          }
+          results.push(usesEntry)
+        }
+      }
+    }
+    
+    // 3. Check for ordinance matches if query mentions ordinance/code/regulation
+    if (lastMessage.match(/ordinance|code|regulation|section|chapter/i) && jurisdiction) {
+      const { data: ordinances } = await supabase
+        .from('ordinances')
+        .select('ordinance_number, title, chapter, section, summary, source_url')
+        .eq('jurisdiction_id', districts?.[0]?.jurisdictions?.id || 0)
+        .limit(3)
+      
+      if (ordinances && ordinances.length > 0) {
+        let ordEntry = '\nRELEVANT ORDINANCES:'
+        for (const o of ordinances) {
+          ordEntry += `\n  ${o.ordinance_number}: ${o.title}`
+          if (o.summary) ordEntry += `\n    Summary: ${o.summary.slice(0, 150)}`
+          if (o.source_url) ordEntry += `\n    Source: ${o.source_url}`
+        }
+        results.push(ordEntry)
+      }
+    }
+    
+  } catch (error) {
+    console.error('Failed to fetch zoning data:', error)
+    return null
+  }
+  
+  return results.length > 0 ? results.join('\n\n---\n\n') : null
 }
 
-function parseArtifacts(response: string, query: string): any[] {
+function parseArtifacts(response: string): any[] {
   const artifacts: any[] = []
   const artifactRegex = /\[ARTIFACT:(MAP|TABLE|REPORT):([^\]]+)\]/g
   let match
@@ -113,19 +217,8 @@ function parseArtifacts(response: string, query: string): any[] {
       id: crypto.randomUUID(),
       type: match[1].toLowerCase(),
       title: match[2],
-      data: { zoneCode: extractZoneCode(response), jurisdiction: extractJurisdiction(response) }
+      data: {}
     })
   }
   return artifacts
-}
-
-function extractZoneCode(text: string): string | null {
-  const match = text.match(/\b([A-Z]+-?\d+[A-Z]?)\b/i)
-  return match ? match[1].toUpperCase() : null
-}
-
-function extractJurisdiction(text: string): string | null {
-  const jurisdictions = ['Satellite Beach','Melbourne','Palm Bay','Cocoa Beach','Titusville','Jacksonville','Miami','Tampa','Orlando','Fort Lauderdale','Tallahassee','Naples','Sarasota']
-  for (const j of jurisdictions) { if (text.toLowerCase().includes(j.toLowerCase())) return j }
-  return null
 }
