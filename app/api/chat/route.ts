@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
           { session_id: sessionId, role: 'user', content: messages[messages.length - 1]?.content || '' },
           { session_id: sessionId, role: 'assistant', content: cleanedResponse, artifacts }
         ])
-        await supabase.rpc('increment_query_count', { session_uuid: sessionId }).catch(() => {})
+        try { await supabase.rpc('increment_query_count', { session_uuid: sessionId }) } catch (_) { /* ignore */ }
       } catch (logError) { console.error('Log error:', logError) }
     }
     
