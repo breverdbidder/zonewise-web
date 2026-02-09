@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { ThemeProvider } from '@/lib/theme-context'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -21,11 +22,20 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            if (localStorage.getItem('zw-theme') === 'light') {
+              document.documentElement.classList.remove('dark');
+            }
+          } catch(e) {}
+        `}} />
       </head>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }
