@@ -39,11 +39,10 @@ jobs:
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           echo "Deploying: supabase/migrations/${{ github.event.inputs.migration_file }}"
+          # Use Supabase connection pooler (IPv4-compatible, session mode on port 5432)
+          # Session mode is required for DDL/multi-statement migrations
           psql \
-            -h db.mocerqjnksmhcjzxrewo.supabase.co \
-            -p 5432 \
-            -U postgres \
-            -d postgres \
+            "postgresql://postgres.mocerqjnksmhcjzxrewo:${PGPASSWORD}@aws-0-us-east-1.pooler.supabase.com:5432/postgres" \
             -v ON_ERROR_STOP=1 \
             -f "supabase/migrations/${{ github.event.inputs.migration_file }}"
           echo "Migration deployed successfully."
