@@ -1,0 +1,65 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run security tests
+        run: npm run test:security
+
+      - name: Check for secrets in code
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          FOUND=0
+          # Check for common secret patterns
+          for pattern in "ghp_[a-zA-Z0-9]{36}" "sk-[a-zA-Z0-9]{48}" "sbp_[a-zA-Z0-9]{40}" "eyJhbGciOi[a-zA-Z0-9._-]{50,}"; do
+            if grep -rn -E "$pattern" --include="*.ts" --include="*.tsx" --include="*.js" --exclude-dir=node_modules --exclude-dir=.next --exclude="*.test.*" . 2>/dev/null; then
+              FOUND=1
+            fi
+          done
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::error::Hardcoded secrets found in source code!"
+            exit 1
+          fi
+          echo "No secrets found"
+
+      - name: Verify security headers exist
+        run: |
+          echo "Checking security header configuration..."
+          grep -q "X-Content-Type-Options" lib/api/cors.ts || { echo "::error::Missing X-Content-Type-Options header"; exit 1; }
+          grep -q "X-Frame-Options" lib/api/cors.ts || { echo "::error::Missing X-Frame-Options header"; exit 1; }
+          grep -q "Referrer-Policy" lib/api/cors.ts || { echo "::error::Missing Referrer-Policy header"; exit 1; }
+          echo "Security headers present"
+
+      - name: Verify rate limiting exists
+        run: |
+          echo "Checking rate limiting..."
+          grep -q "checkRateLimit" middleware.ts || { echo "::error::Rate limiting not found in middleware"; exit 1; }
+          grep -q "429" middleware.ts || { echo "::error::429 status not found in middleware"; exit 1; }
+          echo "Rate limiting configured"
+
+      - name: Verify authentication on API routes
+        run: |
+          echo "Checking API authentication..."
+          grep -q "authenticateRequest" app/api/chat/route.ts || { echo "::error::Authentication not found on chat API"; exit 1; }
+          grep -q "401" app/api/chat/route.ts || { echo "::error::401 status not found on chat API"; exit 1; }
+          echo "API authentication configured"
