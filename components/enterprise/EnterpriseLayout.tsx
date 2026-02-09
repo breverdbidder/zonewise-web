@@ -32,12 +32,19 @@ export default function EnterpriseLayout() {
       return
     }
     
+    // Get profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authUser.id)
+      .single()
+    
     setUser({
       id: authUser.id,
       email: authUser.email || '',
-      role: 'pro',
+      role: (profile?.subscription_tier as any) || 'free',
       queryCount: 0,
-      queryLimit: 500,
+      queryLimit: profile?.subscription_tier === 'pro' ? 500 : profile?.subscription_tier === 'investor' ? 2000 : 25,
       createdAt: new Date()
     })
     
@@ -47,7 +54,7 @@ export default function EnterpriseLayout() {
 
   const loadSessions = async (userId: string) => {
     const { data } = await supabase
-      .from('chat_sessions')
+      .from('zw_chat_sessions')
       .select('*')
       .eq('user_id', userId)
       .order('updated_at', { ascending: false })
@@ -71,7 +78,7 @@ export default function EnterpriseLayout() {
     if (!user) return
     
     const { data, error } = await supabase
-      .from('chat_sessions')
+      .from('zw_chat_sessions')
       .insert({
         user_id: user.id,
         title: 'New Chat',
@@ -101,9 +108,8 @@ export default function EnterpriseLayout() {
   const selectSession = async (session: Session) => {
     setActiveSession(session)
     
-    // Load messages for this session
     const { data } = await supabase
-      .from('chat_messages')
+      .from('zw_chat_messages')
       .select('*')
       .eq('session_id', session.id)
       .order('created_at', { ascending: true })
@@ -118,7 +124,6 @@ export default function EnterpriseLayout() {
       }))
       setMessages(formattedMessages)
       
-      // Extract artifacts
       const allArtifacts = formattedMessages.flatMap(m => m.artifacts || [])
       setArtifacts(allArtifacts)
       if (allArtifacts.length > 0) {
@@ -166,17 +171,16 @@ export default function EnterpriseLayout() {
       
       setMessages(prev => [...prev, assistantMessage])
       
-      // Handle artifacts
       if (data.artifacts && data.artifacts.length > 0) {
         setArtifacts(prev => [...prev, ...data.artifacts])
         setActiveArtifact(data.artifacts[data.artifacts.length - 1])
       }
       
-      // Update session title if it's first message
+      // Update session title on first message
       if (messages.length === 0 && activeSession) {
         const title = content.slice(0, 50) + (content.length > 50 ? '...' : '')
         await supabase
-          .from('chat_sessions')
+          .from('zw_chat_sessions')
           .update({ title, updated_at: new Date().toISOString() })
           .eq('id', activeSession.id)
         
@@ -204,7 +208,7 @@ export default function EnterpriseLayout() {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-400 font-medium">Loading ZoneWise.AI...</p>
         </div>
       </div>
@@ -213,7 +217,6 @@ export default function EnterpriseLayout() {
 
   return (
     <div className="h-screen flex bg-slate-950 text-slate-100 overflow-hidden">
-      {/* Session Sidebar */}
       <SessionSidebar
         sessions={sessions}
         activeSession={activeSession}
@@ -225,9 +228,7 @@ export default function EnterpriseLayout() {
         onSignOut={handleSignOut}
       />
       
-      {/* Main Content Area */}
       <div className="flex-1 flex min-w-0">
-        {/* Chat Panel */}
         <ChatPanel
           messages={messages}
           onSendMessage={handleSendMessage}
@@ -236,7 +237,6 @@ export default function EnterpriseLayout() {
           onSelectArtifact={setActiveArtifact}
         />
         
-        {/* Artifact Panel */}
         <ArtifactPanel
           artifact={activeArtifact}
           artifacts={artifacts}
