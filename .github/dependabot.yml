@@ -4,9 +4,22 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "security"
     reviewers:
       - "breverdbidder"
+    groups:
+      security-critical:
+        patterns:
+          - "next"
+          - "@supabase/*"
+          - "stripe"
+          - "@anthropic-ai/*"
+      dev-dependencies:
+        dependency-type: "development"
+    ignore:
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
