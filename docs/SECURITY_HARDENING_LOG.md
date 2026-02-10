@@ -218,6 +218,60 @@ Type error: Type '"2025-02-24.acacia"' is not assignable to type '"2024-09-30.ac
 - Security Checks workflow: SUCCESS (`afe2d41`)
 - **Deploy to Vercel workflow: SUCCESS (`afe2d41`)** — first successful deploy
 
+## zonewise-desktop Hardening Sprint (2026-02-09)
+
+### Dependency Security (Phase 1) — Desktop
+
+| Action | Details |
+|--------|---------|
+| Pin critical deps | electron 39.2.7, electron-builder 26.0.12, @anthropic-ai/sdk 0.71.1, @anthropic-ai/claude-agent-sdk 0.2.19, @modelcontextprotocol/sdk 1.24.3, openai 6.18.0 |
+| Sentry upgrade | @sentry/electron 7.7.0 → ^10.36.0 |
+| Dependabot enabled | Weekly npm scanning with security labels |
+| .env.example cleaned | Removed `sk-ant-...` hint |
+
+### Security Test Suite (Phase 2) — Desktop
+
+**70 tests, 5 test files, 100% pass rate**
+
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `ipc-filesystem.test.ts` | 17 | SEC-003: Filesystem whitelist, 20+ sensitive patterns, symlink resolution |
+| `encryption.test.ts` | 17 | SEC-006: AES-256-GCM, scrypt key derivation, auth tags, legacy compat |
+| `shell-injection.test.ts` | 13 | SEC-007: ALLOWED_SHELLS whitelist, getSafeShell, suspicious char rejection |
+| `input-validation.test.ts` | 19 | SEC-010: Extension whitelist, filename sanitization, null bytes, NFKC |
+| `secrets.test.ts` | 4 | Hardcoded secrets scanning + .gitignore validation |
+
+Infrastructure: bun:test (built-in), source-level verification (reads .ts source and validates security patterns)
+
+### CI/CD Security Pipeline (Phase 3) — Desktop
+
+**Workflow**: `.github/workflows/security-checks.yml`
+
+Runs on push to `main` and all PRs. Checks:
+1. Security test suite (70 tests)
+2. Hardcoded secrets scanning (API keys, tokens, JWTs)
+3. .gitignore and .env file validation
+4. Security control existence verification (SEC-003/006/007/010)
+
+### Combined Security Scorecard (Both Repos)
+
+| Category | zonewise-web | zonewise-desktop | Combined |
+|----------|-------------|-----------------|----------|
+| Authentication | 18/20 | N/A (desktop) | 18/20 |
+| Authorization (RLS) | 14/15 | N/A | 14/15 |
+| Input Validation | 14/15 | 14/15 | 14/15 |
+| Encryption | 9/10 | 9/10 | 9/10 |
+| CORS / Headers | 9/10 | N/A | 9/10 |
+| Rate Limiting | 9/10 | N/A | 9/10 |
+| Filesystem Security | N/A | 9/10 | 9/10 |
+| Shell Security | N/A | 9/10 | 9/10 |
+| Audit Logging | 8/10 | N/A | 8/10 |
+| Dependencies | 9/10 | 9/10 | 9/10 |
+| Testing | 9/10 (53 tests) | 9/10 (70 tests) | 9/10 |
+| CI/CD Security | 8/10 | 8/10 | 8/10 |
+| Secrets Management | 8/10 | 8/10 | 8/10 |
+| **TOTAL** | — | — | **133/155 (~86%)** |
+
 ## Remaining Recommendations
 
 1. ~~**Upgrade Next.js** to 14.2.35+~~ — DONE (2026-02-09)
