@@ -8,8 +8,10 @@ describe('SEC-008: CORS Behavioral Tests', () => {
     expect(corsSource).not.toMatch(/'Access-Control-Allow-Origin'\s*,\s*'\*'/)
   })
 
-  it('whitelists only zonewise.ai domains in production', () => {
-    const prodOrigins = corsSource.match(/https:\/\/[a-z.-]+/g) || []
+  it('whitelists only trusted domains', () => {
+    // Extract origins from the ALLOWED_ORIGINS set (before CSP header)
+    const allowedOriginsBlock = corsSource.split('ALLOWED_ORIGINS')[1]?.split(']')[0] || ''
+    const prodOrigins = allowedOriginsBlock.match(/https:\/\/[a-z.-]+/g) || []
     for (const origin of prodOrigins) {
       expect(origin).toMatch(/zonewise|vercel/)
     }
@@ -42,6 +44,27 @@ describe('SEC-008: CORS Behavioral Tests', () => {
     expect(corsSource).toMatch(/X-Content-Type-Options/)
     expect(corsSource).toMatch(/X-Frame-Options/)
     expect(corsSource).toMatch(/Referrer-Policy/)
+    expect(corsSource).toMatch(/X-XSS-Protection/)
+  })
+
+  it('includes Content-Security-Policy header', () => {
+    expect(corsSource).toMatch(/Content-Security-Policy/)
+    expect(corsSource).toMatch(/default-src\s+'self'/)
+    expect(corsSource).toMatch(/script-src\s+'self'/)
+    expect(corsSource).toMatch(/connect-src\s+'self'/)
+  })
+
+  it('includes Strict-Transport-Security header with preload', () => {
+    expect(corsSource).toMatch(/Strict-Transport-Security/)
+    expect(corsSource).toMatch(/max-age=31536000/)
+    expect(corsSource).toMatch(/includeSubDomains/)
+    expect(corsSource).toMatch(/preload/)
+  })
+
+  it('includes Permissions-Policy header restricting sensitive APIs', () => {
+    expect(corsSource).toMatch(/Permissions-Policy/)
+    expect(corsSource).toMatch(/camera=\(\)/)
+    expect(corsSource).toMatch(/microphone=\(\)/)
   })
 
   it('sets Vary: Origin header for proper caching', () => {
