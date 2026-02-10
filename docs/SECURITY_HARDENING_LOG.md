@@ -129,7 +129,7 @@ Verified objects:
 ### zonewise-desktop (post-hardening)
 - Uses bun workspaces (no npm lockfile for audit)
 - Pinned: electron 39.2.7, electron-builder 26.0.12, @anthropic-ai/sdk 0.71.1
-- Updated: @sentry/electron 7.7.0 → ^10.36.0 (matches @sentry/react)
+- Updated: @sentry/electron 7.7.0 → 7.7.1 (matches @sentry/react)
 - 0 application-code vulnerabilities introduced
 
 ---
@@ -144,7 +144,7 @@ Verified objects:
 | Supabase upgrade | zonewise-web | @supabase/supabase-js 2.45.4 → 2.95.3, @supabase/ssr 0.5.1 → 0.5.2 |
 | Pin critical deps | zonewise-web | @anthropic-ai/sdk, @supabase/supabase-js, @supabase/ssr, stripe, next (exact versions, no ^) |
 | Pin critical deps | zonewise-desktop | electron, electron-builder, @anthropic-ai/sdk, @anthropic-ai/claude-agent-sdk, @modelcontextprotocol/sdk, openai |
-| Sentry upgrade | zonewise-desktop | @sentry/electron 7.7.0 → ^10.36.0 |
+| Sentry upgrade | zonewise-desktop | @sentry/electron 7.7.0 → 7.7.1 |
 | Lockfile committed | zonewise-web | package-lock.json added to git |
 | Dependabot enabled | both repos | Weekly npm scanning, auto-PRs, security labels |
 | .env.example cleaned | zonewise-web | Removed hardcoded Mapbox token and Supabase URL |
@@ -229,7 +229,7 @@ Type error: Type '"2025-02-24.acacia"' is not assignable to type '"2024-09-30.ac
 | Action | Details |
 |--------|---------|
 | Pin critical deps | electron 39.2.7, electron-builder 26.0.12, @anthropic-ai/sdk 0.71.1, @anthropic-ai/claude-agent-sdk 0.2.19, @modelcontextprotocol/sdk 1.24.3, openai 6.18.0 |
-| Sentry upgrade | @sentry/electron 7.7.0 → ^10.36.0 |
+| Sentry upgrade | @sentry/electron 7.7.0 → 7.7.1 |
 | Dependabot enabled | Weekly npm scanning with security labels |
 | .env.example cleaned | Removed `sk-ant-...` hint |
 
