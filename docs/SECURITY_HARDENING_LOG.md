@@ -195,6 +195,29 @@ Runs on push to `main` and all PRs. Checks:
 
 *Target categories improved: Dependencies 50% → 90%, Testing 40% → 90%, CI/CD 30% → 80%, Secrets 50% → 80%*
 
+## Vercel Deploy Fix (2026-02-09)
+
+**Commit**: `afe2d41`
+**Root cause**: Every Deploy to Vercel workflow run had been failing since the first commit. The TypeScript compiler rejected the Stripe API version string.
+
+**Problem**: `app/api/stripe/checkout/route.ts` and `app/api/stripe/webhook/route.ts` specified `apiVersion: '2025-02-24.acacia'`, but the pinned `stripe@17.2.0` SDK only supports `'2024-09-30.acacia'`. This caused a type error during `next build`:
+
+```
+Type error: Type '"2025-02-24.acacia"' is not assignable to type '"2024-09-30.acacia"'.
+```
+
+**Fix applied**:
+- Changed `apiVersion` from `'2025-02-24.acacia'` to `'2024-09-30.acacia'` in both Stripe route files
+- Made `createClient()` in `lib/supabase/server.ts` async with `await cookies()` (forward-compatible with Next.js 15)
+- Removed dead no-op `.update()` call in chat route query counter
+- Removed deprecated `request.ip` fallback in middleware
+
+**Verification**:
+- TypeScript compilation: PASS
+- Security tests: 53/53 PASS
+- Security Checks workflow: SUCCESS (`afe2d41`)
+- **Deploy to Vercel workflow: SUCCESS (`afe2d41`)** — first successful deploy
+
 ## Remaining Recommendations
 
 1. ~~**Upgrade Next.js** to 14.2.35+~~ — DONE (2026-02-09)
