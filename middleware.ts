@@ -13,10 +13,26 @@ function getClientIp(request: NextRequest): string {
   )
 }
 
+/**
+ * Extract user ID from Authorization header (Bearer token JWT).
+ * Returns null if no valid auth header present.
+ */
+function getUserIdFromAuth(request: NextRequest): string | null {
+  const authHeader = request.headers.get('authorization')
+  if (!authHeader?.startsWith('Bearer ')) return null
+  try {
+    const token = authHeader.slice(7)
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload.sub || null
+  } catch {
+    return null
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // SEC-009: Rate limit auth endpoints (login, signup, callback)
+  // SEC-009: Rate limit auth endpoints (login, signup, callback) — 5/min per IP
   if (pathname.startsWith('/auth/') || pathname.startsWith('/login') || pathname.startsWith('/signup')) {
     const ip = getClientIp(request)
     const result = checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth)
@@ -36,7 +52,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // SEC-009: Rate limit API endpoints
+  // SEC-009: Rate limit API endpoints — 30/min per IP
   if (pathname.startsWith('/api/')) {
     const ip = getClientIp(request)
     const result = checkRateLimit(`api:${ip}`, RATE_LIMITS.api)
@@ -53,6 +69,25 @@ export async function middleware(request: NextRequest) {
           },
         }
       )
+    }
+
+    // SEC-009: Per-user rate limit on authenticated API routes — 20/min per user
+    const userId = getUserIdFromAuth(request)
+    if (userId) {
+      const userResult = checkRateLimit(`user:${userId}`, RATE_LIMITS.userApi)
+      if (!userResult.allowed) {
+        return NextResponse.json(
+          { error: 'Too many requests. Please try again later.' },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(Math.ceil((userResult.resetAt - Date.now()) / 1000)),
+              'X-RateLimit-Limit': String(RATE_LIMITS.userApi.limit),
+              'X-RateLimit-Remaining': '0',
+            },
+          }
+        )
+      }
     }
   }
 

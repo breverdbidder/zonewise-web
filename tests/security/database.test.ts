@@ -31,6 +31,32 @@ describe('SEC-004: SQL Injection Prevention', () => {
   })
 })
 
+describe('SEC-004: Migration 003 - Legacy RPC Removal', () => {
+  const migration003 = fs.readFileSync('supabase/migrations/003_drop_legacy_rpc.sql', 'utf-8')
+
+  it('drops legacy function signature', () => {
+    expect(migration003).toMatch(/DROP FUNCTION IF EXISTS increment_query_count\(UUID\)/i)
+  })
+
+  it('validates caller identity with auth.uid()', () => {
+    expect(migration003).toMatch(/auth\.uid\(\)\s+IS DISTINCT FROM\s+p_user_id/i)
+  })
+
+  it('raises exception on unauthorized access', () => {
+    expect(migration003).toMatch(/RAISE EXCEPTION\s+'Access denied/i)
+  })
+
+  it('uses SECURITY DEFINER with locked search_path', () => {
+    expect(migration003).toMatch(/SECURITY DEFINER/i)
+    expect(migration003).toMatch(/SET search_path\s*=\s*public/i)
+  })
+
+  it('revokes public access and grants only to authenticated', () => {
+    expect(migration003).toMatch(/REVOKE ALL.*FROM PUBLIC/i)
+    expect(migration003).toMatch(/GRANT EXECUTE.*TO authenticated/i)
+  })
+})
+
 describe('SEC-005: RLS Write Policies', () => {
   const migration = fs.readFileSync('supabase/migrations/002_security_hardening.sql', 'utf-8')
 

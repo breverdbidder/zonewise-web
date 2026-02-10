@@ -53,8 +53,8 @@ describe('SEC-009: Rate Limiting', () => {
     expect(rateLimitSource).toMatch(/export function checkRateLimit/)
   })
 
-  it('defines auth rate limit (10 req/min)', () => {
-    expect(rateLimitSource).toMatch(/auth.*limit:\s*10/)
+  it('defines auth rate limit (5 req/min, tightened)', () => {
+    expect(rateLimitSource).toMatch(/auth.*limit:\s*5/)
   })
 
   it('defines API rate limit (30 req/min)', () => {
