@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   }
 
   // SEC-002: Validate CSRF state parameter
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const storedState = cookieStore.get('oauth_state')?.value
 
   if (storedState) {
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     )
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
