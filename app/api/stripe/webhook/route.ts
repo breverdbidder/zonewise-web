@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 async function getStripe() {
   const Stripe = (await import('stripe')).default
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-02-24.acacia',
+    apiVersion: '2024-09-30.acacia',
   })
 }
 

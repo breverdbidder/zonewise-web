@@ -217,10 +217,6 @@ export async function POST(request: NextRequest) {
     
     // SEC-001: Increment query count for the authenticated user
     try {
-      await supabase
-        .from('subscriptions')
-        .update({ queries_used: supabase.rpc ? undefined : undefined })
-      // Use RPC to atomically increment
       await supabase.rpc('increment_query_count', { p_user_id: authUser.userId })
     } catch (_) { /* non-fatal: don't block response if counter fails */ }
 
