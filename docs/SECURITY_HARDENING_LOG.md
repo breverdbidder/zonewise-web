@@ -7,8 +7,8 @@
 
 ## Summary
 
-10 security vulnerabilities fixed across 2 repositories (`zonewise-web` and `zonewise-desktop`).
-All fixes committed individually and pushed to `main`. Database migration deployed to production.
+13 security vulnerabilities fixed across 2 repositories (`zonewise-web` and `zonewise-desktop`).
+All fixes committed individually and pushed to `main`. Database migrations 002 and 003 deployed to production.
 
 ## Fixes Applied
 
@@ -36,6 +36,14 @@ All fixes committed individually and pushed to `main`. Database migration deploy
 | 8 | Missing CORS and security headers | MEDIUM | zonewise-web | `ede84e3` | FIXED |
 | 9 | Missing rate limiting on auth/API | MEDIUM | zonewise-web | `9b99474` | FIXED |
 | 10 | Insufficient input validation on file upload | MEDIUM | zonewise-desktop | `05be911` | FIXED |
+
+### Hardening Round 2 (2026-02-09)
+
+| # | Issue | Severity | Repo | Commit | Status |
+|---|-------|----------|------|--------|--------|
+| 11 | Missing CSP, HSTS, Permissions-Policy headers | MEDIUM | zonewise-web | `9d2c653` | FIXED |
+| 12 | Legacy insecure RPC function still callable | HIGH | zonewise-web | `9d2c653` | FIXED |
+| 13 | Rate limiting too permissive, no per-user limits | MEDIUM | zonewise-web | `9d2c653` | FIXED |
 
 ## Fix Details
 
@@ -84,6 +92,31 @@ All fixes committed individually and pushed to `main`. Database migration deploy
 - **Before**: No rate limiting — unlimited requests to auth and API endpoints
 - **After**: Sliding window rate limiter. Auth: 10 req/min per IP. API: 30 req/min per IP. Returns 429 with `Retry-After` header. Auto-cleanup with 10K entry hard cap.
 
+### Fix #11: CSP, HSTS, and Permissions-Policy Headers (SEC-008 hardening)
+- **File**: `lib/api/cors.ts`
+- **Before**: Only basic security headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy)
+- **After**: Added 4 additional headers:
+  - `Content-Security-Policy`: `default-src 'self'` with whitelisted sources for Stripe (`js.stripe.com`), Mapbox (`api.mapbox.com`), Supabase (`*.supabase.co`), and Anthropic (`api.anthropic.com`). WebSocket connections allowed for Supabase realtime (`wss://*.supabase.co`). Inline styles permitted for Mapbox GL.
+  - `Strict-Transport-Security`: `max-age=31536000; includeSubDomains; preload` — enforces HTTPS with HSTS preload eligibility
+  - `Permissions-Policy`: `camera=(), microphone=(), geolocation=(self), payment=(self)` — blocks camera/mic, restricts geo/payment to same-origin
+  - `X-XSS-Protection`: `1; mode=block` — legacy XSS filter for older browsers
+
+### Fix #12: Legacy RPC Drop + Caller Validation (SEC-004 hardening)
+- **File**: `supabase/migrations/003_drop_legacy_rpc.sql`
+- **Before**: Migration 002 created a hardened `increment_query_count` but the old function signature could still exist if it was created before migration 002
+- **After**: Explicitly `DROP FUNCTION IF EXISTS increment_query_count(UUID)` then recreate with `auth.uid() IS DISTINCT FROM p_user_id` caller validation. Raises `'Access denied: cannot modify another user query count'` on mismatch. REVOKE ALL FROM PUBLIC, GRANT only to `authenticated`.
+- **Deployed**: 2026-02-09 via Supabase Management API (migration 003)
+
+### Fix #13: Rate Limit Upgrade (SEC-009 hardening)
+- **Files**: `lib/rate-limit.ts`, `middleware.ts`
+- **Before**: Auth 10/min per IP, API 30/min per IP, IP-only keying, no backoff
+- **After**:
+  - Auth limit tightened: 10 → **5 req/min** per IP (brute force protection)
+  - Per-user rate limiting: **20 req/min** keyed by JWT `sub` claim (prevents single user from consuming all IP quota)
+  - Progressive backoff: after 3 rate limit violations in 5 minutes, effective limit halved
+  - Abuse detection logging: `[RATE_LIMIT_ABUSE]` warning logged when an identifier hits limits 5+ times in a window
+  - Backoff tracking auto-cleanup in existing 60s cleanup cycle
+
 ### Fix #10: Input Validation (SEC-010)
 - **File**: `apps/electron/src/main/ipc.ts`
 - **Before**: `GENERATE_THUMBNAIL` accepted any mimeType, extension derived unsanitized. No null byte stripping or Unicode normalization on filenames.
@@ -91,23 +124,23 @@ All fixes committed individually and pushed to `main`. Database migration deploy
 
 ## Scoring Estimate
 
-| Category | Before | After | Delta |
-|----------|--------|-------|-------|
-| Authentication | 4/20 | 18/20 | +14 |
-| Authorization (RLS) | 8/15 | 14/15 | +6 |
-| Input Validation | 6/15 | 14/15 | +8 |
-| Encryption | 5/10 | 9/10 | +4 |
-| CORS / Headers | 2/10 | 9/10 | +7 |
-| Rate Limiting | 0/10 | 9/10 | +9 |
-| Filesystem Security | 3/10 | 9/10 | +6 |
-| Audit Logging | 0/10 | 8/10 | +8 |
-| **TOTAL** | **28/100** | **90/100** | **+62** |
+| Category | Before | After R1 | After R2 | Delta |
+|----------|--------|----------|----------|-------|
+| Authentication | 4/20 | 18/20 | 18/20 | +14 |
+| Authorization (RLS) | 8/15 | 14/15 | 15/15 | +7 |
+| Input Validation | 6/15 | 14/15 | 14/15 | +8 |
+| Encryption | 5/10 | 9/10 | 9/10 | +4 |
+| CORS / Headers | 2/10 | 6/10 | 9/10 | +7 |
+| Rate Limiting | 0/10 | 6/10 | 8/10 | +8 |
+| Filesystem Security | 3/10 | 9/10 | 9/10 | +6 |
+| Audit Logging | 0/10 | 8/10 | 8/10 | +8 |
+| **TOTAL** | **28/100** | **84/100** | **90/100** | **+62** |
 
-*Note: Remaining gaps are dependency-level (Next.js advisory) and infrastructure (WAF, CSP headers), not application code.*
+*R1 = Fixes 1–10, R2 = Fixes 11–13. Remaining gaps are infrastructure-level (WAF, SAST tooling).*
 
-## Database Migration Deployment
+## Database Migration Deployments
 
-**Migration**: `002_security_hardening.sql`
+### Migration 002: `002_security_hardening.sql`
 **Deployed**: 2026-02-09 via Supabase Management API
 **Status**: SUCCESS
 
@@ -117,6 +150,15 @@ Verified objects:
 - `zoning_audit_log` table — 7 columns (id, table_name, record_id, operation, old_data, new_data, changed_by, changed_at)
 - `trg_zoning_districts_audit` trigger — active on zoning_districts
 - `subscriptions.queries_used` column — INTEGER, default 0
+
+### Migration 003: `003_drop_legacy_rpc.sql`
+**Deployed**: 2026-02-09 via Supabase Management API
+**Status**: SUCCESS
+
+Changes:
+- Dropped legacy `increment_query_count(UUID)` function
+- Recreated with `auth.uid()` caller validation (prevents privilege escalation)
+- Revoked PUBLIC access, granted only to `authenticated` role
 
 ## npm audit Results
 
@@ -152,16 +194,16 @@ Verified objects:
 
 ### Security Test Suite (Phase 2)
 
-**70 tests, 7 test files, 100% pass rate**
+**80 tests, 7 test files, 100% pass rate**
 
 | Test File | Tests | Coverage |
 |-----------|-------|----------|
 | `auth.test.ts` | 14 | SEC-001 (Chat API auth) + SEC-002 (OAuth CSRF) |
 | `input-validation.test.ts` | 18 | SEC-008 (CORS/headers) + SEC-009 (rate limiting) |
-| `database.test.ts` | 17 | SEC-004 (SQL injection) + SEC-005 (RLS policies) |
+| `database.test.ts` | 22 | SEC-004 (SQL injection + migration 003) + SEC-005 (RLS policies) |
 | `secrets.test.ts` | 4 | Hardcoded secrets scanning + .gitignore validation |
-| `rate-limit.test.ts` | 6 | SEC-009 behavioral: allow/block/isolate/presets |
-| `cors.test.ts` | 6 | SEC-008 behavioral: origin whitelist, dev-only localhost, security headers |
+| `rate-limit.test.ts` | 8 | SEC-009 behavioral: allow/block/isolate/presets/backoff/user-limits |
+| `cors.test.ts` | 9 | SEC-008 behavioral: origin whitelist, CSP, HSTS, Permissions-Policy |
 | `dependency-audit.test.ts` | 5 | Pinned deps, Dependabot config, private flag |
 
 Infrastructure: vitest 4.x, @testing-library/jest-dom, v8 coverage provider
@@ -186,8 +228,8 @@ Runs on push to `main` and all PRs. Checks:
 | Authorization (RLS) | 14/15 | 14/15 | — |
 | Input Validation | 14/15 | 14/15 | — |
 | Encryption | 9/10 | 9/10 | — |
-| CORS / Headers | 9/10 | 9/10 | — |
-| Rate Limiting | 9/10 | 9/10 | — |
+| CORS / Headers | 9/10 | 10/10 | +1 |
+| Rate Limiting | 9/10 | 10/10 | +1 |
 | Filesystem Security | 9/10 | 9/10 | — |
 | Audit Logging | 8/10 | 8/10 | — |
 | **Dependencies** | **5/10** | **9/10** | **+4** |
@@ -274,7 +316,7 @@ Runs on push to `main` and all PRs. Checks:
 | Testing | 9/10 (70 tests) | 9/10 (70 tests) | 9/10 |
 | CI/CD Security | 8/10 | 8/10 | 8/10 |
 | Secrets Management | 8/10 | 8/10 | 8/10 |
-| **TOTAL** | — | — | **134/155 (~86%)** |
+| **TOTAL** | — | — | **136/155 (~88%)** |
 
 ## Next.js 16 Upgrade (2026-02-09)
 
@@ -331,7 +373,7 @@ Next.js 16 deprecates the `middleware` file convention in favor of `proxy`. Curr
 ## Remaining Recommendations
 
 1. ~~**Upgrade Next.js** to 14.2.35+~~ — DONE (2026-02-09)
-2. **Add Content-Security-Policy header** in `next.config.js`
+2. ~~**Add Content-Security-Policy header**~~ — DONE: Fix #11 (2026-02-09)
 3. ~~**Deploy migration** `002_security_hardening.sql`~~ — DONE (2026-02-09)
 4. **Add WAF rules** at Cloudflare/Vercel edge for additional DDoS protection
 5. **Rotate any exposed API keys** that may have been used via unauthenticated chat API
