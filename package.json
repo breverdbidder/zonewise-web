@@ -12,9 +12,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.30.0",
+    "@anthropic-ai/sdk": "0.74.0",
     "@stripe/stripe-js": "4.8.0",
-    "@supabase/ssr": "0.5.2",
+    "@supabase/ssr": "0.8.0",
     "@supabase/supabase-js": "2.95.3",
     "@types/mapbox-gl": "^3.0.0",
     "clsx": "^2.1.1",
@@ -24,7 +24,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
-    "stripe": "17.2.0",
+    "stripe": "20.3.1",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
