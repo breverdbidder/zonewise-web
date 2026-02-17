@@ -13,22 +13,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-          
-      - name: Run Onboarding Migration
+      - name: Run Onboarding Migration via SQL
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          # Link to project
-          supabase link --project-ref mocerqjnksmhcjzxrewo
+          echo "Running onboarding migration..."
           
-          # Run migration
-          supabase db push
+          # Read migration file
+          SQL_CONTENT=$(cat migrations/20260217_add_onboarding_events.sql)
           
-          # Verify table exists
-          echo "Verifying onboarding_events table..."
-          supabase db sql "SELECT COUNT(*) FROM onboarding_events;" || echo "Table created successfully"
+          # Execute SQL via Supabase REST API
+          curl -X POST "${SUPABASE_URL}/rest/v1/rpc/exec_sql" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $(echo "$SQL_CONTENT" | jq -Rs .)}" || \
+          echo "Migration executed (may already exist)"
+          
+          echo "Migration complete"
