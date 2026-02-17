@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/lib/theme-context'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://zonewise.ai'),
   title: 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate',
   description: 'Every zoning rule, every parcel, every county in Florida. AI-powered property intelligence for investors, developers, and architects. Join the beta.',
   manifest: '/manifest.json',
