@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZoneWise.AI Onboarding Flow - State Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            position: relative;
+        }
+        
+        .state-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .state-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .state-card.active {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        .state-card.error {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        
+        .state-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .state-card.active .step-number {
+            background: #48bb78;
+        }
+        
+        .state-card.error .step-number {
+            background: #f56565;
+        }
+        
+        .state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .state-message {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #2d3748;
+            border-left: 4px solid #667eea;
+        }
+        
+        .state-card.active .state-message {
+            border-left-color: #48bb78;
+        }
+        
+        .state-card.error .state-message {
+            border-left-color: #f56565;
+        }
+        
+        .ui-components {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .ui-chip {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        
+        .analytics-event {
+            font-size: 12px;
+            color: #718096;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .arrow {
+            text-align: center;
+            color: #cbd5e0;
+            font-size: 24px;
+            margin: -15px 0;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .legend-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid;
+        }
+        
+        .legend-box.normal {
+            border-color: #e2e8f0;
+            background: white;
+        }
+        
+        .legend-box.active {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        .legend-box.error {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        
+        .metrics {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 40px;
+        }
+        
+        .metrics-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 16px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ZoneWise.AI Onboarding Flow</h1>
+        <p class="subtitle">State Machine Visualization | Feb 19, 2026 Launch</p>
+        
+        <div class="flow-container">
+            <!-- State 1: Welcome -->
+            <div class="state-card" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">1</div>
+                    <div class="state-title">Welcome Screen</div>
+                </div>
+                <div class="state-message">
+                    Welcome to ZoneWise.AI! I can search foreclosure auctions across 67 Florida counties in real-time. Which county are you targeting?
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Miami-Dade</div>
+                    <div class="ui-chip">Broward</div>
+                    <div class="ui-chip">Palm Beach</div>
+                    <div class="ui-chip">Hillsborough</div>
+                    <div class="ui-chip">Orange</div>
+                    <div class="ui-chip">Other...</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_welcome_shown</div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- State 2: County Selected -->
+            <div class="state-card" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">2</div>
+                    <div class="state-title">County Selected</div>
+                </div>
+                <div class="state-message">
+                    Great! I'll search <strong>{{county_name}}</strong>. Try asking:<br>
+                    • "Show me foreclosures under $200K"<br>
+                    • "Find properties with high equity"<br>
+                    • "What's the auction schedule this week?"
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Clickable example queries</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_county_selected</div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- State 3: First Query Submitted -->
+            <div class="state-card" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">3</div>
+                    <div class="state-title">Searching...</div>
+                </div>
+                <div class="state-message">
+                    🔍 Searching <strong>{{county_name}}</strong> with AgentQL...<br>
+                    <em>(This takes 5-15 seconds while I scrape live auction data)</em>
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Loading spinner</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_first_query_submitted</div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- State 4: Report Generated -->
+            <div class="state-card" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">4</div>
+                    <div class="state-title">Report Generated</div>
+                </div>
+                <div class="state-message">
+                    ✅ Found <strong>{{result_count}}</strong> properties! Your report is on the right →<br><br>
+                    You can:<br>
+                    • Click any property for details<br>
+                    • Ask follow-up questions<br>
+                    • Search another county
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Tooltip overlay (8 seconds)</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_report_generated</div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- State 5: Onboarding Complete -->
+            <div class="state-card active" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">✓</div>
+                    <div class="state-title">Onboarding Complete</div>
+                </div>
+                <div class="state-message">
+                    User can now freely explore ZoneWise.AI!<br>
+                    <em>localStorage flag set - onboarding won't repeat</em>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_completed</div>
+            </div>
+        </div>
+        
+        <!-- Error States -->
+        <div class="flow-container" style="margin-top: 60px;">
+            <h2 style="color: #1a202c; margin-bottom: 20px;">🚨 Error & Recovery States</h2>
+            
+            <!-- Error State 1: Scraper Failure -->
+            <div class="state-card error" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">!</div>
+                    <div class="state-title">Scraper Failure</div>
+                </div>
+                <div class="state-message">
+                    ⚠️ Had trouble reaching <strong>{{county_name}}</strong>'s website. This happens occasionally. Try:<br>
+                    • Refresh and retry<br>
+                    • Pick a different county<br>
+                    • Come back in 5 minutes
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Retry Button</div>
+                    <div class="ui-chip">Pick Different County</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_scraper_failure</div>
+            </div>
+            
+            <!-- Error State 2: No Results -->
+            <div class="state-card error" onclick="highlightState(this)">
+                <div class="state-header">
+                    <div class="step-number">!</div>
+                    <div class="state-title">No Results</div>
+                </div>
+                <div class="state-message">
+                    🔍 No properties match that criteria in <strong>{{county_name}}</strong> right now. Try:<br>
+                    • Broader price range<br>
+                    • Different county<br>
+                    • Check auction calendar
+                </div>
+                <div class="ui-components">
+                    <div class="ui-chip">Try $0-$500K</div>
+                    <div class="ui-chip">Show all properties</div>
+                    <div class="ui-chip">When's next auction?</div>
+                </div>
+                <div class="analytics-event">📊 Event: onboarding_no_results</div>
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box normal"></div>
+                <span>Normal State</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box active"></div>
+                <span>Success / Complete</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box error"></div>
+                <span>Error State</span>
+            </div>
+        </div>
+        
+        <!-- Target Metrics -->
+        <div class="metrics">
+            <div class="metrics-title">🎯 Target Metrics (Week 1)</div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Completion Rate</div>
+                    <div class="metric-value">>60%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Time to Complete</div>
+                    <div class="metric-value"><2 min</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Drop-off per Step</div>
+                    <div class="metric-value"><20%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Skip Rate</div>
+                    <div class="metric-value"><10%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function highlightState(element) {
+            // Remove active class from all cards
+            document.querySelectorAll('.state-card').forEach(card => {
+                if (!card.classList.contains('error')) {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // Add active class to clicked card
+            if (!element.classList.contains('error')) {
+                element.classList.add('active');
+            }
+        }
+        
+        // Auto-play demonstration
+        let currentStep = 0;
+        const normalStates = Array.from(document.querySelectorAll('.state-card')).slice(0, 5);
+        
+        function autoPlay() {
+            if (currentStep < normalStates.length) {
+                highlightState(normalStates[currentStep]);
+                currentStep++;
+                setTimeout(autoPlay, 2000);
+            }
+        }
+        
+        // Start auto-play after 1 second
+        setTimeout(autoPlay, 1000);
+    </script>
+</body>
+</html>
