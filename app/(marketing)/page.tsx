@@ -78,7 +78,7 @@ export default function Home() {
             <p className="text-slate-300 text-sm mt-1">Jurisdictions</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">1,542</p>
+            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">5,562</p>
             <p className="text-slate-300 text-sm mt-1">Zoning Districts</p>
           </div>
           <div>
