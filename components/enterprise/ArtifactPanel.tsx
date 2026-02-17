@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Artifact } from '@/types'
 import { useTheme } from '@/lib/theme-context'
+import { OnboardingTooltip } from '@/components/onboarding'
 
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -163,6 +164,9 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 
   return (
     <div className={`w-[480px] ${panelBg} border-l ${borderColor} flex flex-col transition-colors`}>
+      {/* Onboarding Tooltip */}
+      <OnboardingTooltip />
+      
       {/* Header */}
       <div className={`h-14 px-4 flex items-center justify-between border-b ${borderColor}`}>
         <h3 className={`font-medium ${headingText} truncate flex-1 mr-3`}>{artifact?.title || 'Artifact'}</h3>

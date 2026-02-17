@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Message, Artifact, Session } from '@/types'
+import { OnboardingMessage } from '@/components/onboarding'
 
 interface ChatPanelProps {
   messages: Message[]
@@ -62,6 +63,9 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-8">
+            {/* Onboarding Message */}
+            <OnboardingMessage />
+            
             <div className="max-w-lg text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-zw-navy-500/20 to-zw-navy-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-zw-navy-500/20">
                 <svg className="w-8 h-8 text-zw-navy-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
