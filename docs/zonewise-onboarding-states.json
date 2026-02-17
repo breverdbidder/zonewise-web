@@ -1,0 +1,112 @@
+{
+  "onboarding_flow": {
+    "version": "1.0.0",
+    "launch_date": "2026-02-19",
+    "states": [
+      {
+        "id": "welcome",
+        "step_number": 1,
+        "ai_message": "Welcome to ZoneWise.AI! I can search foreclosure auctions across 67 Florida counties in real-time. Which county are you targeting?",
+        "ui_components": [
+          {
+            "type": "button_group",
+            "buttons": ["Miami-Dade", "Broward", "Palm Beach", "Hillsborough", "Orange", "Other..."]
+          }
+        ],
+        "next_state": "county_selected",
+        "analytics_event": "onboarding_welcome_shown"
+      },
+      {
+        "id": "county_selected",
+        "step_number": 2,
+        "ai_message": "Great! I'll search {{county_name}}. Try asking:\n\n• 'Show me foreclosures under $200K'\n• 'Find properties with high equity'\n• 'What's the auction schedule this week?'",
+        "ui_components": [
+          {
+            "type": "example_queries",
+            "queries": [
+              "Show me foreclosures under $200K",
+              "Find properties with high equity",
+              "What's the auction schedule this week?"
+            ]
+          }
+        ],
+        "next_state": "first_query_submitted",
+        "analytics_event": "onboarding_county_selected"
+      },
+      {
+        "id": "first_query_submitted",
+        "step_number": 3,
+        "ai_message": "🔍 Searching {{county_name}} with AgentQL...\n\n(This takes 5-15 seconds while I scrape live auction data)",
+        "ui_components": [
+          {
+            "type": "loading_indicator",
+            "style": "pulsing_dots"
+          }
+        ],
+        "next_state": "report_generated",
+        "analytics_event": "onboarding_first_query_submitted"
+      },
+      {
+        "id": "report_generated",
+        "step_number": 4,
+        "ai_message": "✅ Found {{result_count}} properties! Your report is on the right →\n\nYou can:\n• Click any property for details\n• Ask follow-up questions\n• Search another county",
+        "ui_components": [
+          {
+            "type": "tooltip",
+            "target": "right_panel",
+            "message": "Your foreclosure report appears here",
+            "duration_seconds": 5
+          }
+        ],
+        "next_state": "onboarding_complete",
+        "analytics_event": "onboarding_report_generated"
+      },
+      {
+        "id": "onboarding_complete",
+        "step_number": 5,
+        "ai_message": null,
+        "ui_components": [],
+        "next_state": null,
+        "analytics_event": "onboarding_completed"
+      }
+    ],
+    "error_states": [
+      {
+        "id": "scraper_failure",
+        "ai_message": "⚠️ Had trouble reaching {{county_name}}'s website. This happens occasionally. Try:\n\n• Refresh and retry\n• Pick a different county\n• Come back in 5 minutes",
+        "ui_components": [
+          {
+            "type": "button_group",
+            "buttons": ["Retry", "Pick Different County"]
+          }
+        ],
+        "recovery_state": "county_selected",
+        "analytics_event": "onboarding_scraper_failure"
+      },
+      {
+        "id": "no_results",
+        "ai_message": "🔍 No properties match that criteria in {{county_name}} right now. Try:\n\n• Broader price range\n• Different county\n• Check auction calendar",
+        "ui_components": [
+          {
+            "type": "suggestion_chips",
+            "suggestions": ["Try $0-$500K", "Show all properties", "When's next auction?"]
+          }
+        ],
+        "recovery_state": "first_query_submitted",
+        "analytics_event": "onboarding_no_results"
+      }
+    ],
+    "tracking": {
+      "supabase_table": "onboarding_events",
+      "fields": [
+        "user_id",
+        "session_id",
+        "step_name",
+        "timestamp",
+        "county_selected",
+        "first_query",
+        "completed"
+      ]
+    }
+  }
+}
