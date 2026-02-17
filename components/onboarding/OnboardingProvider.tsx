@@ -1,12 +1,16 @@
+'use client'
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+function getSupabase() {
+  return createClient(SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+}
 
-const OnboardingContext = createContext(null);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const OnboardingContext = createContext<any>(null);
 
 const ONBOARDING_STATES = {
   WELCOME: 'welcome',
@@ -17,11 +21,11 @@ const ONBOARDING_STATES = {
   SKIPPED: 'onboarding_skipped'
 };
 
-export const OnboardingProvider = ({ children }) => {
-  const [currentState, setCurrentState] = useState(null);
+export const OnboardingProvider = ({ children }: { children: React.ReactNode }) => {
+  const [currentState, setCurrentState] = useState<string | null>(null);
   const [isActive, setIsActive] = useState(false);
-  const [selectedCounty, setSelectedCounty] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
+  const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -38,9 +42,9 @@ export const OnboardingProvider = ({ children }) => {
     }
   }, []);
 
-  const trackEvent = async (eventName, data = {}) => {
+  const trackEvent = async (eventName: string, data: Record<string, unknown> = {}) => {
     try {
-      await supabase.from('onboarding_events').insert({
+      await getSupabase().from('onboarding_events').insert({
         session_id: sessionId,
         event_name: eventName,
         event_data: data,
@@ -51,18 +55,18 @@ export const OnboardingProvider = ({ children }) => {
     }
   };
 
-  const selectCounty = (county) => {
+  const selectCounty = (county: string) => {
     setSelectedCounty(county);
     setCurrentState(ONBOARDING_STATES.COUNTY_SELECTED);
     trackEvent('onboarding_county_selected', { county });
   };
 
-  const submitFirstQuery = (query) => {
+  const submitFirstQuery = (query: string) => {
     setCurrentState(ONBOARDING_STATES.FIRST_QUERY);
     trackEvent('onboarding_first_query_submitted', { query });
   };
 
-  const showReport = (resultCount) => {
+  const showReport = (resultCount: number) => {
     setCurrentState(ONBOARDING_STATES.REPORT_GENERATED);
     trackEvent('onboarding_report_generated', { result_count: resultCount });
   };
