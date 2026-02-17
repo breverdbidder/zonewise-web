@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SplitScreenPreview from '@/components/SplitScreenPreview'
+import BetaSignupForm from '@/components/BetaSignupForm'
 
 export default function Home() {
   return (
@@ -17,10 +18,9 @@ export default function Home() {
           <nav className="flex items-center gap-6">
             <a href="#how" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">How It Works</a>
             <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</a>
-            <Link href="/login" className="text-gray-600 hover:text-slate-800 text-sm">Login</Link>
-            <Link href="/signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
-              Try ZoneWise Free
-            </Link>
+            <a href="#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
+              Join the Beta
+            </a>
           </nav>
         </div>
       </header>
@@ -49,9 +49,9 @@ export default function Home() {
             Founded by Ariel Shapira, Inventor &amp; Founder
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Link href="/signup" className="bg-zw-navy text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-zw-navy-700 transition-all hover:shadow-lg hover:shadow-zw-navy/20">
-              Start Free
-            </Link>
+            <a href="#beta-signup" className="bg-zw-navy text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-zw-navy-700 transition-all hover:shadow-lg hover:shadow-zw-navy/20">
+              Join the Beta
+            </a>
             <a href="#how" className="text-zw-navy font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
               See how it works
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -74,11 +74,11 @@ export default function Home() {
             <p className="text-slate-300 text-sm mt-1">Counties</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">808+</p>
+            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">369</p>
             <p className="text-slate-300 text-sm mt-1">Jurisdictions</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">5,562</p>
+            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">5,950</p>
             <p className="text-slate-300 text-sm mt-1">Zoning Districts</p>
           </div>
           <div>
@@ -200,7 +200,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { name: '67 FL Counties', value: '369 jurisdictions' },
-              { name: '5,395 Districts', value: 'Indexed & searchable' },
+              { name: '5,950 Districts', value: 'Indexed & searchable' },
               { name: 'District Lookup', value: 'Instant regex path' },
               { name: 'Density Compare', value: 'Claude Sonnet 4.5' },
               { name: 'Setback Analysis', value: 'Front/side/rear' },
@@ -252,65 +252,39 @@ export default function Home() {
 
       {/* Pricing */}
       <section id="pricing" className="py-24 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Choose your plan</h2>
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Early access pricing</h2>
           <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
-            Every plan includes full AI access. Upgrade for deeper intelligence, not more messages.
+            Get in early. Lock in founder benefits before we launch.
           </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <h3 className="font-bold text-lg text-slate-800">Free</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl p-8 border-2 border-zw-navy relative shadow-lg shadow-zw-navy/5">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zw-navy text-white text-xs px-4 py-1 rounded-full font-medium">Available Now</span>
+              <h3 className="font-bold text-lg text-slate-800">Beta Access</h3>
               <p className="text-4xl font-bold my-4 text-slate-900">$0</p>
-              <p className="text-sm text-gray-400 mb-6">Explore the intelligence</p>
+              <p className="text-sm text-gray-400 mb-6">Free during beta</p>
               <ul className="space-y-3 text-sm text-gray-600 mb-8">
                 <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>AI-powered zoning lookups</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Basic property intelligence</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>7-language support</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Interactive map</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>All 67 Florida counties</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>District &amp; setback analysis</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Permitted use search</li>
               </ul>
-              <Link href="/signup" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">Get Started</Link>
+              <a href="#beta-signup" className="block text-center py-3 bg-zw-navy text-white rounded-xl hover:bg-zw-navy-700 font-medium transition-colors">Join the Beta</a>
             </div>
-            <div className="bg-white rounded-2xl p-8 border-2 border-zw-navy relative shadow-lg shadow-zw-navy/5">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-zw-navy text-white text-xs px-4 py-1 rounded-full font-medium">Most Popular</span>
-              <h3 className="font-bold text-lg text-slate-800">Pro</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$29<span className="text-base font-normal text-gray-400">/mo</span></p>
-              <p className="text-sm text-gray-400 mb-6">Full intelligence access</p>
+            <div className="bg-white rounded-2xl p-8 border border-gray-200 relative opacity-80">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gray-400 text-white text-xs px-4 py-1 rounded-full font-medium">Coming Soon</span>
+              <h3 className="font-bold text-lg text-slate-800">Founding Member</h3>
+              <p className="text-4xl font-bold my-4 text-slate-400">TBD</p>
+              <p className="text-sm text-gray-400 mb-6">Lifetime discounted rate</p>
               <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Free</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Foreclosure &amp; tax deed tracking</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Beta</li>
                 <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>3D building envelopes</li>
+                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Foreclosure &amp; tax deed tracking</li>
                 <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>PDF &amp; DOCX exports</li>
               </ul>
-              <Link href="/signup?plan=pro" className="block text-center py-3 bg-zw-navy text-white rounded-xl hover:bg-zw-navy-700 font-medium transition-colors">Start Free Trial</Link>
-            </div>
-            <div className="bg-white rounded-2xl p-8 border border-gray-200">
-              <h3 className="font-bold text-lg text-slate-800">Investor</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$79<span className="text-base font-normal text-gray-400">/mo</span></p>
-              <p className="text-sm text-gray-400 mb-6">Professional-grade tools</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Pro</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>ML auction predictions</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Portfolio tracking &amp; alerts</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>API access</li>
-              </ul>
-              <Link href="/signup?plan=investor" className="block text-center py-3 border border-gray-300 rounded-xl hover:bg-slate-50 text-slate-700 font-medium transition-colors">Start Free Trial</Link>
-            </div>
-            <div className="bg-zw-navy rounded-2xl p-8 text-white">
-              <h3 className="font-bold text-lg">Enterprise</h3>
-              <p className="text-4xl font-bold my-4">Custom</p>
-              <p className="text-sm text-slate-300 mb-6">For teams &amp; institutions</p>
-              <ul className="space-y-3 text-sm text-slate-300 mb-8">
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Everything in Investor</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Multi-seat workspaces</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>White-label reports</li>
-                <li className="flex items-start gap-2"><svg className="w-4 h-4 text-zw-orange mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>Custom data pipelines</li>
-              </ul>
-              <a href="mailto:ariel@everestcapitalusa.com" className="block text-center py-3 bg-white text-zw-navy rounded-xl hover:bg-slate-100 font-medium transition-colors">Contact Sales</a>
+              <span className="block text-center py-3 border border-gray-300 rounded-xl text-gray-400 font-medium cursor-not-allowed">Coming Soon</span>
             </div>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-8">
-            All plans include full AI access with no per-query limits. Upgrade for deeper capabilities, not more messages.
-          </p>
         </div>
       </section>
 
@@ -323,9 +297,24 @@ export default function Home() {
           <p className="text-slate-300 text-lg mb-10 max-w-xl mx-auto">
             Join investors across Florida who use ZoneWise to analyze properties, track auctions, and find opportunities others miss.
           </p>
-          <Link href="/signup" className="inline-block bg-white text-zw-navy px-10 py-4 rounded-xl text-lg font-semibold hover:bg-slate-100 transition-colors">
-            Try ZoneWise Free
-          </Link>
+          <a href="#beta-signup" className="inline-block bg-white text-zw-navy px-10 py-4 rounded-xl text-lg font-semibold hover:bg-slate-100 transition-colors">
+            Join the Beta
+          </a>
+        </div>
+      </section>
+
+      {/* Beta Signup */}
+      <section id="beta-signup" className="py-24 bg-white">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+            Get early access
+          </h2>
+          <p className="text-gray-500 text-lg mb-10 max-w-xl mx-auto">
+            Enter your email to join the beta. We&apos;ll notify you when your account is ready.
+          </p>
+          <div className="relative">
+            <BetaSignupForm />
+          </div>
         </div>
       </section>
 
