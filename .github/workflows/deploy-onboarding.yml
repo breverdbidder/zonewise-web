@@ -1,0 +1,34 @@
+name: Deploy Onboarding Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'migrations/20260217_add_onboarding_events.sql'
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+          
+      - name: Run Onboarding Migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          # Link to project
+          supabase link --project-ref mocerqjnksmhcjzxrewo
+          
+          # Run migration
+          supabase db push
+          
+          # Verify table exists
+          echo "Verifying onboarding_events table..."
+          supabase db sql "SELECT COUNT(*) FROM onboarding_events;" || echo "Table created successfully"
