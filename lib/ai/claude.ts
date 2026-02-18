@@ -20,7 +20,7 @@ Help users understand zoning regulations, foreclosures, tax deeds, and real esta
 ## Data Coverage
 - 67 Florida counties
 - 298 KPIs tracked
-- 10.8M parcels indexed
+- 10.5M parcels indexed
 - Zone categories: Residential (R), Commercial (C/BU), Industrial (I), Agricultural (A), Planned Development (PUD)
 
 ## Response Guidelines
