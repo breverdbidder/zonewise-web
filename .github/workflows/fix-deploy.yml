@@ -4,80 +4,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  fix:
+  sync-env:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Cloudflare API token permissions
+      - name: Set SUPABASE_SERVICE_ROLE_KEY in Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          echo "=== Token permissions check ==="
-          curl -s "https://api.cloudflare.com/client/v4/user/tokens/verify" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" | python3 -m json.tool
-          
-      - name: Attempt DNS record creation with verbose output
-        run: |
-          ZONE_ID="b32406b78aaaefd55557d77c843a5940"
-          
-          echo "=== Creating A record pointing to Vercel ==="
-          RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          PROJECT_ID="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          echo "Setting SUPABASE_SERVICE_ROLE_KEY..."
+          RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{
-              "type": "A",
-              "name": "zonewise.ai",
-              "content": "76.76.21.21",
-              "ttl": 1,
-              "proxied": false
-            }')
-          echo "$RESULT" | python3 -m json.tool
-          
-          echo ""
-          echo "=== Creating CNAME for www ==="
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "type": "CNAME",
-              "name": "www",
-              "content": "cname.vercel-dns.com",
-              "ttl": 1,
-              "proxied": false
-            }' | python3 -m json.tool
+            "https://api.vercel.com/v10/projects/$PROJECT_ID/env" \
+            -d "{\"key\":\"SUPABASE_SERVICE_ROLE_KEY\",\"value\":\"$SERVICE_ROLE_KEY\",\"type\":\"encrypted\",\"target\":[\"production\",\"preview\",\"development\"]}")
+          echo "$RESP"
 
-      - name: Purge Cloudflare cache
+      - name: Verify Vercel env vars
         run: |
-          ZONE_ID="b32406b78aaaefd55557d77c843a5940"
-          
-          echo "=== Purging ALL cached content ==="
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"purge_everything": true}' | python3 -m json.tool
-
-      - name: Wait and verify
-        run: |
-          echo "Waiting 45s for propagation..."
-          sleep 45
-          
-          echo "=== Headers ==="
-          curl -sI https://zonewise.ai | head -15
-          
-          echo ""
-          echo "=== Title ==="
-          curl -s https://zonewise.ai | grep -o "<title>[^<]*</title>"
-          
-          echo ""
-          echo "=== Navy check ==="
-          COUNT=$(curl -s https://zonewise.ai | grep -c "1E3A5F" || true)
-          echo "Navy #1E3A5F count: $COUNT"
-          
-          if [ "$COUNT" -gt 0 ]; then
-            echo "✅ REBRAND IS LIVE!"
-          else
-            echo "❌ Still showing old version — DNS not updated (token likely lacks DNS write permission)"
-            echo ""
-            echo "MANUAL FIX NEEDED:"
-            echo "1. Go to Cloudflare dashboard → zonewise.ai → DNS"
-            echo "2. Delete the existing A/CNAME record pointing to Render"
-            echo "3. Add: A record → zonewise.ai → 76.76.21.21 (Vercel) → Proxy OFF"
-            echo "4. Add: CNAME → www → cname.vercel-dns.com → Proxy OFF"
-          fi
+          PROJECT_ID="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v9/projects/$PROJECT_ID/env" | \
+            python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          for e in d.get('envs', []):
+              t = ','.join(e.get('target', []))
+              print(f\"{e['key']}: {t}\")
+          "
