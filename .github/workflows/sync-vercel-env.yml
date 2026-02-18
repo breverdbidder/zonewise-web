@@ -10,77 +10,38 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Get Vercel Project Info
+      - name: Link Vercel Project
         run: |
-          # Get project and org IDs via Vercel CLI
           mkdir -p .vercel
           vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
-          
-          # Extract from .vercel/project.json
-          if [ -f .vercel/project.json ]; then
-            PROJECT_ID=$(cat .vercel/project.json | python3 -c "import json,sys; print(json.load(sys.stdin)['projectId'])")
-            ORG_ID=$(cat .vercel/project.json | python3 -c "import json,sys; print(json.load(sys.stdin)['orgId'])")
-            echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-            echo "ORG_ID=$ORG_ID" >> $GITHUB_ENV
-            echo "Found project: $PROJECT_ID"
-          else
-            echo "Failed to link project"
-            exit 1
-          fi
+          cat .vercel/project.json
+          PROJECT_ID=$(python3 -c "import json; print(json.load(open('.vercel/project.json'))['projectId'])")
+          ORG_ID=$(python3 -c "import json; print(json.load(open('.vercel/project.json'))['orgId'])")
+          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
+          echo "ORG_ID=$ORG_ID" >> $GITHUB_ENV
 
       - name: Set SUPABASE_SERVICE_ROLE_KEY in Vercel
         run: |
-          # Check if env var already exists
-          EXISTING=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          echo "Creating SUPABASE_SERVICE_ROLE_KEY for project $PROJECT_ID..."
+          RESPONSE=$(curl -s -w "
+%{http_code}" -X POST \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG_ID" \
+            -d "{\"key\":\"SUPABASE_SERVICE_ROLE_KEY\",\"value\":\"${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}\",\"type\":\"encrypted\",\"target\":[\"production\",\"preview\",\"development\"]}")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          echo "HTTP $HTTP_CODE"
+          echo "$BODY" | python3 -c "import json,sys; d=json.load(sys.stdin); print('Key:', d.get('key','?'), '| Created:', d.get('createdAt', d.get('created', d.get('error',{}).get('message','unknown'))))"
+
+      - name: Verify env vars
+        run: |
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             "https://api.vercel.com/v9/projects/$PROJECT_ID/env?teamId=$ORG_ID" | \
             python3 -c "
           import json, sys
           d = json.load(sys.stdin)
           for e in d.get('envs', []):
-              if e['key'] == 'SUPABASE_SERVICE_ROLE_KEY':
-                  print(e['id'])
-                  break
-          else:
-              print('NOT_FOUND')
-          ")
-          
-          if [ "$EXISTING" = "NOT_FOUND" ]; then
-            echo "Creating SUPABASE_SERVICE_ROLE_KEY..."
-            curl -s -X POST \
-              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              "https://api.vercel.com/v10/projects/$PROJECT_ID/env?teamId=$ORG_ID" \
-              -d "{
-                \"key\": \"SUPABASE_SERVICE_ROLE_KEY\",
-                \"value\": \"${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}\",
-                \"type\": \"encrypted\",
-                \"target\": [\"production\", \"preview\", \"development\"]
-              }" | python3 -c "
-            import json, sys
-            d = json.load(sys.stdin)
-            if 'created' in d:
-                print('✅ Created successfully')
-            else:
-                print(f'Response: {json.dumps(d)[:200]}')
-            "
-          else
-            echo "Updating existing env var $EXISTING..."
-            curl -s -X PATCH \
-              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              "https://api.vercel.com/v9/projects/$PROJECT_ID/env/$EXISTING?teamId=$ORG_ID" \
-              -d "{
-                \"value\": \"${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}\",
-                \"target\": [\"production\", \"preview\", \"development\"]
-              }" | python3 -c "
-            import json, sys
-            d = json.load(sys.stdin)
-            print(f'✅ Updated: {d.get(\"key\", \"unknown\")}')
-            "
-          fi
-
-      - name: Trigger Redeploy
-        run: |
-          # Trigger a redeploy so the new env var takes effect
-          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes 2>&1 | tail -5 || true
-          echo "Note: Vercel Git Integration will also redeploy on next push"
+              targets = ','.join(e.get('target', []))
+              print(f\"{e['key']}: {targets}\")
+          "
