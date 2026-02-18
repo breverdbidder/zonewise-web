@@ -23,6 +23,9 @@ npm-debug.log*
 # local env files
 .env
 .env*.local
+.env.production
+.env.staging
+.env.local
 
 # vercel
 .vercel
@@ -30,3 +33,8 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI session artifacts
+CLAUDE_CODE_MISSION*.md
+PASTE_INTO_CLAUDE_CODE.md
+OPUS_*_MISSION.md
