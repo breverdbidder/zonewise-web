@@ -50,3 +50,46 @@ fix: stripe webhook signature validation on cold start
 chore: update next.js to 14.x
 docs: update README with new pricing tiers
 ```
+
+---
+
+## react-doctor — MANDATORY Quality Gate
+
+**This is non-negotiable. Every Claude Code session that modifies React/Next.js code MUST run this before committing.**
+
+### Step 1: Run the scan
+```bash
+npx react-doctor . --verbose
+```
+
+### Step 2: Check the score
+- Score went **up or stayed same** → proceed to commit
+- Score went **down** → fix the regressions before committing. Do not push a lower score.
+- First run ever → save the score as baseline (see Step 4)
+
+### Step 3: Install the skill (first time only)
+```bash
+npx skills add millionco/react-doctor
+```
+This installs 47+ React best-practice rules into the agent context so they apply automatically on every session.
+
+### Step 4: Save/update the baseline
+After each session, update `react-doctor-baseline.json` in repo root:
+```json
+{
+  "score": <current_score>,
+  "date": "<YYYY-MM-DD>",
+  "session": "<brief description of what changed>"
+}
+```
+
+### What react-doctor checks
+- Security: XSS vectors, unsafe dangerouslySetInnerHTML, missing input sanitization
+- Performance: unnecessary re-renders, missing memo/callback, large bundle imports
+- Correctness: hook rule violations, missing deps in useEffect, key prop issues
+- Architecture: prop drilling depth, component size, dead code
+
+### Rules
+- A react-doctor score drop is a **merge blocker** — same weight as a failing test
+- `react-doctor-baseline.json` must be committed alongside any score change
+- If react-doctor is not installed: `npm install -g react-doctor` then re-run
