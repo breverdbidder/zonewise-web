@@ -17,6 +17,7 @@ export default function Home() {
           </div>
           <nav className="flex items-center gap-6">
             <a href="#how" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">How It Works</a>
+            <a href="/kpis" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">298 KPIs</a>
             <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</a>
             <a href="#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
               Join the Beta
@@ -82,7 +83,7 @@ export default function Home() {
             <p className="text-slate-300 text-sm mt-1">Zoning Districts</p>
           </div>
           <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">10.8M</p>
+            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">10.5M</p>
             <p className="text-slate-300 text-sm mt-1">Parcels</p>
           </div>
           <div className="col-span-2 md:col-span-1">
@@ -162,7 +163,12 @@ export default function Home() {
           <p className="text-center text-gray-500 mb-12 max-w-xl mx-auto">
             Tackle any property question — from zoning setbacks to foreclosure due diligence — in one conversation.
           </p>
-          <SplitScreenPreview />
+          <div className="relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-zw-orange text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow-md">
+              PREVIEW &mdash; Coming Soon
+            </div>
+            <SplitScreenPreview />
+          </div>
         </div>
       </section>
 
@@ -222,9 +228,9 @@ export default function Home() {
           <p className="text-slate-300 mb-8 max-w-xl mx-auto">
             Desktop app coming soon. Join the beta for first access.
           </p>
-          <Link href="/signup" className="inline-flex items-center justify-center gap-2 bg-white text-zw-navy px-6 py-3 rounded-lg font-semibold hover:bg-slate-100 transition-colors">
-            Join Beta
-          </Link>
+          <a href="#beta-signup" className="inline-flex items-center justify-center gap-2 bg-white text-zw-navy px-6 py-3 rounded-lg font-semibold hover:bg-slate-100 transition-colors">
+            Join the Beta
+          </a>
         </div>
       </section>
 
