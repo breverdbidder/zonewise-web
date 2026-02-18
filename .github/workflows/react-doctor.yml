@@ -1,0 +1,57 @@
+name: react-doctor baseline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Install react-doctor
+        run: npm install -g react-doctor
+
+      - name: Install react-doctor skill
+        run: npx skills add millionco/react-doctor --yes || true
+
+      - name: Run react-doctor scan
+        id: scan
+        run: |
+          SCORE=$(npx react-doctor . --score --yes 2>/dev/null || echo "0")
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+          echo "React Doctor Score: $SCORE"
+
+      - name: Save baseline
+        run: |
+          cat > react-doctor-baseline.json << EOF
+          {
+            "score": ${{ steps.scan.outputs.score }},
+            "date": "$(date -u +%Y-%m-%d)",
+            "session": "baseline — automated scan via GitHub Actions",
+            "sha": "${{ github.sha }}"
+          }
+          EOF
+
+      - name: Commit baseline if changed
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add react-doctor-baseline.json
+          git diff --staged --quiet || git commit -m "chore: update react-doctor baseline score [${{ steps.scan.outputs.score }}]"
+          git push || true
