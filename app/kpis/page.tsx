@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co'
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MzI1MjYsImV4cCI6MjA4MDEwODUyNn0.ydHmPfGqpOHNT6uIHywH1pz4CL2OvmvIUNmklKQDw'
 
 interface KPI {
   kpi_code: string
@@ -49,11 +47,7 @@ export default function KPIsPage() {
   useEffect(() => {
     async function loadKPIs() {
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/zonewise_kpis?select=kpi_code,kpi_name,category,subcategory,description,data_source,is_exclusive,competitive_source,ui_panel&order=kpi_code.asc`, {
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-          },
-        })
+        const res = await fetch('/api/kpis')
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
         setKPIs(data)
