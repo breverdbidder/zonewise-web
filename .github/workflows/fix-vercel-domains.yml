@@ -10,41 +10,68 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Diagnose and fix domains
+      - name: Find www.zonewise.ai across all projects
         run: |
-          echo "Step 1: List domains on both projects"
+          echo "=== Scanning ALL Vercel projects for zonewise domains ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=50")
+          echo "$PROJECTS" | jq -r '.projects[].id' | while read pid; do
+            pname=$(echo "$PROJECTS" | jq -r --arg id "$pid" '.projects[] | select(.id == $id) | .name')
+            domains=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$pid/domains")
+            has_zw=$(echo "$domains" | jq -r '.domains[]? | select(.name | test("zonewise")) | .name' 2>/dev/null)
+            if [ -n "$has_zw" ]; then
+              echo ""
+              echo "PROJECT: $pname ($pid)"
+              echo "$domains" | jq '.domains[] | {name, redirect, redirectStatusCode, verified}'
+            fi
+          done
           
-          echo "--- zonewise-web domains ---"
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" | jq '.domains[] | {name, redirect, verified}'
+      - name: Fix redirect
+        run: |
+          echo "=== Finding project with www.zonewise.ai ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=50")
+          TARGET=""
           
-          echo "--- zonewise-ai domains ---"
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" | jq '.domains[] | {name, redirect, verified}'
-
-      - name: Remove bare domain from wrong project
-        run: |
-          echo "Removing zonewise.ai from zonewise-web..."
-          curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains/zonewise.ai" | jq '.' || true
-          sleep 5
-
-      - name: Add bare domain to correct project with redirect
-        run: |
-          echo "Adding zonewise.ai -> www.zonewise.ai on zonewise-ai project..."
-          curl -v -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" \
-            -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}'
+          for pid in $(echo "$PROJECTS" | jq -r '.projects[].id'); do
+            has_www=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$pid/domains" | jq -r '.domains[]? | select(.name == "www.zonewise.ai") | .name' 2>/dev/null)
+            if [ "$has_www" = "www.zonewise.ai" ]; then
+              pname=$(echo "$PROJECTS" | jq -r --arg id "$pid" '.projects[] | select(.id == $id) | .name')
+              echo "FOUND www.zonewise.ai on project: $pname ($pid)"
+              TARGET="$pid"
+              break
+            fi
+          done
+          
+          if [ -z "$TARGET" ]; then
+            echo "www.zonewise.ai NOT FOUND on any project!"
+            echo "Will add both www.zonewise.ai and zonewise.ai to zonewise-ai project"
+            TARGET="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
+            
+            echo "Adding www.zonewise.ai..."
+            curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.vercel.com/v9/projects/$TARGET/domains" \
+              -d '{"name":"www.zonewise.ai"}' | jq '.'
+            sleep 3
+          fi
+          
           echo ""
-          echo "Done"
-
-      - name: Verify final state
+          echo "Adding zonewise.ai with redirect to www.zonewise.ai on project $TARGET..."
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/$TARGET/domains" \
+            -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}' | jq '.'
+          
+      - name: Verify
         run: |
           sleep 5
-          echo "--- zonewise-web domains ---"
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" | jq '.domains[] | {name, redirect, verified}'
-          echo "--- zonewise-ai domains ---"
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" | jq '.domains[] | {name, redirect, verified}'
+          echo "=== All zonewise domains across projects ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=50")
+          for pid in $(echo "$PROJECTS" | jq -r '.projects[].id'); do
+            domains=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$pid/domains")
+            has_zw=$(echo "$domains" | jq -r '.domains[]? | select(.name | test("zonewise")) | .name' 2>/dev/null)
+            if [ -n "$has_zw" ]; then
+              pname=$(echo "$PROJECTS" | jq -r --arg id "$pid" '.projects[] | select(.id == $id) | .name')
+              echo "PROJECT: $pname"
+              echo "$domains" | jq '.domains[] | {name, redirect, redirectStatusCode, verified}'
+            fi
+          done
