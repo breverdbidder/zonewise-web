@@ -1,0 +1,1 @@
+Fix Vercel domain redirect - 2026-02-19T05:29:06Z
