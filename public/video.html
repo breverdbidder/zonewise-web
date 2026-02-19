@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZoneWise.AI — BidWise Demo Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1E35;
+  --navy2:#1E3A5F;
+  --gold:#F5A623;
+  --gold2:#FFD06B;
+  --green:#00D68F;
+  --red:#FF4B6E;
+  --white:#F8F9FF;
+  --dim:#8492B0;
+  --bg:#060D18;
+}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Outfit',sans-serif}
+
+/* ── STAGE ─────────────────────────── */
+#stage{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── PROGRESS BAR ─────────────────── */
+#progress-track{
+  position:fixed;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.08);z-index:100;
+}
+#progress-fill{
+  height:100%;width:0%;background:linear-gradient(90deg,var(--navy2),var(--gold));
+  transition:width 0.1s linear;
+}
+#scene-label{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3);
+  letter-spacing:0.15em;text-transform:uppercase;z-index:100;
+}
+#timer{
+  position:fixed;bottom:16px;right:24px;
+  font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2);
+  z-index:100;
+}
+#replay-btn{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  background:var(--navy2);color:white;border:1px solid rgba(255,255,255,0.2);
+  padding:12px 32px;border-radius:8px;font-family:'Outfit',sans-serif;
+  font-size:14px;font-weight:600;cursor:pointer;display:none;z-index:100;
+  letter-spacing:0.05em;transition:all 0.2s;
+}
+#replay-btn:hover{background:var(--gold);color:#000;}
+
+/* ── SCENES ────────────────────────── */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.8s ease;
+}
+.scene.active{opacity:1;pointer-events:all;}
+
+/* ── SCENE 1: LOGO ─────────────────── */
+#s1{background:var(--bg);}
+.logo-mark{
+  width:80px;height:80px;background:var(--navy2);border-radius:20px;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  margin-bottom:32px;
+  box-shadow:0 0 60px rgba(30,58,95,0.8),0 0 120px rgba(30,58,95,0.4);
+}
+.logo-mark span{font-size:36px;font-weight:800;color:white;font-family:'Bebas Neue';}
+.logo-dot{
+  position:absolute;top:-4px;right:-4px;width:16px;height:16px;
+  background:var(--gold);border-radius:50%;
+  animation:pulse-dot 2s infinite;
+}
+@keyframes pulse-dot{
+  0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,0.7);}
+  50%{box-shadow:0 0 0 8px rgba(245,166,35,0);}
+}
+.logo-name{
+  font-family:'Bebas Neue';font-size:72px;letter-spacing:0.05em;
+  color:white;line-height:1;margin-bottom:12px;
+  text-shadow:0 0 40px rgba(255,255,255,0.1);
+}
+.logo-name span{color:var(--gold);}
+.logo-tagline{
+  font-family:'Outfit';font-size:16px;font-weight:300;
+  color:var(--dim);letter-spacing:0.12em;text-transform:uppercase;
+  opacity:0;animation:fadeUp 0.8s 1.2s ease forwards;
+}
+.s1-headline{
+  font-family:'DM Serif Display';font-size:clamp(28px,4vw,48px);
+  color:white;text-align:center;line-height:1.2;margin-top:48px;
+  max-width:700px;opacity:0;
+  animation:fadeUp 1s 2s ease forwards;
+}
+.s1-headline em{color:var(--gold);font-style:normal;}
+
+/* ── SCENE 2: DISCOVERWISE ───────────  */
+#s2{background:var(--bg);}
+.terminal-window{
+  width:min(700px,90vw);background:#0A1628;border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,0.6);
+}
+.terminal-bar{
+  background:#111D2E;padding:14px 20px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.t-dot{width:12px;height:12px;border-radius:50%;}
+.t-dot.r{background:#FF4B6E;} .t-dot.y{background:#FFD06B;} .t-dot.g{background:#00D68F;}
+.terminal-bar-title{
+  flex:1;text-align:center;font-family:'Space Mono';font-size:11px;
+  color:rgba(255,255,255,0.3);letter-spacing:0.1em;
+}
+.terminal-body{padding:24px 28px;min-height:280px;}
+.t-label{
+  font-family:'Space Mono';font-size:11px;color:var(--gold);
+  letter-spacing:0.1em;margin-bottom:16px;opacity:0.7;
+}
+.t-search-row{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+.t-prompt{font-family:'Space Mono';font-size:13px;color:var(--dim);}
+.t-input{
+  font-family:'Outfit';font-size:22px;font-weight:600;color:white;
+  border-bottom:2px solid var(--gold);padding-bottom:4px;
+  min-width:160px;position:relative;
+}
+.t-cursor{
+  display:inline-block;width:2px;height:22px;background:var(--gold);
+  margin-left:2px;vertical-align:middle;
+  animation:blink 0.8s infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.t-result-row{
+  display:flex;align-items:center;gap:16px;padding:12px 16px;
+  border-radius:8px;margin-bottom:8px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  opacity:0;transform:translateX(-12px);
+  transition:all 0.4s ease;
+}
+.t-result-row.show{opacity:1;transform:translateX(0);}
+.t-tag{
+  font-size:10px;font-weight:700;font-family:'Space Mono';
+  padding:3px 8px;border-radius:4px;letter-spacing:0.08em;
+}
+.t-tag.bid{background:rgba(0,214,143,0.15);color:var(--green);border:1px solid rgba(0,214,143,0.3);}
+.t-tag.rev{background:rgba(255,208,107,0.15);color:var(--gold2);border:1px solid rgba(255,208,107,0.3);}
+.t-tag.skip{background:rgba(255,75,110,0.1);color:var(--red);border:1px solid rgba(255,75,110,0.2);}
+.t-addr{font-size:13px;font-weight:500;color:white;flex:1;}
+.t-bid{font-family:'Space Mono';font-size:12px;color:var(--gold);font-weight:700;}
+.discover-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(30,58,95,0.4);border:1px solid rgba(30,58,95,0.8);
+  padding:8px 16px;border-radius:8px;margin-bottom:20px;
+}
+.discover-badge span{font-family:'Space Mono';font-size:11px;color:var(--gold);letter-spacing:0.1em;}
+.pulse-dot-sm{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse-dot 1.5s infinite;}
+.found-count{
+  font-family:'Bebas Neue';font-size:52px;color:white;margin-bottom:4px;
+}
+.found-label{font-size:13px;color:var(--dim);letter-spacing:0.1em;}
+
+/* ── SCENE 3: MODULES ─────────────── */
+#s3{background:var(--bg);}
+.modules-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+  width:min(800px,92vw);
+}
+.mod-card{
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:16px 12px;text-align:center;
+  position:relative;overflow:hidden;
+  opacity:0.3;transition:all 0.5s ease;
+}
+.mod-card.active-mod{
+  opacity:1;
+  background:rgba(30,58,95,0.3);
+  border-color:var(--navy2);
+  box-shadow:0 0 24px rgba(30,58,95,0.5),inset 0 0 12px rgba(30,58,95,0.2);
+}
+.mod-card.hero-mod{
+  opacity:1;
+  background:rgba(245,166,35,0.15);
+  border-color:var(--gold);
+  box-shadow:0 0 40px rgba(245,166,35,0.4),inset 0 0 20px rgba(245,166,35,0.1);
+  transform:scale(1.05);
+}
+.mod-num{
+  font-family:'Space Mono';font-size:9px;color:var(--dim);
+  letter-spacing:0.1em;margin-bottom:8px;
+}
+.mod-name{
+  font-size:11px;font-weight:700;color:white;
+  letter-spacing:0.05em;
+}
+.mod-icon{font-size:18px;margin-bottom:8px;}
+.mod-check{
+  position:absolute;top:6px;right:6px;
+  width:14px;height:14px;background:var(--green);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;opacity:0;transition:opacity 0.3s;
+}
+.mod-card.active-mod .mod-check{opacity:1;}
+.s3-headline{
+  font-family:'DM Serif Display';font-size:clamp(20px,3vw,32px);
+  color:white;text-align:center;margin-bottom:32px;
+}
+.s3-headline em{color:var(--gold);font-style:normal;}
+.s3-sub{font-size:13px;color:var(--dim);text-align:center;margin-top:24px;letter-spacing:0.05em;}
+
+/* ── SCENE 4: BIDWISE HERO ───────── */
+#s4{background:radial-gradient(ellipse at center, #1A0F00 0%, var(--bg) 70%);}
+.bidwise-stage{text-align:center;position:relative;}
+.bw-pre{
+  font-family:'Space Mono';font-size:11px;color:var(--dim);
+  letter-spacing:0.2em;text-transform:uppercase;margin-bottom:24px;
+  opacity:0;animation:fadeUp 0.6s 0.2s ease forwards;
+}
+.bw-module-name{
+  font-family:'Bebas Neue';font-size:clamp(48px,8vw,96px);
+  color:var(--gold);letter-spacing:0.1em;line-height:1;
+  opacity:0;animation:blastIn 0.8s 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  text-shadow:0 0 60px rgba(245,166,35,0.6),0 0 120px rgba(245,166,35,0.3);
+}
+@keyframes blastIn{
+  0%{opacity:0;transform:scale(0.3);}
+  100%{opacity:1;transform:scale(1);}
+}
+.bw-separator{
+  width:120px;height:2px;background:var(--gold);margin:24px auto;
+  transform:scaleX(0);animation:expandLine 0.6s 1.2s ease forwards;
+  box-shadow:0 0 12px var(--gold);
+}
+@keyframes expandLine{0%{transform:scaleX(0);}100%{transform:scaleX(1);}}
+.bw-question{
+  font-family:'DM Serif Display';font-size:clamp(18px,2.5vw,28px);
+  color:rgba(255,255,255,0.7);font-style:italic;margin-bottom:48px;
+  opacity:0;animation:fadeUp 0.8s 1.6s ease forwards;
+}
+.bw-number-wrap{
+  position:relative;display:inline-block;
+  opacity:0;animation:numberReveal 1s 2.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes numberReveal{
+  0%{opacity:0;transform:scale(0.5) translateY(20px);}
+  100%{opacity:1;transform:scale(1) translateY(0);}
+}
+.bw-number-label{
+  font-family:'Space Mono';font-size:11px;color:var(--gold);
+  letter-spacing:0.25em;text-transform:uppercase;margin-bottom:8px;
+  opacity:0.7;
+}
+.bw-number{
+  font-family:'Bebas Neue';font-size:clamp(64px,12vw,140px);
+  color:white;letter-spacing:0.05em;line-height:1;
+  text-shadow:0 0 80px rgba(255,255,255,0.15);
+}
+.bw-number span{color:var(--gold);}
+.bw-property{
+  font-size:14px;color:var(--dim);margin-top:12px;letter-spacing:0.05em;
+}
+.bw-verdict{
+  display:inline-flex;align-items:center;gap:10px;margin-top:32px;
+  background:rgba(0,214,143,0.1);border:1px solid rgba(0,214,143,0.3);
+  padding:10px 24px;border-radius:8px;
+  opacity:0;animation:fadeUp 0.8s 3.2s ease forwards;
+}
+.bw-verdict-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse-dot 1.5s infinite;}
+.bw-verdict span{font-family:'Space Mono';font-size:12px;color:var(--green);letter-spacing:0.1em;}
+
+/* ── SCENE 5: INSIGHT REPORT ────── */
+#s5{background:var(--bg);}
+.report-container{
+  width:min(680px,90vw);
+}
+.report-header{
+  background:var(--navy2);border-radius:12px 12px 0 0;padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  opacity:0;animation:fadeDown 0.6s 0.3s ease forwards;
+}
+@keyframes fadeDown{
+  0%{opacity:0;transform:translateY(-12px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+.report-header-title{
+  font-family:'Bebas Neue';font-size:16px;color:white;letter-spacing:0.15em;
+}
+.report-score-ring{position:relative;width:56px;height:56px;}
+.ring-svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:4;}
+.ring-fill{
+  fill:none;stroke:var(--gold);stroke-width:4;
+  stroke-dasharray:151;stroke-dashoffset:151;stroke-linecap:round;
+  transition:stroke-dashoffset 1.5s 1.5s ease;
+}
+.ring-text{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue';font-size:18px;color:var(--gold);
+}
+.kpi-section{
+  background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
+  border-top:none;padding:16px 20px;
+  opacity:0;transition:all 0.5s ease;
+}
+.kpi-section.show{opacity:1;}
+.kpi-section:last-of-type{border-radius:0 0 12px 12px;}
+.kpi-section-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+}
+.kpi-section-name{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:0.12em;text-transform:uppercase;}
+.kpi-badge{
+  font-family:'Space Mono';font-size:9px;color:var(--gold);
+  background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);
+  padding:2px 8px;border-radius:4px;
+}
+.kpi-rows{display:flex;flex-direction:column;gap:6px;}
+.kpi-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.kpi-row:last-child{border-bottom:none;}
+.kpi-name{font-size:12px;color:rgba(255,255,255,0.6);}
+.kpi-val{font-family:'Space Mono';font-size:12px;font-weight:700;}
+.kpi-val.gold{color:var(--gold);}
+.kpi-val.green{color:var(--green);}
+.kpi-val.white{color:white;}
+.kpi-bar{
+  width:48px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;
+}
+.kpi-bar-fill{height:100%;background:var(--green);border-radius:2px;width:0%;transition:width 1s ease;}
+.kpi-section.show .kpi-bar-fill{width:var(--pct);}
+
+/* ── SCENE 6: CTA ─────────────────── */
+#s6{background:radial-gradient(ellipse at 60% 40%, rgba(30,58,95,0.4) 0%, var(--bg) 60%);}
+.cta-content{text-align:center;max-width:640px;}
+.cta-eyebrow{
+  font-family:'Space Mono';font-size:11px;color:var(--gold);
+  letter-spacing:0.2em;text-transform:uppercase;margin-bottom:24px;
+  opacity:0;animation:fadeUp 0.6s 0.3s ease forwards;
+}
+.cta-headline{
+  font-family:'Bebas Neue';font-size:clamp(48px,8vw,88px);
+  color:white;letter-spacing:0.08em;line-height:0.95;margin-bottom:16px;
+  opacity:0;animation:fadeUp 0.8s 0.7s ease forwards;
+}
+.cta-headline .gold{color:var(--gold);}
+.cta-sub{
+  font-size:18px;font-weight:300;color:var(--dim);margin-bottom:48px;
+  opacity:0;animation:fadeUp 0.8s 1.1s ease forwards;
+}
+.cta-url{
+  font-family:'Bebas Neue';font-size:clamp(28px,5vw,56px);
+  color:white;letter-spacing:0.1em;
+  border-bottom:3px solid var(--gold);padding-bottom:4px;
+  display:inline-block;margin-bottom:40px;
+  opacity:0;animation:fadeUp 0.8s 1.5s ease forwards;
+  text-shadow:0 0 40px rgba(255,255,255,0.1);
+}
+.cta-pills{
+  display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 0.8s 2s ease forwards;
+}
+.cta-pill{
+  font-size:12px;font-weight:600;letter-spacing:0.08em;
+  padding:8px 20px;border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);
+}
+.cta-pill.highlight{
+  background:var(--navy2);border-color:var(--navy2);
+  color:white;box-shadow:0 0 20px rgba(30,58,95,0.5);
+}
+.cta-module-row{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:32px;
+  opacity:0;animation:fadeUp 0.8s 2.4s ease forwards;
+}
+.mini-mod{
+  font-family:'Space Mono';font-size:9px;color:rgba(255,255,255,0.3);
+  padding:4px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:4px;
+  letter-spacing:0.08em;
+}
+.mini-mod.hero{color:var(--gold);border-color:rgba(245,166,35,0.3);}
+
+/* ── SHARED ANIMATIONS ─────────────── */
+@keyframes fadeUp{
+  0%{opacity:0;transform:translateY(16px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+.grain{
+  position:fixed;inset:0;pointer-events:none;z-index:1;
+  opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* scanline */
+.scanlines{
+  position:fixed;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="scanlines"></div>
+
+<div id="stage">
+
+<!-- ── SCENE 1: LOGO + TAGLINE ──────────────────────────── -->
+<div class="scene" id="s1">
+  <div class="logo-mark">
+    <span>Z</span>
+    <div class="logo-dot"></div>
+  </div>
+  <div class="logo-name">Zone<span>Wise</span>.AI</div>
+  <div class="logo-tagline">Distressed Assets Decoded</div>
+  <div class="s1-headline">
+    Every Florida auction.<br>
+    <em>BidWise.</em> 298 KPIs. In seconds.
+  </div>
+</div>
+
+<!-- ── SCENE 2: DISCOVERWISE ────────────────────────────── -->
+<div class="scene" id="s2">
+  <div style="text-align:center;margin-bottom:28px;">
+    <div class="discover-badge">
+      <div class="pulse-dot-sm"></div>
+      <span>01 · DISCOVERWISE</span>
+    </div>
+    <div style="font-family:'DM Serif Display';font-size:clamp(22px,3vw,34px);color:white;margin-top:12px;">
+      Finding auctions across <em style="color:var(--gold);font-style:normal;">67 Florida counties</em>
+    </div>
+  </div>
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <div class="t-dot r"></div><div class="t-dot y"></div><div class="t-dot g"></div>
+      <div class="terminal-bar-title">DISCOVERWISE — AUCTION INTELLIGENCE</div>
+    </div>
+    <div class="terminal-body">
+      <div class="t-label">▶ SEARCH COUNTY</div>
+      <div class="t-search-row">
+        <div class="t-prompt">$</div>
+        <div class="t-input" id="search-text"><span class="t-cursor" id="t-cursor"></span></div>
+      </div>
+      <div id="results-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCENE 3: MODULES ACTIVATING ──────────────────────── -->
+<div class="scene" id="s3">
+  <div class="s3-headline">
+    12 Wise Modules — <em>All Firing</em>
+  </div>
+  <div class="modules-grid" id="modules-grid">
+    <div class="mod-card" data-mod="0"><div class="mod-num">01</div><div class="mod-icon">🔍</div><div class="mod-name">DiscoverWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="1"><div class="mod-num">02</div><div class="mod-icon">📦</div><div class="mod-name">GatherWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="2"><div class="mod-num">03</div><div class="mod-icon">📋</div><div class="mod-name">TitleWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="3"><div class="mod-num">04</div><div class="mod-icon">⛓</div><div class="mod-name">LienWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="4"><div class="mod-num">05</div><div class="mod-icon">🧾</div><div class="mod-name">TaxWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="5"><div class="mod-num">06</div><div class="mod-icon">🏘</div><div class="mod-name">NeighborWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="6"><div class="mod-num">07</div><div class="mod-icon">🤖</div><div class="mod-name">ScoreWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card hero-pending" data-mod="7"><div class="mod-num">⭐</div><div class="mod-icon">💰</div><div class="mod-name">BidWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="8"><div class="mod-num">09</div><div class="mod-icon">✅</div><div class="mod-name">CallWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="9"><div class="mod-num">10</div><div class="mod-icon">📊</div><div class="mod-name">InsightWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="10"><div class="mod-num">11</div><div class="mod-icon">📈</div><div class="mod-name">TrackWise</div><div class="mod-check">✓</div></div>
+    <div class="mod-card" data-mod="11"><div class="mod-num">12</div><div class="mod-icon">🔐</div><div class="mod-name">VaultWise</div><div class="mod-check">✓</div></div>
+  </div>
+  <div class="s3-sub" id="s3-sub">Initializing...</div>
+</div>
+
+<!-- ── SCENE 4: BIDWISE HERO ─────────────────────────────── -->
+<div class="scene" id="s4">
+  <div class="bidwise-stage">
+    <div class="bw-pre">Module 08 · The Hero</div>
+    <div class="bw-module-name">BidWise</div>
+    <div class="bw-separator"></div>
+    <div class="bw-question">"What is the most I should pay at this auction?"</div>
+    <div class="bw-number-wrap">
+      <div class="bw-number-label">MAX BID</div>
+      <div class="bw-number"><span>$</span>213,000</div>
+      <div class="bw-property">2847 Harbor Blvd · Cocoa Beach · ARV $387K · Repairs $42K</div>
+    </div>
+    <div class="bw-verdict">
+      <div class="bw-verdict-dot"></div>
+      <span>BID/JUDGMENT: 107% · VERDICT: STRONG BID</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCENE 5: INSIGHTWISE 298-KPI ─────────────────────── -->
+<div class="scene" id="s5">
+  <div style="text-align:center;margin-bottom:20px;">
+    <div class="discover-badge" style="margin:0 auto 12px;">
+      <div class="pulse-dot-sm"></div>
+      <span>10 · INSIGHTWISE</span>
+    </div>
+    <div style="font-family:'DM Serif Display';font-size:clamp(18px,2.5vw,28px);color:white;">
+      298-KPI <em style="color:var(--gold);font-style:normal;">BidWise Intelligence Report</em>
+    </div>
+  </div>
+  <div class="report-container">
+    <div class="report-header">
+      <div>
+        <div class="report-header-title">BIDWISE INTELLIGENCE REPORT</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;font-family:'Space Mono'">2847 Harbor Blvd · Cocoa Beach 32931</div>
+      </div>
+      <div class="report-score-ring">
+        <svg class="ring-svg" width="56" height="56" viewBox="0 0 56 56">
+          <circle class="ring-bg" cx="28" cy="28" r="24"/>
+          <circle class="ring-fill" id="ring-fill" cx="28" cy="28" r="24"/>
+        </svg>
+        <div class="ring-text" id="ring-text">0</div>
+      </div>
+    </div>
+    <div class="kpi-section" id="kpi0">
+      <div class="kpi-section-header">
+        <div class="kpi-section-name">BidWise Intelligence — Financial</div>
+        <div class="kpi-badge">74 KPIs</div>
+      </div>
+      <div class="kpi-rows">
+        <div class="kpi-row"><div class="kpi-name">After-Repair Value</div><div class="kpi-val gold">$387,000</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:88%"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">⭐ Max Bid (BidWise)</div><div class="kpi-val gold" style="font-size:14px;font-weight:800">$213,000</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:95%;background:var(--gold)"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">Gross Profit Potential</div><div class="kpi-val green">$131,500</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:90%"></div></div></div>
+      </div>
+    </div>
+    <div class="kpi-section" id="kpi1">
+      <div class="kpi-section-header">
+        <div class="kpi-section-name">NeighborWise — Market</div>
+        <div class="kpi-badge">68 KPIs</div>
+      </div>
+      <div class="kpi-rows">
+        <div class="kpi-row"><div class="kpi-name">MTR Demand Score</div><div class="kpi-val gold">91/100</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:91%"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">Days on Market</div><div class="kpi-val white">24 days</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:88%"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">Price Appreciation YoY</div><div class="kpi-val green">+7.2%</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:85%"></div></div></div>
+      </div>
+    </div>
+    <div class="kpi-section" id="kpi2">
+      <div class="kpi-section-header">
+        <div class="kpi-section-name">TitleWise + LienWise — Risk</div>
+        <div class="kpi-badge">82 KPIs</div>
+      </div>
+      <div class="kpi-rows">
+        <div class="kpi-row"><div class="kpi-name">Title Chain Integrity</div><div class="kpi-val green">CLEAN</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:98%"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">Open Permits</div><div class="kpi-val green">NONE</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:100%"></div></div></div>
+        <div class="kpi-row"><div class="kpi-name">Tax Delinquency</div><div class="kpi-val green">CURRENT</div><div class="kpi-bar"><div class="kpi-bar-fill" style="--pct:100%"></div></div></div>
+      </div>
+    </div>
+    <div class="kpi-section" id="kpi3" style="border-radius:0 0 12px 12px;background:rgba(0,214,143,0.05);border-color:rgba(0,214,143,0.15);">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-family:'Bebas Neue';font-size:18px;color:white;letter-spacing:0.1em;">BIDWISE RECOMMENDATION</div>
+          <div style="font-size:12px;color:var(--dim);margin-top:2px;font-family:'Space Mono'">298/298 KPIs · 94% confidence · 52 seconds</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Bebas Neue';font-size:28px;color:var(--green);letter-spacing:0.1em;">BID</div>
+          <div style="font-family:'Bebas Neue';font-size:20px;color:var(--gold);">UP TO $213,000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCENE 6: CTA ──────────────────────────────────────── -->
+<div class="scene" id="s6">
+  <div class="cta-content">
+    <div class="cta-eyebrow">⭐ BidWise is free in beta</div>
+    <div class="cta-headline">No guesswork.<br><span class="gold">Just the number.</span></div>
+    <div class="cta-sub">67 FL counties · 298 KPIs · 12 Wise modules · No analyst needed</div>
+    <div class="cta-url">zonewise.ai</div>
+    <div class="cta-pills">
+      <div class="cta-pill highlight">Join the Beta — Free</div>
+      <div class="cta-pill">Watch Demo → /demo.html</div>
+    </div>
+    <div class="cta-module-row">
+      <div class="mini-mod">DiscoverWise</div>
+      <div class="mini-mod">GatherWise</div>
+      <div class="mini-mod">TitleWise</div>
+      <div class="mini-mod">LienWise</div>
+      <div class="mini-mod hero">⭐ BidWise</div>
+      <div class="mini-mod">InsightWise</div>
+      <div class="mini-mod">VaultWise</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /stage -->
+
+<div id="progress-track"><div id="progress-fill"></div></div>
+<div id="scene-label">INTRO</div>
+<div id="timer">0:00</div>
+<button id="replay-btn" onclick="startVideo()">↺ Play Again</button>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+const TOTAL_MS = 91000; // 91 seconds total
+const SCENES = [
+  { id:'s1', label:'INTRO',             start:0,      end:8000  },
+  { id:'s2', label:'DISCOVERWISE',      start:8000,   end:22000 },
+  { id:'s3', label:'MODULES ACTIVATING',start:22000,  end:38000 },
+  { id:'s4', label:'BIDWISE — THE HERO',start:38000,  end:52000 },
+  { id:'s5', label:'INSIGHTWISE REPORT',start:52000,  end:70000 },
+  { id:'s6', label:'JOIN THE BETA',     start:70000,  end:91000 },
+];
+
+let startTime = null;
+let raf = null;
+let scene2Done = false;
+let scene3Done = false;
+let scene5Done = false;
+let currentScene = -1;
+
+// ── SCENE 2: TYPING ─────────────────────────────────────
+const SEARCH_TEXT = 'Brevard';
+const PROPS = [
+  { addr:'2847 Harbor Blvd, Cocoa Beach', tag:'bid',  bid:'$213,000' },
+  { addr:'519 Merritt Ave, Merritt Island', tag:'rev', bid:'$233,500' },
+  { addr:'88 Banana River Dr, Cocoa Bch', tag:'skip', bid:'$142,000' },
+  { addr:'214 Park Ave, Titusville',       tag:'bid',  bid:'$178,000' },
+];
+
+function setupScene2() {
+  if(scene2Done) return;
+  scene2Done = true;
+  const textEl = document.getElementById('search-text');
+  const cursor = document.getElementById('t-cursor');
+  const resultsArea = document.getElementById('results-area');
+  resultsArea.innerHTML = '';
+
+  // Type the search text
+  let i = 0;
+  const typeInterval = setInterval(() => {
+    if(i >= SEARCH_TEXT.length){
+      clearInterval(typeInterval);
+      cursor.style.display = 'none';
+      // Show found count
+      const countDiv = document.createElement('div');
+      countDiv.innerHTML = `<div class="found-count">19</div><div class="found-label">PROPERTIES FOUND</div>`;
+      countDiv.style.textAlign = 'center';
+      countDiv.style.marginBottom = '16px';
+      countDiv.style.opacity = '0';
+      countDiv.style.animation = 'fadeUp 0.6s ease forwards';
+      resultsArea.appendChild(countDiv);
+      // Then show property rows
+      PROPS.forEach((p, idx) => {
+        setTimeout(() => {
+          const row = document.createElement('div');
+          row.className = 't-result-row';
+          row.innerHTML = `
+            <div class="t-tag ${p.tag}">${p.tag.toUpperCase()}</div>
+            <div class="t-addr">${p.addr}</div>
+            <div class="t-bid">${p.bid}</div>`;
+          resultsArea.appendChild(row);
+          requestAnimationFrame(() => setTimeout(() => row.classList.add('show'), 10));
+        }, idx * 300 + 400);
+      });
+      return;
+    }
+    textEl.childNodes[0].textContent = SEARCH_TEXT.slice(0,i+1);
+    textEl.appendChild(cursor);
+    i++;
+  }, 90);
+}
+
+// ── SCENE 3: MODULES ────────────────────────────────────
+function setupScene3() {
+  if(scene3Done) return;
+  scene3Done = true;
+  const cards = document.querySelectorAll('.mod-card');
+  const sub = document.getElementById('s3-sub');
+  const labels = [
+    'DiscoverWise — 19 auctions found',
+    'GatherWise — BCPAO data loaded',
+    'TitleWise — chain of title verified',
+    'LienWise — lien waterfall mapped',
+    'TaxWise — certificates checked',
+    'NeighborWise — neighborhood scored',
+    'ScoreWise — AI probability: 84%',
+    '⭐ BidWise — MAX BID: $213,000',
+    'CallWise — verdict: BID',
+    'InsightWise — 298 KPIs compiled',
+    'TrackWise — disposition tracked',
+    'VaultWise — archived',
+  ];
+  cards.forEach((c,i) => {
+    setTimeout(() => {
+      c.classList.add('active-mod');
+      if(i === 7) c.classList.add('hero-mod');
+      sub.textContent = labels[i];
+    }, i * 900);
+  });
+}
+
+// ── SCENE 5: REPORT RING ────────────────────────────────
+function setupScene5() {
+  if(scene5Done) return;
+  scene5Done = true;
+  const sections = ['kpi0','kpi1','kpi2','kpi3'];
+  sections.forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('show');
+    }, i * 1400 + 400);
+  });
+  // Animate score ring to 84
+  setTimeout(() => {
+    const ringFill = document.getElementById('ring-fill');
+    const ringText = document.getElementById('ring-text');
+    const circ = 2 * Math.PI * 24; // ~151
+    ringFill.style.strokeDashoffset = circ * (1 - 84/100);
+    // Count up text
+    let n = 0;
+    const counter = setInterval(() => {
+      n = Math.min(n + 2, 84);
+      ringText.textContent = n;
+      if(n >= 84) clearInterval(counter);
+    }, 25);
+  }, 1200);
+}
+
+// ── MAIN LOOP ────────────────────────────────────────────
+function tick(ts) {
+  if(!startTime) startTime = ts;
+  const elapsed = ts - startTime;
+  const progress = Math.min(elapsed / TOTAL_MS * 100, 100);
+  document.getElementById('progress-fill').style.width = progress + '%';
+
+  // Timer
+  const secs = Math.floor(elapsed / 1000);
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+
+  // Scene transitions
+  const activeScene = SCENES.findIndex(sc => elapsed >= sc.start && elapsed < sc.end);
+  if(activeScene !== -1 && activeScene !== currentScene) {
+    // Deactivate old
+    if(currentScene >= 0) document.getElementById(SCENES[currentScene].id).classList.remove('active');
+    // Activate new
+    document.getElementById(SCENES[activeScene].id).classList.add('active');
+    document.getElementById('scene-label').textContent = SCENES[activeScene].label;
+    currentScene = activeScene;
+    // Scene-specific setups
+    if(activeScene === 1) setTimeout(setupScene2, 800);
+    if(activeScene === 2) setupScene3();
+    if(activeScene === 4) setTimeout(setupScene5, 600);
+  }
+
+  if(elapsed < TOTAL_MS) {
+    raf = requestAnimationFrame(tick);
+  } else {
+    // End
+    document.getElementById('scene-label').textContent = 'FIN';
+    document.getElementById('replay-btn').style.display = 'block';
+  }
+}
+
+function startVideo() {
+  // Reset everything
+  document.getElementById('replay-btn').style.display = 'none';
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('timer').textContent = '0:00';
+  scene2Done = false; scene3Done = false; scene5Done = false;
+  currentScene = -1;
+
+  // Reset scene 2
+  const textEl = document.getElementById('search-text');
+  textEl.innerHTML = '<span class="t-cursor" id="t-cursor"></span>';
+  document.getElementById('results-area').innerHTML = '';
+
+  // Reset scene 3
+  document.querySelectorAll('.mod-card').forEach(c => {
+    c.classList.remove('active-mod','hero-mod');
+  });
+  document.getElementById('s3-sub').textContent = 'Initializing...';
+
+  // Reset scene 5
+  ['kpi0','kpi1','kpi2','kpi3'].forEach(id => document.getElementById(id).classList.remove('show'));
+  document.getElementById('ring-fill').style.strokeDashoffset = '151';
+  document.getElementById('ring-text').textContent = '0';
+
+  if(raf) cancelAnimationFrame(raf);
+  startTime = null;
+  raf = requestAnimationFrame(tick);
+}
+
+// Autostart
+startVideo();
+</script>
+</body>
+</html>
