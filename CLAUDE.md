@@ -105,3 +105,28 @@ docs: update README pricing tiers
 1. Try to solve autonomously (3 attempts minimum)
 2. If still blocked, log to Supabase `insights` table
 3. Only then surface to Ariel: "BLOCKED: [issue]. Tried: [x]. Recommend: [y]. Approve?"
+
+
+---
+
+## The 12 Wise Module System (ZoneWise Brand Language)
+
+All pipeline stages use Wise-branded names. BidWise is the hero module.
+
+| # | Module | What It Does |
+|---|--------|-------------|
+| 01 | DiscoverWise | Find upcoming auctions — 67 FL counties |
+| 02 | GatherWise | Pull all property data (BCPAO, photos, history) |
+| 03 | TitleWise | Verify full chain of title |
+| 04 | LienWise | Map complete lien waterfall |
+| 05 | TaxWise | Check tax certificates and delinquencies |
+| 06 | NeighborWise | Neighborhood intel — income, vacancy, demand |
+| 07 | ScoreWise | AI bid probability score |
+| 08 | BidWise | THE HERO — exact max bid calculation |
+| 09 | CallWise | Final BID / REVIEW / SKIP decision |
+| 10 | InsightWise | Full 298-KPI intelligence report |
+| 11 | TrackWise | Disposition tracking |
+| 12 | VaultWise | Archive every deal and result |
+
+BidWise hero tagline: "Every module exists to get you to one number. BidWise gives you that number."
+Demo: https://zonewise.ai/demo.html
