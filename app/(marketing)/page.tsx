@@ -18,6 +18,9 @@ export default function Home() {
           <nav className="flex items-center gap-6">
             <a href="#how" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">How It Works</a>
             <a href="/kpis" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">298 KPIs</a>
+            <a href="/demo.html" className="text-zw-navy font-semibold hover:text-zw-navy-700 hidden sm:block text-sm border border-zw-navy/30 px-3 py-1 rounded-lg hover:bg-zw-navy/5 transition-all">
+              ▶ Live Demo
+            </a>
             <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</a>
             <a href="#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
               Join the Beta
@@ -39,6 +42,10 @@ export default function Home() {
               Everest Capital USA
             </a>
           </p>
+          <a href="/demo.html" className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 rounded-full text-sm font-medium mb-8 hover:bg-amber-100 transition-colors">
+            <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse inline-block"></span>
+            ▶ See BidWise in action — 34-second live demo
+          </a>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 mb-8 leading-[1.1] tracking-tight">
             The AI for<br />
             <span className="text-zw-navy">Real Estate Intelligence</span>
@@ -52,6 +59,9 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <a href="#beta-signup" className="bg-zw-navy text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-zw-navy-700 transition-all hover:shadow-lg hover:shadow-zw-navy/20">
               Join the Beta
+            </a>
+            <a href="/demo.html" className="border-2 border-zw-navy text-zw-navy px-8 py-4 rounded-xl text-lg font-semibold hover:bg-zw-navy hover:text-white transition-all flex items-center gap-2">
+              ▶ Watch BidWise Live
             </a>
             <a href="#how" className="text-zw-navy font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
               See how it works
