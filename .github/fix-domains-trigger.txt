@@ -1,1 +1,1 @@
-Run 6 scan all - 05:35:53
+Run 7 DNS+verify 05:38:40
