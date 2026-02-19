@@ -10,141 +10,107 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ZONE: b32406b78aaaefd55557d77c843a5940
+      VERCEL_PROJECT: prj_B478bSAAf0yLnY3owbhN7a1W7mQs
     steps:
-      - name: Get Cloudflare zone ID for zonewise.ai
-        id: cf_zone
+      - name: Add Vercel TXT verification records to Cloudflare
         run: |
-          echo "=== Finding Cloudflare zone for zonewise.ai ==="
-          ZONES=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai")
-          ZONE_ID=$(echo "$ZONES" | jq -r '.result[0].id // empty')
-          echo "Zone ID: $ZONE_ID"
+          set -x
           
-          if [ -z "$ZONE_ID" ]; then
-            echo "No Cloudflare zone found for zonewise.ai"
-            echo "Listing all zones..."
-            curl -s -H "Authorization: Bearer $CF_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones?per_page=50" | \
-              jq -r '.result[] | "\(.name) -> \(.id)"'
-            exit 1
-          fi
-          
-          echo "zone_id=$ZONE_ID" >> $GITHUB_OUTPUT
-          
-          echo ""
-          echo "=== Current DNS records ==="
-          curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=100" | \
-            jq -r '.result[] | "\(.type) \(.name) -> \(.content) (proxied: \(.proxied))"'
-            
-      - name: Add Vercel TXT verification records
-        run: |
-          ZONE_ID="${{ steps.cf_zone.outputs.zone_id }}"
-          
-          echo "=== Getting current Vercel verification requirements ==="
+          # Get verification values from Vercel
           DOMAINS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains")
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT/domains")
           
-          echo "$DOMAINS" | jq '.domains[] | select(.verified == false) | {name, verification}'
-          
-          # Get verification values
           WWW_TXT=$(echo "$DOMAINS" | jq -r '.domains[] | select(.name == "www.zonewise.ai") | .verification[0].value // empty')
           BARE_TXT=$(echo "$DOMAINS" | jq -r '.domains[] | select(.name == "zonewise.ai") | .verification[0].value // empty')
           
           echo "www TXT: $WWW_TXT"
           echo "bare TXT: $BARE_TXT"
           
-          # Delete existing _vercel TXT records if any
+          # Delete any existing _vercel TXT records
           EXISTING=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=TXT&name=_vercel.zonewise.ai")
-          for rid in $(echo "$EXISTING" | jq -r '.result[].id // empty'); do
-            echo "Deleting old TXT record $rid..."
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?type=TXT&name=_vercel.zonewise.ai")
+          for rid in $(echo "$EXISTING" | jq -r '.result[]?.id // empty' 2>/dev/null); do
+            echo "Deleting old TXT: $rid"
             curl -s -X DELETE -H "Authorization: Bearer $CF_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$rid" | jq '.success'
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$rid" > /dev/null
           done
           
-          # Add TXT for www verification
+          # Add TXT records
           if [ -n "$WWW_TXT" ]; then
-            echo "Adding TXT for www: $WWW_TXT"
+            echo "Adding TXT: $WWW_TXT"
             curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
               -H "Content-Type: application/json" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$WWW_TXT\",\"ttl\":60}" | jq '{success, id: .result.id}'
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records" \
+              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$WWW_TXT\",\"ttl\":60}" | jq '.success'
           fi
           
-          # Add TXT for bare domain verification (if different)
           if [ -n "$BARE_TXT" ] && [ "$BARE_TXT" != "$WWW_TXT" ]; then
-            echo "Adding TXT for bare: $BARE_TXT"
+            echo "Adding TXT: $BARE_TXT"
             curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
               -H "Content-Type: application/json" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$BARE_TXT\",\"ttl\":60}" | jq '{success, id: .result.id}'
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records" \
+              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$BARE_TXT\",\"ttl\":60}" | jq '.success'
           fi
           
-      - name: Set DNS A/CNAME records for Vercel
+      - name: Set DNS A and CNAME records for Vercel
         run: |
-          ZONE_ID="${{ steps.cf_zone.outputs.zone_id }}"
-          
-          echo "=== Ensuring correct DNS records for Vercel ==="
-          
-          # Vercel requires: A record for apex -> 76.76.21.21
-          # CNAME for www -> cname.vercel-dns.com
+          set -x
           
           # Delete existing A records for apex
-          EXISTING_A=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=A&name=zonewise.ai")
-          for rid in $(echo "$EXISTING_A" | jq -r '.result[].id // empty'); do
-            echo "Deleting old A record $rid..."
+          for rid in $(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?type=A&name=zonewise.ai" | \
+            jq -r '.result[]?.id // empty' 2>/dev/null); do
+            echo "Deleting A record: $rid"
             curl -s -X DELETE -H "Authorization: Bearer $CF_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$rid" | jq '.success'
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$rid" > /dev/null
           done
           
           # Delete existing CNAME for www
-          EXISTING_CNAME=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=www.zonewise.ai")
-          for rid in $(echo "$EXISTING_CNAME" | jq -r '.result[].id // empty'); do
-            echo "Deleting old CNAME record $rid..."
+          for rid in $(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records?type=CNAME&name=www.zonewise.ai" | \
+            jq -r '.result[]?.id // empty' 2>/dev/null); do
+            echo "Deleting CNAME record: $rid"
             curl -s -X DELETE -H "Authorization: Bearer $CF_TOKEN" \
-              "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$rid" | jq '.success'
+              "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records/$rid" > /dev/null
           done
           
-          # Add A record for apex (NOT proxied - Vercel needs direct)
-          echo "Adding A record: zonewise.ai -> 76.76.21.21"
+          # Add Vercel A record (NOT proxied)
+          echo "Adding A: zonewise.ai -> 76.76.21.21"
           curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -d '{"type":"A","name":"zonewise.ai","content":"76.76.21.21","ttl":1,"proxied":false}' | jq '{success, id: .result.id}'
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records" \
+            -d '{"type":"A","name":"zonewise.ai","content":"76.76.21.21","ttl":1,"proxied":false}' | jq '.success'
           
-          # Add CNAME for www (NOT proxied - Vercel needs direct)
-          echo "Adding CNAME: www.zonewise.ai -> cname.vercel-dns.com"
+          # Add Vercel CNAME (NOT proxied)
+          echo "Adding CNAME: www -> cname.vercel-dns.com"
           curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-            -d '{"type":"CNAME","name":"www","content":"cname.vercel-dns.com","ttl":1,"proxied":false}' | jq '{success, id: .result.id}'
+            "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/dns_records" \
+            -d '{"type":"CNAME","name":"www","content":"cname.vercel-dns.com","ttl":1,"proxied":false}' | jq '.success'
           
-      - name: Trigger Vercel verification
+      - name: Verify domains with Vercel
         run: |
-          echo "Waiting 15s for DNS propagation..."
-          sleep 15
+          echo "Waiting 20s for DNS propagation..."
+          sleep 20
           
-          echo "=== Triggering domain verification ==="
+          echo "=== Verifying www.zonewise.ai ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains/www.zonewise.ai/verify" | jq '.'
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT/domains/www.zonewise.ai/verify" | jq '{verified}'
           
+          echo "=== Verifying zonewise.ai ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains/zonewise.ai/verify" | jq '.'
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT/domains/zonewise.ai/verify" | jq '{verified}'
           
           sleep 10
           
-          echo ""
-          echo "=== Final domain status ==="
+          echo "=== Final status ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" | \
-            jq '.domains[] | select(.name | test("zonewise.ai")) | {name, redirect, redirectStatusCode, verified}'
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT/domains" | \
+            jq '.domains[] | select(.name | test("zonewise")) | {name, redirect, redirectStatusCode, verified}'
           
-          echo ""
-          echo "=== Testing redirects ==="
+          echo "=== Test redirects ==="
           echo -n "https://zonewise.ai -> "
-          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(propagating...)"
+          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(propagating)"
           echo -n "http://zonewise.ai -> "
-          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(propagating...)"
+          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(propagating)"
