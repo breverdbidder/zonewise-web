@@ -93,66 +93,52 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how" className="py-24">
+      {/* How It Works — 12 Wise Modules */}
+      <section id="how" className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">How you can use ZoneWise</h2>
-          <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto">
-            Ask anything about Florida real estate. ZoneWise reasons through zoning codes, lien structures, and market data — so you don&apos;t have to.
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">
+            The 12-Stage <span className="text-zw-navy">Wise System</span>
+          </h2>
+          <p className="text-center text-gray-500 mb-4 max-w-xl mx-auto">
+            Every auction property passes through all 12 modules — automatically.
           </p>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="group">
-              <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
-                <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
-                  <svg className="w-6 h-6 text-zw-navy group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+          <p className="text-center text-zw-navy font-bold mb-12 text-lg">
+            ⭐ Everything exists to get you to one number: <span className="underline">BidWise</span>
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { n:1,  name:"DiscoverWise",  desc:"Find upcoming auctions across 67 FL counties",          color:"#1E3A5F" },
+              { n:2,  name:"GatherWise",    desc:"Pull all property data — BCPAO, photos, history",       color:"#1E3A5F" },
+              { n:3,  name:"TitleWise",     desc:"Verify the full chain of title",                        color:"#1E3A5F" },
+              { n:4,  name:"LienWise",      desc:"Map the complete lien waterfall",                       color:"#1E3A5F" },
+              { n:5,  name:"TaxWise",       desc:"Check tax certificates and delinquencies",              color:"#1E3A5F" },
+              { n:6,  name:"NeighborWise",  desc:"Neighborhood intelligence — income, vacancy, demand",   color:"#1E3A5F" },
+              { n:7,  name:"ScoreWise",     desc:"AI bid probability score — should you bid?",            color:"#1E3A5F" },
+              { n:8,  name:"BidWise",       desc:"Your exact max bid. The number that matters.",          color:"#F5A623", hero:true },
+              { n:9,  name:"CallWise",      desc:"Final BID / REVIEW / SKIP decision output",            color:"#1E3A5F" },
+              { n:10, name:"InsightWise",   desc:"Full 298-KPI auction intelligence report",             color:"#1E3A5F" },
+              { n:11, name:"TrackWise",     desc:"Track outcome — flip, rent, or pass",                  color:"#1E3A5F" },
+              { n:12, name:"VaultWise",     desc:"Archive every deal, decision, and result",             color:"#1E3A5F" },
+            ].map((m) => (
+              <div key={m.n} className={`rounded-xl p-5 border transition-all duration-200 hover:shadow-md ${m.hero ? "bg-zw-navy text-white border-zw-navy shadow-lg scale-105" : "bg-white border-gray-200"}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${m.hero ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"}`}>
+                    {String(m.n).padStart(2,"0")}
+                  </span>
+                  {m.hero && <span className="text-xs font-bold text-amber-300">⭐ HERO</span>}
                 </div>
-                <h3 className="text-xl font-bold mb-3">Analyze</h3>
-                <p className="text-gray-500 group-hover:text-slate-300 transition-colors mb-6 text-sm leading-relaxed">
-                  Zoning setbacks, building envelopes, permitted uses, lien priority — analyzed in seconds, not hours.
+                <h3 className={`font-bold text-base mb-1 ${m.hero ? "text-white" : "text-slate-900"}`}>
+                  {m.name}
+                </h3>
+                <p className={`text-xs leading-relaxed ${m.hero ? "text-blue-100" : "text-gray-500"}`}>
+                  {m.desc}
                 </p>
-                <div className="bg-white/5 border border-gray-200 group-hover:border-white/20 rounded-lg p-3 transition-colors">
-                  <p className="text-xs text-gray-400 group-hover:text-slate-400 mb-1">Try asking:</p>
-                  <p className="text-sm font-medium">&ldquo;What can I build on parcel 28-37-15 in Melbourne?&rdquo;</p>
-                </div>
               </div>
-            </div>
-            <div className="group">
-              <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
-                <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
-                  <svg className="w-6 h-6 text-zw-navy group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold mb-3">Research</h3>
-                <p className="text-gray-500 group-hover:text-slate-300 transition-colors mb-6 text-sm leading-relaxed">
-                  Foreclosure dockets, tax deed sales, auction calendars, and comparable sales across all 67 counties.
-                </p>
-                <div className="bg-white/5 border border-gray-200 group-hover:border-white/20 rounded-lg p-3 transition-colors">
-                  <p className="text-xs text-gray-400 group-hover:text-slate-400 mb-1">Try asking:</p>
-                  <p className="text-sm font-medium">&ldquo;Find foreclosures under $150K in Duval with clear title&rdquo;</p>
-                </div>
-              </div>
-            </div>
-            <div className="group">
-              <div className="bg-slate-50 rounded-2xl p-8 hover:bg-zw-navy hover:text-white transition-all duration-300 h-full">
-                <div className="w-12 h-12 bg-zw-navy/10 group-hover:bg-white/10 rounded-xl flex items-center justify-center mb-6 transition-colors">
-                  <svg className="w-6 h-6 text-zw-navy group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold mb-3">Build</h3>
-                <p className="text-gray-500 group-hover:text-slate-300 transition-colors mb-6 text-sm leading-relaxed">
-                  3D building envelopes, feasibility reports, and investment analysis — your AI development partner.
-                </p>
-                <div className="bg-white/5 border border-gray-200 group-hover:border-white/20 rounded-lg p-3 transition-colors">
-                  <p className="text-xs text-gray-400 group-hover:text-slate-400 mb-1">Try asking:</p>
-                  <p className="text-sm font-medium">&ldquo;Show me the max buildable envelope for this lot&rdquo;</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
+          <p className="text-center text-gray-400 text-sm mt-8">
+            12 modules · 298 KPIs · Every Florida county · No analyst needed
+          </p>
         </div>
       </section>
 
