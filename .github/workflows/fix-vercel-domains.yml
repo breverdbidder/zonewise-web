@@ -10,66 +10,81 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Move www.zonewise.ai back to zonewise-ai
+      - name: Check zonewise-web deployments
         run: |
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          
-          echo "=== Check latest deployments on zonewise-ai ==="
+          echo "=== Latest 5 deployments on zonewise-web ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$AI&limit=3" | \
-            jq '.deployments[] | {uid, url, state, created: .created}'
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&limit=5" | \
+            jq '.deployments[] | {uid, url, state, created: (.created / 1000 | todate), meta: .meta.githubCommitMessage}'
+
+      - name: Redeploy latest successful build
+        run: |
+          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           
-          echo ""
-          echo "=== Delete www.zonewise.ai from zonewise-web ==="
-          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains/www.zonewise.ai"
-          echo ""
-          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai"
-          sleep 5
+          # Find the last READY deployment
+          LATEST_UID=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&limit=10&state=READY" | \
+            jq -r '.deployments[0].uid')
+          echo "Latest ready deployment: $LATEST_UID"
           
-          echo ""
-          echo "=== Add www.zonewise.ai to zonewise-ai ==="
-          curl -s -w "\nHTTP:%{http_code}" -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$AI/domains" \
-            -d '{"name":"www.zonewise.ai"}'
-          sleep 3
+          # Check its URL
+          LATEST_URL=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&limit=10&state=READY" | \
+            jq -r '.deployments[0].url')
+          echo "URL: $LATEST_URL"
           
+          # Test feasibility on that deployment
+          echo -n "Test /feasibility: "
+          curl -s -o /dev/null -w "HTTP %{http_code}" "https://$LATEST_URL/feasibility"
           echo ""
-          echo "=== Verify www ==="
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains/www.zonewise.ai/verify" | jq '{name, verified}'
-          sleep 3
+          
+          # Find a deployment that HAS /feasibility
+          DEPLOYS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&limit=10&state=READY")
+          for uid in $(echo "$DEPLOYS" | jq -r '.deployments[].uid'); do
+            url=$(echo "$DEPLOYS" | jq -r --arg uid "$uid" '.deployments[] | select(.uid == $uid) | .url')
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://$url/feasibility")
+            msg=$(echo "$DEPLOYS" | jq -r --arg uid "$uid" '.deployments[] | select(.uid == $uid) | .meta.githubCommitMessage // "no msg"' | head -c 60)
+            echo "$uid | $url | /feasibility=$code | $msg"
+            if [ "$code" = "200" ]; then
+              echo "FOUND working deployment: $uid"
+              
+              # Redeploy this one
+              echo "Redeploying..."
+              curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://api.vercel.com/v13/deployments" \
+                -d "{\"name\":\"zonewise-web\",\"deploymentId\":\"$uid\",\"target\":\"production\"}" | \
+                jq '{uid, url, readyState}'
+              break
+            fi
+          done
+
+      - name: Re-add zonewise.ai redirect
+        run: |
+          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          echo "=== Current domains ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB/domains" | jq '.domains[] | {name, redirect, verified}'
           
           echo ""
           echo "=== Add zonewise.ai redirect ==="
           curl -s -w "\nHTTP:%{http_code}" -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$AI/domains" \
+            "https://api.vercel.com/v9/projects/$WEB/domains" \
             -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}'
-          sleep 3
           
+          sleep 5
           echo ""
-          echo "=== Verify bare ==="
+          echo "=== Verify ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai/verify" | jq '{name, verified}'
+            "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai/verify" | jq '{name, verified}'
           
           sleep 15
           echo ""
-          echo "=== FINAL DOMAIN STATE ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains" | jq '.domains[] | {name, redirect, verified}'
-          
-          echo ""
-          echo "=== LIVE TESTS ==="
-          for path in "" "login" "feasibility" "api/kpis" "dashboard"; do
+          echo "=== LIVE ==="
+          for path in "" "login" "feasibility" "api/kpis" "dashboard" "app"; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/$path")
             echo "www.zonewise.ai/$path: HTTP $code"
           done
-          echo ""
-          echo -n "https://zonewise.ai redirect: "
-          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location | tr -d '\r'
-          echo -n "http://zonewise.ai redirect: "
-          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location | tr -d '\r'
