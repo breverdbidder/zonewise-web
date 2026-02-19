@@ -1,0 +1,78 @@
+name: Fix Vercel Domain Redirect
+on:
+  push:
+    paths:
+      - ".github/fix-domains-trigger.txt"
+
+jobs:
+  fix-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fix domain configuration
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -e
+          echo "=== Getting Vercel projects ==="
+          PROJECTS=$(curl -sf -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?limit=20")
+          
+          echo "All projects:"
+          echo "$PROJECTS" | jq -r ".projects[] | \"  \(.name) (\(.id))\"" 2>/dev/null
+          
+          # Find zonewise project (could be zonewise-web or zonewise-ai)
+          PROJECT_ID=$(echo "$PROJECTS" | jq -r "[.projects[] | select(.name | test(\"zonewise\"))] | .[0].id" 2>/dev/null)
+          
+          if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" = "null" ]; then
+            echo "ERROR: No zonewise project found"
+            exit 1
+          fi
+          echo ""
+          echo "Using project: $PROJECT_ID"
+          
+          echo ""
+          echo "=== Current domain config ==="
+          DOMAINS=$(curl -sf -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}/domains")
+          echo "$DOMAINS" | jq ".domains[] | {name, redirect, redirectStatusCode, verified}" 2>/dev/null
+          
+          # Check if bare domain exists and its config
+          BARE_EXISTS=$(echo "$DOMAINS" | jq -r ".domains[] | select(.name == \"zonewise.ai\") | .name" 2>/dev/null)
+          BARE_REDIRECT=$(echo "$DOMAINS" | jq -r ".domains[] | select(.name == \"zonewise.ai\") | .redirect" 2>/dev/null)
+          
+          echo ""
+          echo "Bare domain exists: ${BARE_EXISTS:-NO}"
+          echo "Current redirect: ${BARE_REDIRECT:-NONE}"
+          
+          if [ -n "$BARE_EXISTS" ]; then
+            echo ""
+            echo "Removing misconfigured bare domain..."
+            curl -sf -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v9/projects/${PROJECT_ID}/domains/zonewise.ai" | jq "." 2>/dev/null || true
+            sleep 3
+          fi
+          
+          echo ""
+          echo "Adding zonewise.ai → www.zonewise.ai redirect..."
+          RESULT=$(curl -sf -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}/domains" \
+            -d "{\"name\":\"zonewise.ai\",\"redirect\":\"www.zonewise.ai\",\"redirectStatusCode\":308}")
+          echo "$RESULT" | jq "." 2>/dev/null || echo "$RESULT"
+          
+          echo ""
+          echo "=== Final domain config ==="
+          sleep 3
+          curl -sf -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/${PROJECT_ID}/domains" | \
+            jq ".domains[] | {name, redirect, redirectStatusCode, verified}" 2>/dev/null
+          
+          echo ""
+          echo "=== Testing redirects (may take 30s to propagate) ==="
+          sleep 10
+          echo -n "https://zonewise.ai -> "
+          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(checking...)"
+          echo -n "http://zonewise.ai -> "  
+          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i "location" || echo "(checking...)"
+          echo "DONE"
+
