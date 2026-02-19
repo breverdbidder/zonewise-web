@@ -18,7 +18,7 @@ interface FeasibilityLayoutProps {
   unitMix: UnitMix[]
 }
 
-const TABS: FeasibilityTab[] = ['Site', 'Market', 'Comps', 'Capacity', 'Develop', 'Export']
+const TABS: FeasibilityTab[] = ['Site', 'Market', 'Comps', 'Capacity', 'Develop', 'Generate']
 
 export default function FeasibilityLayout({
   site,
@@ -67,11 +67,14 @@ export default function FeasibilityLayout({
 
         <div className="flex-1" />
 
-        {/* NLP Chat Teaser */}
-        <div className="flex items-center gap-2 bg-white/[0.08] px-3.5 py-1.5 rounded-lg cursor-pointer hover:bg-white/[0.12] transition-colors">
+        {/* NLP Chat — click to open Export tab */}
+        <button
+          onClick={() => setTab('Generate')}
+          className="flex items-center gap-2 bg-white/[0.08] px-3.5 py-1.5 rounded-lg cursor-pointer hover:bg-white/[0.12] transition-colors border-none"
+        >
           <span className="text-xs opacity-70">💬</span>
           <span className="text-xs text-white/50 italic">Ask anything about this site...</span>
-        </div>
+        </button>
 
         {/* User */}
         <div className="ml-3 flex items-center gap-2">
@@ -108,7 +111,7 @@ export default function FeasibilityLayout({
         {tab === 'Comps' && <CompsTab site={site} comps={comps} unitRents={unitRents} />}
         {tab === 'Capacity' && <CapacityTab site={site} />}
         {tab === 'Develop' && <DevelopTab site={site} unitMix={unitMix} />}
-        {tab === 'Export' && <ExportTab site={site} />}
+        {tab === 'Generate' && <ExportTab site={site} />}
       </main>
     </div>
   )

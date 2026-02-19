@@ -87,6 +87,6 @@ export interface ProFormaOutputs {
   adjustedUnits: number
 }
 
-export type FeasibilityTab = 'Site' | 'Market' | 'Comps' | 'Capacity' | 'Develop' | 'Export'
+export type FeasibilityTab = 'Site' | 'Market' | 'Comps' | 'Capacity' | 'Develop' | 'Generate'
 export type SiteSubTab = 'Summary' | 'Zoning' | 'Map View'
 export type CompsView = 'Map' | 'Table' | 'Charts'
