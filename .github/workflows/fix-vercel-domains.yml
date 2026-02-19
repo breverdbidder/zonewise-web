@@ -9,78 +9,98 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - name: Re-link GitHub repo to Vercel project
+      - name: Compare env vars between projects
         run: |
           TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
           
-          echo "=== Current project link status ==="
+          echo "=== zonewise-ai env vars (source of truth) ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" | jq '{link}'
+            "https://api.vercel.com/v9/projects/$AI/env?teamId=$TEAM" | \
+            jq '.envs[] | {key, target, value: .value[0:20]}'
           
           echo ""
-          echo "=== Re-link to GitHub repo ==="
-          curl -s -X PATCH -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" \
-            -d '{
-              "gitRepository": {
-                "repo": "breverdbidder/zonewise-web",
-                "type": "github"
-              }
-            }' | jq '{name, link}'
+          echo "=== zonewise-web env vars (needs fixing) ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM" | \
+            jq '.envs[] | {key, target, value: .value[0:20]}'
 
-      - name: Force production deployment  
+      - name: Copy env vars from zonewise-ai to zonewise-web
         run: |
           TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-
-          echo "=== Triggering production deployment from latest main ==="
-          RESULT=$(curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
+          
+          # Get all env vars from zonewise-ai
+          AI_ENVS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/env?teamId=$TEAM")
+          
+          # Get existing web env var keys
+          WEB_ENVS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM")
+          
+          echo "$AI_ENVS" | jq -c '.envs[]' | while read env; do
+            KEY=$(echo "$env" | jq -r '.key')
+            VALUE=$(echo "$env" | jq -r '.value')
+            TARGET=$(echo "$env" | jq -c '.target')
+            TYPE=$(echo "$env" | jq -r '.type // "encrypted"')
+            
+            # Check if already exists on web
+            EXISTING=$(echo "$WEB_ENVS" | jq -r --arg k "$KEY" '.envs[] | select(.key == $k) | .id')
+            
+            if [ -n "$EXISTING" ]; then
+              echo "UPDATE: $KEY (already exists, updating...)"
+              curl -s -X PATCH -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://api.vercel.com/v9/projects/$WEB/env/$EXISTING?teamId=$TEAM" \
+                -d "{\"value\":\"$VALUE\",\"target\":$TARGET,\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
+            else
+              echo "ADD: $KEY"
+              curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM" \
+                -d "{\"key\":\"$KEY\",\"value\":\"$VALUE\",\"target\":$TARGET,\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
+            fi
+          done
+          
+          echo ""
+          echo "=== Env vars synced. Triggering redeploy... ==="
+          
+          # Redeploy latest
+          LATEST=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1&state=READY" | \
+            jq -r '.deployments[0].uid')
+          
+          echo "Redeploying from: $LATEST"
+          REDEPLOY=$(curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.vercel.com/v13/deployments?teamId=$TEAM" \
-            -d "{
-              \"name\": \"zonewise-web\",
-              \"project\": \"$WEB\",
-              \"target\": \"production\",
-              \"gitSource\": {
-                \"type\": \"github\",
-                \"org\": \"breverdbidder\",
-                \"repo\": \"zonewise-web\",
-                \"ref\": \"main\"
-              }
-            }")
-          echo "$RESULT" | jq '{id, url, readyState, target}'
+            -d "{\"name\":\"zonewise-web\",\"deploymentId\":\"$LATEST\",\"target\":\"production\"}")
           
-          DEP_ID=$(echo "$RESULT" | jq -r '.id // empty')
+          NEW_ID=$(echo "$REDEPLOY" | jq -r '.id // empty')
+          echo "New deployment: $NEW_ID"
+          echo "$REDEPLOY" | jq '{id, url, readyState}' 
           
-          if [ -z "$DEP_ID" ]; then
-            echo "Deployment failed. Full response:"
-            echo "$RESULT" | jq '.'
-          else
-            echo ""
-            echo "Deployment started: $DEP_ID"
-            echo "Waiting for build (up to 120s)..."
+          if [ -n "$NEW_ID" ]; then
+            echo "Waiting for build..."
             for i in $(seq 1 12); do
               sleep 10
               STATE=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-                "https://api.vercel.com/v13/deployments/$DEP_ID?teamId=$TEAM" | jq -r '.readyState')
+                "https://api.vercel.com/v13/deployments/$NEW_ID?teamId=$TEAM" | jq -r '.readyState')
               echo "  ${i}0s: $STATE"
-              if [ "$STATE" = "READY" ] || [ "$STATE" = "ERROR" ]; then
-                break
-              fi
+              if [ "$STATE" = "READY" ] || [ "$STATE" = "ERROR" ]; then break; fi
             done
-            
-            echo ""
-            echo "=== Final deployment status ==="
-            curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-              "https://api.vercel.com/v13/deployments/$DEP_ID?teamId=$TEAM" | \
-              jq '{readyState, url, alias, errorCode, errorMessage}'
-            
-            echo ""
-            echo "=== Test /feasibility ==="
-            curl -s -o /dev/null -w "https://www.zonewise.ai/feasibility -> HTTP %{http_code}\n" \
-              "https://www.zonewise.ai/feasibility"
           fi
+
+      - name: Final verification
+        run: |
+          sleep 10
+          echo "=== FINAL CHECKS ==="
+          echo -n "Homepage: "
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/"
+          echo -n "/feasibility: "
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/feasibility"
+          echo -n "https://zonewise.ai redirect: "
+          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location
