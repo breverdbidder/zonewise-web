@@ -4,9 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ZoneWise.AI — Live Demo</title>
-<meta name="description" content="12 Wise modules. 298 KPIs. Every Florida foreclosure auction analyzed in under 60 seconds."/>
+<meta name="description" content="Watch 5 AI agents analyze Florida foreclosure auctions and generate 298-KPI reports in real time."/>
 <meta property="og:title" content="ZoneWise.AI — Live Demo"/>
-<meta property="og:description" content="From DiscoverWise to VaultWise — BidWise gives you the number that wins."/>
+<meta property="og:description" content="5 AI agents. 298 KPIs. 67 FL counties. Every auction analyzed in under 60 seconds."/>
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -23,7 +23,6 @@ html,body{height:100%;background:#080A0D;color:#E2E8F4;font-family:'DM Sans',san
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
 @keyframes data-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
 @keyframes glow{0%,100%{box-shadow:0 0 10px rgba(245,166,35,.12)}50%{box-shadow:0 0 32px rgba(245,166,35,.45)}}
-@keyframes glow-hero{0%,100%{box-shadow:0 0 20px rgba(245,166,35,.2),0 0 60px rgba(245,166,35,.08)}50%{box-shadow:0 0 40px rgba(245,166,35,.5),0 0 80px rgba(245,166,35,.2)}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes border-pulse{0%,100%{border-color:rgba(245,166,35,.3)}50%{border-color:rgba(245,166,35,.85)}}
 @keyframes scanline{0%{top:0%;opacity:.6}100%{top:110%;opacity:0}}
@@ -37,122 +36,100 @@ html,body{height:100%;background:#080A0D;color:#E2E8F4;font-family:'DM Sans',san
 const{useState,useEffect,useRef,useCallback}=React;
 
 const T={TD:90,TP:600,AG:2400,AD:2200,LI:700,SR:12800,RR:13600,TL:7000,CE:15500,CC:18000,
-  RPT_START:20000,RPT_K1:21200,RPT_K2:22800,RPT_K3:24400,RPT_K4:26000,
-  RPT_SCORE:27800,RPT_DONE:29200,LR:34000};
-
-const WISE_PIPELINE=[
-  {id:1, name:"DiscoverWise", role:"Finds upcoming auctions"},
-  {id:2, name:"GatherWise",   role:"Pulls all property data"},
-  {id:3, name:"TitleWise",    role:"Verifies title chain"},
-  {id:4, name:"LienWise",     role:"Analyzes lien stack"},
-  {id:5, name:"TaxWise",      role:"Tax certificates"},
-  {id:6, name:"NeighborWise", role:"Neighborhood data"},
-  {id:7, name:"ScoreWise",    role:"AI bid probability"},
-  {id:8, name:"BidWise",      role:"Your max bid number", hero:true},
-  {id:9, name:"CallWise",     role:"BID / REVIEW / SKIP"},
-  {id:10,name:"InsightWise",  role:"298-KPI full report"},
-  {id:11,name:"TrackWise",    role:"Disposition tracking"},
-  {id:12,name:"VaultWise",    role:"Archive everything"},
-];
+  RPT_START:20000,RPT_K1:21200,RPT_K2:22800,RPT_K3:24400,RPT_K4:26000,RPT_SCORE:27800,RPT_DONE:29200,LR:34000};
 
 const AGENTS=[
-  {id:"gather",  name:"GatherWise",  wise:2,  desc:"Pulling live data — RealForeclose.com, BCPAO, AcclaimWeb"},
-  {id:"title",   name:"TitleWise",   wise:3,  desc:"Verifying chain of title — parcel 24-37-14-00-00058.0-0000"},
-  {id:"lien",    name:"LienWise",    wise:4,  desc:"Analyzing lien priority waterfall"},
-  {id:"score",   name:"ScoreWise",   wise:7,  desc:"XGBoost bid probability model v4.2.1 running"},
-  {id:"insight", name:"InsightWise", wise:10, desc:"Compiling 298-KPI BidWise intelligence report"},
+  {id:"scraper",label:"GatherWise",  desc:"DiscoverWise — live auction listings"},
+  {id:"title",  label:"TitleWise",   desc:"TitleWise — chain of title verified"},
+  {id:"lien",   label:"LienWise",  desc:"LienWise — lien waterfall analysis"},
+  {id:"ml",     label:"ScoreWise",      desc:"ScoreWise — AI bid probability model"},
+  {id:"report", label:"InsightWise",   desc:"InsightWise — 298-KPI BidWise report"},
 ];
 
 const PROPS=[
-  {addr:"2847 Harbor Blvd",    city:"Cocoa Beach 32931",    arv:387000,maxBid:213000,jdg:198500,tag:"BID",   sc:84,sqft:1842,yr:1987},
-  {addr:"519 Merritt Ave",     city:"Merritt Island 32953", arv:445000,maxBid:233500,jdg:302000,tag:"REVIEW",sc:71,sqft:2190,yr:1994},
-  {addr:"1104 Atlantic Dr",    city:"Satellite Beach 32937",arv:512000,maxBid:287400,jdg:389000,tag:"REVIEW",sc:68,sqft:2644,yr:2001},
-  {addr:"3301 S Banana River", city:"Cocoa Beach 32931",    arv:298000,maxBid:83600, jdg:271000,tag:"SKIP",  sc:31,sqft:1520,yr:1973},
+  {addr:"2847 Harbor Blvd",    city:"Cocoa Beach 32931",    arv:387000,maxBid:213000,judgment:198500,tag:"BID",   score:84,liens:["1st Mortgage: $198,500","HOA: $4,200"],sqft:1842,year:1987},
+  {addr:"519 Merritt Ave",     city:"Merritt Island 32953", arv:445000,maxBid:233500,judgment:302000,tag:"REVIEW",score:71,liens:["1st Mortgage: $302,000","Tax Cert: $8,100"],sqft:2190,year:1994},
+  {addr:"1104 Atlantic Dr",    city:"Satellite Beach 32937",arv:512000,maxBid:287400,judgment:389000,tag:"REVIEW",score:68,liens:["1st Mortgage: $389,000"],sqft:2644,year:2001},
+  {addr:"3301 S Banana River", city:"Cocoa Beach 32931",    arv:298000,maxBid:83600, judgment:271000,tag:"SKIP",  score:31,liens:["1st Mortgage: $271,000","Code Liens: $22,400","HOA: $9,800"],sqft:1520,year:1973},
 ];
 
 const LOGS=[
-  "[DiscoverWise]  Connecting to RealForeclose.com — Brevard County ...",
-  "[GatherWise]    Session authenticated. 19 properties found ...",
-  "[GatherWise]    BCPAO parcel data batch complete",
-  "[TitleWise]     Chain of title verified — 19/19 clean",
-  "[LienWise]      Priority waterfall analysis running ...",
-  "[LienWise]      HOA lien detected — junior position confirmed",
-  "[TaxWise]       Tax certificate search complete — 2 flagged",
-  "[NeighborWise]  Demographic and market data loaded",
-  "[ScoreWise]     XGBoost v4.2.1 — predicting 19 properties ...",
-  "[CallWise]      4 BID  3 REVIEW  12 SKIP",
-  "[InsightWise]   Compiling 298-KPI BidWise report: 2847 Harbor Blvd ...",
-  "[VaultWise]     Complete. 19/19 properties archived.",
+  "[DiscoverWise] Connecting to auction calendar ...","[DiscoverWise] Session authenticated",
+  "[GatherWise]  Loading Brevard County auctions ...","[DiscoverWise] 19 properties found for analysis",
+  "[GatherWise]  Fetching parcel + BCPAO data ...","[TitleWise]   Title chain verification running",
+  "[LienWise]    Lien priority waterfall running","[ScoreWise]   AI bid probability model loaded",
+  "[ScoreWise]   Generating bid scores ...","[BidWise]     4 BID · 3 REVIEW · 12 SKIP",
+  "[InsightWise] Compiling 298-KPI BidWise report ...","[BidWise]     Analysis complete. 19/19 processed.",
 ];
 
 const KPI_SECTIONS=[
-  {id:"bid", label:"BidWise", sub:"Financial Intelligence", icon:"$", color:"#F5A623", count:74, hero:true, kpis:[
-    {l:"After-Repair Value",       v:"$387,000",  s:"BCPAO + 6-comp CMA",       score:88},
-    {l:"BidWise Max Bid",          v:"$213,000",  s:"(ARV×70%)−Repairs−$10K",   score:95,hi:true},
-    {l:"Estimated Repairs",        v:"$42,000",   s:"Contractor estimate",       score:72},
-    {l:"Judgment Amount",          v:"$198,500",  s:"Wells Fargo NA v. Torres",  score:null},
-    {l:"Bid/Judgment Ratio",       v:"107%",      s:"Above threshold ≥75%",      score:100,hi:true},
-    {l:"Gross Profit Potential",   v:"$131,500",  s:"ARV − MaxBid − Repairs",    score:90},
-    {l:"Projected ROI",            v:"61.7%",     s:"12-month flip scenario",    score:87},
-    {l:"Monthly MTR Cash Flow",    v:"$2,840",    s:"32937 avg $3,200/mo",       score:82},
-    {l:"Cap Rate",                 v:"8.8%",      s:"Annual NOI / ARV",          score:78},
-    {l:"Break-Even Occupancy",     v:"64%",       s:"MTR scenario",              score:85},
-    {l:"Equity Capture Day 1",     v:"$131,500",  s:"ARV minus all-in cost",     score:90},
-    {l:"Price Per Sqft",           v:"$210/sqft", s:"Zip median: $228",          score:83},
+  {id:"fin",  label:"BidWise Intelligence",     icon:"$",  color:"#F5A623", count:74, kpis:[
+    {l:"After-Repair Value",     v:"$387,000", s:"BCPAO + 6-comp CMA",         score:88},
+    {l:"Max Bid (Formula)",      v:"$213,000", s:"(ARV×70%)−Repairs−$10K",    score:95, hi:true},
+    {l:"Estimated Repairs",      v:"$42,000",  s:"Contractor estimate",        score:72},
+    {l:"Judgment Amount",        v:"$198,500", s:"Wells Fargo NA v. Torres",   score:null},
+    {l:"Bid/Judgment Ratio",     v:"107%",     s:"Above threshold ≥75%",       score:100,hi:true},
+    {l:"Gross Profit Potential", v:"$131,500", s:"ARV − MaxBid − Repairs",     score:90},
+    {l:"Projected ROI (Flip)",   v:"61.7%",    s:"12-month hold scenario",     score:87},
+    {l:"Monthly MTR Cash Flow",  v:"$2,840",   s:"32937 avg $3,200/mo",        score:82},
+    {l:"Cap Rate",               v:"8.8%",     s:"Annual NOI / ARV",           score:78},
+    {l:"Break-Even Occupancy",   v:"64%",      s:"MTR scenario",               score:85},
+    {l:"Equity Capture Day 1",   v:"$131,500", s:"ARV minus all-in cost",      score:90},
+    {l:"Price Per Sqft (ARV)",   v:"$210/sqft",s:"Zip median: $228",           score:83},
   ]},
-  {id:"nbr", label:"NeighborWise", sub:"Market Intelligence", icon:"◈", color:"#3D6FFF", count:68, kpis:[
-    {l:"Zip Median Sale Price",    v:"$398,000",  s:"32931 — L12M median",       score:82},
-    {l:"Days on Market",           v:"24 days",   s:"32931 — L90D",              score:88},
-    {l:"List-to-Sale Ratio",       v:"98.4%",     s:"Hot seller market",         score:91},
-    {l:"Price Appreciation YoY",   v:"+7.2%",     s:"Brevard County",            score:85},
-    {l:"Inventory Level",          v:"1.8 mo",    s:"Below 3mo = seller's mkt",  score:90},
-    {l:"MTR Demand Score",         v:"91/100",    s:"AirDNA — 32937",            score:91,hi:true},
-    {l:"Rental Vacancy Rate",      v:"4.2%",      s:"32937 zip",                 score:84},
-    {l:"Population Growth 5yr",    v:"+6.8%",     s:"Brevard County",            score:79},
-    {l:"Median HH Income",         v:"$79,400",   s:"Census ACS 32937",          score:88},
-    {l:"Foreclosure Rate",         v:"0.31%",     s:"Below FL avg 0.48%",        score:76},
-    {l:"STR Regulation",           v:"Allowed",   s:"Cocoa Beach permits STR",   score:95},
-    {l:"Distance to Beach",        v:"0.4 mi",    s:"Atlantic Ocean access",     score:97,hi:true},
+  {id:"mkt",  label:"NeighborWise Intelligence",        icon:"◈",  color:"#3D6FFF", count:68, kpis:[
+    {l:"Zip Median Sale Price",  v:"$398,000", s:"32931 — L12M median",        score:82},
+    {l:"Days on Market (Avg)",   v:"24 days",  s:"32931 — L90D",               score:88},
+    {l:"List-to-Sale Ratio",     v:"98.4%",    s:"Hot seller market",          score:91},
+    {l:"Price Appreciation YoY", v:"+7.2%",    s:"Brevard County",             score:85},
+    {l:"Inventory Level",        v:"1.8 mo",   s:"Below 3mo = seller's mkt",   score:90},
+    {l:"Foreclosure Rate",       v:"0.31%",    s:"Below FL avg 0.48%",         score:76},
+    {l:"MTR Demand Score",       v:"91/100",   s:"32937 AirDNA data",          score:91,hi:true},
+    {l:"Rental Vacancy Rate",    v:"4.2%",     s:"32937 zip",                  score:84},
+    {l:"Population Growth 5yr",  v:"+6.8%",    s:"Brevard County",             score:79},
+    {l:"Median HH Income",       v:"$79,400",  s:"32937 Census ACS",           score:88},
+    {l:"Walkability Score",      v:"52/100",   s:"Car-dependent area",         score:55},
+    {l:"Flood Zone",             v:"Zone X",   s:"Minimal flood risk",         score:92},
   ]},
-  {id:"risk",label:"TitleWise + LienWise", sub:"Risk Intelligence", icon:"⚠", color:"#FF4757", count:82, kpis:[
-    {l:"TitleWise: Chain Status",  v:"CLEAN",     s:"No breaks detected",        score:98,hi:true},
-    {l:"Senior Lien Survived?",    v:"CHECK",     s:"HOA foreclosure — verify",  score:60},
-    {l:"LienWise: HOA Position",   v:"Junior",    s:"Behind 1st mortgage",       score:85},
-    {l:"TaxWise: Delinquency",     v:"Current",   s:"2024 taxes paid",           score:100},
-    {l:"Open Permits",             v:"0",         s:"BCPAO permit search",       score:100},
-    {l:"Code Violations",          v:"0",         s:"City of Cocoa Beach",       score:100},
-    {l:"Lis Pendens (Other)",      v:"None",      s:"AcclaimWeb search",         score:100},
-    {l:"Bankruptcy Flag",          v:"None",      s:"PACER cross-reference",     score:100},
-    {l:"Environmental Flag",       v:"Clear",     s:"EPA ECHO + state DB",       score:95},
-    {l:"Mold/WDO Risk",            v:"Moderate",  s:"1987 build — inspect req",  score:62},
-    {l:"Wind Insurance Risk",      v:"Medium",    s:"Coastal proximity",         score:65},
-    {l:"HOA Monthly",              v:"$185/mo",   s:"Harbour Isle POA",          score:80},
+  {id:"risk", label:"TitleWise + LienWise",  icon:"⚠",  color:"#FF4757", count:82, kpis:[
+    {l:"Title Chain Integrity",  v:"CLEAN",    s:"No breaks detected",         score:98,hi:true},
+    {l:"Senior Lien Survived?",  v:"CHECK",    s:"HOA foreclosure — verify",   score:60},
+    {l:"Open Permits",           v:"0",        s:"BCPAO permit search",        score:100},
+    {l:"Code Violations",        v:"0",        s:"City of Cocoa Beach",        score:100},
+    {l:"HOA Lien Priority",      v:"Junior",   s:"Behind 1st mortgage",        score:85},
+    {l:"Tax Delinquency",        v:"Current",  s:"2024 taxes paid",            score:100},
+    {l:"Lis Pendens (Other)",    v:"None",     s:"AcclaimWeb search",          score:100},
+    {l:"Bankruptcy Flag",        v:"None",     s:"PACER cross-reference",      score:100},
+    {l:"Environmental Flag",     v:"Clear",    s:"EPA ECHO + state DB",        score:95},
+    {l:"Mold/WDO Risk",          v:"Moderate", s:"1987 build — inspect req",   score:62},
+    {l:"Wind Insurance Risk",    v:"Medium",   s:"Coastal proximity",          score:65},
+    {l:"HOA Monthly",            v:"$185/mo",  s:"Harbour Isle POA",           score:80},
   ]},
-  {id:"ai",  label:"ScoreWise", sub:"AI Prediction Intelligence", icon:"◉", color:"#00D68F", count:74, kpis:[
-    {l:"ScoreWise ML Score",       v:"84/100",    s:"XGBoost v4.2.1",            score:84,hi:true},
-    {l:"3rd-Party Buy Probability",v:"78%",       s:"Historical auction data",   score:78},
-    {l:"Crime Index",              v:"32/100",    s:"Lower = safer. FL avg: 48", score:85},
-    {l:"Nearby Employers",         v:"8 major",   s:"KSC, Harris, Northrop",     score:91},
-    {l:"ARV Trend (Neighborhood)", v:"+$18K",     s:"L12M comp appreciation",    score:86},
-    {l:"Investor Activity 90d",    v:"High",      s:"14 third-party purchases",  score:82},
-    {l:"HOA Restrictions",         v:"Moderate",  s:"No STR ban, pets OK",       score:75},
-    {l:"Comparable Sales 90d",     v:"6 comps",   s:"Within 0.5mi ±200sqft",    score:88},
-    {l:"School District Rating",   v:"B+",        s:"Brevard County Schools",    score:82},
-    {l:"Flood Insurance Est.",     v:"$1,240/yr", s:"Zone X — standard rate",    score:78},
-    {l:"Utility Infrastructure",   v:"City",      s:"City water + sewer",        score:92},
-    {l:"CallWise Decision",        v:"BID ✓",     s:"Score 84 — above 75 threshold",score:84,hi:true},
+  {id:"nbr",  label:"NeighborWise + TaxWise",  icon:"◉",  color:"#00D68F", count:74, kpis:[
+    {l:"School District Rating", v:"B+",       s:"Brevard County Schools",     score:82},
+    {l:"Crime Index",            v:"32/100",   s:"Lower = safer. FL avg: 48",  score:85},
+    {l:"Distance to Beach",      v:"0.4 mi",   s:"Atlantic Ocean access",      score:97,hi:true},
+    {l:"Distance to I-95",       v:"4.1 mi",   s:"Major highway access",       score:78},
+    {l:"Nearby Employers",       v:"8 major",  s:"KSC, Harris, Northrop",      score:91},
+    {l:"STR Regulation",         v:"Allowed",  s:"Cocoa Beach permits STR",    score:95},
+    {l:"ARV Neighborhood Trend", v:"+$18K",    s:"L12M comp appreciation",     score:86},
+    {l:"Investor Activity 90d",  v:"High",     s:"14 third-party purchases",   score:82},
+    {l:"HOA Restrictions",       v:"Moderate", s:"No STR ban, pets OK",        score:75},
+    {l:"Utility Infrastructure", v:"City",     s:"City water + sewer",         score:92},
+    {l:"Flood Insurance Est.",   v:"$1,240/yr",s:"Zone X — standard rate",     score:78},
+    {l:"Comparable Sales 90d",   v:"6 comps",  s:"Within 0.5mi ±200sqft",     score:88},
   ]},
 ];
 
 const fmt=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
 const TAG={BID:{bg:"rgba(0,214,143,.08)",bd:"rgba(0,214,143,.5)",tx:"#00D68F"},REVIEW:{bg:"rgba(255,187,51,.08)",bd:"rgba(255,187,51,.5)",tx:"#FFBB33"},SKIP:{bg:"rgba(255,71,87,.08)",bd:"rgba(255,71,87,.5)",tx:"#FF4757"}};
-const LC={DiscoverWise:"#F5A623",GatherWise:"#F5A623",TitleWise:"#3D6FFF",LienWise:"#FFBB33",TaxWise:"#8492B0",NeighborWise:"#3D6FFF",ScoreWise:"#3D6FFF",CallWise:"#00D68F",InsightWise:"#8492B0",VaultWise:"#00D68F"};
+const LC={INIT:"#5A6480",AUTH:"#3D6FFF",SCRAPE:"#F5A623",FOUND:"#00D68F",BCPAO:"#8492B0",TITLE:"#8492B0",LIEN:"#FFBB33",ML:"#3D6FFF",SCORE:"#00D68F",RPT:"#8492B0",DONE:"#00D68F"};
 
 function AgentNode({agent,status}){
   const c={idle:"#2A3145",active:"#F5A623",done:"#00D68F"}[status];
   const tc={idle:"#5A6480",active:"#E2E8F4",done:"#E2E8F4"}[status];
   return(
-    <div style={{display:"flex",alignItems:"center",gap:12,padding:"11px 14px",
+    <div style={{display:"flex",alignItems:"center",gap:14,padding:"11px 15px",
       background:status==="active"?"rgba(245,166,35,.05)":"transparent",
       border:`1px solid ${status==="active"?"rgba(245,166,35,.3)":"#1E2433"}`,
       borderRadius:9,transition:"all .35s",
@@ -164,21 +141,19 @@ function AgentNode({agent,status}){
         </>}
         <div style={{width:30,height:30,borderRadius:"50%",border:`2px solid ${c}`,display:"flex",alignItems:"center",justifyContent:"center",
           background:status==="done"?"rgba(0,214,143,.1)":status==="active"?"rgba(245,166,35,.08)":"transparent",
-          fontSize:12,color:c,transition:"all .35s",animation:status==="active"?"spin 2.5s linear infinite":"none",fontFamily:"monospace"}}>
+          fontSize:12,color:c,transition:"all .35s",
+          animation:status==="active"?"spin 2.5s linear infinite":"none",fontFamily:"monospace"}}>
           {status==="done"?"✓":status==="active"?"◎":"○"}
         </div>
       </div>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:7}}>
-          <div className="syne" style={{fontSize:13,fontWeight:800,color:tc}}>{agent.name}</div>
-          <div className="mono" style={{fontSize:8,color:"#2A3145",letterSpacing:".04em"}}>#{agent.wise}</div>
-        </div>
-        <div className="mono" style={{fontSize:9,color:status==="active"?"#8492B0":"#3A4255",marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+      <div style={{flex:1}}>
+        <div className="syne" style={{fontSize:12,fontWeight:700,color:tc,transition:"color .3s"}}>{agent.label}</div>
+        <div className="mono" style={{fontSize:10,color:status==="active"?"#8492B0":"#3A4255",marginTop:1}}>
           {status==="active"?agent.desc:status==="done"?"✓ Complete":"Standby"}
         </div>
       </div>
-      {status==="active"&&<span className="mono" style={{fontSize:9,color:"#F5A623",animation:"blink .9s infinite",letterSpacing:".08em",flexShrink:0}}>LIVE</span>}
-      {status==="done"  &&<span className="mono" style={{fontSize:9,color:"#00D68F",letterSpacing:".08em",flexShrink:0}}>DONE</span>}
+      {status==="active"&&<span className="mono" style={{fontSize:9,color:"#F5A623",animation:"blink .9s infinite",letterSpacing:".08em"}}>LIVE</span>}
+      {status==="done"  &&<span className="mono" style={{fontSize:9,color:"#00D68F",letterSpacing:".08em"}}>DONE</span>}
     </div>
   );
 }
@@ -217,22 +192,17 @@ function KpiRow({kpi,vis,delay}){
 
 function KpiSection({sec,vis,kvis}){
   return(
-    <div style={{border:`1px solid ${sec.color}22`,borderRadius:9,overflow:"hidden",
-      background:sec.hero?"rgba(245,166,35,.015)":"rgba(255,255,255,.01)",
-      boxShadow:sec.hero?"0 0 28px rgba(245,166,35,.08)":"none",
-      opacity:vis?1:0,transform:vis?"translateY(0)":"translateY(18px)",transition:"opacity .5s,transform .5s"}}>
+    <div style={{border:`1px solid ${sec.color}22`,borderRadius:9,overflow:"hidden",background:"rgba(255,255,255,.01)",
+      opacity:vis?1:0,transform:vis?"translateY(0)":"translateY(18px)",
+      transition:"opacity .5s,transform .5s"}}>
       <div style={{padding:"10px 14px",borderBottom:`1px solid ${sec.color}22`,
-        background:`linear-gradient(135deg,${sec.color}${sec.hero?"12":"0A"} 0%,transparent 100%)`,
+        background:`linear-gradient(135deg,${sec.color}0D 0%,transparent 100%)`,
         display:"flex",alignItems:"center",gap:9}}>
         <div style={{width:26,height:26,borderRadius:5,background:`${sec.color}18`,border:`1px solid ${sec.color}35`,
           display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:sec.color}}>{sec.icon}</div>
         <div style={{flex:1}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <div className="syne" style={{fontSize:11,fontWeight:800,color:sec.hero?"#F5A623":"#E2E8F4"}}>{sec.label}</div>
-            {sec.hero&&<span style={{padding:"1px 6px",borderRadius:8,background:"rgba(245,166,35,.2)",border:"1px solid rgba(245,166,35,.4)",
-              fontFamily:"monospace",fontSize:7,color:"#F5A623",fontWeight:700,letterSpacing:".08em"}}>⭐ HERO</span>}
-          </div>
-          <div className="mono" style={{fontSize:8,color:"#5A6480",marginTop:1}}>{sec.sub} · {sec.count} KPIs</div>
+          <div className="syne" style={{fontSize:11,fontWeight:700,color:"#E2E8F4"}}>{sec.label}</div>
+          <div className="mono" style={{fontSize:8,color:"#5A6480",marginTop:1}}>{sec.count} KPIs ANALYZED</div>
         </div>
         <div style={{padding:"2px 8px",borderRadius:10,background:`${sec.color}18`,border:`1px solid ${sec.color}35`}}>
           <span className="mono" style={{fontSize:8,color:sec.color,fontWeight:700,letterSpacing:".06em"}}>COMPLETE</span>
@@ -245,15 +215,15 @@ function KpiSection({sec,vis,kvis}){
   );
 }
 
-function BidWiseHero({vis}){
+function OverallScore({vis}){
   const c=2*Math.PI*54;
   return(
-    <div style={{padding:"20px",border:"2px solid rgba(245,166,35,.45)",borderRadius:12,
-      background:"linear-gradient(135deg,rgba(245,166,35,.07) 0%,rgba(8,10,13,0) 60%)",
+    <div style={{padding:"20px",border:"1px solid rgba(245,166,35,.3)",borderRadius:11,
+      background:"linear-gradient(135deg,rgba(245,166,35,.06) 0%,transparent 60%)",
       display:"flex",alignItems:"center",gap:20,flexWrap:"wrap",
       opacity:vis?1:0,transform:vis?"scale(1)":"scale(.92)",
       transition:"opacity .6s,transform .6s cubic-bezier(.34,1.56,.64,1)",
-      animation:vis?"glow-hero 3s ease infinite":"none"}}>
+      animation:vis?"glow 3s ease infinite":"none"}}>
       <div style={{position:"relative",width:108,height:108,flexShrink:0}}>
         <svg width="108" height="108" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="54" fill="none" stroke="#1E2433" strokeWidth="7"/>
@@ -261,29 +231,23 @@ function BidWiseHero({vis}){
             strokeDasharray={c} strokeDashoffset={vis?c-(c*.84):c}
             strokeLinecap="round" transform="rotate(-90 60 60)"
             style={{transition:"stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)",transitionDelay:".2s",
-              filter:"drop-shadow(0 0 8px rgba(245,166,35,.7))"}}/>
+              filter:"drop-shadow(0 0 8px rgba(245,166,35,.6))"}}/>
         </svg>
         <div style={{position:"absolute",top:0,right:0,bottom:0,left:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
           <div className="syne" style={{fontSize:30,fontWeight:800,color:"#F5A623",lineHeight:1}}>84</div>
           <div className="mono" style={{fontSize:8,color:"#8492B0",marginTop:2}}>/ 100</div>
         </div>
       </div>
-      <div style={{flex:1,minWidth:200}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-          <div className="mono" style={{fontSize:9,color:"#F5A623",letterSpacing:".12em",textTransform:"uppercase"}}>⭐ BIDWISE — MODULE 8 — HERO</div>
+      <div style={{flex:1,minWidth:220}}>
+        <div className="mono" style={{fontSize:9,color:"#F5A623",letterSpacing:".14em",textTransform:"uppercase",marginBottom:6}}>◉ OVERALL AUCTION SCORE</div>
+        <div className="syne" style={{fontSize:22,fontWeight:800,color:"#00D68F",marginBottom:4}}>⭐ BIDWISE: STRONG BID</div>
+        <div style={{fontSize:12,color:"#8492B0",lineHeight:1.65,marginBottom:12}}>
+          2847 Harbor Blvd clears all critical KPI thresholds. Clean title chain, junior HOA lien, 107% bid/judgment ratio, strong coastal MTR demand. Max bid $213,000.
         </div>
-        <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:6}}>
-          <div className="syne" style={{fontSize:28,fontWeight:800,color:"#F5A623",lineHeight:1}}>$213,000</div>
-          <div style={{fontSize:12,color:"#8492B0"}}>your maximum bid</div>
-        </div>
-        <div className="syne" style={{fontSize:15,fontWeight:800,color:"#00D68F",marginBottom:8}}>CALLWISE SAYS: BID ✓</div>
-        <div style={{fontSize:11,color:"#8492B0",lineHeight:1.65,marginBottom:10}}>
-          Clean title · Junior HOA lien · 107% bid/judgment ratio · MTR demand 91/100 · $131K day-one equity
-        </div>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          {[{l:"298",d:"KPIs"},{l:"12",d:"Modules"},{l:"94%",d:"Confidence"},{l:"52s",d:"Total Time"}].map(x=>(
-            <div key={x.l} style={{padding:"4px 10px",background:"rgba(245,166,35,.08)",border:"1px solid rgba(245,166,35,.2)",borderRadius:6,textAlign:"center"}}>
-              <div className="syne" style={{fontSize:13,fontWeight:800,color:"#F5A623"}}>{x.l}</div>
+        <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+          {[{l:"298",d:"KPIs Analyzed"},{l:"4",d:"Risk Flags"},{l:"94%",d:"Confidence"},{l:"#1",d:"Priority Bid"}].map(x=>(
+            <div key={x.l} style={{padding:"5px 10px",background:"rgba(245,166,35,.08)",border:"1px solid rgba(245,166,35,.2)",borderRadius:6,textAlign:"center"}}>
+              <div className="syne" style={{fontSize:14,fontWeight:800,color:"#F5A623"}}>{x.l}</div>
               <div className="mono" style={{fontSize:8,color:"#5A6480",marginTop:1}}>{x.d}</div>
             </div>
           ))}
@@ -293,54 +257,35 @@ function BidWiseHero({vis}){
   );
 }
 
-function PipelineBar({activeWise}){
+function PropCard({prop,highlightReport,index}){
+  const t=TAG[prop.tag];
+  const sc=prop.score>=75?"#00D68F":prop.score>=60?"#FFBB33":"#FF4757";
   return(
-    <div style={{padding:"10px 12px",background:"#0F1117",border:"1px solid #1E2433",borderRadius:8,marginBottom:12}}>
-      <div className="mono" style={{fontSize:8,color:"#5A6480",marginBottom:6,letterSpacing:".1em",textTransform:"uppercase"}}>
-        The Wise Pipeline — 12 Modules
-      </div>
-      <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-        {WISE_PIPELINE.map(m=>(
-          <div key={m.id} style={{padding:"3px 9px",borderRadius:20,fontSize:9,fontWeight:700,fontFamily:"Syne,sans-serif",
-            position:"relative",transition:"all .4s",
-            background:m.hero?"rgba(245,166,35,.15)":activeWise>=m.id?"rgba(0,214,143,.07)":"transparent",
-            border:`1px solid ${m.hero?"rgba(245,166,35,.5)":activeWise>=m.id?"rgba(0,214,143,.35)":"#1E2433"}`,
-            color:m.hero?"#F5A623":activeWise>=m.id?"#00D68F":"#3A4255"}}>
-            {m.hero&&<span style={{position:"absolute",top:-5,right:-2,fontSize:9}}>⭐</span>}
-            {m.name}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PropCard({prop,hi,idx}){
-  const t=TAG[prop.tag];const sc=prop.sc>=75?"#00D68F":prop.sc>=60?"#FFBB33":"#FF4757";
-  return(
-    <div style={{background:"#0F1117",border:`1px solid ${hi?"rgba(245,166,35,.4)":"#1E2433"}`,
-      borderRadius:9,padding:13,animation:`slide-up .4s ease both`,animationDelay:`${idx*.1}s`,
-      boxShadow:hi?"0 0 18px rgba(245,166,35,.07)":"none",transition:"all .3s"}}>
-      {hi&&<div className="mono" style={{fontSize:9,color:"#F5A623",letterSpacing:".1em",textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:5}}>
-        <span style={{animation:"blink 1s infinite"}}>●</span> INSIGHTWISE — GENERATING 298-KPI REPORT
-      </div>}
+    <div style={{background:"#0F1117",border:`1px solid ${highlightReport?"rgba(245,166,35,.4)":"#1E2433"}`,
+      borderRadius:9,padding:13,animation:`slide-up .4s ease both`,animationDelay:`${index*.1}s`,
+      boxShadow:highlightReport?"0 0 18px rgba(245,166,35,.07)":"none",transition:"all .3s"}}>
+      {highlightReport&&(
+        <div className="mono" style={{fontSize:9,color:"#F5A623",letterSpacing:".1em",textTransform:"uppercase",marginBottom:7,display:"flex",alignItems:"center",gap:5}}>
+          <span style={{animation:"blink 1s infinite"}}>●</span> GENERATING BIDWISE REPORT
+        </div>
+      )}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
         <div>
           <div className="syne" style={{fontSize:12,fontWeight:700,color:"#E2E8F4"}}>{prop.addr}</div>
-          <div className="mono" style={{fontSize:9,color:"#5A6480",marginTop:2}}>{prop.city} · {prop.sqft.toLocaleString()} sqft · {prop.yr}</div>
+          <div className="mono" style={{fontSize:9,color:"#5A6480",marginTop:2}}>{prop.city} · {prop.sqft.toLocaleString()} sqft · {prop.year}</div>
         </div>
         <div style={{padding:"3px 10px",borderRadius:18,fontSize:10,fontWeight:700,background:t.bg,border:`1px solid ${t.bd}`,color:t.tx,fontFamily:"Syne,sans-serif",letterSpacing:".06em",flexShrink:0}}>{prop.tag}</div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginTop:11}}>
-        {[{l:"ARV",v:fmt(prop.arv),c:"#E2E8F4"},{l:"BidWise ⭐",v:fmt(prop.maxBid),c:"#F5A623"},{l:"Judgment",v:fmt(prop.jdg),c:"#8492B0"}].map(x=>(
+        {[{l:"ARV",v:fmt(prop.arv),c:"#E2E8F4"},{l:"Max Bid",v:fmt(prop.maxBid),c:"#F5A623"},{l:"Judgment",v:fmt(prop.judgment),c:"#8492B0"}].map(x=>(
           <div key={x.l} style={{textAlign:"center"}}>
-            <div className="mono" style={{fontSize:11,fontWeight:700,color:x.c}}>{x.v}</div>
-            <div style={{fontSize:9,color:x.l.includes("BidWise")?"rgba(245,166,35,.5)":"#5A6480",marginTop:1,textTransform:"uppercase",letterSpacing:".04em"}}>{x.l}</div>
+            <div className="mono" style={{fontSize:11,fontWeight:600,color:x.c}}>{x.v}</div>
+            <div style={{fontSize:9,color:"#5A6480",marginTop:1,textTransform:"uppercase",letterSpacing:".05em"}}>{x.l}</div>
           </div>
         ))}
       </div>
       <div style={{height:2,background:"#161A24",borderRadius:1,overflow:"hidden",marginTop:9}}>
-        <div style={{height:"100%",borderRadius:1,background:sc,width:`${prop.sc}%`,transition:"width 1.2s ease"}}/>
+        <div style={{height:"100%",borderRadius:1,background:sc,width:`${prop.score}%`,transition:"width 1.2s ease"}}/>
       </div>
     </div>
   );
@@ -350,12 +295,12 @@ function Terminal({lines,active}){
   const ref=useRef();
   useEffect(()=>{if(ref.current)ref.current.scrollTop=ref.current.scrollHeight;},[lines]);
   return(
-    <div ref={ref} style={{background:"#040608",border:"1px solid #1E2433",borderRadius:9,padding:14,height:200,overflowY:"hidden",position:"relative"}}>
+    <div ref={ref} style={{background:"#040608",border:"1px solid #1E2433",borderRadius:9,padding:14,height:180,overflowY:"hidden",position:"relative"}}>
       {active&&<div style={{position:"absolute",left:0,right:0,height:2,background:"linear-gradient(transparent,rgba(245,166,35,.15),transparent)",animation:"scanline 2s linear infinite",pointerEvents:"none"}}/>}
       {lines.map((line,i)=>{
-        const mod=line.match(/^\[(\w+)\]/)?.[1];
-        return(<div key={i} className="mono" style={{fontSize:11,lineHeight:1.9,animation:"data-in .2s ease both",animationDelay:`${i*.03}s`}}>
-          <span style={{color:LC[mod]||"#5A6480"}}>{line.slice(0,line.indexOf("]")+1)}</span>
+        const tag=line.match(/^\[(\w+)\]/)?.[1];
+        return(<div key={i} className="mono" style={{fontSize:11,lineHeight:1.85,animation:"data-in .2s ease both",animationDelay:`${i*.03}s`}}>
+          <span style={{color:LC[tag]||"#5A6480"}}>{line.slice(0,line.indexOf("]")+1)}</span>
           <span style={{color:"#8492B0"}}>{line.slice(line.indexOf("]")+1)}</span>
         </div>);
       })}
@@ -364,51 +309,56 @@ function Terminal({lines,active}){
   );
 }
 
-function ReportView({secs,scoreVis,done}){
-  const p=PROPS[0];const t=TAG[p.tag];
+function ReportView({sections,scoreVis,done}){
+  const prop=PROPS[0];const t=TAG[prop.tag];
   return(
     <div style={{animation:"fade-in .4s ease"}}>
+      {/* Header */}
       <div style={{padding:"14px 18px",background:"linear-gradient(135deg,rgba(245,166,35,.08) 0%,transparent 100%)",
-        border:"1px solid rgba(245,166,35,.25)",borderRadius:10,marginBottom:12,display:"flex",gap:12,alignItems:"flex-start",flexWrap:"wrap"}}>
+        border:"1px solid rgba(245,166,35,.25)",borderRadius:10,marginBottom:14,display:"flex",gap:14,alignItems:"flex-start",flexWrap:"wrap"}}>
         <div style={{flex:1,minWidth:180}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-            <div className="mono" style={{fontSize:8,color:"#F5A623",letterSpacing:".12em",textTransform:"uppercase"}}>◉ INSIGHTWISE — 298-KPI REPORT</div>
-            <div className="mono" style={{fontSize:8,color:"#5A6480"}}>MODULE 10</div>
+          <div className="mono" style={{fontSize:8,color:"#F5A623",letterSpacing:".14em",textTransform:"uppercase",marginBottom:5}}>
+            ◉ BidWise 298-KPI INTELLIGENCE REPORT
           </div>
-          <div className="syne" style={{fontSize:17,fontWeight:800,color:"#E2E8F4"}}>{p.addr}</div>
+          <div className="syne" style={{fontSize:18,fontWeight:800,color:"#E2E8F4"}}>{prop.addr}</div>
           <div className="mono" style={{fontSize:9,color:"#8492B0",marginTop:2}}>Cocoa Beach, FL 32931 · Parcel 24-37-14-00-00058.0-0000</div>
           <div className="mono" style={{fontSize:9,color:"#5A6480",marginTop:1}}>1,842 sqft · Built 1987 · Single Family · Brevard County</div>
         </div>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-          <div style={{padding:"4px 12px",borderRadius:18,background:t.bg,border:`1px solid ${t.bd}`,color:t.tx,fontFamily:"Syne,sans-serif",fontSize:11,fontWeight:800,letterSpacing:".08em"}}>{p.tag}</div>
-          <div style={{padding:"4px 12px",borderRadius:18,background:"rgba(245,166,35,.12)",border:"1px solid rgba(245,166,35,.4)"}}>
-            <span className="syne" style={{fontSize:11,color:"#F5A623",fontWeight:800}}>⭐ BIDWISE: $213,000</span>
+        <div style={{display:"flex",gap:7,flexWrap:"wrap",alignItems:"center"}}>
+          <div style={{padding:"5px 12px",borderRadius:18,background:t.bg,border:`1px solid ${t.bd}`,color:t.tx,fontFamily:"Syne,sans-serif",fontSize:11,fontWeight:800,letterSpacing:".08em"}}>{prop.tag}</div>
+          <div style={{padding:"5px 12px",borderRadius:18,background:"rgba(245,166,35,.1)",border:"1px solid rgba(245,166,35,.3)"}}>
+            <span className="mono" style={{fontSize:10,color:"#F5A623",fontWeight:700}}>MAX BID: $213,000</span>
           </div>
-          <div style={{padding:"4px 12px",borderRadius:18,background:"rgba(0,214,143,.08)",border:"1px solid rgba(0,214,143,.3)"}}>
-            <span className="mono" style={{fontSize:10,color:"#00D68F",fontWeight:700}}>CALLWISE: BID ✓</span>
+          <div style={{padding:"5px 12px",borderRadius:18,background:"rgba(0,214,143,.08)",border:"1px solid rgba(0,214,143,.3)"}}>
+            <span className="mono" style={{fontSize:10,color:"#00D68F",fontWeight:700}}>BID/JDG: 107%</span>
           </div>
         </div>
       </div>
 
-      <div style={{marginBottom:12}}><BidWiseHero vis={scoreVis}/></div>
+      {/* Overall score */}
+      <div style={{marginBottom:14}}><OverallScore vis={scoreVis}/></div>
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
-        {KPI_SECTIONS.map((s,i)=><KpiSection key={s.id} sec={s} vis={secs>i} kvis={secs>i}/>)}
+      {/* KPI 2x2 grid */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+        {KPI_SECTIONS.map((sec,i)=>(
+          <KpiSection key={sec.id} sec={sec} vis={sections>i} kvis={sections>i}/>
+        ))}
       </div>
 
+      {/* Recommendation footer */}
       {done&&(
         <div style={{padding:"14px 18px",background:"rgba(0,214,143,.05)",border:"1px solid rgba(0,214,143,.3)",borderRadius:10,
-          animation:"slide-up .5s ease",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+          animation:"slide-up .5s ease",display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}>
           <div style={{width:40,height:40,borderRadius:9,background:"rgba(0,214,143,.15)",border:"1px solid rgba(0,214,143,.4)",
             display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:18,color:"#00D68F"}}>✓</div>
           <div style={{flex:1}}>
-            <div className="syne" style={{fontSize:13,fontWeight:800,color:"#00D68F"}}>CALLWISE: BID — UP TO $213,000</div>
+            <div className="syne" style={{fontSize:13,fontWeight:800,color:"#00D68F"}}>BIDWISE RECOMMENDATION: BID — UP TO $213,000</div>
             <div className="mono" style={{fontSize:9,color:"#8492B0",marginTop:3}}>
-              298/298 KPIs · 12 Wise modules · 94% confidence · 52 seconds · Archived to VaultWise
+              298/298 KPIs processed · 4 manageable risk flags · 94% data confidence · BidWise · Generated in 52 seconds
             </div>
           </div>
           <div style={{textAlign:"right",flexShrink:0}}>
-            <div className="mono" style={{fontSize:8,color:"#5A6480",letterSpacing:".1em",textTransform:"uppercase"}}>POWERED BY</div>
+            <div className="mono" style={{fontSize:8,color:"#5A6480",letterSpacing:".1em",textTransform:"uppercase"}}>POWERED BY BIDWISE — ZoneWise.AI</div>
             <div className="syne" style={{fontSize:14,fontWeight:800,color:"#F5A623"}}>ZoneWise.AI</div>
           </div>
         </div>
@@ -417,105 +367,101 @@ function ReportView({secs,scoreVis,done}){
   );
 }
 
+/* ─── APP ─────────────────────────────────────────────────────────── */
 function App(){
   const[phase,setPhase]=useState("idle");
   const[typed,setTyped]=useState("");
-  const[agt,setAgt]=useState({gather:"idle",title:"idle",lien:"idle",score:"idle",insight:"idle"});
+  const[agt,setAgt]=useState({scraper:"idle",title:"idle",lien:"idle",ml:"idle",report:"idle"});
   const[logs,setLogs]=useState([]);
-  const[statsOn,setStatsOn]=useState(false);
+  const[stats,setStats]=useState(null);
   const[stv,setStv]=useState(false);
   const[props,setProps]=useState([]);
-  const[tab,setTab]=useState("pipeline");
+  const[tab,setTab]=useState("agents");
   const[rptSecs,setRptSecs]=useState(0);
   const[scoreVis,setScoreVis]=useState(false);
   const[rptDone,setRptDone]=useState(false);
   const[rptProp,setRptProp]=useState(false);
-  const[activeWise,setActiveWise]=useState(0);
-  const timers=useRef([]);const logRef=useRef([]);
+  const timers=useRef([]);
+  const logRef=useRef([]);
 
   const kill=()=>{timers.current.forEach(clearTimeout);timers.current=[];};
   const after=(ms,fn)=>{const t=setTimeout(fn,ms);timers.current.push(t);};
 
   const run=useCallback(()=>{
     logRef.current=[];
-    setTyped("");setLogs([]);setProps([]);setStatsOn(false);setStv(false);
-    setAgt({gather:"idle",title:"idle",lien:"idle",score:"idle",insight:"idle"});
-    setTab("pipeline");setPhase("typing");setActiveWise(0);
+    setTyped("");setLogs([]);setProps([]);setStats(null);setStv(false);
+    setAgt({scraper:"idle",title:"idle",lien:"idle",ml:"idle",report:"idle"});
+    setTab("agents");setPhase("typing");
     setRptSecs(0);setScoreVis(false);setRptDone(false);setRptProp(false);
 
     "Brevard".split("").forEach((ch,ci)=>after(ci*T.TD,()=>setTyped("Brevard".slice(0,ci+1))));
     const at="Brevard".length*T.TD+T.TP;
 
     after(at,()=>{
-      setPhase("agents");setTab("pipeline");
-      [1,2,3,4,5,6,7,8,9,10].forEach((w,i)=>after(i*700,()=>setActiveWise(w)));
+      setPhase("agents");setTab("agents");
       AGENTS.forEach(({id},ai)=>{
         after(ai*T.AG,     ()=>setAgt(s=>({...s,[id]:"active"})));
         after(ai*T.AG+T.AD,()=>setAgt(s=>({...s,[id]:"done"})));
       });
       LOGS.forEach((l,li)=>after(li*T.LI+200,()=>{logRef.current=[...logRef.current,l];setLogs([...logRef.current]);}));
       after(T.TL-at,()=>setTab("log"));
-      after(T.SR-at,()=>{setStatsOn(true);after(200,()=>setStv(true));});
+      after(T.SR-at,()=>{setStats({});after(200,()=>setStv(true));});
       after(T.RR-at,()=>{setProps(PROPS);setPhase("results");setTab("results");});
       after(T.CE-at,()=>setRptProp(true));
       after(T.CC-at,()=>setRptProp(false));
-      after(T.RPT_START-at,()=>setTab("insightwise"));
+      // Report phase
+      after(T.RPT_START-at,()=>{setTab("report");});
       after(T.RPT_K1-at,()=>setRptSecs(1));
       after(T.RPT_K2-at,()=>setRptSecs(2));
       after(T.RPT_K3-at,()=>setRptSecs(3));
       after(T.RPT_K4-at,()=>setRptSecs(4));
       after(T.RPT_SCORE-at,()=>setScoreVis(true));
-      after(T.RPT_DONE-at,()=>{setRptDone(true);setActiveWise(12);});
+      after(T.RPT_DONE-at,()=>setRptDone(true));
       after(T.LR-at,()=>{setPhase("idle");after(600,()=>run());});
     });
   },[]);
 
   useEffect(()=>{after(800,()=>run());return kill;},[]);
 
-  const showPanel=phase==="agents"||phase==="results"||rptSecs>0||tab==="insightwise";
+  const showPanel=phase==="agents"||phase==="results"||tab==="report"||rptSecs>0;
 
   return(
     <div style={{minHeight:"100vh",background:"#080A0D",color:"#E2E8F4",fontFamily:"'DM Sans',sans-serif",paddingBottom:80,userSelect:"none"}}>
 
+      {/* NAV */}
       <div style={{borderBottom:"1px solid #1E2433",padding:"13px 22px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(8,10,13,.98)",position:"sticky",top:0,zIndex:100}}>
         <a href="https://zonewise.ai" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
           <div style={{width:31,height:31,borderRadius:7,background:"#F5A623",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,boxShadow:"0 0 18px rgba(245,166,35,.4)"}}>⬡</div>
           <div>
             <div className="syne" style={{fontSize:15,fontWeight:800,letterSpacing:"-.02em",color:"#E2E8F4"}}>Zone<span style={{color:"#F5A623"}}>Wise</span><span style={{color:"#5A6480",fontWeight:400}}>.AI</span></div>
-            <div className="mono" style={{fontSize:8,color:"#5A6480"}}>12 WISE MODULES · 298 KPIs · 67 FL COUNTIES</div>
+            <div className="mono" style={{fontSize:8,color:"#5A6480"}}>67 FL COUNTIES · BIDWISE 298-KPI</div>
           </div>
         </a>
         <div style={{display:"flex",gap:5,alignItems:"center"}}>
-          {["Dashboard","Pipeline","Reports"].map(t=>(
+          {["Dashboard","Counties","Reports"].map(t=>(
             <div key={t} className="mono" style={{padding:"4px 10px",fontSize:10,color:"#3A4255"}}>{t}</div>
           ))}
           <a href="https://zonewise.ai" style={{padding:"6px 14px",borderRadius:6,background:"#F5A623",color:"#000",fontSize:11,fontWeight:700,textDecoration:"none",fontFamily:"Syne,sans-serif",letterSpacing:".04em"}}>Join Waitlist →</a>
         </div>
       </div>
 
-      <div style={{maxWidth:940,margin:"0 auto",padding:"32px 18px 0"}}>
+      <div style={{maxWidth:940,margin:"0 auto",padding:"34px 18px 0"}}>
+
+        {/* HERO */}
         {phase==="idle"&&(
-          <div style={{textAlign:"center",marginBottom:30,animation:"fade-in .5s ease"}}>
+          <div style={{textAlign:"center",marginBottom:32,animation:"fade-in .5s ease"}}>
             <div className="mono" style={{fontSize:10,color:"#F5A623",letterSpacing:".18em",textTransform:"uppercase",marginBottom:10}}>◉ AUTONOMOUS DEMO — LIVE</div>
-            <h1 className="syne" style={{fontSize:"clamp(22px,4.2vw,48px)",fontWeight:800,lineHeight:1.08,letterSpacing:"-.03em",marginBottom:12}}>
-              From <span style={{color:"#8492B0"}}>DiscoverWise</span> to <span style={{color:"#8492B0"}}>VaultWise</span>.<br/>
-              <span style={{color:"#F5A623"}}>BidWise</span> gives you the number that wins.
+            <h1 className="syne" style={{fontSize:"clamp(24px,4.5vw,50px)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.03em",marginBottom:12}}>
+              Every Florida auction.<br/><span style={{color:"#F5A623"}}>BidWise. 298 KPIs. In seconds.</span>
             </h1>
-            <p style={{fontSize:13,color:"#8492B0",maxWidth:460,margin:"0 auto 20px",lineHeight:1.72}}>
-              12 intelligent Wise modules. 298 KPIs. Every Florida foreclosure auction analyzed in under 60 seconds. No analyst needed.
+            <p style={{fontSize:14,color:"#8492B0",maxWidth:480,margin:"0 auto",lineHeight:1.72}}>
+              12 Wise modules — DiscoverWise, TitleWise, LienWise, ScoreWise — deliver a full 298-KPI BidWise report. Autonomous. No analyst needed.
             </p>
-            <div style={{display:"flex",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
-              {[{v:"12",l:"Wise Modules"},{v:"298",l:"KPIs / Property"},{v:"67",l:"FL Counties"},{v:"< 60s",l:"Full Report"}].map(x=>(
-                <div key={x.l} style={{padding:"8px 16px",background:"#0F1117",border:"1px solid #1E2433",borderRadius:40,display:"flex",alignItems:"center",gap:7}}>
-                  <span className="syne" style={{fontSize:15,fontWeight:800,color:"#F5A623"}}>{x.v}</span>
-                  <span style={{fontSize:11,color:"#5A6480"}}>{x.l}</span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 
-        <div style={{maxWidth:520,margin:"0 auto",marginBottom:16}}>
+        {/* SEARCH BAR */}
+        <div style={{maxWidth:520,margin:"0 auto",marginBottom:20}}>
           <div style={{display:"flex",alignItems:"center",background:"#0F1117",
             border:`1px solid ${phase!=="idle"?"rgba(245,166,35,.7)":"#2A3145"}`,
             borderRadius:10,overflow:"hidden",transition:"border-color .4s,box-shadow .4s",
@@ -525,80 +471,98 @@ function App(){
             </div>
             <div style={{flex:1,padding:"13px 0",display:"flex",alignItems:"center"}}>
               <span style={{fontSize:13,color:typed?"#E2E8F4":"#3A4255",fontFamily:"'DM Sans',sans-serif"}}>
-                {typed||(phase==="idle"?"Search any Florida county...":"")}
+                {typed||(phase==="idle"?"Searching Florida counties...":"")}
               </span>
               {phase==="typing"&&<span style={{display:"inline-block",width:2,height:14,background:"#F5A623",marginLeft:2,animation:"cursor-blink .9s infinite"}}/>}
             </div>
             <div style={{padding:"10px 18px",background:"#F5A623",color:"#000",fontWeight:700,fontSize:11,fontFamily:"Syne,sans-serif",letterSpacing:".04em",
-              opacity:phase==="typing"?.5:1,transition:"opacity .3s",display:"flex",alignItems:"center",gap:5,flexShrink:0}}>
-              {phase==="agents"||phase==="results"||rptSecs>0
+              opacity:phase==="typing"?.5:1,transition:"opacity .3s",display:"flex",alignItems:"center",gap:5}}>
+              {phase==="agents"||phase==="results"||tab==="report"
                 ?<><span style={{width:6,height:6,borderRadius:"50%",background:"#000",display:"inline-block",animation:"blink .7s infinite"}}/> RUNNING</>
                 :"ANALYZE →"}
             </div>
           </div>
         </div>
 
+        {/* IDLE PILLS */}
+        {phase==="idle"&&(
+          <div style={{display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap",animation:"slide-up .6s ease"}}>
+            {[{v:"67",l:"FL Counties"},{v:"298",l:"KPIs / Property"},{v:"5",l:"AI Agents"},{v:"< 60s",l:"Full Report"}].map(x=>(
+              <div key={x.l} style={{padding:"9px 17px",background:"#0F1117",border:"1px solid #1E2433",borderRadius:40,display:"flex",alignItems:"center",gap:8}}>
+                <span className="syne" style={{fontSize:16,fontWeight:800,color:"#F5A623"}}>{x.v}</span>
+                <span style={{fontSize:11,color:"#5A6480"}}>{x.l}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ACTIVE PANEL */}
         {showPanel&&(
           <div>
-            {phase!=="idle"&&<PipelineBar activeWise={activeWise}/>}
-            {statsOn&&(
-              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:1,background:"#1E2433",borderRadius:9,overflow:"hidden",marginBottom:12}}>
+            {/* Stats */}
+            {stats&&(
+              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:1,background:"#1E2433",borderRadius:9,overflow:"hidden",marginBottom:14}}>
                 {[{l:"Total",v:19,c:"#E2E8F4"},{l:"BID",v:4,c:"#00D68F"},{l:"REVIEW",v:3,c:"#FFBB33"},{l:"SKIP",v:12,c:"#FF4757"},{l:"Judgment",v:"$4.4M",c:"#8492B0"}].map(x=>(
                   <div key={x.l} style={{background:"#0F1117",padding:"11px 8px",textAlign:"center"}}>
-                    <div className="syne" style={{fontSize:18,fontWeight:800,color:x.c,opacity:stv?1:0,transform:stv?"scale(1)":"scale(.7)",transition:"all .5s cubic-bezier(.34,1.56,.64,1)"}}>{x.v}</div>
+                    <div className="syne" style={{fontSize:19,fontWeight:800,color:x.c,opacity:stv?1:0,transform:stv?"scale(1)":"scale(.7)",transition:"all .5s cubic-bezier(.34,1.56,.64,1)"}}>{x.v}</div>
                     <div className="mono" style={{fontSize:8,color:"#5A6480",marginTop:2,textTransform:"uppercase",letterSpacing:".1em"}}>{x.l}</div>
                   </div>
                 ))}
               </div>
             )}
 
+            {/* Tab bar */}
             <div style={{display:"flex",gap:4,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-              {[{k:"pipeline",l:"Pipeline"},{k:"log",l:"Log"},{k:"results",l:"Results"},{k:"insightwise",l:"InsightWise"}].map(({k,l})=>(
-                <div key={k} className="syne" style={{padding:"5px 14px",borderRadius:5,fontSize:10,fontWeight:700,
+              {["agents","log","results","report"].map(t=>(
+                <div key={t} className="syne" style={{padding:"5px 14px",borderRadius:5,fontSize:10,fontWeight:700,
                   letterSpacing:".06em",textTransform:"uppercase",position:"relative",
-                  background:tab===k?"#F5A623":"#0F1117",color:tab===k?"#000":"#3A4255",
-                  border:tab===k?"none":"1px solid #1E2433",transition:"all .3s"}}>
-                  {l}
-                  {k==="insightwise"&&tab!==k&&rptSecs>0&&<span style={{position:"absolute",top:-3,right:-3,width:7,height:7,borderRadius:"50%",background:"#F5A623",animation:"blink .8s infinite"}}/>}
+                  background:tab===t?"#F5A623":"#0F1117",color:tab===t?"#000":"#3A4255",
+                  border:tab===t?"none":"1px solid #1E2433",transition:"all .3s"}}>
+                  {t}
+                  {t==="report"&&tab!=="report"&&rptSecs>0&&(
+                    <span style={{position:"absolute",top:-3,right:-3,width:7,height:7,borderRadius:"50%",background:"#F5A623",animation:"blink .8s infinite"}}/>
+                  )}
                 </div>
               ))}
               <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6}}>
                 <div style={{width:6,height:6,borderRadius:"50%",
-                  background:rptDone?"#00D68F":tab==="insightwise"?"#F5A623":phase==="results"?"#00D68F":"#F5A623",
-                  animation:phase==="agents"||tab==="insightwise"&&!rptDone?"blink .7s infinite":"none"}}/>
-                <span className="mono" style={{fontSize:9,color:rptDone?"#00D68F":tab==="insightwise"?"#F5A623":phase==="results"?"#00D68F":"#F5A623"}}>
-                  {rptDone?"VAULTWISE: ARCHIVED":tab==="insightwise"?"INSIGHTWISE RUNNING":phase==="results"?"CALLWISE COMPLETE":"PIPELINE RUNNING"}
+                  background:rptDone?"#00D68F":tab==="report"?"#F5A623":phase==="results"?"#00D68F":"#F5A623",
+                  animation:phase==="agents"||tab==="report"&&!rptDone?"blink .7s infinite":"none"}}/>
+                <span className="mono" style={{fontSize:9,
+                  color:rptDone?"#00D68F":tab==="report"?"#F5A623":phase==="results"?"#00D68F":"#F5A623"}}>
+                  {rptDone?"BIDWISE COMPLETE":tab==="report"?"GENERATING BIDWISE REPORT":phase==="results"?"ANALYSIS COMPLETE":"ANALYZING BREVARD"}
                 </span>
               </div>
             </div>
 
-            {tab==="pipeline"&&<div style={{display:"grid",gap:7,animation:"fade-in .3s ease"}}>{AGENTS.map(a=><AgentNode key={a.id} agent={a} status={agt[a.id]}/>)}</div>}
+            {tab==="agents"&&<div style={{display:"grid",gap:7,animation:"fade-in .3s ease"}}>{AGENTS.map(a=><AgentNode key={a.id} agent={a} status={agt[a.id]}/>)}</div>}
             {tab==="log"&&<Terminal lines={logs} active={phase==="agents"}/>}
             {tab==="results"&&(
               <div style={{display:"grid",gap:7,animation:"fade-in .3s ease"}}>
-                {props.map((p,i)=><PropCard key={i} prop={p} hi={i===0&&rptProp} idx={i}/>)}
-                <div className="mono" style={{fontSize:9,color:"#3A4255",textAlign:"center",marginTop:5}}>
-                  19 properties · 4 BID · 3 REVIEW · 12 SKIP · BidWise ⭐ max shown per card
+                {props.map((p,i)=><PropCard key={i} prop={p} highlightReport={i===0&&rptProp} index={i}/>)}
+                <div className="mono" style={{fontSize:9,color:"#3A4255",textAlign:"center",marginTop:6}}>
+                  Showing 4 of 19 · 4 BID · 3 REVIEW · 12 SKIP
                 </div>
               </div>
             )}
-            {tab==="insightwise"&&(
+            {tab==="report"&&(
               <div style={{overflowY:"auto",maxHeight:"68vh",paddingRight:3}}>
-                <ReportView secs={rptSecs} scoreVis={scoreVis} done={rptDone}/>
+                <ReportView sections={rptSecs} scoreVis={scoreVis} done={rptDone}/>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <div style={{textAlign:"center",marginTop:40,paddingBottom:16}}>
+      <div style={{textAlign:"center",marginTop:44,paddingBottom:16}}>
         <div className="mono" style={{fontSize:8,color:"#2A3145",letterSpacing:".14em"}}>
-          ZONEWISE.AI · 12 WISE MODULES · 298-KPI INTELLIGENCE · FLORIDA FORECLOSURE · Q1 2026
+          ZONEWISE.AI · 298-KPI AGENTIC INTELLIGENCE · FLORIDA FORECLOSURE · Q1 2026
         </div>
       </div>
     </div>
   );
 }
+
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
