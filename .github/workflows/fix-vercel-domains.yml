@@ -2,88 +2,49 @@ name: Fix Vercel Domain Redirect
 on:
   push:
     paths:
-      - ".github/fix-domains-trigger.txt"
+      - '.github/fix-domains-trigger.txt'
 
 jobs:
   fix-domain:
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Fix domain configuration
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Diagnose and fix domains
         run: |
-          set -x
+          echo "Step 1: List domains on both projects"
           
-          # Projects from the Vercel account
-          WEB_PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"   # zonewise-web
-          AI_PROJECT="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"    # zonewise-ai
+          echo "--- zonewise-web domains ---"
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" | jq '.domains[] | {name, redirect, verified}'
           
-          echo "=== Step 1: Check www.zonewise.ai location ==="
-          for proj in "$WEB_PROJECT" "$AI_PROJECT"; do
-            echo "Checking project $proj..."
-            curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-              "https://api.vercel.com/v9/projects/${proj}/domains" | \
-              jq -r ".domains[].name" 2>/dev/null
-            echo "---"
-          done
-          
-          echo ""
-          echo "=== Step 2: Remove zonewise.ai from zonewise-web (already unverified) ==="
-          curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/${WEB_PROJECT}/domains/zonewise.ai" || true
-          echo "Removed from web project (or already gone)"
-          sleep 3
-          
-          echo ""
-          echo "=== Step 3: Remove zonewise.ai from zonewise-ai if present ==="
-          curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/${AI_PROJECT}/domains/zonewise.ai" || true
-          echo "Removed from ai project (or not present)"
-          sleep 3
-          
-          echo ""
-          echo "=== Step 4: Add zonewise.ai to zonewise-ai with redirect to www ==="
-          RESULT=$(curl -s -w "
-HTTP_CODE:%{http_code}" -X POST \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/${AI_PROJECT}/domains" \
-            -d "{\"name\":\"zonewise.ai\",\"redirect\":\"www.zonewise.ai\",\"redirectStatusCode\":308}")
-          echo "$RESULT"
-          
-          HTTP_CODE=$(echo "$RESULT" | grep "HTTP_CODE:" | cut -d: -f2)
-          echo "Response code: $HTTP_CODE"
-          
-          # If that failed, try adding to web project instead
-          if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
-            echo ""
-            echo "=== Step 4b: Try adding to zonewise-web instead ==="
-            RESULT2=$(curl -s -w "
-HTTP_CODE:%{http_code}" -X POST \
-              -H "Authorization: Bearer $VERCEL_TOKEN" \
-              -H "Content-Type: application/json" \
-              "https://api.vercel.com/v9/projects/${WEB_PROJECT}/domains" \
-              -d "{\"name\":\"zonewise.ai\",\"redirect\":\"www.zonewise.ai\",\"redirectStatusCode\":308}")
-            echo "$RESULT2"
-          fi
-          
-          echo ""
-          echo "=== Step 5: Verify domain configs on both projects ==="
-          for proj in "$WEB_PROJECT" "$AI_PROJECT"; do
-            echo "Project $proj domains:"
-            curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-              "https://api.vercel.com/v9/projects/${proj}/domains" | \
-              jq ".domains[] | {name, redirect, redirectStatusCode, verified}" 2>/dev/null
-            echo "---"
-          done
-          
-          echo ""
-          echo "=== Step 6: DNS verification check ==="
-          echo "A records for zonewise.ai:"
-          dig +short zonewise.ai A 2>/dev/null || nslookup zonewise.ai 2>/dev/null || echo "dig not available"
-          echo "CNAME for www.zonewise.ai:"
-          dig +short www.zonewise.ai CNAME 2>/dev/null || nslookup www.zonewise.ai 2>/dev/null || echo "dig not available"
-          
-          echo ""
-          echo "DONE - Domain redirect configuration updated"
+          echo "--- zonewise-ai domains ---"
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" | jq '.domains[] | {name, redirect, verified}'
 
+      - name: Remove bare domain from wrong project
+        run: |
+          echo "Removing zonewise.ai from zonewise-web..."
+          curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains/zonewise.ai" | jq '.' || true
+          sleep 5
+
+      - name: Add bare domain to correct project with redirect
+        run: |
+          echo "Adding zonewise.ai -> www.zonewise.ai on zonewise-ai project..."
+          curl -v -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" \
+            -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}'
+          echo ""
+          echo "Done"
+
+      - name: Verify final state
+        run: |
+          sleep 5
+          echo "--- zonewise-web domains ---"
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" | jq '.domains[] | {name, redirect, verified}'
+          echo "--- zonewise-ai domains ---"
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains" | jq '.domains[] | {name, redirect, verified}'
