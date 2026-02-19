@@ -10,28 +10,39 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Full account audit
+      - name: Check domains and add with teamId
         run: |
-          echo "=== /v2/user (personal account) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v2/user" | jq '.'
+          TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
+          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
           
-          echo ""
-          echo "=== /v2/teams (all teams) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v2/teams" | jq '.teams[] | {slug, name, id}'
-          
-          echo ""
-          echo "=== All projects with their accountId and latest deployment URL ==="
-          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=20")
-          echo "$PROJECTS" | jq '.projects[] | {name, id, accountId}' 
-          
-          echo ""
-          echo "=== Latest deployment for zonewise-ai (shows full URL with scope) ==="
+          echo "=== Current domains on zonewise-ai ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=prj_B478bSAAf0yLnY3owbhN7a1W7mQs&limit=1" | \
-            jq '.deployments[0] | {url, name, creator: .creator.username, team: .team}'
+            "https://api.vercel.com/v9/projects/$AI/domains?teamId=$TEAM" | jq '.domains[] | {name, redirect, verified}'
           
-          echo ""  
-          echo "=== Latest deployment for zonewise-web ==="
+          echo ""
+          echo "=== Adding www.zonewise.ai WITH teamId ==="
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/$AI/domains?teamId=$TEAM" \
+            -d '{"name":"www.zonewise.ai"}' | jq '.'
+          
+          echo ""
+          echo "=== Adding zonewise.ai redirect WITH teamId ==="
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/$AI/domains?teamId=$TEAM" \
+            -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}' | jq '.'
+          
+          sleep 10
+          
+          echo ""
+          echo "=== Verify ==="
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/domains/www.zonewise.ai/verify?teamId=$TEAM" | jq '{name, verified}'
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai/verify?teamId=$TEAM" | jq '{name, verified}'
+          
+          echo ""
+          echo "=== Final ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=1" | \
-            jq '.deployments[0] | {url, name, creator: .creator.username, team: .team}'
+            "https://api.vercel.com/v9/projects/$AI/domains?teamId=$TEAM" | jq '.domains[] | {name, redirect, verified}'
