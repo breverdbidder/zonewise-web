@@ -1,1 +1,1 @@
-Fix Vercel domain redirect - 2026-02-19T05:29:06Z
+Run 2 - Fix domain redirect targeting zonewise-ai project - 2026-02-19T05:30:11Z
