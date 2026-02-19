@@ -10,58 +10,66 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Step 1 - Delete from zonewise-ai
+      - name: Move www.zonewise.ai back to zonewise-ai
         run: |
+          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          echo "Deleting www.zonewise.ai from zonewise-ai..."
-          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains/www.zonewise.ai"
-          echo ""
-          echo "Deleting zonewise.ai from zonewise-ai..."
-          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai"
-          sleep 5
-          echo ""
-          echo "Verify deletion:"
+          
+          echo "=== Check latest deployments on zonewise-ai ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains" | jq '.domains[].name'
-
-      - name: Step 2 - Add to zonewise-web
-        run: |
-          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          echo "Adding www.zonewise.ai to zonewise-web..."
+            "https://api.vercel.com/v6/deployments?projectId=$AI&limit=3" | \
+            jq '.deployments[] | {uid, url, state, created: .created}'
+          
+          echo ""
+          echo "=== Delete www.zonewise.ai from zonewise-web ==="
+          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB/domains/www.zonewise.ai"
+          echo ""
+          curl -s -w "\nHTTP:%{http_code}" -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai"
+          sleep 5
+          
+          echo ""
+          echo "=== Add www.zonewise.ai to zonewise-ai ==="
           curl -s -w "\nHTTP:%{http_code}" -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$WEB/domains" \
+            "https://api.vercel.com/v9/projects/$AI/domains" \
             -d '{"name":"www.zonewise.ai"}'
-          sleep 5
+          sleep 3
+          
           echo ""
-          echo "Adding zonewise.ai redirect to zonewise-web..."
+          echo "=== Verify www ==="
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/domains/www.zonewise.ai/verify" | jq '{name, verified}'
+          sleep 3
+          
+          echo ""
+          echo "=== Add zonewise.ai redirect ==="
           curl -s -w "\nHTTP:%{http_code}" -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$WEB/domains" \
+            "https://api.vercel.com/v9/projects/$AI/domains" \
             -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}'
-
-      - name: Step 3 - Verify domains
-        run: |
-          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          echo "Verifying www..."
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains/www.zonewise.ai/verify" | jq '{name, verified}'
-          echo "Verifying bare..."
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai/verify" | jq '{name, verified}'
+          sleep 3
           
-          sleep 10
           echo ""
-          echo "=== FINAL STATE ==="
+          echo "=== Verify bare ==="
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai/verify" | jq '{name, verified}'
+          
+          sleep 15
+          echo ""
+          echo "=== FINAL DOMAIN STATE ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains" | jq '.domains[] | {name, redirect, verified}'
+            "https://api.vercel.com/v9/projects/$AI/domains" | jq '.domains[] | {name, redirect, verified}'
           
           echo ""
-          echo "=== LIVE TEST ==="
-          echo -n "www.zonewise.ai: "
-          curl -s -o /dev/null -w "HTTP %{http_code}" "https://www.zonewise.ai/"
+          echo "=== LIVE TESTS ==="
+          for path in "" "login" "feasibility" "api/kpis" "dashboard"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/$path")
+            echo "www.zonewise.ai/$path: HTTP $code"
+          done
           echo ""
-          echo -n "zonewise.ai: "
+          echo -n "https://zonewise.ai redirect: "
           curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location | tr -d '\r'
+          echo -n "http://zonewise.ai redirect: "
+          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location | tr -d '\r'
