@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZoneWise.AI — Live Demo</title>
+<meta name="description" content="Watch 5 AI agents analyze Florida foreclosure auctions in real time. ZoneWise.AI — agentic intelligence for 67 FL counties."/>
+<meta property="og:title" content="ZoneWise.AI — Live Demo"/>
+<meta property="og:description" content="5 AI agents. 67 FL counties. Every auction analyzed in under 60 seconds."/>
+<meta property="og:image" content="https://zonewise.ai/og-demo.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#080A0D;color:#E2E8F4;font-family:'DM Sans',sans-serif}
+:root{
+  --bg:#080A0D;--surface:#0F1117;--surface2:#161A24;
+  --border:#1E2433;--border2:#2A3145;
+  --gold:#F5A623;--green:#00D68F;--red:#FF4757;--amber:#FFBB33;
+  --text:#E2E8F4;--muted:#5A6480;--muted2:#8492B0;--accent:#3D6FFF;
+}
+.syne{font-family:'Syne',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes slide-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes data-in{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(245,166,35,.12)}50%{box-shadow:0 0 32px rgba(245,166,35,.45)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes border-pulse{0%,100%{border-color:rgba(245,166,35,.3)}50%{border-color:rgba(245,166,35,.85)}}
+@keyframes scanline{0%{top:0%;opacity:.6}100%{top:110%;opacity:0}}
+@keyframes cursor-blink{0%,100%,49%{opacity:1}50%,99%{opacity:0}}
+@keyframes count-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useEffect,useRef,useCallback}=React;
+
+const DEMO_SEQUENCE=[
+  {county:"Brevard",      bid:4, review:3, skip:12,jdg:4350000},
+  {county:"Miami-Dade",   bid:7, review:5, skip:21,jdg:9820000},
+  {county:"Palm Beach",   bid:3, review:6, skip:18,jdg:7140000},
+  {county:"Hillsborough", bid:5, review:4, skip:16,jdg:5670000},
+];
+
+const AGENTS=[
+  {id:"scraper",label:"Scraper Agent",  desc:"Pulling live listings from RealForeclose.com"},
+  {id:"title",  label:"Title Search",   desc:"Chain of title via AcclaimWeb"},
+  {id:"lien",   label:"Lien Priority",  desc:"Waterfall analysis & lien hierarchy"},
+  {id:"ml",     label:"ML Scorer",      desc:"XGBoost bid probability model v4.2.1"},
+  {id:"report", label:"Report Agent",   desc:"Generating auction bid packets"},
+];
+
+const PROPS={
+  Brevard:[
+    {addr:"2847 Harbor Blvd",    city:"Cocoa Beach 32931",    arv:387000,maxBid:213000,judgment:198500,tag:"BID",   score:84,liens:["1st Mortgage: $198,500","HOA: $4,200"],sqft:1842,year:1987},
+    {addr:"519 Merritt Ave",     city:"Merritt Island 32953", arv:445000,maxBid:233500,judgment:302000,tag:"REVIEW",score:71,liens:["1st Mortgage: $302,000","Tax Cert: $8,100"],sqft:2190,year:1994},
+    {addr:"1104 Atlantic Dr",    city:"Satellite Beach 32937",arv:512000,maxBid:287400,judgment:389000,tag:"REVIEW",score:68,liens:["1st Mortgage: $389,000"],sqft:2644,year:2001},
+    {addr:"3301 S Banana River", city:"Cocoa Beach 32931",    arv:298000,maxBid:83600, judgment:271000,tag:"SKIP",  score:31,liens:["1st Mortgage: $271,000","Code Liens: $22,400","HOA: $9,800"],sqft:1520,year:1973},
+  ],
+  "Miami-Dade":[
+    {addr:"8412 SW 142nd Ave", city:"Miami 33183",   arv:620000,maxBid:354000,judgment:412000,tag:"BID",   score:88,liens:["1st Mortgage: $412,000"],sqft:2210,year:2003},
+    {addr:"3301 NW 7th St",    city:"Miami 33125",   arv:390000,maxBid:193000,judgment:301000,tag:"REVIEW",score:64,liens:["1st Mortgage: $301,000","Code Lien: $14,200"],sqft:1480,year:1969},
+    {addr:"11205 SW 97th Ave",  city:"Miami 33176",  arv:512000,maxBid:127000,judgment:398000,tag:"SKIP",  score:28,liens:["1st Mortgage: $398,000","HOA: $18,400","Tax Cert: $6,100"],sqft:1920,year:1982},
+    {addr:"6740 NW 167th St",  city:"Hialeah 33015", arv:445000,maxBid:248000,judgment:288000,tag:"BID",   score:82,liens:["1st Mortgage: $288,000","HOA: $2,100"],sqft:1870,year:1998},
+  ],
+  "Palm Beach":[
+    {addr:"412 Banyan Blvd",    city:"West Palm Beach 33401",arv:720000,maxBid:394000,judgment:498000,tag:"BID",   score:79,liens:["1st Mortgage: $498,000"],sqft:3100,year:2005},
+    {addr:"8821 SE Cove Rd",    city:"Hobe Sound 33455",     arv:384000,maxBid:158000,judgment:312000,tag:"SKIP",  score:33,liens:["1st Mortgage: $312,000","Lis Pendens","HOA: $8,900"],sqft:1640,year:1985},
+    {addr:"2211 Lake Shore Dr", city:"Lake Worth 33460",     arv:510000,maxBid:267000,judgment:340000,tag:"REVIEW",score:72,liens:["1st Mortgage: $340,000","Tax Cert: $4,400"],sqft:2280,year:1997},
+    {addr:"1490 S Ocean Blvd",  city:"Manalapan 33462",      arv:890000,maxBid:503000,judgment:601000,tag:"BID",   score:91,liens:["1st Mortgage: $601,000"],sqft:4100,year:2010},
+  ],
+  Hillsborough:[
+    {addr:"5214 Bayshore Blvd",city:"Tampa 33611",arv:498000,maxBid:279000,judgment:318000,tag:"BID",   score:86,liens:["1st Mortgage: $318,000"],sqft:2340,year:2002},
+    {addr:"9910 Arbor View Dr", city:"Tampa 33647",arv:412000,maxBid:196000,judgment:342000,tag:"SKIP",  score:29,liens:["1st Mortgage: $342,000","Code: $19,100","HOA: $11,200"],sqft:1780,year:1991},
+    {addr:"3301 W Swann Ave",   city:"Tampa 33609",arv:560000,maxBid:302000,judgment:388000,tag:"REVIEW",score:69,liens:["1st Mortgage: $388,000","Tax Cert: $3,900"],sqft:2620,year:1999},
+    {addr:"1022 Davis Islands",  city:"Tampa 33606",arv:880000,maxBid:526000,judgment:581000,tag:"BID",   score:93,liens:["1st Mortgage: $581,000"],sqft:3900,year:2008},
+  ],
+};
+
+const LOGS=(county,total,d)=>[
+  `[INIT]   Connecting to RealForeclose.com ...`,
+  `[AUTH]   Session token acquired`,
+  `[SCRAPE] Loading ${county} County auction calendar ...`,
+  `[FOUND]  ${total} properties scheduled for sale`,
+  `[BCPAO]  Fetching parcel data (batch) ...`,
+  `[TITLE]  AcclaimWeb lien search initiated`,
+  `[LIEN]   Priority waterfall analysis running`,
+  `[ML]     XGBoost model loaded (v4.2.1)`,
+  `[ML]     Generating predictions ...`,
+  `[SCORE]  ${d.bid} BID · ${d.review} REVIEW · ${d.skip} SKIP`,
+  `[RPT]    Generating auction packets ...`,
+  `[DONE]   Analysis complete. ${total}/${total} processed.`,
+];
+
+const fmt=n=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+const TAG={BID:{bg:"rgba(0,214,143,.08)",bd:"rgba(0,214,143,.5)",tx:"#00D68F"},REVIEW:{bg:"rgba(255,187,51,.08)",bd:"rgba(255,187,51,.5)",tx:"#FFBB33"},SKIP:{bg:"rgba(255,71,87,.08)",bd:"rgba(255,71,87,.5)",tx:"#FF4757"}};
+const LC={INIT:"#5A6480",AUTH:"#3D6FFF",SCRAPE:"#F5A623",FOUND:"#00D68F",BCPAO:"#8492B0",TITLE:"#8492B0",LIEN:"#FFBB33",ML:"#3D6FFF",SCORE:"#00D68F",RPT:"#8492B0",DONE:"#00D68F"};
+const T={TD:90,TP:600,AG:2400,AD:2200,LI:700,SR:12800,RR:13600,TL:7000,CE:15500,CC:18500,LR:22000};
+
+function AgentNode({agent,status}){
+  const c={idle:"#2A3145",active:"#F5A623",done:"#00D68F"}[status];
+  const tc={idle:"#5A6480",active:"#E2E8F4",done:"#E2E8F4"}[status];
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",
+      background:status==="active"?"rgba(245,166,35,.05)":"transparent",
+      border:`1px solid ${status==="active"?"rgba(245,166,35,.3)":"#1E2433"}`,
+      borderRadius:9,transition:"all .35s ease",
+      animation:status==="active"?"glow 2s ease infinite,border-pulse 2s ease infinite":"none"}}>
+      <div style={{position:"relative",width:32,height:32,flexShrink:0}}>
+        {status==="active"&&<>
+          <div style={{position:"absolute",inset:0,borderRadius:"50%",border:"2px solid #F5A623",animation:"pulse-ring 1.3s ease-out infinite"}}/>
+          <div style={{position:"absolute",inset:0,borderRadius:"50%",border:"2px solid #F5A623",animation:"pulse-ring 1.3s ease-out infinite",animationDelay:".4s"}}/>
+        </>}
+        <div style={{width:32,height:32,borderRadius:"50%",border:`2px solid ${c}`,
+          display:"flex",alignItems:"center",justifyContent:"center",
+          background:status==="done"?"rgba(0,214,143,.1)":status==="active"?"rgba(245,166,35,.08)":"transparent",
+          fontSize:13,color:c,transition:"all .35s",
+          animation:status==="active"?"spin 2.5s linear infinite":"none",fontFamily:"monospace"}}>
+          {status==="done"?"✓":status==="active"?"◎":"○"}
+        </div>
+      </div>
+      <div style={{flex:1}}>
+        <div className="syne" style={{fontSize:13,fontWeight:700,color:tc,transition:"color .3s"}}>{agent.label}</div>
+        <div className="mono" style={{fontSize:10,color:status==="active"?"#8492B0":"#3A4255",marginTop:2}}>
+          {status==="active"?agent.desc:status==="done"?"✓ Complete":"Standby"}
+        </div>
+      </div>
+      {status==="active"&&<div className="mono" style={{fontSize:10,color:"#F5A623",animation:"blink .9s infinite",letterSpacing:".08em"}}>LIVE</div>}
+      {status==="done"  &&<div className="mono" style={{fontSize:10,color:"#00D68F",letterSpacing:".08em"}}>DONE</div>}
+    </div>
+  );
+}
+
+function StatCell({label,value,color,visible}){
+  return(
+    <div style={{background:"#0F1117",padding:"14px 8px",textAlign:"center"}}>
+      <div className="syne" style={{fontSize:22,fontWeight:800,color,
+        opacity:visible?1:0,transform:visible?"scale(1)":"scale(.7)",
+        transition:"all .5s cubic-bezier(.34,1.56,.64,1)"}}>{value}</div>
+      <div className="mono" style={{fontSize:9,color:"#5A6480",marginTop:3,textTransform:"uppercase",letterSpacing:".1em"}}>{label}</div>
+    </div>
+  );
+}
+
+function PropCard({prop,autoExpand,index}){
+  const t=TAG[prop.tag];
+  const sc=prop.score>=75?"#00D68F":prop.score>=60?"#FFBB33":"#FF4757";
+  return(
+    <div style={{background:"#0F1117",border:`1px solid ${autoExpand?"#2A3145":"#1E2433"}`,
+      borderRadius:10,padding:16,
+      animation:`slide-up .45s ease both`,animationDelay:`${index*.1}s`,transition:"border-color .3s"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+        <div>
+          <div className="syne" style={{fontSize:13,fontWeight:700,color:"#E2E8F4"}}>{prop.addr}</div>
+          <div className="mono" style={{fontSize:10,color:"#5A6480",marginTop:2}}>{prop.city} · {prop.sqft.toLocaleString()} sqft · {prop.year}</div>
+        </div>
+        <div style={{padding:"4px 12px",borderRadius:20,fontSize:11,fontWeight:700,background:t.bg,border:`1px solid ${t.bd}`,color:t.tx,fontFamily:"Syne,sans-serif",letterSpacing:".06em",flexShrink:0}}>{prop.tag}</div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginTop:14}}>
+        {[{l:"ARV",v:fmt(prop.arv),c:"#E2E8F4"},{l:"Max Bid",v:fmt(prop.maxBid),c:"#F5A623"},{l:"Judgment",v:fmt(prop.judgment),c:"#8492B0"}].map(x=>(
+          <div key={x.l} style={{textAlign:"center"}}>
+            <div className="mono" style={{fontSize:13,fontWeight:600,color:x.c}}>{x.v}</div>
+            <div style={{fontSize:10,color:"#5A6480",marginTop:2,textTransform:"uppercase",letterSpacing:".06em"}}>{x.l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:12}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+          <span className="mono" style={{fontSize:10,color:"#5A6480"}}>ML CONFIDENCE</span>
+          <span className="mono" style={{fontSize:10,color:sc}}>{prop.score}%</span>
+        </div>
+        <div style={{height:3,background:"#161A24",borderRadius:2,overflow:"hidden"}}>
+          <div style={{height:"100%",borderRadius:2,background:sc,boxShadow:`0 0 8px ${sc}88`,
+            width:`${prop.score}%`,transition:"width 1.4s cubic-bezier(.4,0,.2,1)",transitionDelay:`${index*.12}s`}}/>
+        </div>
+      </div>
+      <div style={{overflow:"hidden",maxHeight:autoExpand?"140px":"0px",opacity:autoExpand?1:0,
+        transition:"max-height .5s ease,opacity .4s ease",
+        marginTop:autoExpand?12:0,paddingTop:autoExpand?12:0,
+        borderTop:autoExpand?"1px solid #1E2433":"none"}}>
+        <div className="mono" style={{fontSize:10,color:"#5A6480",marginBottom:8,textTransform:"uppercase",letterSpacing:".08em"}}>Liens Detected</div>
+        {prop.liens.map((l,j)=>(
+          <div key={j} className="mono" style={{fontSize:11,color:"#8492B0",marginBottom:4,paddingLeft:10,borderLeft:"2px solid #2A3145",animation:`data-in .25s ease both`,animationDelay:`${j*.08}s`}}>{l}</div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Terminal({lines,active}){
+  const ref=useRef();
+  useEffect(()=>{if(ref.current)ref.current.scrollTop=ref.current.scrollHeight;},[lines]);
+  return(
+    <div ref={ref} style={{background:"#040608",border:"1px solid #1E2433",borderRadius:9,padding:16,height:200,overflowY:"hidden",position:"relative"}}>
+      {active&&<div style={{position:"absolute",left:0,right:0,height:2,background:"linear-gradient(transparent,rgba(245,166,35,.15),transparent)",animation:"scanline 2s linear infinite",pointerEvents:"none"}}/>}
+      {lines.map((line,i)=>{
+        const tag=line.match(/^\[(\w+)\]/)?.[1];
+        return(
+          <div key={i} className="mono" style={{fontSize:11,lineHeight:1.85,animation:"data-in .2s ease both",animationDelay:`${i*.03}s`}}>
+            <span style={{color:LC[tag]||"#5A6480"}}>{line.slice(0,line.indexOf("]")+1)}</span>
+            <span style={{color:"#8492B0"}}>{line.slice(line.indexOf("]")+1)}</span>
+          </div>
+        );
+      })}
+      {active&&lines.length<12&&<span className="mono" style={{fontSize:11,color:"#F5A623",animation:"cursor-blink 1s infinite"}}>█</span>}
+    </div>
+  );
+}
+
+function App(){
+  const[seqIdx,setSeqIdx]=useState(0);
+  const[phase,setPhase]=useState("idle");
+  const[typed,setTyped]=useState("");
+  const[agt,setAgt]=useState({scraper:"idle",title:"idle",lien:"idle",ml:"idle",report:"idle"});
+  const[logs,setLogs]=useState([]);
+  const[stats,setStats]=useState(null);
+  const[stv,setStv]=useState(false);
+  const[props,setProps]=useState([]);
+  const[tab,setTab]=useState("agents");
+  const[exp,setExp]=useState(-1);
+  const timers=useRef([]);
+  const logRef=useRef([]);
+  const seqRef=useRef(0);
+
+  const kill=()=>{timers.current.forEach(clearTimeout);timers.current=[];};
+  const after=(ms,fn)=>{const t=setTimeout(fn,ms);timers.current.push(t);};
+
+  const run=useCallback((idx)=>{
+    const d=DEMO_SEQUENCE[idx%DEMO_SEQUENCE.length];
+    const total=d.bid+d.review+d.skip;
+    const pd=PROPS[d.county]||PROPS.Brevard;
+    const ll=LOGS(d.county,total,d);
+
+    logRef.current=[];
+    setTyped("");setLogs([]);setProps([]);setStats(null);setStv(false);setExp(-1);
+    setAgt({scraper:"idle",title:"idle",lien:"idle",ml:"idle",report:"idle"});
+    setTab("agents");setPhase("typing");
+
+    const name=d.county;
+    name.split("").forEach((ch,ci)=>after(ci*T.TD,()=>setTyped(name.slice(0,ci+1))));
+    const at=name.length*T.TD+T.TP;
+
+    after(at,()=>{
+      setPhase("agents");setTab("agents");
+      AGENTS.forEach(({id},ai)=>{
+        after(ai*T.AG,       ()=>setAgt(s=>({...s,[id]:"active"})));
+        after(ai*T.AG+T.AD,  ()=>setAgt(s=>({...s,[id]:"done"})));
+      });
+      ll.forEach((line,li)=>after(li*T.LI+200,()=>{logRef.current=[...logRef.current,line];setLogs([...logRef.current]);}));
+      after(T.TL-at,()=>setTab("log"));
+      after(T.SR-at,()=>{setStats({total,bid:d.bid,review:d.review,skip:d.skip,jdg:d.jdg});after(200,()=>setStv(true));});
+      after(T.RR-at,()=>{setProps(pd);setPhase("results");setTab("results");});
+      after(T.CE-at,()=>setExp(0));
+      after(T.CC-at,()=>setExp(-1));
+      after(T.LR-at,()=>{
+        const next=(seqRef.current+1)%DEMO_SEQUENCE.length;
+        seqRef.current=next;setSeqIdx(next);setPhase("idle");
+        after(400,()=>run(next));
+      });
+    });
+  },[]);
+
+  useEffect(()=>{after(800,()=>run(0));return kill;},[]);
+
+  const d=DEMO_SEQUENCE[seqIdx%DEMO_SEQUENCE.length];
+  const total=d.bid+d.review+d.skip;
+
+  return(
+    <div style={{minHeight:"100vh",background:"#080A0D",color:"#E2E8F4",fontFamily:"'DM Sans',sans-serif",paddingBottom:80,userSelect:"none"}}>
+
+      {/* NAV */}
+      <div style={{borderBottom:"1px solid #1E2433",padding:"15px 28px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(8,10,13,.98)",position:"sticky",top:0,zIndex:100}}>
+        <a href="https://zonewise.ai" style={{display:"flex",alignItems:"center",gap:10,textDecoration:"none"}}>
+          <div style={{width:33,height:33,borderRadius:7,background:"#F5A623",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,boxShadow:"0 0 20px rgba(245,166,35,.4)"}}>⬡</div>
+          <div>
+            <div className="syne" style={{fontSize:16,fontWeight:800,letterSpacing:"-.02em",color:"#E2E8F4"}}>Zone<span style={{color:"#F5A623"}}>Wise</span><span style={{color:"#5A6480",fontWeight:400}}>.AI</span></div>
+            <div className="mono" style={{fontSize:9,color:"#5A6480"}}>67 FL COUNTIES · AGENTIC INTELLIGENCE</div>
+          </div>
+        </a>
+        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+          {["Dashboard","Counties","Reports","Settings"].map(t=>(
+            <div key={t} className="mono" style={{padding:"5px 11px",fontSize:11,color:"#3A4255"}}>{t}</div>
+          ))}
+          <a href="https://zonewise.ai" style={{padding:"6px 16px",borderRadius:6,background:"#F5A623",color:"#000",fontSize:12,fontWeight:700,textDecoration:"none",fontFamily:"Syne,sans-serif"}}>Join Waitlist</a>
+        </div>
+      </div>
+
+      <div style={{maxWidth:820,margin:"0 auto",padding:"44px 24px 0"}}>
+
+        {/* HERO */}
+        {phase==="idle"&&(
+          <div style={{textAlign:"center",marginBottom:40,animation:"fade-in .5s ease"}}>
+            <div className="mono" style={{fontSize:11,color:"#F5A623",letterSpacing:".18em",textTransform:"uppercase",marginBottom:12}}>◉ AUTONOMOUS DEMO — LIVE</div>
+            <h1 className="syne" style={{fontSize:"clamp(28px,5vw,54px)",fontWeight:800,lineHeight:1.06,letterSpacing:"-.03em",marginBottom:14}}>
+              Every Florida auction.<br/><span style={{color:"#F5A623"}}>Analyzed in seconds.</span>
+            </h1>
+            <p style={{fontSize:15,color:"#8492B0",maxWidth:460,margin:"0 auto",lineHeight:1.72}}>
+              5 AI agents per county — scraping, title search, lien priority, ML scoring, reports — fully autonomous.
+            </p>
+          </div>
+        )}
+
+        {/* SEARCH BAR */}
+        <div style={{maxWidth:510,margin:"0 auto",marginBottom:28}}>
+          <div style={{display:"flex",alignItems:"center",background:"#0F1117",
+            border:`1px solid ${phase!=="idle"?"rgba(245,166,35,.7)":"#2A3145"}`,
+            borderRadius:11,overflow:"hidden",transition:"border-color .4s,box-shadow .4s",
+            boxShadow:phase!=="idle"?"0 0 32px rgba(245,166,35,.10)":"none"}}>
+            <div style={{padding:"0 14px",color:"#5A6480",display:"flex"}}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div style={{flex:1,padding:"15px 0",display:"flex",alignItems:"center"}}>
+              <span style={{fontSize:14,color:typed?"#E2E8F4":"#3A4255",fontFamily:"'DM Sans',sans-serif"}}>
+                {typed||(phase==="idle"?"Searching Florida counties...":"")}
+              </span>
+              {phase==="typing"&&<span style={{display:"inline-block",width:2,height:16,background:"#F5A623",marginLeft:2,animation:"cursor-blink .9s infinite"}}/>}
+            </div>
+            <div style={{padding:"11px 20px",background:"#F5A623",color:"#000",fontWeight:700,fontSize:12,fontFamily:"Syne,sans-serif",letterSpacing:".04em",
+              opacity:phase==="typing"?.5:1,transition:"opacity .3s",display:"flex",alignItems:"center",gap:6}}>
+              {phase==="agents"||phase==="results"
+                ?<><span style={{width:7,height:7,borderRadius:"50%",background:"#000",display:"inline-block",animation:"blink .7s infinite"}}/> RUNNING</>
+                :"ANALYZE →"}
+            </div>
+          </div>
+
+          {/* County dots */}
+          <div style={{display:"flex",gap:6,justifyContent:"center",marginTop:12}}>
+            {DEMO_SEQUENCE.map((dd,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"center",gap:5,padding:"4px 10px",borderRadius:20,
+                background:i===seqIdx%4?"rgba(245,166,35,.12)":"transparent",
+                border:`1px solid ${i===seqIdx%4?"rgba(245,166,35,.4)":"#1E2433"}`,transition:"all .4s"}}>
+                {i===seqIdx%4&&<div style={{width:5,height:5,borderRadius:"50%",background:"#F5A623",animation:"blink 1s infinite"}}/>}
+                <span className="mono" style={{fontSize:9,color:i===seqIdx%4?"#F5A623":"#3A4255",letterSpacing:".06em"}}>{dd.county.toUpperCase()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* IDLE PILLS */}
+        {phase==="idle"&&(
+          <div style={{display:"flex",justifyContent:"center",gap:12,flexWrap:"wrap",animation:"slide-up .6s ease"}}>
+            {[{v:"67",l:"FL Counties"},{v:"1,000+",l:"Daily Auctions"},{v:"5",l:"AI Agents"},{v:"< 60s",l:"Full Analysis"}].map(x=>(
+              <div key={x.l} style={{padding:"10px 20px",background:"#0F1117",border:"1px solid #1E2433",borderRadius:40,display:"flex",alignItems:"center",gap:10}}>
+                <span className="syne" style={{fontSize:17,fontWeight:800,color:"#F5A623"}}>{x.v}</span>
+                <span style={{fontSize:12,color:"#5A6480"}}>{x.l}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ACTIVE PANEL */}
+        {(phase==="agents"||phase==="results")&&(
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:1,background:"#1E2433",borderRadius:10,overflow:"hidden",marginBottom:20}}>
+              {[{l:"Total",v:total,c:"#E2E8F4"},{l:"BID",v:d.bid,c:"#00D68F"},{l:"REVIEW",v:d.review,c:"#FFBB33"},{l:"SKIP",v:d.skip,c:"#FF4757"},{l:"Judgment",v:`$${(d.jdg/1e6).toFixed(1)}M`,c:"#8492B0"}]
+                .map(x=><StatCell key={x.l} label={x.l} value={x.v} color={x.c} visible={stv}/>)}
+            </div>
+
+            <div style={{display:"flex",gap:4,marginBottom:14,alignItems:"center"}}>
+              {["agents","log","results"].map(t=>(
+                <div key={t} className="syne" style={{padding:"6px 16px",borderRadius:5,fontSize:11,fontWeight:700,letterSpacing:".06em",textTransform:"uppercase",
+                  background:tab===t?"#F5A623":"#0F1117",color:tab===t?"#000":"#3A4255",
+                  border:tab===t?"none":"1px solid #1E2433",transition:"all .3s"}}>{t}</div>
+              ))}
+              <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:7}}>
+                <div style={{width:7,height:7,borderRadius:"50%",background:phase==="results"?"#00D68F":"#F5A623",animation:phase==="agents"?"blink .7s infinite":"none"}}/>
+                <span className="mono" style={{fontSize:10,color:phase==="results"?"#00D68F":"#F5A623"}}>
+                  {phase==="results"?"COMPLETE":`ANALYZING ${d.county.toUpperCase()}`}
+                </span>
+              </div>
+            </div>
+
+            {tab==="agents"&&<div style={{display:"grid",gap:8,animation:"fade-in .3s ease"}}>{AGENTS.map(a=><AgentNode key={a.id} agent={a} status={agt[a.id]}/>)}</div>}
+            {tab==="log"&&<Terminal lines={logs} active={phase==="agents"}/>}
+            {tab==="results"&&(
+              <div style={{display:"grid",gap:10,animation:"fade-in .3s ease"}}>
+                {props.map((p,i)=><PropCard key={`${d.county}-${i}`} prop={p} i={i} autoExpand={exp===i}/>)}
+                <div className="mono" style={{fontSize:10,color:"#3A4255",textAlign:"center",marginTop:4}}>
+                  Showing 4 of {total} · {d.bid} BID · {d.review} REVIEW · {d.skip} SKIP
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div style={{textAlign:"center",marginTop:52,paddingBottom:20}}>
+        <a href="https://zonewise.ai" style={{textDecoration:"none"}}>
+          <div className="mono" style={{fontSize:9,color:"#2A3145",letterSpacing:".15em"}}>ZONEWISE.AI · AGENTIC AI ECOSYSTEM · FLORIDA FORECLOSURE INTELLIGENCE · Q1 2026</div>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
