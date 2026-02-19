@@ -10,48 +10,50 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Full domain audit
+      - name: Re-add and verify domains
         run: |
-          echo "=== ALL projects, ALL zonewise domains ==="
-          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=50")
-          for pid in $(echo "$PROJECTS" | jq -r '.projects[].id'); do
-            pname=$(echo "$PROJECTS" | jq -r --arg id "$pid" '.projects[] | select(.id == $pid) | .name')
-            domains=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects/$pid/domains")
-            has=$(echo "$domains" | jq -r '.domains[]? | select(.name | test("zonewise")) | .name' 2>/dev/null)
-            if [ -n "$has" ]; then
-              echo ""
-              echo "PROJECT: $pname ($pid)"
-              echo "$domains" | jq '.domains[]'
-            fi
-          done
-          
-          echo ""
-          echo "=== Re-add domains to zonewise-ai ==="
           AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
           
-          echo "Adding www.zonewise.ai..."
+          echo "=== Current domains on zonewise-ai ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI/domains" | jq '.domains[].name'
+          
+          echo ""
+          echo "=== Adding www.zonewise.ai ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.vercel.com/v9/projects/$AI/domains" \
             -d '{"name":"www.zonewise.ai"}' | jq '{name, verified, verification}'
           
-          echo "Adding zonewise.ai with redirect..."
+          echo ""
+          echo "=== Adding zonewise.ai with redirect ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.vercel.com/v9/projects/$AI/domains" \
             -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}' | jq '{name, verified, verification}'
           
+          echo ""
+          echo "Waiting 15s for TXT lookup..."
           sleep 15
           
           echo ""
-          echo "=== Verify ==="
+          echo "=== Triggering verify ==="
+          echo "www:"
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI/domains/www.zonewise.ai/verify" | jq '{name, verified}'
+          echo "bare:"
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai/verify" | jq '{name, verified}'
           
           echo ""
-          echo "=== Final ==="
+          echo "=== Final domain list ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI/domains" | \
-            jq '.domains[] | select(.name | test("zonewise.ai")) | {name, redirect, verified}'
+            jq '.domains[] | {name, redirect, redirectStatusCode, verified}'
+          
+          echo ""
+          echo "=== Live test ==="
+          echo -n "http://zonewise.ai -> "
+          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location
+          echo -n "https://zonewise.ai -> "
+          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location
