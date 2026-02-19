@@ -9,98 +9,95 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VAR_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      VAR_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      VAR_MAPBOX: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+      VAR_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+      VAR_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      VAR_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
-      - name: Compare env vars between projects
+      - name: Add all env vars to zonewise-web
         run: |
           TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
+          API="https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM"
+          AUTH="Authorization: Bearer $VERCEL_TOKEN"
           
-          echo "=== zonewise-ai env vars (source of truth) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/env?teamId=$TEAM" | \
-            jq '.envs[] | {key, target, value: .value[0:20]}'
+          echo "=== Current env vars ==="
+          EXISTING=$(curl -s -H "$AUTH" "$API")
+          echo "$EXISTING" | jq '[.envs[].key]'
           
-          echo ""
-          echo "=== zonewise-web env vars (needs fixing) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM" | \
-            jq '.envs[] | {key, target, value: .value[0:20]}'
-
-      - name: Copy env vars from zonewise-ai to zonewise-web
-        run: |
-          TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
-          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          
-          # Get all env vars from zonewise-ai
-          AI_ENVS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/env?teamId=$TEAM")
-          
-          # Get existing web env var keys
-          WEB_ENVS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM")
-          
-          echo "$AI_ENVS" | jq -c '.envs[]' | while read env; do
-            KEY=$(echo "$env" | jq -r '.key')
-            VALUE=$(echo "$env" | jq -r '.value')
-            TARGET=$(echo "$env" | jq -c '.target')
-            TYPE=$(echo "$env" | jq -r '.type // "encrypted"')
+          add_or_update() {
+            local KEY="$1"
+            local VALUE="$2"
+            local TYPE="${3:-encrypted}"
             
-            # Check if already exists on web
-            EXISTING=$(echo "$WEB_ENVS" | jq -r --arg k "$KEY" '.envs[] | select(.key == $k) | .id')
+            EXISTING_ID=$(echo "$EXISTING" | jq -r --arg k "$KEY" '.envs[] | select(.key == $k) | .id' | head -1)
             
-            if [ -n "$EXISTING" ]; then
-              echo "UPDATE: $KEY (already exists, updating...)"
-              curl -s -X PATCH -H "Authorization: Bearer $VERCEL_TOKEN" \
-                -H "Content-Type: application/json" \
-                "https://api.vercel.com/v9/projects/$WEB/env/$EXISTING?teamId=$TEAM" \
-                -d "{\"value\":\"$VALUE\",\"target\":$TARGET,\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
+            if [ -n "$EXISTING_ID" ] && [ "$EXISTING_ID" != "null" ]; then
+              echo "UPDATE: $KEY"
+              curl -s -X PATCH -H "$AUTH" -H "Content-Type: application/json" \
+                "https://api.vercel.com/v9/projects/$WEB/env/$EXISTING_ID?teamId=$TEAM" \
+                -d "{\"value\":$(echo "$VALUE" | jq -Rs .),\"target\":[\"production\",\"preview\",\"development\"],\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
             else
               echo "ADD: $KEY"
-              curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-                -H "Content-Type: application/json" \
-                "https://api.vercel.com/v9/projects/$WEB/env?teamId=$TEAM" \
-                -d "{\"key\":\"$KEY\",\"value\":\"$VALUE\",\"target\":$TARGET,\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
+              curl -s -X POST -H "$AUTH" -H "Content-Type: application/json" "$API" \
+                -d "{\"key\":\"$KEY\",\"value\":$(echo "$VALUE" | jq -Rs .),\"target\":[\"production\",\"preview\",\"development\"],\"type\":\"$TYPE\"}" | jq -r '.key // .error.message'
             fi
-          done
+          }
+          
+          add_or_update "NEXT_PUBLIC_SUPABASE_ANON_KEY" "$VAR_ANON_KEY" "plain"
+          add_or_update "NEXT_PUBLIC_SUPABASE_URL" "$VAR_SUPABASE_URL" "plain"
+          add_or_update "NEXT_PUBLIC_MAPBOX_TOKEN" "$VAR_MAPBOX" "plain"
+          add_or_update "NEXT_PUBLIC_APP_URL" "$VAR_APP_URL" "plain"
+          add_or_update "SUPABASE_SERVICE_ROLE_KEY" "$VAR_SERVICE_ROLE" "encrypted"
+          add_or_update "ANTHROPIC_API_KEY" "$VAR_ANTHROPIC" "encrypted"
           
           echo ""
-          echo "=== Env vars synced. Triggering redeploy... ==="
+          echo "=== Final env vars ==="
+          curl -s -H "$AUTH" "$API" | jq '[.envs[] | {key, target}]'
+
+      - name: Redeploy with new env vars
+        run: |
+          TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
+          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           
-          # Redeploy latest
+          echo "=== Getting latest deployment to redeploy ==="
           LATEST=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1&state=READY" | \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1" | \
             jq -r '.deployments[0].uid')
+          echo "Source: $LATEST"
           
-          echo "Redeploying from: $LATEST"
-          REDEPLOY=$(curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+          echo "Triggering redeploy..."
+          RESULT=$(curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            "https://api.vercel.com/v13/deployments?teamId=$TEAM" \
+            "https://api.vercel.com/v13/deployments?teamId=$TEAM&forceNew=1" \
             -d "{\"name\":\"zonewise-web\",\"deploymentId\":\"$LATEST\",\"target\":\"production\"}")
           
-          NEW_ID=$(echo "$REDEPLOY" | jq -r '.id // empty')
+          NEW_ID=$(echo "$RESULT" | jq -r '.id // empty')
           echo "New deployment: $NEW_ID"
-          echo "$REDEPLOY" | jq '{id, url, readyState}' 
+          echo "$RESULT" | jq '{id, url, readyState}'
           
           if [ -n "$NEW_ID" ]; then
-            echo "Waiting for build..."
-            for i in $(seq 1 12); do
+            for i in $(seq 1 18); do
               sleep 10
               STATE=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
                 "https://api.vercel.com/v13/deployments/$NEW_ID?teamId=$TEAM" | jq -r '.readyState')
               echo "  ${i}0s: $STATE"
               if [ "$STATE" = "READY" ] || [ "$STATE" = "ERROR" ]; then break; fi
             done
+            
+            if [ "$STATE" = "READY" ]; then
+              echo ""
+              echo "=== VERIFICATION ==="
+              sleep 5
+              echo -n "Homepage: "
+              curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/"
+              echo -n "/feasibility: "
+              curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/feasibility"
+              echo -n "zonewise.ai redirect: "
+              curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location
+              echo -n "http redirect: "
+              curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location
+            fi
           fi
-
-      - name: Final verification
-        run: |
-          sleep 10
-          echo "=== FINAL CHECKS ==="
-          echo -n "Homepage: "
-          curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/"
-          echo -n "/feasibility: "
-          curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://www.zonewise.ai/feasibility"
-          echo -n "https://zonewise.ai redirect: "
-          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location
