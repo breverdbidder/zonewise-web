@@ -10,121 +10,114 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: Get Cloudflare zone and current DNS
+      - name: Debug Cloudflare API
         run: |
-          echo "=== Finding zonewise.ai zone ==="
-          ZONES=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai")
-          ZONE_ID=$(echo "$ZONES" | jq -r '.result[0].id')
+          echo "=== CF Token test (first 10 chars redacted) ==="
+          echo "Token length: ${#CF_TOKEN}"
+          
+          echo ""
+          echo "=== List zones (raw) ==="
+          ZONES_RAW=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai&status=active")
+          echo "$ZONES_RAW" | head -c 2000
+          
+          ZONE_ID=$(echo "$ZONES_RAW" | jq -r '.result[0].id // "NOT_FOUND"')
+          echo ""
           echo "Zone ID: $ZONE_ID"
           
-          echo ""
-          echo "=== Current DNS records ==="
-          curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=50" | \
-            jq '.result[] | {name, type, content: .content[0:80], proxied}'
+          if [ "$ZONE_ID" = "NOT_FOUND" ] || [ "$ZONE_ID" = "null" ]; then
+            echo "Trying without status filter..."
+            ZONES_RAW2=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+              "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai")
+            echo "$ZONES_RAW2" | head -c 2000
+            ZONE_ID=$(echo "$ZONES_RAW2" | jq -r '.result[0].id // "NOT_FOUND"')
+            echo "Zone ID: $ZONE_ID"
+          fi
+          
+          if [ "$ZONE_ID" = "NOT_FOUND" ] || [ "$ZONE_ID" = "null" ]; then
+            echo "Listing ALL zones..."
+            curl -s -H "Authorization: Bearer $CF_TOKEN" \
+              "https://api.cloudflare.com/client/v4/zones" | jq '.result[] | {id, name, status}' 2>/dev/null || \
+            curl -s -H "Authorization: Bearer $CF_TOKEN" \
+              "https://api.cloudflare.com/client/v4/zones" | head -c 3000
+          fi
+
+      - name: Get DNS records
+        if: always()
+        run: |
+          ZONE_ID="b32406b78aaaefd55557d77c843a5940"
+          echo "=== DNS records (raw response) ==="
+          DNS_RAW=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?per_page=50")
+          echo "$DNS_RAW" | head -c 5000
           
           echo ""
-          echo "=== Current _vercel TXT records ==="
-          curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=_vercel.zonewise.ai&type=TXT" | \
-            jq '.result[] | {id, name, content}'
+          echo ""
+          echo "=== Parsed records ==="
+          echo "$DNS_RAW" | jq -r '.result[]? | "\(.type)\t\(.name)\t\(.content[0:60])\t\(.proxied)"' 2>/dev/null || echo "Parse failed"
 
-      - name: Get Vercel verification values
+      - name: Add Vercel TXT and verify
+        if: always()
         run: |
-          echo "=== Vercel domain verification status ==="
+          ZONE_ID="b32406b78aaaefd55557d77c843a5940"
           AI_PROJECT="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI_PROJECT/domains" | \
-            jq '.domains[] | select(.name | test("zonewise")) | {name, verified, verification}'
-
-      - name: Add DNS verification TXT records
-        run: |
-          ZONES=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai")
-          ZONE_ID=$(echo "$ZONES" | jq -r '.result[0].id')
           
-          # Get verification values from Vercel
-          AI_PROJECT="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          DOMAINS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+          # Get Vercel verification values
+          echo "=== Vercel verification values ==="
+          VDOMAINS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI_PROJECT/domains")
+          echo "$VDOMAINS" | jq '.domains[] | select(.name | test("zonewise.ai")) | {name, verified, verification}'
           
-          # Extract verification values
-          WWW_VERIFY=$(echo "$DOMAINS" | jq -r '.domains[] | select(.name == "www.zonewise.ai") | .verification[0].value // empty')
-          BARE_VERIFY=$(echo "$DOMAINS" | jq -r '.domains[] | select(.name == "zonewise.ai") | .verification[0].value // empty')
+          WWW_VERIFY=$(echo "$VDOMAINS" | jq -r '.domains[] | select(.name == "www.zonewise.ai") | .verification[0].value // empty')
+          BARE_VERIFY=$(echo "$VDOMAINS" | jq -r '.domains[] | select(.name == "zonewise.ai") | .verification[0].value // empty')
           
-          echo "www verification: $WWW_VERIFY"
-          echo "bare verification: $BARE_VERIFY"
+          echo "www verify: $WWW_VERIFY"
+          echo "bare verify: $BARE_VERIFY"
           
-          # Delete existing _vercel TXT records first
-          EXISTING=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
+          # Delete old _vercel TXT records
+          OLD_TXT=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
             "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=_vercel.zonewise.ai&type=TXT")
-          for rid in $(echo "$EXISTING" | jq -r '.result[].id' 2>/dev/null); do
-            echo "Deleting old TXT record $rid..."
+          for rid in $(echo "$OLD_TXT" | jq -r '.result[]?.id' 2>/dev/null); do
+            echo "Deleting old TXT $rid..."
             curl -s -X DELETE -H "Authorization: Bearer $CF_TOKEN" \
               "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$rid" | jq '.success'
           done
           
-          # Add www verification TXT
+          # Add verification TXT records
           if [ -n "$WWW_VERIFY" ]; then
-            echo ""
-            echo "Adding TXT for www.zonewise.ai verification..."
+            echo "Adding TXT for www..."
             curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
               -H "Content-Type: application/json" \
               "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$WWW_VERIFY\",\"ttl\":60}" | jq '{success, result: {id: .result.id, name: .result.name, content: .result.content}}'
+              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$WWW_VERIFY\",\"ttl\":60}" | jq '{success}'
           fi
           
-          # Add bare domain verification TXT  
           if [ -n "$BARE_VERIFY" ]; then
-            echo ""
-            echo "Adding TXT for zonewise.ai verification..."
+            echo "Adding TXT for bare..."
             curl -s -X POST -H "Authorization: Bearer $CF_TOKEN" \
               -H "Content-Type: application/json" \
               "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$BARE_VERIFY\",\"ttl\":60}" | jq '{success, result: {id: .result.id, name: .result.name, content: .result.content}}'
+              -d "{\"type\":\"TXT\",\"name\":\"_vercel.zonewise.ai\",\"content\":\"$BARE_VERIFY\",\"ttl\":60}" | jq '{success}'
           fi
           
-          # Also ensure A/CNAME records point to Vercel
           echo ""
-          echo "=== Checking A/CNAME records ==="
-          A_RECORDS=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=zonewise.ai&type=A")
-          echo "A records for zonewise.ai:"
-          echo "$A_RECORDS" | jq '.result[] | {id, content, proxied}'
+          echo "Waiting 20s for DNS..."
+          sleep 20
           
-          CNAME_WWW=$(curl -s -H "Authorization: Bearer $CF_TOKEN" \
-            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=www.zonewise.ai&type=CNAME")
-          echo "CNAME for www.zonewise.ai:"
-          echo "$CNAME_WWW" | jq '.result[] | {id, content, proxied}'
-
-      - name: Wait and verify with Vercel
-        run: |
-          echo "Waiting 30s for DNS propagation..."
-          sleep 30
-          
-          AI_PROJECT="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          
-          echo "=== Requesting Vercel re-verification ==="
-          # Trigger verification check
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI_PROJECT/domains/zonewise.ai/verify" | jq '{name, verified}'
+          echo "=== Verify with Vercel ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI_PROJECT/domains/www.zonewise.ai/verify" | jq '{name, verified}'
+          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$AI_PROJECT/domains/zonewise.ai/verify" | jq '{name, verified}'
           
-          sleep 10
-          
+          sleep 5
           echo ""
-          echo "=== Final domain status ==="
+          echo "=== Final status ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$AI_PROJECT/domains" | \
-            jq '.domains[] | select(.name | test("zonewise")) | {name, redirect, redirectStatusCode, verified}'
+            jq '.domains[] | select(.name | test("zonewise.ai")) | {name, redirect, verified}'
           
           echo ""
-          echo "=== Live redirect test ==="
-          echo -n "http://zonewise.ai -> "
-          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location || echo "(no redirect yet - DNS may need more time)"
-          echo -n "https://zonewise.ai -> "
-          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location || echo "200 OK"
+          echo "=== Live test ==="
+          curl -sI "http://zonewise.ai/" 2>/dev/null | head -3
