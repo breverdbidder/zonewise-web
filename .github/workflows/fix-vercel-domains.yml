@@ -10,67 +10,40 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Fix domain - add bare redirect to zonewise-web
+      - name: Check all recent deployments
         run: |
           TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           
-          echo "=== Current zonewise-web domains ==="
+          echo "=== Last 10 Vercel deployments for zonewise-web ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains?teamId=$TEAM" | jq '.domains[] | {name, redirect, verified}'
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=10" | \
+            jq '.deployments[] | {uid: .uid[0:20], url: .url[0:60], state, readyState, createdAt: (.createdAt / 1000 | strftime("%Y-%m-%dT%H:%M:%SZ")), meta: .meta.githubCommitMessage[0:60]}'
           
           echo ""
-          echo "=== Remove zonewise.ai from zonewise-ai if stuck there ==="
-          AI="prj_B478bSAAf0yLnY3owbhN7a1W7mQs"
-          curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$AI/domains/zonewise.ai?teamId=$TEAM" | jq '.name // .error.message'
+          echo "=== Latest READY deployment build output ==="
+          DEP_UID=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1&state=READY" | \
+            jq -r '.deployments[0].uid')
+          echo "Deployment: $DEP_UID"
           
           echo ""
-          echo "=== Add zonewise.ai redirect to zonewise-web (where www lives) ==="
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v9/projects/$WEB/domains?teamId=$TEAM" \
-            -d '{"name":"zonewise.ai","redirect":"www.zonewise.ai","redirectStatusCode":308}' | jq '.'
-          
-          sleep 10
+          echo "=== Build output files (check for feasibility) ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments/$DEP_UID/files?teamId=$TEAM" | \
+            jq '.. | .name? // empty' 2>/dev/null | grep -i feasib || echo "NO feasibility files in build output"
           
           echo ""
-          echo "=== Verify zonewise.ai ==="
+          echo "=== Vercel project settings (build command, root dir) ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" | \
+            jq '{buildCommand, devCommand, installCommand, outputDirectory, rootDirectory, framework, nodeVersion, link: .link}'
+          
+          echo ""
+          echo "=== Check .vercel/project.json in repo ==="
+          echo "(checked via GitHub API earlier - not present)"
+          
+          echo ""
+          echo "=== Verify domain status ==="
           curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai/verify?teamId=$TEAM" | jq '{name, verified}'
-
-          echo ""
-          echo "=== Final domain config ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains?teamId=$TEAM" | jq '.domains[] | {name, redirect, redirectStatusCode, verified}'
-          
-          echo ""
-          echo "=== Live redirect test ==="
-          sleep 5
-          echo -n "http://zonewise.ai -> "
-          curl -sI "http://zonewise.ai/" 2>/dev/null | grep -i location
-          echo -n "https://zonewise.ai -> "
-          curl -sI "https://zonewise.ai/" 2>/dev/null | grep -i location
-
-      - name: Diagnose feasibility 404
-        run: |
-          TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
-          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          
-          echo "=== Latest zonewise-web deployment ==="
-          DEP=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1")
-          echo "$DEP" | jq '.deployments[0] | {uid, url, state, ready, readyState, buildingAt, createdAt}'
-          
-          DEP_ID=$(echo "$DEP" | jq -r '.deployments[0].uid')
-          echo ""
-          echo "=== Deployment routes/files ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v13/deployments/$DEP_ID?teamId=$TEAM" | \
-            jq '{routes: [.routes[]? | select(.dest | test("feasibility") // false)], readyState, errorCode, errorMessage}'
-          
-          echo ""
-          echo "=== Build logs (last 50 lines) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v2/deployments/$DEP_ID/events?teamId=$TEAM&direction=backward&limit=100" | \
-            jq -r '.[].text // empty' | grep -iE "(feasib|error|warn|404|fail|page)" | tail -20
