@@ -9,41 +9,78 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - name: Check all recent deployments
+      - name: Re-link GitHub repo to Vercel project
         run: |
           TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
           WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           
-          echo "=== Last 10 Vercel deployments for zonewise-web ==="
+          echo "=== Current project link status ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=10" | \
-            jq '.deployments[] | {uid: .uid[0:20], url: .url[0:60], state, readyState, createdAt: (.createdAt / 1000 | strftime("%Y-%m-%dT%H:%M:%SZ")), meta: .meta.githubCommitMessage[0:60]}'
+            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" | jq '{link}'
           
           echo ""
-          echo "=== Latest READY deployment build output ==="
-          DEP_UID=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$WEB&teamId=$TEAM&limit=1&state=READY" | \
-            jq -r '.deployments[0].uid')
-          echo "Deployment: $DEP_UID"
+          echo "=== Re-link to GitHub repo ==="
+          curl -s -X PATCH -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" \
+            -d '{
+              "gitRepository": {
+                "repo": "breverdbidder/zonewise-web",
+                "type": "github"
+              }
+            }' | jq '{name, link}'
+
+      - name: Force production deployment  
+        run: |
+          TEAM="team_UEds2qBzyD9e7rOrX8aakj9K"
+          WEB="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+
+          echo "=== Triggering production deployment from latest main ==="
+          RESULT=$(curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v13/deployments?teamId=$TEAM" \
+            -d "{
+              \"name\": \"zonewise-web\",
+              \"project\": \"$WEB\",
+              \"target\": \"production\",
+              \"gitSource\": {
+                \"type\": \"github\",
+                \"org\": \"breverdbidder\",
+                \"repo\": \"zonewise-web\",
+                \"ref\": \"main\"
+              }
+            }")
+          echo "$RESULT" | jq '{id, url, readyState, target}'
           
-          echo ""
-          echo "=== Build output files (check for feasibility) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments/$DEP_UID/files?teamId=$TEAM" | \
-            jq '.. | .name? // empty' 2>/dev/null | grep -i feasib || echo "NO feasibility files in build output"
+          DEP_ID=$(echo "$RESULT" | jq -r '.id // empty')
           
-          echo ""
-          echo "=== Vercel project settings (build command, root dir) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB?teamId=$TEAM" | \
-            jq '{buildCommand, devCommand, installCommand, outputDirectory, rootDirectory, framework, nodeVersion, link: .link}'
-          
-          echo ""
-          echo "=== Check .vercel/project.json in repo ==="
-          echo "(checked via GitHub API earlier - not present)"
-          
-          echo ""
-          echo "=== Verify domain status ==="
-          curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$WEB/domains/zonewise.ai/verify?teamId=$TEAM" | jq '{name, verified}'
+          if [ -z "$DEP_ID" ]; then
+            echo "Deployment failed. Full response:"
+            echo "$RESULT" | jq '.'
+          else
+            echo ""
+            echo "Deployment started: $DEP_ID"
+            echo "Waiting for build (up to 120s)..."
+            for i in $(seq 1 12); do
+              sleep 10
+              STATE=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+                "https://api.vercel.com/v13/deployments/$DEP_ID?teamId=$TEAM" | jq -r '.readyState')
+              echo "  ${i}0s: $STATE"
+              if [ "$STATE" = "READY" ] || [ "$STATE" = "ERROR" ]; then
+                break
+              fi
+            done
+            
+            echo ""
+            echo "=== Final deployment status ==="
+            curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments/$DEP_ID?teamId=$TEAM" | \
+              jq '{readyState, url, alias, errorCode, errorMessage}'
+            
+            echo ""
+            echo "=== Test /feasibility ==="
+            curl -s -o /dev/null -w "https://www.zonewise.ai/feasibility -> HTTP %{http_code}\n" \
+              "https://www.zonewise.ai/feasibility"
+          fi
