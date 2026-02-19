@@ -10,17 +10,28 @@ jobs:
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
-      - name: Get account info
+      - name: Full account audit
         run: |
-          echo "=== Vercel User ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v2/user" | jq '{username, email, name, id}'
+          echo "=== /v2/user (personal account) ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v2/user" | jq '.'
           
           echo ""
-          echo "=== Vercel Teams ==="
+          echo "=== /v2/teams (all teams) ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v2/teams" | jq '.teams[] | {slug, name, id}'
           
           echo ""
-          echo "=== zonewise-ai project details ==="
+          echo "=== All projects with their accountId and latest deployment URL ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v9/projects?limit=20")
+          echo "$PROJECTS" | jq '.projects[] | {name, id, accountId}' 
+          
+          echo ""
+          echo "=== Latest deployment for zonewise-ai (shows full URL with scope) ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs" | \
-            jq '{name, accountId, link: .link, targets: .targets | keys}'
+            "https://api.vercel.com/v6/deployments?projectId=prj_B478bSAAf0yLnY3owbhN7a1W7mQs&limit=1" | \
+            jq '.deployments[0] | {url, name, creator: .creator.username, team: .team}'
+          
+          echo ""  
+          echo "=== Latest deployment for zonewise-web ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=1" | \
+            jq '.deployments[0] | {url, name, creator: .creator.username, team: .team}'
