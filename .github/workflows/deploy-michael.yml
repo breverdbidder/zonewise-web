@@ -1,0 +1,21 @@
+name: Deploy Michael Shapira Award to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch page from GitHub
+        run: |
+          mkdir dist
+          curl -s https://raw.githubusercontent.com/breverdbidder/michael-shapira-award/main/index.html -o dist/index.html
+          echo "File size: $(wc -c < dist/index.html) bytes"
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=michael-shapira-award --commit-dirty=true
