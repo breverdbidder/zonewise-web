@@ -21,7 +21,7 @@ jobs:
       - name: Install deps
         run: npm install --legacy-peer-deps
 
-      - name: Inject runtime vars into wrangler.toml
+      - name: Write .env for Next.js build
         env:
           V_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           V_SUPABASE_ANON: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -32,25 +32,30 @@ jobs:
           V_MAPBOX: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
           V_APP_URL: "https://zonewise-vinext-test.brevardbidderai.workers.dev"
         run: |
-          cat >> wrangler.toml << EOF
-
-          NEXT_PUBLIC_SUPABASE_URL = "$V_SUPABASE_URL"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY = "$V_SUPABASE_ANON"
-          SUPABASE_SERVICE_ROLE_KEY = "$V_SUPABASE_SERVICE"
-          ANTHROPIC_API_KEY = "$V_ANTHROPIC"
-          STRIPE_SECRET_KEY = "$V_STRIPE_SECRET"
-          STRIPE_WEBHOOK_SECRET = "$V_STRIPE_WEBHOOK"
-          NEXT_PUBLIC_MAPBOX_TOKEN = "$V_MAPBOX"
-          NEXT_PUBLIC_APP_URL = "$V_APP_URL"
+          cat > .env << EOF
+          NEXT_PUBLIC_SUPABASE_URL=${V_SUPABASE_URL}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${V_SUPABASE_ANON}
+          SUPABASE_SERVICE_ROLE_KEY=${V_SUPABASE_SERVICE}
+          ANTHROPIC_API_KEY=${V_ANTHROPIC}
+          STRIPE_SECRET_KEY=${V_STRIPE_SECRET}
+          STRIPE_WEBHOOK_SECRET=${V_STRIPE_WEBHOOK}
+          NEXT_PUBLIC_MAPBOX_TOKEN=${V_MAPBOX}
+          NEXT_PUBLIC_APP_URL=${V_APP_URL}
           EOF
-          echo "wrangler.toml vars injected ✅"
-          grep -v "KEY\|SECRET\|TOKEN\|URL" wrangler.toml
+          echo ".env written ✅ ($(wc -l < .env) lines)"
 
       - name: vinext deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_APP_URL: "https://zonewise-vinext-test.brevardbidderai.workers.dev"
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npx vinext deploy 2>&1
 
       - name: Smoke test
@@ -58,26 +63,29 @@ jobs:
           sleep 20
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
 
+          echo "=== Pages ==="
           for path in "/" "/login" "/signup" "/dashboard"; do
             printf "%s → " "$path"
             curl -si --max-time 10 "$BASE$path" | grep "^HTTP/2" | tr -d '\r'
           done
 
-          echo "--- /api/chat (no auth, expect 401/missing user) ---"
+          echo ""
+          echo "=== API Routes ==="
+
+          echo "--- /api/chat ---"
           RESP=$(curl -s -X POST "$BASE/api/chat" -H "Content-Type: application/json" -d '{"message":"test"}')
           echo "$RESP"
-          # Pass if no "Missing env" error
-          if echo "$RESP" | grep -q "Missing env"; then echo "❌ FAIL: env not loaded"; exit 1; fi
+          if echo "$RESP" | grep -q "Missing env"; then echo "❌ FAIL: ANTHROPIC_API_KEY not loaded"; exit 1; fi
 
-          echo "--- /api/stripe/checkout (no auth, expect 401/503 NOT 'Stripe not configured') ---"
+          echo "--- /api/stripe/checkout ---"
           RESP=$(curl -s -X POST "$BASE/api/stripe/checkout" -H "Content-Type: application/json" -d '{"priceId":"test"}')
           echo "$RESP"
-          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: stripe env not loaded"; exit 1; fi
+          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: STRIPE_SECRET_KEY not loaded"; exit 1; fi
 
-          echo "--- /api/stripe/webhook (no sig, expect 400 sig error) ---"
+          echo "--- /api/stripe/webhook ---"
           RESP=$(curl -s -X POST "$BASE/api/stripe/webhook" -d '{}')
           echo "$RESP"
-          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: stripe env not loaded"; exit 1; fi
+          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: STRIPE_WEBHOOK_SECRET not loaded"; exit 1; fi
 
           echo ""
-          echo "✅ All checks passed — Worker live at $BASE"
+          echo "✅ Sprint 2 COMPLETE — Worker live: $BASE"
