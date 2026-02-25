@@ -1,0 +1,67 @@
+name: zonewise-vinext FIXED Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/vinext-fixed-deploy.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout zonewise-vinext-test
+        uses: actions/checkout@v4
+        with:
+          repository: breverdbidder/zonewise-vinext-test
+          token: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install (including wrangler)
+        run: npm install --legacy-peer-deps
+
+      - name: vinext build
+        run: npx vinext build
+      
+      - name: Fix ssr extension (index.mjs → index.js)
+        run: |
+          echo "=== Before fix ==="
+          ls -la dist/server/ssr/ 2>/dev/null || echo "no ssr dir"
+          if [ -f dist/server/ssr/index.mjs ]; then
+            cp dist/server/ssr/index.mjs dist/server/ssr/index.js
+            echo "✅ Copied index.mjs → index.js"
+          else
+            echo "⚠️  No dist/server/ssr/index.mjs found"
+            find dist -name "*.mjs" | head -20
+          fi
+          echo "=== dist structure ==="
+          find dist -type f | sort
+
+      - name: Verify worker-cf.mjs entry + wrangler.toml
+        run: |
+          echo "=== wrangler.toml ==="
+          cat wrangler.toml
+          echo ""
+          echo "=== worker-cf.mjs exists? ==="
+          ls -la worker-cf.mjs
+
+      - name: wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy --log-level info 2>&1
+
+      - name: Verify live (wait 15s for propagation)
+        run: |
+          sleep 15
+          BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
+          echo "=== Testing live Worker ==="
+          for path in "/" "/api/health"; do
+            echo "--- $BASE$path ---"
+            curl -si --max-time 20 "$BASE$path" | head -8
+            echo ""
+          done
