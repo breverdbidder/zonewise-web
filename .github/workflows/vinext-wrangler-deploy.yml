@@ -23,86 +23,100 @@ jobs:
       - name: Build with vinext
         run: npm run build
 
-      - name: Inspect vinext server app-router-entry
+      - name: Inspect dist/server/index.mjs exports and structure
         run: |
-          echo "=== vinext/server/ contents ==="
-          ls node_modules/vinext/server/ 2>/dev/null || ls node_modules/vinext/dist/server/ 2>/dev/null || echo "checking..."
-          find node_modules/vinext -name "app-router*" | head -10
+          echo "=== Last 30 lines of dist/server/index.mjs (exports) ==="
+          tail -30 dist/server/index.mjs
           echo ""
-          echo "=== vinext package exports ==="
-          node -e "const p=require('./node_modules/vinext/package.json'); console.log(JSON.stringify(p.exports, null, 2))" 2>/dev/null | head -40
+          echo "=== Lines containing 'export' ==="
+          grep -n "^export\|^var __export\|exports\." dist/server/index.mjs | tail -20
+          echo ""
+          echo "=== Dynamic import lines ==="
+          grep -n "import(" dist/server/index.mjs | head -10
 
-      - name: Bundle Worker entry with esbuild
+      - name: Build Worker bundle
         run: |
-          # Write a minimal Worker entry that uses vinext's server handler
-          cat > worker-entry.mjs << 'EOF'
-          import handler from "vinext/server/app-router-entry";
-          export default handler;
-          EOF
-          
-          echo "=== worker-entry.mjs ==="
-          cat worker-entry.mjs
-          
-          # Bundle everything into a single Worker-compatible ESM file
-          npx esbuild worker-entry.mjs \
+          # Fix 1: copy ssr .mjs → .js so dynamic imports resolve
+          cp dist/server/ssr/index.mjs dist/server/ssr/index.js
+          for f in dist/server/ssr/assets/*.mjs; do
+            [ -f "$f" ] && cp "$f" "${f%.mjs}.js"
+          done
+
+          # Fix 2: write a Worker wrapper that re-exports the compiled handler
+          cat > worker-cf.mjs << 'WORKER_EOF'
+          // Import the vinext compiled RSC server bundle
+          import server from "./dist/server/index.mjs";
+
+          export default {
+            async fetch(request, env, ctx) {
+              // Pass ASSETS binding so vinext can serve static files
+              if (typeof server === "function") {
+                return server(request, env, ctx);
+              }
+              if (server && typeof server.fetch === "function") {
+                return server.fetch(request, env, ctx);
+              }
+              if (server && typeof server.default === "function") {
+                return server.default(request, env, ctx);
+              }
+              if (server && server.default && typeof server.default.fetch === "function") {
+                return server.default.fetch(request, env, ctx);
+              }
+              return new Response("vinext handler not found: " + typeof server + " keys:" + Object.keys(server||{}).join(","), { status: 500 });
+            }
+          };
+          WORKER_EOF
+
+          echo "=== worker-cf.mjs ==="
+          cat worker-cf.mjs
+
+          # Bundle with esbuild - inline dist/server relative deps, externalize node: and cloudflare:
+          npx esbuild worker-cf.mjs \
             --bundle \
             --format=esm \
-            --platform=browser \
-            --external:node:async_hooks \
-            --external:node:buffer \
-            --external:node:stream \
-            --external:node:util \
-            --external:node:path \
-            --external:node:fs \
-            --external:node:os \
-            --external:node:crypto \
-            --external:node:url \
-            --external:node:events \
-            --external:node:http \
-            --external:node:https \
-            --external:__STATIC_CONTENT_MANIFEST \
-            --outfile=dist/worker-bundle.js \
-            --log-level=info 2>&1 | tail -20
+            --platform=node \
+            --conditions=worker,workerd,browser \
+            --external:"node:*" \
+            --external:"cloudflare:*" \
+            --external:"__STATIC_CONTENT_MANIFEST" \
+            --outfile=dist/worker-bundle.mjs \
+            --log-level=info 2>&1
           
           echo ""
-          echo "=== Bundle size ==="
-          ls -lh dist/worker-bundle.js 2>/dev/null || echo "bundle failed"
+          echo "=== Bundle stats ==="
+          ls -lh dist/worker-bundle.mjs 2>/dev/null || echo "BUNDLE FAILED"
           echo ""
-          echo "=== First 10 lines ==="
-          head -10 dist/worker-bundle.js 2>/dev/null || echo "no bundle"
-          echo ""
-          echo "=== Has fetch export? ==="
-          grep -c "export.*fetch\|fetch.*export\|default.*{.*fetch" dist/worker-bundle.js 2>/dev/null | xargs echo "fetch matches:"
+          echo "=== Bundle exports check ==="
+          grep -c "export default\|export {" dist/worker-bundle.mjs 2>/dev/null | xargs echo "export lines:"
+          head -5 dist/worker-bundle.mjs 2>/dev/null
 
-      - name: Update wrangler.toml to use bundle
-        run: |
-          cat > wrangler.toml << 'EOF'
-          name = "zonewise-vinext-test"
-          main = "dist/worker-bundle.js"
-          compatibility_date = "2024-09-23"
-          compatibility_flags = ["nodejs_compat_v2"]
-          
-          [assets]
-          directory = "dist/client"
-          binding = "ASSETS"
-          
-          [vars]
-          ENVIRONMENT = "test"
-          EOF
-          cat wrangler.toml
-
-      - name: Deploy with wrangler
+      - name: Write wrangler.toml and deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler@latest deploy 2>&1
+        run: |
+          cat > wrangler.toml << 'EOF'
+          name = "zonewise-vinext-test"
+          main = "dist/worker-bundle.mjs"
+          compatibility_date = "2024-09-23"
+          compatibility_flags = ["nodejs_compat_v2"]
+
+          [assets]
+          directory = "dist/client"
+          binding = "ASSETS"
+
+          [vars]
+          ENVIRONMENT = "test"
+          EOF
+
+          npx wrangler@latest deploy 2>&1
 
       - name: Verify live
         run: |
           sleep 12
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
           echo "=== GET / ==="
-          curl -si --max-time 20 "$BASE/" | head -30
+          curl -si --max-time 20 "$BASE/" | head -40
           echo ""
           echo "=== GET /api/health ==="
           curl -si --max-time 20 "$BASE/api/health"
