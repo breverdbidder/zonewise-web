@@ -1,4 +1,4 @@
-name: zonewise-vinext FIXED Deploy v2 (CF-native RSC)
+name: zonewise-vinext Supabase SSR Validation
 
 on:
   workflow_dispatch:
@@ -18,38 +18,49 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install deps (includes @cloudflare/vite-plugin)
+      - name: Install deps (supabase/ssr + @cloudflare/vite-plugin)
         run: npm install --legacy-peer-deps
 
-      - name: Show vite.config.ts + wrangler.jsonc
-        run: |
-          echo "=== vite.config.ts ==="
-          cat vite.config.ts
-          echo ""
-          echo "=== wrangler.jsonc ==="
-          cat wrangler.jsonc
-          echo ""
-          echo "=== worker/index.ts ==="
-          cat worker/index.ts
-
-      - name: vinext deploy (builds CF-native RSC bundle + deploys via wrangler)
+      - name: vinext deploy (build-time Supabase env vars inlined by RSC bundler)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          npx vinext deploy 2>&1
-          echo "Exit: $?"
+          # These NEXT_PUBLIC_ vars are inlined at build time by vinext/vite
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: "https://zonewise-vinext-test.brevardbidderai.workers.dev"
+        run: npx vinext deploy 2>&1
 
-      - name: Verify live (wait 15s for propagation)
+      - name: Set Supabase anon key as CF Worker secret (runtime access)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "$NEXT_PUBLIC_SUPABASE_ANON_KEY" | npx wrangler secret put NEXT_PUBLIC_SUPABASE_ANON_KEY --name zonewise-vinext-test 2>&1 || echo "secret put warning (may already exist)"
+
+      - name: Verify — live SSR auth test
         run: |
           sleep 15
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
-          echo "=== Testing live Worker ==="
-          for path in "/" "/api/health" "/county"; do
-            echo "--- $BASE$path ---"
-            RESP=$(curl -si --max-time 20 "$BASE$path" 2>/dev/null)
-            echo "$RESP" | head -6
-            echo "$RESP" | tail -3
-            echo ""
-          done
+          echo "=== Testing SSR + Auth routes ==="
+          
+          echo "--- / (home with session check) ---"
+          curl -si --max-time 20 "$BASE/" | head -4
+          
+          echo ""
+          echo "--- /api/health ---"
+          curl -s --max-time 10 "$BASE/api/health"
+          
+          echo ""
+          echo "--- /api/auth/session (anonymous) ---"
+          curl -s --max-time 10 "$BASE/api/auth/session"
+          
+          echo ""
+          echo "--- /protected (should redirect to /login) ---"
+          curl -si --max-time 10 "$BASE/protected" | grep -E "HTTP|location:|Location:"
+          
+          echo ""
+          echo "--- /login (should render) ---"
+          curl -si --max-time 10 "$BASE/login" | head -3
 
