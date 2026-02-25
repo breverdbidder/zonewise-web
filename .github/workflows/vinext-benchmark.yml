@@ -15,39 +15,38 @@ jobs:
           repository: breverdbidder/zonewise-vinext-test
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Check vinext version
+      - name: Check vinext + vite
         run: |
-          echo "=== vinext package info ==="
-          node -e "const p=require('./node_modules/vinext/package.json'); console.log('vinext version:', p.version, '| react peer:', p.peerDependencies?.react)"
-          ls node_modules/.bin/ | grep -E "vinext|vite" | head -10
+          node --version
+          node -e "const p=require('./node_modules/vinext/package.json'); console.log('vinext:', p.version, '| engines:', JSON.stringify(p.engines))"
+          node -e "const p=require('./node_modules/vite/package.json'); console.log('vite:', p.version)"
+          ls node_modules/.bin/ | grep -E "vinext|vite"
 
       - name: Benchmark - next build (baseline)
         id: next_bench
         run: |
-          echo "=== NEXT.JS BUILD BASELINE ==="
           START_MS=$(date +%s%3N)
           npm run next:build 2>&1 | tee /tmp/next_build.log
           END_MS=$(date +%s%3N)
           ELAPSED=$(( END_MS - START_MS ))
           echo "next_ms=$ELAPSED" >> $GITHUB_OUTPUT
-          echo "Next build time: ${ELAPSED}ms"
           BUNDLE_SIZE=$(du -sh .next 2>/dev/null | cut -f1 || echo "N/A")
           echo "next_bundle=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
+          echo "NEXT BUILD: ${ELAPSED}ms | bundle: $BUNDLE_SIZE"
           rm -rf .next
 
       - name: Benchmark - vinext build
         id: vinext_bench
         continue-on-error: true
         run: |
-          echo "=== VINEXT BUILD ==="
           START_MS=$(date +%s%3N)
           npm run build 2>&1 | tee /tmp/vinext_build.log
           BUILD_EXIT=$?
@@ -55,16 +54,16 @@ jobs:
           ELAPSED=$(( END_MS - START_MS ))
           echo "vinext_ms=$ELAPSED" >> $GITHUB_OUTPUT
           echo "vinext_exit=$BUILD_EXIT" >> $GITHUB_OUTPUT
-          echo "Vinext build: ${ELAPSED}ms exit=$BUILD_EXIT"
+          echo "VINEXT BUILD: ${ELAPSED}ms exit=$BUILD_EXIT"
           for d in dist .vinext .output; do
             if [ -d "$d" ]; then
               SIZE=$(du -sh $d | cut -f1)
-              echo "vinext_bundle=$SIZE ($d)" >> $GITHUB_OUTPUT
+              echo "vinext_bundle=$SIZE" >> $GITHUB_OUTPUT
               echo "Bundle: $d = $SIZE"
               break
             fi
           done
-          tail -40 /tmp/vinext_build.log
+          cat /tmp/vinext_build.log | tail -50
 
       - name: Calculate speedup
         run: |
@@ -76,8 +75,6 @@ jobs:
               saved = ((next_ms - vinext_ms) / next_ms) * 100
               print(f'SPEEDUP: {ratio:.1f}x faster ({saved:.0f}% time saved)')
               print(f'next: {next_ms/1000:.2f}s | vinext: {vinext_ms/1000:.2f}s')
-          else:
-              print('Build comparison unavailable — check logs')
           "
 
       - name: Deploy to Cloudflare Workers
@@ -87,17 +84,15 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          echo "=== DEPLOYING ==="
           npm run deploy 2>&1 | tee /tmp/deploy.log
+          cat /tmp/deploy.log | tail -30
           DEPLOYED_URL=$(grep -oE 'https://[a-zA-Z0-9._-]+\.workers\.dev[^ ]*' /tmp/deploy.log | head -1 || echo "")
           echo "deployed_url=$DEPLOYED_URL" >> $GITHUB_OUTPUT
-          echo "URL: $DEPLOYED_URL"
+          echo "DEPLOYED URL: $DEPLOYED_URL"
           if [ -n "$DEPLOYED_URL" ]; then
             sleep 8
-            echo "=== HEALTH CHECK ==="
-            curl -sf --max-time 30 "$DEPLOYED_URL/api/health" && echo "HEALTH OK" || echo "health check pending"
+            curl -sf --max-time 30 "$DEPLOYED_URL/api/health" | python3 -m json.tool && echo "HEALTH OK" || echo "health pending"
           fi
-          cat /tmp/deploy.log | tail -20
 
       - name: Log to Supabase
         continue-on-error: true
@@ -111,7 +106,7 @@ jobs:
           key = os.environ.get("SUPABASE_KEY", "")
           payload = {
               "category": "vinext_benchmark",
-              "title": "vinext vs next.js benchmark " + str(datetime.date.today()),
+              "title": "vinext vs next.js " + str(datetime.date.today()),
               "content": json.dumps({
                   "next_build_ms": "${{ steps.next_bench.outputs.next_ms }}",
                   "vinext_build_ms": "${{ steps.vinext_bench.outputs.vinext_ms }}",
@@ -119,9 +114,10 @@ jobs:
                   "vinext_bundle": "${{ steps.vinext_bench.outputs.vinext_bundle }}",
                   "deployed_url": "${{ steps.deploy.outputs.deployed_url }}",
                   "vinext_version": "0.0.9",
-                  "test_date": datetime.datetime.utcnow().isoformat(),
+                  "node_version": "22",
+                  "test_date": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               }),
-              "created_at": datetime.datetime.utcnow().isoformat()
+              "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
           }
           req = urllib.request.Request(
               f"{url}/rest/v1/insights",
