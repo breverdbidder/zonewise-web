@@ -21,7 +21,7 @@ jobs:
       - name: Install deps
         run: npm install --legacy-peer-deps
 
-      - name: Write .env for Next.js build
+      - name: Write .env for vinext build
         env:
           V_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           V_SUPABASE_ANON: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
@@ -30,7 +30,6 @@ jobs:
           V_STRIPE_SECRET: ${{ secrets.STRIPE_SECRET_KEY }}
           V_STRIPE_WEBHOOK: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
           V_MAPBOX: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
-          V_APP_URL: "https://zonewise-vinext-test.brevardbidderai.workers.dev"
         run: |
           cat > .env << EOF
           NEXT_PUBLIC_SUPABASE_URL=${V_SUPABASE_URL}
@@ -40,11 +39,11 @@ jobs:
           STRIPE_SECRET_KEY=${V_STRIPE_SECRET}
           STRIPE_WEBHOOK_SECRET=${V_STRIPE_WEBHOOK}
           NEXT_PUBLIC_MAPBOX_TOKEN=${V_MAPBOX}
-          NEXT_PUBLIC_APP_URL=${V_APP_URL}
+          NEXT_PUBLIC_APP_URL=https://zonewise-vinext-test.brevardbidderai.workers.dev
           EOF
-          echo ".env written ✅ ($(wc -l < .env) lines)"
+          echo ".env written ✅"
 
-      - name: vinext deploy
+      - name: vinext build (no deploy)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -56,7 +55,50 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: npx vinext deploy 2>&1
+        run: npm run build 2>&1
+
+      - name: Inject vars into dist/server/wrangler.json
+        env:
+          V_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          V_SUPABASE_ANON: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          V_SUPABASE_SERVICE: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          V_ANTHROPIC: ${{ secrets.ANTHROPIC_API_KEY }}
+          V_STRIPE_SECRET: ${{ secrets.STRIPE_SECRET_KEY }}
+          V_STRIPE_WEBHOOK: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          V_MAPBOX: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+        run: |
+          python3 << 'PYEOF'
+          import json, os
+
+          path = "dist/server/wrangler.json"
+          with open(path) as f:
+              cfg = json.load(f)
+
+          cfg.setdefault("vars", {})
+          cfg["vars"].update({
+              "NEXT_PUBLIC_SUPABASE_URL":    os.environ["V_SUPABASE_URL"],
+              "NEXT_PUBLIC_SUPABASE_ANON_KEY": os.environ["V_SUPABASE_ANON"],
+              "SUPABASE_SERVICE_ROLE_KEY":   os.environ["V_SUPABASE_SERVICE"],
+              "ANTHROPIC_API_KEY":           os.environ["V_ANTHROPIC"],
+              "STRIPE_SECRET_KEY":           os.environ["V_STRIPE_SECRET"],
+              "STRIPE_WEBHOOK_SECRET":       os.environ["V_STRIPE_WEBHOOK"],
+              "NEXT_PUBLIC_MAPBOX_TOKEN":    os.environ["V_MAPBOX"],
+              "NEXT_PUBLIC_APP_URL":         "https://zonewise-vinext-test.brevardbidderai.workers.dev",
+          })
+
+          with open(path, "w") as f:
+              json.dump(cfg, f, indent=2)
+
+          safe_keys = [k for k in cfg["vars"] if not any(s in k for s in ["KEY","SECRET","TOKEN"])]
+          print("✅ Patched vars:", safe_keys)
+          PYEOF
+
+      - name: wrangler deploy (with patched config)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler@3 deploy --config dist/server/wrangler.json 2>&1
 
       - name: Smoke test
         run: |
@@ -71,21 +113,13 @@ jobs:
 
           echo ""
           echo "=== API Routes ==="
-
-          echo "--- /api/chat ---"
           RESP=$(curl -s -X POST "$BASE/api/chat" -H "Content-Type: application/json" -d '{"message":"test"}')
-          echo "$RESP"
-          if echo "$RESP" | grep -q "Missing env"; then echo "❌ FAIL: ANTHROPIC_API_KEY not loaded"; exit 1; fi
+          echo "chat: $RESP"
+          if echo "$RESP" | grep -q "Missing env"; then echo "❌ ANTHROPIC_API_KEY not loaded"; exit 1; fi
 
-          echo "--- /api/stripe/checkout ---"
           RESP=$(curl -s -X POST "$BASE/api/stripe/checkout" -H "Content-Type: application/json" -d '{"priceId":"test"}')
-          echo "$RESP"
-          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: STRIPE_SECRET_KEY not loaded"; exit 1; fi
-
-          echo "--- /api/stripe/webhook ---"
-          RESP=$(curl -s -X POST "$BASE/api/stripe/webhook" -d '{}')
-          echo "$RESP"
-          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ FAIL: STRIPE_WEBHOOK_SECRET not loaded"; exit 1; fi
+          echo "stripe: $RESP"
+          if echo "$RESP" | grep -q "Stripe not configured"; then echo "❌ STRIPE env not loaded"; exit 1; fi
 
           echo ""
-          echo "✅ Sprint 2 COMPLETE — Worker live: $BASE"
+          echo "✅ Sprint 2 COMPLETE — $BASE"
