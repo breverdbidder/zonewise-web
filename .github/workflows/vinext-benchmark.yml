@@ -19,141 +19,137 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
       - name: Check vinext availability
         run: |
-          echo "=== vinext version ==="
-          npx vinext --version 2>/dev/null || echo "vinext CLI not found, checking package..."
-          node -e "require('vinext')" 2>/dev/null && echo "vinext module OK" || echo "vinext module not loadable"
-          ls node_modules/.bin/ | grep -i vite || echo "no vite bins"
-          ls node_modules/.bin/ | grep -i vinext || echo "no vinext bin"
+          echo "=== vinext check ==="
+          ls node_modules/.bin/ | grep -E "vinext|vite" || echo "no vinext/vite bin found"
+          cat node_modules/vinext/package.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print('vinext version:', d.get('version'))" || echo "vinext not installed"
+          node -e "const v=require('vinext'); console.log('vinext loaded:', typeof v)" 2>/dev/null || echo "vinext require failed"
 
-      - name: Benchmark — next build (baseline)
+      - name: Benchmark - next build (baseline)
         id: next_bench
         run: |
           echo "=== NEXT.JS BUILD BASELINE ==="
-          START=$(date +%s%3N)
-          npm run next:build 2>&1 | tee /tmp/next_build.log || true
-          END=$(date +%s%3N)
-          ELAPSED=$(( END - START ))
+          START_MS=$(date +%s%3N)
+          npm run next:build 2>&1 | tee /tmp/next_build.log
+          END_MS=$(date +%s%3N)
+          ELAPSED=$(( END_MS - START_MS ))
           echo "next_ms=$ELAPSED" >> $GITHUB_OUTPUT
-          echo "Next build time: ${ELAPSED}ms ($(echo "scale=2; $ELAPSED/1000" | bc)s)"
+          echo "Next build time: ${ELAPSED}ms"
           BUNDLE_SIZE=$(du -sh .next 2>/dev/null | cut -f1 || echo "N/A")
           echo "next_bundle=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
-          echo "Next bundle size: $BUNDLE_SIZE"
+          echo "Bundle: $BUNDLE_SIZE"
           rm -rf .next
 
-      - name: Benchmark — vinext build
+      - name: Benchmark - vinext build
         id: vinext_bench
+        continue-on-error: true
         run: |
           echo "=== VINEXT BUILD ==="
-          START=$(date +%s%3N)
-          npm run build 2>&1 | tee /tmp/vinext_build.log || true
-          END=$(date +%s%3N)
-          ELAPSED=$(( END - START ))
+          START_MS=$(date +%s%3N)
+          npm run build 2>&1 | tee /tmp/vinext_build.log
+          BUILD_EXIT=$?
+          END_MS=$(date +%s%3N)
+          ELAPSED=$(( END_MS - START_MS ))
           echo "vinext_ms=$ELAPSED" >> $GITHUB_OUTPUT
-          echo "Vinext build time: ${ELAPSED}ms ($(echo "scale=2; $ELAPSED/1000" | bc)s)"
-          BUNDLE_DIR=$(ls -d dist .vinext .output 2>/dev/null | head -1 || echo "unknown")
-          BUNDLE_SIZE=$(du -sh $BUNDLE_DIR 2>/dev/null | cut -f1 || echo "N/A")
-          echo "vinext_bundle=$BUNDLE_SIZE" >> $GITHUB_OUTPUT
-          echo "Vinext bundle dir: $BUNDLE_DIR ($BUNDLE_SIZE)"
+          echo "vinext_exit=$BUILD_EXIT" >> $GITHUB_OUTPUT
+          echo "Vinext build time: ${ELAPSED}ms, exit: $BUILD_EXIT"
+          for d in dist .vinext .output; do
+            if [ -d "$d" ]; then
+              SIZE=$(du -sh $d | cut -f1)
+              echo "vinext_bundle=$SIZE ($d)" >> $GITHUB_OUTPUT
+              echo "Bundle at $d: $SIZE"
+              break
+            fi
+          done
+          cat /tmp/vinext_build.log | tail -30
 
       - name: Calculate speedup
         run: |
           NEXT_MS=${{ steps.next_bench.outputs.next_ms }}
           VINEXT_MS=${{ steps.vinext_bench.outputs.vinext_ms }}
           python3 -c "
-          next_ms = $NEXT_MS
-          vinext_ms = $VINEXT_MS
-          if vinext_ms > 0:
+          next_ms = int('$NEXT_MS') if '$NEXT_MS' else 0
+          vinext_ms = int('$VINEXT_MS') if '$VINEXT_MS' else 0
+          if vinext_ms > 0 and next_ms > 0:
               ratio = next_ms / vinext_ms
-              print(f'Speedup: {ratio:.1f}x faster')
-              print(f'next: {next_ms/1000:.2f}s | vinext: {vinext_ms/1000:.2f}s')
               saved = ((next_ms - vinext_ms) / next_ms) * 100
+              print(f'SPEEDUP: {ratio:.1f}x faster')
+              print(f'next: {next_ms/1000:.2f}s | vinext: {vinext_ms/1000:.2f}s')
               print(f'Time saved: {saved:.0f}%')
           else:
-              print('vinext build may have failed — check logs')
+              print('One or both builds may have failed — check logs above')
           "
 
       - name: Deploy to Cloudflare Workers
+        id: deploy
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           echo "=== DEPLOYING TO CLOUDFLARE WORKERS ==="
-          npm run deploy 2>&1 | tee /tmp/vinext_deploy.log || true
-          DEPLOYED_URL=$(grep -oE 'https://[a-zA-Z0-9._-]+\.workers\.dev[^ ]*' /tmp/vinext_deploy.log | head -1 || echo "not found")
+          npm run deploy 2>&1 | tee /tmp/vinext_deploy.log
+          DEPLOYED_URL=$(grep -oE 'https://[a-zA-Z0-9._-]+\.workers\.dev[^ ]*' /tmp/vinext_deploy.log | head -1 || echo "")
+          echo "deployed_url=$DEPLOYED_URL" >> $GITHUB_OUTPUT
           echo "Deployed URL: $DEPLOYED_URL"
-          echo "deployed_url=$DEPLOYED_URL" >> $GITHUB_ENV
-
-          if [ "$DEPLOYED_URL" != "not found" ]; then
-            echo "=== VERIFYING DEPLOYMENT ==="
+          if [ -n "$DEPLOYED_URL" ]; then
             sleep 5
-            curl -s --max-time 30 "$DEPLOYED_URL/api/health" | python3 -m json.tool || echo "Health check pending"
+            echo "=== HEALTH CHECK ==="
+            curl -s --max-time 30 "$DEPLOYED_URL/api/health" | python3 -m json.tool || echo "health check pending"
           fi
 
       - name: Log results to Supabase
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          python3 << 'PYEOF'
+          python3 - <<PYEOF
           import urllib.request, json, os, datetime
-
           SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
           SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
-          next_ms = ${{ steps.next_bench.outputs.next_ms }}
-          vinext_ms = ${{ steps.vinext_bench.outputs.vinext_ms }}
-          speedup = round(next_ms / vinext_ms, 1) if vinext_ms > 0 else 0
-
           payload = {
               "category": "vinext_benchmark",
-              "title": f"vinext vs next.js — zonewise-vinext-test ({datetime.date.today()})",
+              "title": "vinext vs next.js — zonewise-vinext-test " + str(datetime.date.today()),
               "content": json.dumps({
-                  "next_build_ms": next_ms,
-                  "vinext_build_ms": vinext_ms,
-                  "speedup_ratio": speedup,
+                  "next_build_ms": "${{ steps.next_bench.outputs.next_ms }}",
+                  "vinext_build_ms": "${{ steps.vinext_bench.outputs.vinext_ms }}",
                   "next_bundle": "${{ steps.next_bench.outputs.next_bundle }}",
                   "vinext_bundle": "${{ steps.vinext_bench.outputs.vinext_bundle }}",
-                  "deployed_url": os.environ.get("deployed_url", ""),
+                  "deployed_url": "${{ steps.deploy.outputs.deployed_url }}",
                   "repo": "breverdbidder/zonewise-vinext-test",
                   "next_version": "16.1.6",
                   "test_date": datetime.datetime.utcnow().isoformat(),
               }),
               "created_at": datetime.datetime.utcnow().isoformat()
           }
-
           req = urllib.request.Request(
               f"{SUPABASE_URL}/rest/v1/insights",
               data=json.dumps(payload).encode(),
-              headers={
-                  "apikey": SUPABASE_KEY,
-                  "Authorization": f"Bearer {SUPABASE_KEY}",
-                  "Content-Type": "application/json",
-                  "Prefer": "return=minimal"
-              },
+              headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}", "Content-Type": "application/json", "Prefer": "return=minimal"},
               method="POST"
           )
           try:
               with urllib.request.urlopen(req) as r:
-                  print(f"✅ Results logged to Supabase (HTTP {r.status})")
+                  print(f"Supabase logged: HTTP {r.status}")
           except Exception as e:
-              print(f"Supabase log failed: {e} — results still in GH logs")
+              print(f"Supabase log error: {e}")
           PYEOF
 
-      - name: Print final report
+      - name: Final Report
         run: |
           echo ""
-          echo "╔════════════════════════════════════════╗"
-          echo "║     VINEXT BENCHMARK RESULTS           ║"
-          echo "╠════════════════════════════════════════╣"
-          echo "║ next build:   ${{ steps.next_bench.outputs.next_ms }}ms"
-          echo "║ vinext build: ${{ steps.vinext_bench.outputs.vinext_ms }}ms"
-          echo "║ next bundle:  ${{ steps.next_bench.outputs.next_bundle }}"
-          echo "║ vinext bundle: ${{ steps.vinext_bench.outputs.vinext_bundle }}"
-          echo "║ Deployed: $deployed_url"
-          echo "╚════════════════════════════════════════╝"
+          echo "========================================"
+          echo "  VINEXT BENCHMARK RESULTS"
+          echo "========================================"
+          echo "  next build:    ${{ steps.next_bench.outputs.next_ms }}ms"
+          echo "  vinext build:  ${{ steps.vinext_bench.outputs.vinext_ms }}ms"
+          echo "  next bundle:   ${{ steps.next_bench.outputs.next_bundle }}"
+          echo "  vinext bundle: ${{ steps.vinext_bench.outputs.vinext_bundle }}"
+          echo "  deployed url:  ${{ steps.deploy.outputs.deployed_url }}"
+          echo "========================================"
