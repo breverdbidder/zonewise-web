@@ -1,4 +1,4 @@
-name: zonewise-vinext FIXED Deploy
+name: zonewise-vinext FIXED Deploy v2 (CF-native RSC)
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout zonewise-vinext-test
         uses: actions/checkout@v4
@@ -18,41 +18,38 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install
+      - name: Install deps (includes @cloudflare/vite-plugin)
         run: npm install --legacy-peer-deps
 
-      - name: vinext build
-        run: npx vinext build
-
-      - name: Fix ssr extension (index.mjs -> index.js)
+      - name: Show vite.config.ts + wrangler.jsonc
         run: |
-          echo "=== dist/server/ ==="
-          find dist/server -type f | sort
-          if [ -f dist/server/ssr/index.mjs ]; then
-            cp dist/server/ssr/index.mjs dist/server/ssr/index.js
-            echo "✅ Copied ssr/index.mjs -> ssr/index.js"
-          else
-            echo "⚠️ No dist/server/ssr/index.mjs - looking for alternatives"
-            find dist -name "index.mjs" | head -10
-          fi
+          echo "=== vite.config.ts ==="
+          cat vite.config.ts
+          echo ""
+          echo "=== wrangler.jsonc ==="
+          cat wrangler.jsonc
+          echo ""
+          echo "=== worker/index.ts ==="
+          cat worker/index.ts
 
-      - name: Show wrangler.toml
-        run: cat wrangler.toml
-
-      - name: wrangler deploy
+      - name: vinext deploy (builds CF-native RSC bundle + deploys via wrangler)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler deploy 2>&1
+        run: |
+          npx vinext deploy 2>&1
+          echo "Exit: $?"
 
-      - name: Verify live
+      - name: Verify live (wait 15s for propagation)
         run: |
           sleep 15
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
           echo "=== Testing live Worker ==="
-          for path in "/" "/api/health"; do
+          for path in "/" "/api/health" "/county"; do
             echo "--- $BASE$path ---"
-            curl -si --max-time 20 "$BASE$path" | head -8
+            RESP=$(curl -si --max-time 20 "$BASE$path" 2>/dev/null)
+            echo "$RESP" | head -6
+            echo "$RESP" | tail -3
             echo ""
           done
 
