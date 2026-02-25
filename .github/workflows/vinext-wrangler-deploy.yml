@@ -20,50 +20,92 @@ jobs:
       - name: Install
         run: npm install --legacy-peer-deps
 
-      - name: Step 1 - vinext build (RSC + SSR bundles)
-        run: npm run build
+      - name: Set clean wrangler.toml
+        run: |
+          printf 'name = "zonewise-vinext-test"\ncompatibility_date = "2024-09-23"\ncompatibility_flags = ["nodejs_compat_v2"]\n\n[assets]\ndirectory = "dist/client"\nbinding = "ASSETS"\n\n[vars]\nENVIRONMENT = "test"\n' > wrangler.toml
 
-      - name: Step 2 - Generate worker/index.ts + vite.config.ts via vinext deploy (dry run)
+      - name: vinext deploy (generates worker/ + vite.config.ts + full build)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          # vinext deploy generates the files then fails on wrangler.toml main pointing to
-          # dist/worker-bundle.mjs which doesn't exist yet. We capture the generated files.
-          # Reset wrangler.toml to default so vinext deploy doesn't choke on our custom main
-          printf 'name = "zonewise-vinext-test"\ncompatibility_date = "2024-09-23"\ncompatibility_flags = ["nodejs_compat_v2"]\n\n[vars]\nENVIRONMENT = "test"\n' > wrangler.toml
-          
-          npm run deploy 2>&1 | head -30 || true
-          
-          echo "=== Generated files? ==="
-          ls worker/ 2>/dev/null && cat worker/index.ts || echo "no worker/"
-          ls vite.config.ts 2>/dev/null && cat vite.config.ts || echo "no vite.config.ts"
-
-      - name: Step 3 - Run vite build with generated config (resolves virtual:vinext-rsc-entry)
-        run: |
-          npx vite build 2>&1
-          echo "=== All new files after vite build ==="
-          find . -newer wrangler.toml -not -path "*/node_modules/*" -not -path "*/.git/*" -type f 2>/dev/null | grep -v "node_modules" | sort | head -30
+          npm run deploy 2>&1 | tee /tmp/deploy.log || true
           echo ""
-          echo "=== dist/ after vite build ==="
+          echo "=== .wrangler/deploy/config.json ==="
+          cat .wrangler/deploy/config.json 2>/dev/null || echo "NOT FOUND"
+          echo ""
+          echo "=== dist/client/wrangler.json ==="
+          cat dist/client/wrangler.json 2>/dev/null || echo "NOT FOUND"
+          echo ""
+          echo "=== All files in dist/ ==="
           find dist -type f | sort
+          echo ""
+          echo "=== Any .js bundles > 500KB? ==="
+          find . -name "*.js" -size +500k -not -path "*/node_modules/*" 2>/dev/null | xargs ls -lh 2>/dev/null
+          echo ""
+          echo "=== Full deploy log ==="
+          cat /tmp/deploy.log
 
-      - name: Step 4 - Find Worker bundle and deploy
+      - name: Patch wrangler config and redeploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          echo "=== .wrangler/ ==="
-          find .wrangler -type f 2>/dev/null | head -20
-          for f in $(find .wrangler -type f 2>/dev/null); do echo "--- $f ---"; cat "$f" | head -20; done
+          # The .wrangler/deploy/config.json is what vinext uses — patch it
+          CONFIG=".wrangler/deploy/config.json"
+          if [ -f "$CONFIG" ]; then
+            echo "=== Original deploy config ==="
+            cat "$CONFIG"
+            
+            # Inject main field pointing to dist/server/index.js (the RSC server handler)
+            python3 -c "
+          import json, sys
+          with open('$CONFIG') as f:
+              c = json.load(f)
+          print('Before main:', c.get('main', 'NOT SET'))
+          # Try to find the right worker entry
+          import os
+          candidates = ['dist/server/index.js', 'dist/server/index.mjs']
+          for cand in candidates:
+              if os.path.exists(cand):
+                  c['main'] = cand
+                  print('Setting main to:', cand)
+                  break
+          # Ensure ASSETS binding
+          if 'assets' not in c:
+              c['assets'] = {'directory': 'dist/client', 'binding': 'ASSETS'}
+          print('Final config main:', c.get('main'))
+          with open('$CONFIG', 'w') as f:
+              json.dump(c, f, indent=2)
+          "
+            echo "=== Patched deploy config ==="
+            cat "$CONFIG"
+          fi
           
-          # Look for wrangler.json that vinext vite build generates
-          echo "=== Any wrangler.json? ==="
-          find . -name "wrangler.json" -not -path "*/node_modules/*" 2>/dev/null
+          # Also patch dist/client/wrangler.json if it exists
+          if [ -f "dist/client/wrangler.json" ]; then
+            python3 -c "
+          import json, os
+          with open('dist/client/wrangler.json') as f:
+              c = json.load(f)
+          print('client/wrangler.json main before:', c.get('main', 'NOT SET'))
+          for cand in ['dist/server/index.js', 'dist/server/index.mjs']:
+              if os.path.exists(cand):
+                  c['main'] = cand
+                  break
+          if 'assets' not in c:
+              c['assets'] = {'directory': '.', 'binding': 'ASSETS'}
+          elif isinstance(c.get('assets'), dict):
+              c['assets']['binding'] = 'ASSETS'
+          print('client/wrangler.json main after:', c.get('main', 'STILL NOT SET'))
+          with open('dist/client/wrangler.json', 'w') as f:
+              json.dump(c, f, indent=2)
+          "
+          fi
           
-          # Use vinext deploy again — this time vite.config.ts + worker/index.ts exist
-          # and the vinext app bundle is in dist/
-          npm run deploy 2>&1
+          # Deploy using the deploy config
+          npx wrangler@latest deploy --config .wrangler/deploy/config.json 2>&1 || \
+          npx wrangler@latest deploy 2>&1
 
       - name: Verify live
         run: |
@@ -71,6 +113,6 @@ jobs:
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
           for path in "/" "/api/health" "/county"; do
             echo "--- $path ---"
-            curl -si --max-time 20 "$BASE$path" | head -6
+            curl -s --max-time 20 "$BASE$path" | head -200
             echo ""
           done
