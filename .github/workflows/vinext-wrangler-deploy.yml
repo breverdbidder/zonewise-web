@@ -23,54 +23,73 @@ jobs:
       - name: Build with vinext
         run: npm run build
 
-      - name: Inspect dist/server/index.mjs exports and structure
+      - name: Patch SSR dynamic imports and build Worker bundle
         run: |
-          echo "=== Last 30 lines of dist/server/index.mjs (exports) ==="
-          tail -30 dist/server/index.mjs
-          echo ""
-          echo "=== Lines containing 'export' ==="
-          grep -n "^export\|^var __export\|exports\." dist/server/index.mjs | tail -20
-          echo ""
-          echo "=== Dynamic import lines ==="
-          grep -n "import(" dist/server/index.mjs | head -10
-
-      - name: Build Worker bundle
-        run: |
-          # Fix 1: copy ssr .mjs → .js so dynamic imports resolve
+          # Fix 1: copy ssr files .mjs → .js
           cp dist/server/ssr/index.mjs dist/server/ssr/index.js
           for f in dist/server/ssr/assets/*.mjs; do
             [ -f "$f" ] && cp "$f" "${f%.mjs}.js"
           done
 
-          # Fix 2: write a Worker wrapper that re-exports the compiled handler
+          # Fix 2: patch dist/server/index.mjs to use static import instead of dynamic
+          # Replace: const ssrEntry = await import("./ssr/index.js")
+          # With: const ssrEntry = ssrEntryModule
+          # by prepending a static import at the top and substituting
+          node << 'NODEOF'
+          const fs = require('fs');
+          let code = fs.readFileSync('dist/server/index.mjs', 'utf8');
+          
+          // Add static import at top
+          const staticImport = 'import * as ssrEntryModule from "./ssr/index.js";
+';
+          
+          // Replace all occurrences of dynamic import with the pre-loaded module
+          code = code.replace(
+            /const ssrEntry = await import\("\.\/ssr\/index\.js"\);/g,
+            'const ssrEntry = ssrEntryModule;'
+          );
+          
+          // Prepend static import
+          code = staticImport + code;
+          
+          fs.writeFileSync('dist/server/index.mjs', code);
+          
+          // Verify patch worked
+          const lines = code.split('\n');
+          console.log('Line 1:', lines[0]);
+          const remaining = code.match(/await import\("\.\/ssr\/index\.js"\)/g);
+          console.log('Remaining dynamic imports:', remaining ? remaining.length : 0);
+          NODEOF
+
+          echo "=== Patch verification ==="
+          head -3 dist/server/index.mjs
+          grep -c 'await import.*ssr' dist/server/index.mjs | xargs echo "remaining dynamic ssr imports:"
+
+          # Fix 3: write thin Worker wrapper
           cat > worker-cf.mjs << 'WORKER_EOF'
-          // Import the vinext compiled RSC server bundle
           import server from "./dist/server/index.mjs";
 
           export default {
             async fetch(request, env, ctx) {
-              // Pass ASSETS binding so vinext can serve static files
-              if (typeof server === "function") {
-                return server(request, env, ctx);
+              try {
+                if (server && typeof server.fetch === "function") {
+                  return await server.fetch(request, env, ctx);
+                }
+                if (typeof server === "function") {
+                  return await server(request, env, ctx);
+                }
+                return new Response("Handler type: " + typeof server + " keys: " + Object.keys(server||{}).join(","), { status: 500 });
+              } catch(e) {
+                return new Response("Worker error: " + e.message + "\n" + e.stack, {
+                  status: 500,
+                  headers: { "content-type": "text/plain" }
+                });
               }
-              if (server && typeof server.fetch === "function") {
-                return server.fetch(request, env, ctx);
-              }
-              if (server && typeof server.default === "function") {
-                return server.default(request, env, ctx);
-              }
-              if (server && server.default && typeof server.default.fetch === "function") {
-                return server.default.fetch(request, env, ctx);
-              }
-              return new Response("vinext handler not found: " + typeof server + " keys:" + Object.keys(server||{}).join(","), { status: 500 });
             }
           };
           WORKER_EOF
 
-          echo "=== worker-cf.mjs ==="
-          cat worker-cf.mjs
-
-          # Bundle with esbuild - inline dist/server relative deps, externalize node: and cloudflare:
+          # Bundle - esbuild will now inline the static ssr import
           npx esbuild worker-cf.mjs \
             --bundle \
             --format=esm \
@@ -78,19 +97,11 @@ jobs:
             --conditions=worker,workerd,browser \
             --external:"node:*" \
             --external:"cloudflare:*" \
-            --external:"__STATIC_CONTENT_MANIFEST" \
-            --outfile=dist/worker-bundle.mjs \
-            --log-level=info 2>&1
+            --outfile=dist/worker-bundle.mjs 2>&1
           
-          echo ""
-          echo "=== Bundle stats ==="
-          ls -lh dist/worker-bundle.mjs 2>/dev/null || echo "BUNDLE FAILED"
-          echo ""
-          echo "=== Bundle exports check ==="
-          grep -c "export default\|export {" dist/worker-bundle.mjs 2>/dev/null | xargs echo "export lines:"
-          head -5 dist/worker-bundle.mjs 2>/dev/null
+          echo "Bundle: $(ls -lh dist/worker-bundle.mjs 2>/dev/null | awk '{print $5}')"
 
-      - name: Write wrangler.toml and deploy
+      - name: Deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -108,15 +119,14 @@ jobs:
           [vars]
           ENVIRONMENT = "test"
           EOF
-
           npx wrangler@latest deploy 2>&1
 
-      - name: Verify live
+      - name: Verify all routes
         run: |
           sleep 12
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
-          echo "=== GET / ==="
-          curl -si --max-time 20 "$BASE/" | head -40
-          echo ""
-          echo "=== GET /api/health ==="
-          curl -si --max-time 20 "$BASE/api/health"
+          for path in "/" "/api/health" "/county" "/county/brevard" "/auctions"; do
+            echo "--- $path ---"
+            curl -si --max-time 20 "$BASE$path" | head -25
+            echo ""
+          done
