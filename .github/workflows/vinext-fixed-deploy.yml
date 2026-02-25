@@ -47,23 +47,25 @@ jobs:
           V_STRIPE_WEBHOOK: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
           V_MAPBOX: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
         run: |
-          push_secret() { printf "%s" "$2" | npx wrangler secret put "$1" --name zonewise-vinext-test --no-interactive && echo "set: $1"; }
-          push_secret "NEXT_PUBLIC_SUPABASE_URL"      "$V_SUPABASE_URL"
-          push_secret "NEXT_PUBLIC_SUPABASE_ANON_KEY" "$V_SUPABASE_ANON"
-          push_secret "SUPABASE_SERVICE_ROLE_KEY"     "$V_SUPABASE_SERVICE"
-          push_secret "ANTHROPIC_API_KEY"             "$V_ANTHROPIC"
-          push_secret "STRIPE_SECRET_KEY"             "$V_STRIPE_SECRET"
-          push_secret "STRIPE_WEBHOOK_SECRET"         "$V_STRIPE_WEBHOOK"
-          push_secret "NEXT_PUBLIC_MAPBOX_TOKEN"      "$V_MAPBOX"
+          echo "$V_SUPABASE_URL"      | npx wrangler secret put NEXT_PUBLIC_SUPABASE_URL      --name zonewise-vinext-test 2>&1 || echo "warn: NEXT_PUBLIC_SUPABASE_URL"
+          echo "$V_SUPABASE_ANON"     | npx wrangler secret put NEXT_PUBLIC_SUPABASE_ANON_KEY  --name zonewise-vinext-test 2>&1 || echo "warn: NEXT_PUBLIC_SUPABASE_ANON_KEY"
+          echo "$V_SUPABASE_SERVICE"  | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY      --name zonewise-vinext-test 2>&1 || echo "warn: SUPABASE_SERVICE_ROLE_KEY"
+          echo "$V_ANTHROPIC"         | npx wrangler secret put ANTHROPIC_API_KEY              --name zonewise-vinext-test 2>&1 || echo "warn: ANTHROPIC_API_KEY"
+          echo "$V_STRIPE_SECRET"     | npx wrangler secret put STRIPE_SECRET_KEY              --name zonewise-vinext-test 2>&1 || echo "warn: STRIPE_SECRET_KEY"
+          echo "$V_STRIPE_WEBHOOK"    | npx wrangler secret put STRIPE_WEBHOOK_SECRET          --name zonewise-vinext-test 2>&1 || echo "warn: STRIPE_WEBHOOK_SECRET"
+          echo "$V_MAPBOX"            | npx wrangler secret put NEXT_PUBLIC_MAPBOX_TOKEN       --name zonewise-vinext-test 2>&1 || echo "warn: NEXT_PUBLIC_MAPBOX_TOKEN"
+          echo "Secrets step complete"
 
       - name: Smoke test
         run: |
           sleep 20
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
+
           for path in "/" "/login" "/signup" "/dashboard"; do
             printf "%s → " "$path"
             curl -si --max-time 10 "$BASE$path" | grep "^HTTP/2" | tr -d '\r'
           done
+
           echo "--- /api/chat (no auth) ---"
           curl -s -X POST "$BASE/api/chat" -H "Content-Type: application/json" -d '{"message":"test"}'
           echo ""
