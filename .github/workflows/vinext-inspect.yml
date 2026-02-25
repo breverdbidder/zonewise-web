@@ -1,0 +1,58 @@
+name: vinext Inspect Worker Config
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: breverdbidder/zonewise-vinext-test
+          token: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install --legacy-peer-deps
+
+      - name: Build + inspect generated config
+        run: npm run build
+
+      - name: Inspect dist/client/wrangler.json
+        run: |
+          echo "=== dist/client/wrangler.json ==="
+          cat dist/client/wrangler.json 2>/dev/null || echo "NOT FOUND"
+          echo ""
+          echo "=== .wrangler/deploy/config.json ==="
+          cat .wrangler/deploy/config.json 2>/dev/null || echo "NOT FOUND"
+          echo ""
+          echo "=== All wrangler configs ==="
+          find . -name "wrangler.*" -not -path "*/node_modules/*" | head -20
+          echo ""
+          echo "=== worker/ dir (vinext-generated) ==="
+          ls -la worker/ 2>/dev/null || echo "no worker/ dir yet"
+          echo ""
+          echo "=== dist/ full tree ==="
+          find dist -type f
+
+      - name: Deploy and capture full output
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npm run deploy 2>&1
+          echo "=== Post-deploy: dist/client/wrangler.json ==="
+          cat dist/client/wrangler.json 2>/dev/null || echo "NOT FOUND"
+          echo "=== Post-deploy: worker/ ==="
+          ls -la worker/ 2>/dev/null || echo "no worker/"
+          cat worker/index.ts 2>/dev/null || echo "no worker/index.ts"
+
+      - name: Verify
+        run: |
+          sleep 10
+          BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
+          curl -si --max-time 15 "$BASE/" 2>&1 | head -20
