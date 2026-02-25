@@ -6,7 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,99 +20,32 @@ jobs:
       - name: Install
         run: npm install --legacy-peer-deps
 
-      - name: Set clean wrangler.toml
-        run: |
-          printf 'name = "zonewise-vinext-test"\ncompatibility_date = "2024-09-23"\ncompatibility_flags = ["nodejs_compat_v2"]\n\n[assets]\ndirectory = "dist/client"\nbinding = "ASSETS"\n\n[vars]\nENVIRONMENT = "test"\n' > wrangler.toml
+      - name: Show current package.json scripts
+        run: node -e "const p=require('./package.json'); console.log(JSON.stringify(p.scripts,null,2))"
 
-      - name: vinext deploy (generates worker/ + vite.config.ts + full build)
+      - name: Build and deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npm run deploy 2>&1 | tee /tmp/deploy.log || true
+          # vinext build → produces dist/server/index.mjs (fetch handler) + dist/client assets
+          npm run build 2>&1 | tail -20
           echo ""
-          echo "=== .wrangler/deploy/config.json ==="
-          cat .wrangler/deploy/config.json 2>/dev/null || echo "NOT FOUND"
+          echo "=== wrangler.toml ==="
+          cat wrangler.toml
           echo ""
-          echo "=== dist/client/wrangler.json ==="
-          cat dist/client/wrangler.json 2>/dev/null || echo "NOT FOUND"
+          echo "=== dist/server/index.mjs last 5 lines ==="
+          tail -5 dist/server/index.mjs
           echo ""
-          echo "=== All files in dist/ ==="
-          find dist -type f | sort
-          echo ""
-          echo "=== Any .js bundles > 500KB? ==="
-          find . -name "*.js" -size +500k -not -path "*/node_modules/*" 2>/dev/null | xargs ls -lh 2>/dev/null
-          echo ""
-          echo "=== Full deploy log ==="
-          cat /tmp/deploy.log
-
-      - name: Patch wrangler config and redeploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          # The .wrangler/deploy/config.json is what vinext uses — patch it
-          CONFIG=".wrangler/deploy/config.json"
-          if [ -f "$CONFIG" ]; then
-            echo "=== Original deploy config ==="
-            cat "$CONFIG"
-            
-            # Inject main field pointing to dist/server/index.js (the RSC server handler)
-            python3 -c "
-          import json, sys
-          with open('$CONFIG') as f:
-              c = json.load(f)
-          print('Before main:', c.get('main', 'NOT SET'))
-          # Try to find the right worker entry
-          import os
-          candidates = ['dist/server/index.js', 'dist/server/index.mjs']
-          for cand in candidates:
-              if os.path.exists(cand):
-                  c['main'] = cand
-                  print('Setting main to:', cand)
-                  break
-          # Ensure ASSETS binding
-          if 'assets' not in c:
-              c['assets'] = {'directory': 'dist/client', 'binding': 'ASSETS'}
-          print('Final config main:', c.get('main'))
-          with open('$CONFIG', 'w') as f:
-              json.dump(c, f, indent=2)
-          "
-            echo "=== Patched deploy config ==="
-            cat "$CONFIG"
-          fi
-          
-          # Also patch dist/client/wrangler.json if it exists
-          if [ -f "dist/client/wrangler.json" ]; then
-            python3 -c "
-          import json, os
-          with open('dist/client/wrangler.json') as f:
-              c = json.load(f)
-          print('client/wrangler.json main before:', c.get('main', 'NOT SET'))
-          for cand in ['dist/server/index.js', 'dist/server/index.mjs']:
-              if os.path.exists(cand):
-                  c['main'] = cand
-                  break
-          if 'assets' not in c:
-              c['assets'] = {'directory': '.', 'binding': 'ASSETS'}
-          elif isinstance(c.get('assets'), dict):
-              c['assets']['binding'] = 'ASSETS'
-          print('client/wrangler.json main after:', c.get('main', 'STILL NOT SET'))
-          with open('dist/client/wrangler.json', 'w') as f:
-              json.dump(c, f, indent=2)
-          "
-          fi
-          
-          # Deploy using the deploy config
-          npx wrangler@latest deploy --config .wrangler/deploy/config.json 2>&1 || \
+          # Deploy: wrangler bundles dist/server/index.mjs (which imports ./ssr/index.js)
           npx wrangler@latest deploy 2>&1
 
       - name: Verify live
         run: |
-          sleep 12
+          sleep 15
           BASE="https://zonewise-vinext-test.brevardbidderai.workers.dev"
-          for path in "/" "/api/health" "/county"; do
+          for path in "/" "/api/health" "/county" "/auctions"; do
             echo "--- $path ---"
-            curl -s --max-time 20 "$BASE$path" | head -200
+            curl -si --max-time 20 "$BASE$path" | head -8
             echo ""
           done
