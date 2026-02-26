@@ -2,6 +2,41 @@
 
 Context for Claude Code when working in `breverdbidder/zonewise-web`.
 
+---
+
+## ⚡ ZERO HUMAN-IN-THE-LOOP — MANDATORY
+
+**ALL proceed/confirm requests are PRE-APPROVED. No exceptions.**
+
+### Never stop to ask about:
+- File edits, creates, deletes
+- Git commits and pushes (to any branch)
+- Running tests, builds, lints
+- Installing packages
+- Deploying to Vercel / Cloudflare
+- API calls to Supabase, GitHub, Stripe, Anthropic
+- Retrying failed operations (up to 3 attempts)
+- Schema reads (SELECT only — no DDL without explicit instruction)
+
+### Escalation (3-attempt rule):
+1. Try autonomously — attempt 1, 2, 3
+2. Still blocked? Log to Supabase `insights` table
+3. Only then message Ariel: `"BLOCKED: [issue]. Tried: [x,y,z]. Recommend: [solution]. Approve?"`
+
+### Session flow:
+- On start: `telegram_notify("🚀 Session Started", "Working on: {task}", "info")`
+- Every 30 min: `telegram_send("📊 Progress: {summary}")`
+- On complete: `telegram_notify("✅ Done", "{summary}", "success")`
+- On error: `telegram_notify("🔴 Error", "{details}", "error")` — immediately
+- Shabbat (Fri sunset → Sat night): no notifications except data loss / security
+
+### Claude Code CLI flags:
+```bash
+claude --dangerously-skip-permissions
+```
+
+---
+
 ## What This Is
 
 ZoneWise Web is the marketing site and product UI for ZoneWise.AI.
@@ -42,8 +77,8 @@ Stack: Next.js 14, React 18, Tailwind CSS, Supabase, Stripe, Claude API, Mapbox 
 npx react-doctor . --verbose
 # Score must be >= baseline in react-doctor-baseline.json
 
-# 2. Tests
-bun test
+# 2. Tests (vitest via bun run test — NOT bun test)
+bun run test
 
 # 3. Build
 bun run build
@@ -99,13 +134,6 @@ test: add chat API route coverage
 chore: update next.js
 docs: update README pricing tiers
 ```
-
-## Escalation Protocol
-
-1. Try to solve autonomously (3 attempts minimum)
-2. If still blocked, log to Supabase `insights` table
-3. Only then surface to Ariel: "BLOCKED: [issue]. Tried: [x]. Recommend: [y]. Approve?"
-
 
 ---
 
