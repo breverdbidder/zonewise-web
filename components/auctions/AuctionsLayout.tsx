@@ -1,14 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import AuctionSummaryCards from './AuctionSummaryCards'
 import AuctionFilters from './AuctionFilters'
 import AuctionTable from './AuctionTable'
-import AuctionMap from './AuctionMap'
 import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/types/auctions'
+
+// Dynamic import — mapbox-gl requires window, breaks SSR
+const AuctionMap = dynamic(() => import('./AuctionMap'), { ssr: false })
 
 export default function AuctionsLayout() {
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [auctions, setAuctions] = useState<Auction[]>([])
   const [summary, setSummary] = useState<AuctionSummary | null>(null)
   const [total, setTotal] = useState(0)
@@ -24,8 +28,14 @@ export default function AuctionsLayout() {
 
   useEffect(() => {
     const init = async () => {
-      await Promise.all([fetchSummary(), fetchAuctions()])
-      setLoading(false)
+      try {
+        await Promise.all([fetchSummary(), fetchAuctions()])
+      } catch (err) {
+        console.error('Init failed:', err)
+        setError('Failed to load auction data')
+      } finally {
+        setLoading(false)
+      }
     }
     init()
   }, [])
@@ -69,6 +79,19 @@ export default function AuctionsLayout() {
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-slate-400 text-sm">Loading auctions...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-red-500 text-sm">{error}</p>
+          <button onClick={() => window.location.reload()} className="text-sm text-blue-500 underline">
+            Retry
+          </button>
         </div>
       </div>
     )
