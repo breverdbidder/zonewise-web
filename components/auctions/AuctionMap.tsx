@@ -47,8 +47,8 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
     mapRef.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: theme === 'dark'
-        ? 'mapbox://styles/mapbox/dark-v11'
-        : 'mapbox://styles/mapbox/light-v11',
+        ? 'mapbox://styles/mapbox/satellite-streets-v12'
+        : 'mapbox://styles/mapbox/satellite-streets-v12',
       center: [-81.5, 27.6],
       zoom: 6,
     })
@@ -69,8 +69,8 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
   useEffect(() => {
     if (mapRef.current && mapLoaded) {
       const style = theme === 'dark'
-        ? 'mapbox://styles/mapbox/dark-v11'
-        : 'mapbox://styles/mapbox/light-v11'
+        ? 'mapbox://styles/mapbox/satellite-streets-v12'
+        : 'mapbox://styles/mapbox/satellite-streets-v12'
       mapRef.current.setStyle(style)
     }
   }, [theme, mapLoaded])
