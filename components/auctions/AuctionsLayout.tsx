@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import AuctionSummaryCards from './AuctionSummaryCards'
 import AuctionFilters from './AuctionFilters'
 import AuctionTable from './AuctionTable'
@@ -10,9 +8,6 @@ import AuctionMap from './AuctionMap'
 import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/types/auctions'
 
 export default function AuctionsLayout() {
-  const router = useRouter()
-  const supabase = createClient()
-
   const [loading, setLoading] = useState(true)
   const [auctions, setAuctions] = useState<Auction[]>([])
   const [summary, setSummary] = useState<AuctionSummary | null>(null)
@@ -29,11 +24,6 @@ export default function AuctionsLayout() {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/login')
-        return
-      }
       await Promise.all([fetchSummary(), fetchAuctions()])
       setLoading(false)
     }
