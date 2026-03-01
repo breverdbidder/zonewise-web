@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import SessionSidebar from '@/components/enterprise/SessionSidebar'
 import ChatPanel from '@/components/enterprise/ChatPanel'
@@ -18,25 +17,49 @@ export default function EnterpriseLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loading, setLoading] = useState(true)
   
-  const router = useRouter()
   const supabase = createClient()
 
   useEffect(() => { initializeUser() }, [])
 
   const initializeUser = async () => {
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-    if (!authUser) { router.push('/login'); return }
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', authUser.id).single()
-    setUser({
-      id: authUser.id,
-      email: authUser.email || '',
-      role: (profile?.subscription_tier as any) || 'free',
-      queryCount: 0,
-      queryLimit: profile?.subscription_tier === 'pro' ? 500 : profile?.subscription_tier === 'investor' ? 2000 : 25,
-      createdAt: new Date()
-    })
-    await loadSessions(authUser.id)
-    setLoading(false)
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (authUser) {
+        // Authenticated user — load profile and sessions
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', authUser.id).single()
+        setUser({
+          id: authUser.id,
+          email: authUser.email || '',
+          role: (profile?.subscription_tier as any) || 'free',
+          queryCount: 0,
+          queryLimit: profile?.subscription_tier === 'pro' ? 500 : profile?.subscription_tier === 'investor' ? 2000 : 25,
+          createdAt: new Date()
+        })
+        await loadSessions(authUser.id)
+      } else {
+        // Guest mode — render UI without Supabase sessions
+        setUser({
+          id: 'guest',
+          email: 'guest@zonewise.ai',
+          role: 'free',
+          queryCount: 0,
+          queryLimit: 25,
+          createdAt: new Date()
+        })
+      }
+    } catch (err) {
+      console.error('Auth check failed, entering guest mode:', err)
+      setUser({
+        id: 'guest',
+        email: 'guest@zonewise.ai',
+        role: 'free',
+        queryCount: 0,
+        queryLimit: 25,
+        createdAt: new Date()
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   const loadSessions = async (userId: string) => {
@@ -52,6 +75,20 @@ export default function EnterpriseLayout() {
 
   const createNewSession = async () => {
     if (!user) return
+    if (user.id === 'guest') {
+      // Local-only session for guests
+      const newSession: Session = {
+        id: crypto.randomUUID(), title: 'New Chat', messages: [],
+        createdAt: new Date(), updatedAt: new Date(), userId: 'guest',
+        metadata: { queryCount: 0 }
+      }
+      setSessions(prev => [newSession, ...prev])
+      setActiveSession(newSession)
+      setMessages([])
+      setArtifacts([])
+      setActiveArtifact(null)
+      return
+    }
     const { data } = await supabase.from('zw_chat_sessions').insert({ user_id: user.id, title: 'New Chat', query_count: 0 }).select().single()
     if (data) {
       const newSession: Session = { id: data.id, title: 'New Chat', messages: [], createdAt: new Date(), updatedAt: new Date(), userId: user.id, metadata: { queryCount: 0 } }
@@ -65,6 +102,7 @@ export default function EnterpriseLayout() {
 
   const selectSession = async (session: Session) => {
     setActiveSession(session)
+    if (user?.id === 'guest') return
     const { data } = await supabase.from('zw_chat_messages').select('*').eq('session_id', session.id).order('created_at', { ascending: true })
     if (data) {
       const formattedMessages: Message[] = data.map(m => ({ id: m.id, role: m.role, content: m.content, timestamp: new Date(m.created_at), artifacts: m.artifacts || [] }))
@@ -88,7 +126,7 @@ export default function EnterpriseLayout() {
       const assistantMessage: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.response, timestamp: new Date(), artifacts: data.artifacts || [] }
       setMessages(prev => [...prev, assistantMessage])
       if (data.artifacts?.length > 0) { setArtifacts(prev => [...prev, ...data.artifacts]); setActiveArtifact(data.artifacts[data.artifacts.length - 1]) }
-      if (messages.length === 0 && activeSession) {
+      if (messages.length === 0 && activeSession && user?.id !== 'guest') {
         const title = content.slice(0, 50) + (content.length > 50 ? '...' : '')
         await supabase.from('zw_chat_sessions').update({ title, updated_at: new Date().toISOString() }).eq('id', activeSession.id)
         setSessions(prev => prev.map(s => s.id === activeSession.id ? { ...s, title } : s))
@@ -98,7 +136,7 @@ export default function EnterpriseLayout() {
     }
   }
 
-  const handleSignOut = async () => { await supabase.auth.signOut(); router.push('/') }
+  const handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = '/' }
 
   if (loading) {
     return (
