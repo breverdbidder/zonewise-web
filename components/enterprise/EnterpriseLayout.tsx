@@ -102,7 +102,7 @@ export default function EnterpriseLayout() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-white dark:bg-slate-950 transition-colors">
+      <div className="h-full flex items-center justify-center bg-white dark:bg-slate-950 transition-colors">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-slate-400 font-medium">Loading ZoneWise.AI...</p>
@@ -112,7 +112,7 @@ export default function EnterpriseLayout() {
   }
 
   return (
-    <div className="h-screen flex bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 overflow-hidden transition-colors">
+    <div className="h-full flex bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 overflow-hidden transition-colors">
       <SessionSidebar sessions={sessions} activeSession={activeSession} collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         onSelectSession={selectSession} onNewSession={createNewSession} user={user} onSignOut={handleSignOut} />
