@@ -45,26 +45,19 @@ export default function AuctionFilters({
       </select>
 
       <div className="ml-auto flex items-center bg-gray-100 dark:bg-slate-800 rounded-md p-0.5">
-        <button
-          onClick={() => onViewModeChange('table')}
-          className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-            viewMode === 'table'
-              ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
-          }`}
-        >
-          Table
-        </button>
-        <button
-          onClick={() => onViewModeChange('map')}
-          className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-            viewMode === 'map'
-              ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
-          }`}
-        >
-          Map
-        </button>
+        {(['table', 'map', 'calendar', 'spreadsheet'] as const).map((mode) => (
+          <button
+            key={mode}
+            onClick={() => onViewModeChange(mode)}
+            className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+              viewMode === mode
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+            }`}
+          >
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </button>
+        ))}
       </div>
     </div>
   )

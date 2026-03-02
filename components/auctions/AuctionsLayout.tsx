@@ -8,8 +8,10 @@ import AuctionFilters from './AuctionFilters'
 import AuctionTable from './AuctionTable'
 import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/types/auctions'
 
-// Dynamic import — mapbox-gl requires window, breaks SSR
+// Dynamic imports — these components require window, break SSR
 const AuctionMap = dynamic(() => import('./AuctionMap'), { ssr: false })
+const AuctionCalendar = dynamic(() => import('./AuctionCalendar'), { ssr: false })
+import AuctionSpreadsheet from './AuctionSpreadsheet'
 
 export default function AuctionsLayout() {
   const router = useRouter()
@@ -121,17 +123,32 @@ export default function AuctionsLayout() {
           onViewModeChange={setViewMode}
         />
 
-        {viewMode === 'table' ? (
+        {viewMode === 'table' && (
           <AuctionTable
             auctions={auctions}
             loading={false}
             onSelectAuction={(auction) => router.push(`/auctions/${auction.id}`)}
           />
-        ) : (
+        )}
+        {viewMode === 'map' && (
           <AuctionMap
             auctions={auctions}
             loading={false}
             onSelectAuction={setSelectedAuction}
+          />
+        )}
+        {viewMode === 'calendar' && (
+          <AuctionCalendar
+            auctions={auctions}
+            loading={false}
+            onSelectAuction={(auction) => router.push(`/auctions/${auction.id}`)}
+          />
+        )}
+        {viewMode === 'spreadsheet' && (
+          <AuctionSpreadsheet
+            auctions={auctions}
+            loading={false}
+            onSelectAuction={(auction) => router.push(`/auctions/${auction.id}`)}
           />
         )}
 

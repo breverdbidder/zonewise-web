@@ -86,14 +86,15 @@ const DOR_USE_CODES: Record<string, string> = {
 /**
  * Generate BCPAO photo URL for Brevard County parcels.
  * Pattern: https://www.bcpao.us/photos/{prefix}/{account}011.jpg
- * Parcel format: "24 3632-54-*-49" → account "2436325449"
+ * For TaxAcct numbers (e.g. "2941190"), prefix = first 2 digits.
+ * For DOR parcel_id (e.g. "25 3628-01-*-13"), strip to get account digits.
  */
 function generateBcpaoPhotoUrl(parcelId: string): string | null {
   if (!parcelId) return null
   // Strip spaces, dashes, asterisks to get raw account number
   const account = parcelId.replace(/[\s\-\*]/g, '')
-  if (account.length < 6) return null
-  const prefix = account.substring(0, 4)
+  if (account.length < 4) return null
+  const prefix = account.substring(0, 2)
   return `https://www.bcpao.us/photos/${prefix}/${account}011.jpg`
 }
 
@@ -132,30 +133,64 @@ export async function GET(
     homestead_value: number | null
   } | null = null
 
-  if (auction.parcel_id) {
-    // Try fl_parcels lookup (best match by parcel_id)
-    const cleanParcel = auction.parcel_id.replace(/[\s\-\*]/g, '')
-    const { data: parcel } = await supabase
+  // Try fl_parcels lookup using fl_parcel_id (DOR format, set by enrichment pipeline)
+  // Falls back to parcel_id with ILIKE if fl_parcel_id is not populated
+  const parcelFields = 'dor_uc, zone_code, municipality, future_land_use, imp_qual, const_clas, sale_prc1, sale_yr1, jv_hmstd'
+  let parcelData: Record<string, unknown> | null = null
+
+  if (auction.fl_parcel_id) {
+    // Strategy 1: Exact match on fl_parcel_id (most reliable — set by enrichment)
+    const { data } = await supabase
       .from('fl_parcels')
-      .select('dor_uc, zone_code, municipality, future_land_use, imp_qual, const_clas, sale_prc1, sale_yr1, jv_hmstd')
-      .ilike('parcel_id', `%${cleanParcel}%`)
+      .select(parcelFields)
+      .eq('parcel_id', auction.fl_parcel_id)
       .limit(1)
       .maybeSingle()
+    parcelData = data
+  }
 
-    if (parcel) {
-      const dorCode = parcel.dor_uc?.padStart(3, '0') || null
-      zoning = {
-        dor_use_code: dorCode,
-        dor_use_description: dorCode ? (DOR_USE_CODES[dorCode] || `Code ${dorCode}`) : null,
-        zone_code: parcel.zone_code,
-        municipality: parcel.municipality,
-        future_land_use: parcel.future_land_use,
-        improvement_quality: parcel.imp_qual,
-        construction_class: parcel.const_clas,
-        last_sale_price: parcel.sale_prc1 && parcel.sale_prc1 > 0 ? parcel.sale_prc1 : null,
-        last_sale_year: parcel.sale_yr1 && parcel.sale_yr1 > 0 ? parcel.sale_yr1 : null,
-        homestead_value: parcel.jv_hmstd && parcel.jv_hmstd > 0 ? parcel.jv_hmstd : null,
-      }
+  if (!parcelData && auction.fl_co_no && auction.parcel_id) {
+    // Strategy 2: Match by co_no + parcel_id substring (handles format differences)
+    const cleanParcel = auction.parcel_id.replace(/[\s\-\*]/g, '')
+    if (cleanParcel.length >= 4) {
+      const { data } = await supabase
+        .from('fl_parcels')
+        .select(parcelFields)
+        .eq('co_no', auction.fl_co_no)
+        .ilike('parcel_id', `%${cleanParcel}%`)
+        .limit(1)
+        .maybeSingle()
+      parcelData = data
+    }
+  }
+
+  if (!parcelData && auction.parcel_id) {
+    // Strategy 3: Broad ILIKE fallback (original behavior)
+    const cleanParcel = auction.parcel_id.replace(/[\s\-\*]/g, '')
+    if (cleanParcel.length >= 4) {
+      const { data } = await supabase
+        .from('fl_parcels')
+        .select(parcelFields)
+        .ilike('parcel_id', `%${cleanParcel}%`)
+        .limit(1)
+        .maybeSingle()
+      parcelData = data
+    }
+  }
+
+  if (parcelData) {
+    const dorCode = (parcelData.dor_uc as string)?.padStart(3, '0') || null
+    zoning = {
+      dor_use_code: dorCode,
+      dor_use_description: dorCode ? (DOR_USE_CODES[dorCode] || `Code ${dorCode}`) : null,
+      zone_code: parcelData.zone_code as string | null,
+      municipality: parcelData.municipality as string | null,
+      future_land_use: parcelData.future_land_use as string | null,
+      improvement_quality: parcelData.imp_qual as string | null,
+      construction_class: parcelData.const_clas as string | null,
+      last_sale_price: (parcelData.sale_prc1 as number) > 0 ? parcelData.sale_prc1 as number : null,
+      last_sale_year: (parcelData.sale_yr1 as number) > 0 ? parcelData.sale_yr1 as number : null,
+      homestead_value: (parcelData.jv_hmstd as number) > 0 ? parcelData.jv_hmstd as number : null,
     }
   }
 
@@ -169,13 +204,43 @@ export async function GET(
     }
   }
 
+  // Shapira Formula scoring
+  const justValue = auction.just_value as number | null
+  const openingBid = auction.opening_bid as number | null
+  let recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN' = 'UNKNOWN'
+  let maxBid: number | null = null
+  let bidRatio: number | null = null
+  let recommendationColor = '#6B7280' // gray
+
+  if (justValue && justValue > 0) {
+    maxBid = Math.round((justValue * 0.70) - 10000 - Math.min(25000, justValue * 0.15))
+    if (maxBid < 0) maxBid = 0
+    const compareBid = openingBid || justValue
+    if (compareBid > 0) {
+      bidRatio = Math.round((maxBid / compareBid) * 100)
+      if (bidRatio >= 75) {
+        recommendation = 'BID'
+        recommendationColor = '#22C55E'
+      } else if (bidRatio >= 60) {
+        recommendation = 'REVIEW'
+        recommendationColor = '#F59E0B'
+      } else {
+        recommendation = 'SKIP'
+        recommendationColor = '#EF4444'
+      }
+    }
+  }
+
   // Build enriched response
   const response = {
     ...auction,
     photo_url: photoUrl,
     bcpao_photo_url: bcpaoPhotoUrl,
     zoning,
-    // Map source_url to external link
+    recommendation,
+    recommendation_color: recommendationColor,
+    max_bid: maxBid,
+    bid_ratio: bidRatio,
     source_url: auction.source_url,
   }
 
