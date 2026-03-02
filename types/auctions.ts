@@ -6,21 +6,48 @@ export interface Auction {
   auction_type: string
   auction_date: string | null
   plaintiff: string | null
-  defendant: string | null
+  defendant?: string | null
+  judgment_amount?: number | null
+  assessed_value: number | null
+  opening_bid: number | null
+  parcel_id: string | null
+  source_url: string | null
+  scraped_at: string | null
+  created_at: string | null
+  fl_parcel_id: string | null
+  fl_co_no: number | null
   just_value: number | null
-  judgment_amount: number | null
+  land_value: number | null
+  total_living_area: number | null
+  year_built: number | null
+  owner_name: string | null
+  lot_sqft: number | null
   centroid_lat: number | null
   centroid_lng: number | null
-  is_vacant_land: boolean
-  is_condo: boolean
-  address_status: string | null
-  parcel_id: string | null
-  owner_name: string | null
-  year_built: number | null
-  total_living_area: number | null
-  lot_sqft: number | null
   photo_url: string | null
   enriched_at: string | null
+  is_condo: boolean
+  is_vacant_land: boolean
+  address_status: string | null
+}
+
+/** Enriched auction detail (from /api/auctions/[id]) */
+export interface AuctionDetail extends Auction {
+  bcpao_photo_url: string | null
+  zoning: ZoningInfo | null
+}
+
+export interface ZoningInfo {
+  dor_use_code: string | null
+  dor_use_description: string | null
+  zone_code: string | null
+  municipality: string | null
+  future_land_use: string | null
+  improvement_quality: string | null
+  construction_class: string | null
+  last_sale_price: number | null
+  last_sale_year: number | null
+  homestead_value: number | null
 }
 
 export interface AuctionSummary {
