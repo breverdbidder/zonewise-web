@@ -35,6 +35,10 @@ export interface Auction {
 export interface AuctionDetail extends Auction {
   bcpao_photo_url: string | null
   zoning: ZoningInfo | null
+  recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN'
+  recommendation_color: string
+  max_bid: number | null
+  bid_ratio: number | null
 }
 
 export interface ZoningInfo {
@@ -68,4 +72,4 @@ export interface AuctionsResponse {
 
 export type SortField = 'auction_date' | 'county' | 'just_value' | 'property_address'
 export type SortDirection = 'asc' | 'desc'
-export type ViewMode = 'table' | 'map'
+export type ViewMode = 'table' | 'map' | 'calendar' | 'spreadsheet'

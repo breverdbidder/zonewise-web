@@ -179,6 +179,15 @@ export default function AuctionDetail({ auctionId }: Props) {
               {typeLabel(auction.auction_type)}
             </span>
 
+            {auction.recommendation && auction.recommendation !== 'UNKNOWN' && (
+              <span
+                className="px-2.5 py-1 text-xs font-bold rounded-full text-white shrink-0"
+                style={{ backgroundColor: auction.recommendation_color }}
+              >
+                {auction.recommendation}
+              </span>
+            )}
+
             {daysUntilAuction != null && daysUntilAuction >= 0 && (
               <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 shrink-0">
                 {daysUntilAuction === 0 ? 'Today' : daysUntilAuction === 1 ? 'Tomorrow' : `${daysUntilAuction} days`}
@@ -308,6 +317,38 @@ export default function AuctionDetail({ auctionId }: Props) {
                 </div>
               )}
             </div>
+
+            {/* Shapira Formula Scoring */}
+            {auction.recommendation && auction.recommendation !== 'UNKNOWN' && (
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-3">Investment Score</p>
+                <div className="text-center mb-3">
+                  <span
+                    className="inline-block px-4 py-2 rounded-lg text-xl font-bold text-white"
+                    style={{ backgroundColor: auction.recommendation_color }}
+                  >
+                    {auction.recommendation}
+                  </span>
+                </div>
+                {auction.max_bid != null && (
+                  <div className="text-center mb-2">
+                    <p className="text-xs text-gray-500 dark:text-slate-400">Max Bid</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(auction.max_bid)}
+                    </p>
+                  </div>
+                )}
+                {auction.bid_ratio != null && (
+                  <div className="text-center mb-3">
+                    <p className="text-xs text-gray-500 dark:text-slate-400">Bid-to-Value Ratio</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{auction.bid_ratio}%</p>
+                  </div>
+                )}
+                <p className="text-[10px] text-gray-400 dark:text-slate-600 text-center mt-2">
+                  Shapira Formula&trade; &middot; (ARV &times; 70%) - Repairs - $10K - MIN($25K, 15% ARV)
+                </p>
+              </div>
+            )}
 
             {/* Mini Map */}
             {hasCoords && (

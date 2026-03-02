@@ -35,13 +35,16 @@ export default function AuctionSummaryCards({ summary, loading }: Props) {
   const addressRate = summary.total > 0
     ? `${((summary.with_address / summary.total) * 100).toFixed(0)}%`
     : '0%'
+  const fcCount = summary.by_type['foreclosure'] || 0
+  const tdCount = summary.by_type['tax_deed'] || 0
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       <StatCard label="Total Auctions" value={summary.total} sub={`${countyCount} counties`} />
+      <StatCard label="Foreclosures" value={fcCount} sub={`${tdCount} tax deeds`} />
       <StatCard label="With Address" value={summary.with_address} sub={addressRate} />
-      <StatCard label="Vacant Land" value={summary.vacant_land} />
-      <StatCard label="Condos" value={summary.condos} />
+      <StatCard label="298 KPIs" value="3.1x" sub="vs PropertyOnion" />
+      <StatCard label="AI Scoring" value="Live" sub="Shapira Formula" />
     </div>
   )
 }
