@@ -5,8 +5,6 @@ import { Artifact } from '@/types'
 import { useTheme } from '@/lib/theme-context'
 import { OnboardingTooltip } from '@/components/onboarding'
 
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
@@ -26,7 +24,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
   const [mapError, setMapError] = useState<string | null>(null)
   const { theme } = useTheme()
 
-  // Initialize map
+  // Initialize map — dynamic import to avoid SSR crash
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return
     if (!MAPBOX_TOKEN) {
@@ -34,29 +32,40 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
       return
     }
 
-    mapboxgl.accessToken = MAPBOX_TOKEN
+    let cancelled = false
 
-    try {
-      mapRef.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: theme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
-        center: [-81.5, 27.6],
-        zoom: 6,
-      })
+    import('mapbox-gl').then((mapboxglModule) => {
+      if (cancelled || !mapContainer.current) return
+      const mapboxgl = mapboxglModule.default
+      import('mapbox-gl/dist/mapbox-gl.css')
 
-      mapRef.current.on('load', () => {
-        setMapLoaded(true)
-        mapRef.current?.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      })
+      mapboxgl.accessToken = MAPBOX_TOKEN
 
-      mapRef.current.on('error', (e: any) => {
-        console.error('Map error:', e)
-      })
-    } catch (err) {
-      setMapError('Failed to initialize map')
-    }
+      try {
+        mapRef.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/satellite-streets-v12',
+          center: [-81.5, 27.6],
+          zoom: 6,
+        })
+
+        mapRef.current.on('load', () => {
+          setMapLoaded(true)
+          mapRef.current?.addControl(new mapboxgl.NavigationControl(), 'top-right')
+        })
+
+        mapRef.current.on('error', (e: any) => {
+          console.error('Map error:', e)
+        })
+      } catch (err) {
+        setMapError('Failed to initialize map')
+      }
+    }).catch(() => {
+      setMapError('Failed to load map library')
+    })
 
     return () => {
+      cancelled = true
       markerRef.current?.remove()
       mapRef.current?.remove()
       mapRef.current = null
@@ -64,13 +73,8 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
     }
   }, [])
 
-  // Update map style on theme change
-  useEffect(() => {
-    if (mapRef.current && mapLoaded) {
-      const style = theme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11'
-      mapRef.current.setStyle(style)
-    }
-  }, [theme, mapLoaded])
+  // Satellite style doesn't change with theme — no-op
+  useEffect(() => {}, [theme, mapLoaded])
 
   // Update map when artifact changes
   useEffect(() => {
@@ -84,40 +88,43 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 
     if (!artifact?.metadata?.coordinates) return
 
+    import('mapbox-gl').then((mapboxglModule) => {
+      if (!mapRef.current) return
+      const mapboxgl = mapboxglModule.default
+      const coords = artifact.metadata!.coordinates!
+      const zoom = (artifact.metadata as any)?.zoom || 13
 
-    const coords = artifact.metadata.coordinates
-    const zoom = (artifact.metadata as any)?.zoom || 13
+      // Create custom marker
+      const el = document.createElement('div')
+      el.innerHTML = `<div style="
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, #2A4F7A, #1E3A5F);
+        border: 3px solid white;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        display: flex; align-items: center; justify-content: center;
+      "><span style="transform: rotate(45deg); color: white; font-weight: bold; font-size: 12px;">Z</span></div>`
 
-    // Create custom marker
-    const el = document.createElement('div')
-    el.innerHTML = `<div style="
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg, #2A4F7A, #1E3A5F);
-      border: 3px solid white;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      display: flex; align-items: center; justify-content: center;
-    "><span style="transform: rotate(45deg); color: white; font-weight: bold; font-size: 12px;">Z</span></div>`
+      markerRef.current = new mapboxgl.Marker(el)
+        .setLngLat(coords)
+        .addTo(mapRef.current)
 
-    markerRef.current = new mapboxgl.Marker(el)
-      .setLngLat(coords)
-      .addTo(mapRef.current)
+      // Add popup with zone info
+      if (artifact.data?.zoneCode) {
+        const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
+          .setHTML(`
+            <div style="padding: 8px; font-family: Arial, sans-serif;">
+              <strong style="color: #1E3A5F; font-size: 14px;">${artifact.data.zoneCode}</strong>
+              <div style="color: #666; font-size: 12px;">${artifact.data.zoneName || ''}</div>
+              <div style="color: #888; font-size: 11px;">${artifact.data.jurisdiction || ''}</div>
+            </div>
+          `)
+        markerRef.current.setPopup(popup).togglePopup()
+      }
 
-    // Add popup with zone info
-    if (artifact.data?.zoneCode) {
-      const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
-        .setHTML(`
-          <div style="padding: 8px; font-family: Arial, sans-serif;">
-            <strong style="color: #1E3A5F; font-size: 14px;">${artifact.data.zoneCode}</strong>
-            <div style="color: #666; font-size: 12px;">${artifact.data.zoneName || ''}</div>
-            <div style="color: #888; font-size: 11px;">${artifact.data.jurisdiction || ''}</div>
-          </div>
-        `)
-      markerRef.current.setPopup(popup).togglePopup()
-    }
-
-    mapRef.current.flyTo({ center: coords, zoom, duration: 1200 })
+      mapRef.current.flyTo({ center: coords, zoom, duration: 1200 })
+    })
   }, [artifact, mapLoaded])
 
   const panelBg = "bg-white dark:bg-slate-900"
