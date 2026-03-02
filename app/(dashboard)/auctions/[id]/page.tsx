@@ -6,7 +6,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params
   return {
     title: `Auction #${id} | ZoneWise.AI`,
-    description: 'Auction property detail — ZoneWise.AI',
+    description: 'Auction detail — property info, parcel data, zoning, and map',
   }
 }
 
