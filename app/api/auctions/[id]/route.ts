@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { resolveBcpaoPhotoUrl } from '@/lib/bcpao'
 
 function getSupabase() {
   return createClient(
@@ -83,20 +84,6 @@ const DOR_USE_CODES: Record<string, string> = {
   '099': 'Acreage not Zoned Ag',
 }
 
-/**
- * Generate BCPAO photo URL for Brevard County parcels.
- * Pattern: https://www.bcpao.us/photos/{prefix}/{account}011.jpg
- * For TaxAcct numbers (e.g. "2941190"), prefix = first 2 digits.
- * For DOR parcel_id (e.g. "25 3628-01-*-13"), strip to get account digits.
- */
-function generateBcpaoPhotoUrl(parcelId: string): string | null {
-  if (!parcelId) return null
-  // Strip spaces, dashes, asterisks to get raw account number
-  const account = parcelId.replace(/[\s\-\*]/g, '')
-  if (account.length < 4) return null
-  const prefix = account.substring(0, 2)
-  return `https://www.bcpao.us/photos/${prefix}/${account}011.jpg`
-}
 
 export async function GET(
   _request: NextRequest,
@@ -198,7 +185,7 @@ export async function GET(
   let photoUrl = auction.photo_url
   let bcpaoPhotoUrl: string | null = null
   if (auction.county === 'Brevard' && auction.parcel_id) {
-    bcpaoPhotoUrl = generateBcpaoPhotoUrl(auction.parcel_id)
+    bcpaoPhotoUrl = await resolveBcpaoPhotoUrl(auction.parcel_id)
     if (!photoUrl) {
       photoUrl = bcpaoPhotoUrl
     }
