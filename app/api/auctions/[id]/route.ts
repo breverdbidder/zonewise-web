@@ -8,31 +8,180 @@ function getSupabase() {
   )
 }
 
+/**
+ * Florida DOR Use Code descriptions.
+ * Source: Florida Dept of Revenue property classification codes.
+ */
+const DOR_USE_CODES: Record<string, string> = {
+  '000': 'Vacant Residential',
+  '001': 'Single Family Residential',
+  '002': 'Mobile Home',
+  '003': 'Multi-Family (2–9 units)',
+  '004': 'Condominium',
+  '005': 'Cooperative',
+  '006': 'Retirement Home (not nursing)',
+  '007': 'Misc Residential',
+  '008': 'Multi-Family (10+ units)',
+  '009': 'Residential Common Area',
+  '010': 'Vacant Commercial',
+  '011': 'Store / Retail',
+  '012': 'Mixed Use (Res + Comm)',
+  '014': 'Supermarket',
+  '016': 'Community Shopping Center',
+  '017': 'Office (1-story)',
+  '018': 'Office (multi-story)',
+  '019': 'Medical Office / Clinic',
+  '020': 'Tourist Attraction / Commercial',
+  '021': 'Restaurant / Cafeteria',
+  '022': 'Drive-In Restaurant',
+  '023': 'Financial Institution',
+  '024': 'Insurance Office',
+  '025': 'Repair Service Shop',
+  '026': 'Service Station',
+  '027': 'Automotive Sales / Repair',
+  '028': 'Parking Lot / Garage',
+  '029': 'Wholesale / Produce',
+  '030': 'Florist / Greenhouse',
+  '033': 'Nightclub / Bar / Lounge',
+  '034': 'Bowling Alley',
+  '038': 'Golf Course',
+  '039': 'Hotel / Motel',
+  '040': 'Vacant Industrial',
+  '041': 'Light Manufacturing',
+  '042': 'Heavy Manufacturing',
+  '043': 'Lumber Yard',
+  '048': 'Warehousing / Distribution',
+  '049': 'Open Storage',
+  '050': 'Vacant Agricultural (Improved)',
+  '051': 'Cropland (Row Crops)',
+  '052': 'Improved Pasture',
+  '053': 'Timber',
+  '060': 'Grazing Land (Improved)',
+  '061': 'Grazing Land (Semi-Improved)',
+  '066': 'Orchard / Grove / Vineyard',
+  '067': 'Poultry / Bees / Fish / etc',
+  '069': 'Ornamental / Misc Ag',
+  '070': 'Vacant Institutional',
+  '071': 'Church / Worship',
+  '072': 'Private School / College',
+  '073': 'Private Hospital',
+  '074': 'Home for the Aged',
+  '075': 'Orphanage / Non-Profit',
+  '076': 'Mortuary / Cemetery',
+  '077': 'Club / Lodge / Union Hall',
+  '080': 'Undefined / Transitional',
+  '082': 'Forest / Parks / Rec (County)',
+  '083': 'Public County School',
+  '085': 'Municipal / Public',
+  '086': 'State / Federal / Other',
+  '089': 'Municipal / Other',
+  '091': 'Utility / Gas / Electric',
+  '092': 'Mining / Minerals / Petroleum',
+  '094': 'Right-of-Way / Road',
+  '095': 'River / Lake / Submerged',
+  '097': 'Outdoor Rec / Park',
+  '099': 'Acreage not Zoned Ag',
+}
+
+/**
+ * Generate BCPAO photo URL for Brevard County parcels.
+ * Pattern: https://www.bcpao.us/photos/{prefix}/{account}011.jpg
+ * Parcel format: "24 3632-54-*-49" → account "2436325449"
+ */
+function generateBcpaoPhotoUrl(parcelId: string): string | null {
+  if (!parcelId) return null
+  // Strip spaces, dashes, asterisks to get raw account number
+  const account = parcelId.replace(/[\s\-\*]/g, '')
+  if (account.length < 6) return null
+  const prefix = account.substring(0, 4)
+  return `https://www.bcpao.us/photos/${prefix}/${account}011.jpg`
+}
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const auctionId = parseInt(id)
-
-  if (isNaN(auctionId)) {
-    return NextResponse.json({ error: 'Invalid auction ID' }, { status: 400 })
-  }
-
   const supabase = getSupabase()
 
-  const { data, error } = await supabase
+  // Fetch auction
+  const { data: auction, error } = await supabase
     .from('multi_county_auctions')
     .select('*')
-    .eq('id', auctionId)
+    .eq('id', id)
     .single()
 
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return NextResponse.json({ error: 'Auction not found' }, { status: 404 })
-    }
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error || !auction) {
+    return NextResponse.json(
+      { error: 'Auction not found' },
+      { status: 404 }
+    )
   }
 
-  return NextResponse.json(data)
+  // Try to enrich with fl_parcels data (zoning, etc.)
+  let zoning: {
+    dor_use_code: string | null
+    dor_use_description: string | null
+    zone_code: string | null
+    municipality: string | null
+    future_land_use: string | null
+    improvement_quality: string | null
+    construction_class: string | null
+    last_sale_price: number | null
+    last_sale_year: number | null
+    homestead_value: number | null
+  } | null = null
+
+  if (auction.parcel_id) {
+    // Try fl_parcels lookup (best match by parcel_id)
+    const cleanParcel = auction.parcel_id.replace(/[\s\-\*]/g, '')
+    const { data: parcel } = await supabase
+      .from('fl_parcels')
+      .select('dor_uc, zone_code, municipality, future_land_use, imp_qual, const_clas, sale_prc1, sale_yr1, jv_hmstd')
+      .ilike('parcel_id', `%${cleanParcel}%`)
+      .limit(1)
+      .maybeSingle()
+
+    if (parcel) {
+      const dorCode = parcel.dor_uc?.padStart(3, '0') || null
+      zoning = {
+        dor_use_code: dorCode,
+        dor_use_description: dorCode ? (DOR_USE_CODES[dorCode] || `Code ${dorCode}`) : null,
+        zone_code: parcel.zone_code,
+        municipality: parcel.municipality,
+        future_land_use: parcel.future_land_use,
+        improvement_quality: parcel.imp_qual,
+        construction_class: parcel.const_clas,
+        last_sale_price: parcel.sale_prc1 && parcel.sale_prc1 > 0 ? parcel.sale_prc1 : null,
+        last_sale_year: parcel.sale_yr1 && parcel.sale_yr1 > 0 ? parcel.sale_yr1 : null,
+        homestead_value: parcel.jv_hmstd && parcel.jv_hmstd > 0 ? parcel.jv_hmstd : null,
+      }
+    }
+  }
+
+  // Generate BCPAO photo URL for Brevard if no photo_url exists
+  let photoUrl = auction.photo_url
+  let bcpaoPhotoUrl: string | null = null
+  if (auction.county === 'Brevard' && auction.parcel_id) {
+    bcpaoPhotoUrl = generateBcpaoPhotoUrl(auction.parcel_id)
+    if (!photoUrl) {
+      photoUrl = bcpaoPhotoUrl
+    }
+  }
+
+  // Build enriched response
+  const response = {
+    ...auction,
+    photo_url: photoUrl,
+    bcpao_photo_url: bcpaoPhotoUrl,
+    zoning,
+    // Map source_url to external link
+    source_url: auction.source_url,
+  }
+
+  return NextResponse.json(response, {
+    headers: {
+      'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=600',
+    },
+  })
 }
