@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import type { Auction } from '@/types/auctions'
+import type { AuctionDetail as AuctionDetailType } from '@/types/auctions'
 
 const AuctionDetailMap = dynamic(() => import('./AuctionDetailMap'), { ssr: false })
 
@@ -11,7 +11,7 @@ interface Props {
   auctionId: string
 }
 
-function formatCurrency(val: number | null): string {
+function formatCurrency(val: number | null | undefined): string {
   if (val == null) return '—'
   return '$' + val.toLocaleString('en-US', { maximumFractionDigits: 0 })
 }
@@ -26,46 +26,79 @@ function typeLabel(type: string): string {
   switch (type) {
     case 'foreclosure': return 'Foreclosure'
     case 'tax_deed': return 'Tax Deed'
+    case 'active': return 'Active FC'
+    case 'cancelled': return 'Cancelled'
     default: return type
   }
 }
 
 function typeBadge(type: string): string {
   switch (type) {
-    case 'foreclosure': return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-    case 'tax_deed': return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
-    default: return 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
+    case 'foreclosure':
+    case 'active':
+      return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+    case 'tax_deed':
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+    case 'cancelled':
+      return 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-500'
+    default:
+      return 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400'
   }
 }
 
-function InfoRow({ label, value, mono }: { label: string; value: string | number | null | undefined; mono?: boolean }) {
+const QUALITY_LABELS: Record<string, string> = {
+  '1': 'Excellent', '2': 'Good', '3': 'Average', '4': 'Below Average', '5': 'Poor',
+}
+
+const CONSTRUCTION_LABELS: Record<string, string> = {
+  '1': 'Fireproof Steel/Concrete', '2': 'Reinforced Concrete', '3': 'Masonry',
+  '4': 'Wood Frame', '5': 'Prefab/Metal', '6': 'Minimum',
+}
+
+function InfoRow({ label, value, mono, link }: { label: string; value: string | number | null | undefined; mono?: boolean; link?: string }) {
   const display = value == null || value === '' ? '—' : String(value)
   return (
     <div className="flex items-start justify-between py-2.5 border-b border-gray-100 dark:border-slate-800 last:border-0">
       <span className="text-sm text-gray-500 dark:text-slate-400 shrink-0 w-36">{label}</span>
-      <span className={`text-sm text-gray-900 dark:text-white text-right ${mono ? 'font-mono text-xs' : ''}`}>
-        {display}
-      </span>
+      {link && display !== '—' ? (
+        <a href={link} target="_blank" rel="noopener noreferrer"
+          className={`text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline text-right ${mono ? 'font-mono text-xs' : ''}`}>
+          {display} ↗
+        </a>
+      ) : (
+        <span className={`text-sm text-gray-900 dark:text-white text-right ${mono ? 'font-mono text-xs' : ''}`}>
+          {display}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function SectionCard({ title, children, icon }: { title: string; children: React.ReactNode; icon?: string }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-5">
+      <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide mb-3 flex items-center gap-2">
+        {icon && <span>{icon}</span>}
+        {title}
+      </h2>
+      {children}
     </div>
   )
 }
 
 export default function AuctionDetail({ auctionId }: Props) {
   const router = useRouter()
-  const [auction, setAuction] = useState<Auction | null>(null)
+  const [auction, setAuction] = useState<AuctionDetailType | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [photoError, setPhotoError] = useState(false)
 
   useEffect(() => {
     async function load() {
       try {
         const res = await fetch(`/api/auctions/${auctionId}`)
         if (!res.ok) {
-          if (res.status === 404) {
-            setError('Auction not found')
-          } else {
-            setError('Failed to load auction')
-          }
+          setError(res.status === 404 ? 'Auction not found' : 'Failed to load auction')
           return
         }
         const data = await res.json()
@@ -109,6 +142,11 @@ export default function AuctionDetail({ auctionId }: Props) {
   const hasCoords = auction.centroid_lat != null && auction.centroid_lng != null
   const daysUntilAuction = auction.auction_date
     ? Math.ceil((new Date(auction.auction_date + 'T00:00:00').getTime() - Date.now()) / 86400000)
+    : null
+
+  // Build BCPAO property page link for Brevard parcels
+  const bcpaoLink = auction.county === 'Brevard' && auction.parcel_id
+    ? `https://www.bcpao.us/PropertySearch/#/parcel/${encodeURIComponent(auction.parcel_id)}`
     : null
 
   return (
@@ -156,44 +194,83 @@ export default function AuctionDetail({ auctionId }: Props) {
           <div className="lg:col-span-3 space-y-6">
 
             {/* Photo */}
-            {auction.photo_url && (
+            {auction.photo_url && !photoError && (
               <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg overflow-hidden">
                 <img
                   src={auction.photo_url}
                   alt={auction.property_address || 'Property photo'}
                   className="w-full h-64 object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  onError={() => setPhotoError(true)}
                 />
+                {auction.county === 'Brevard' && (
+                  <p className="text-xs text-gray-400 dark:text-slate-600 px-3 py-1.5">
+                    Photo: Brevard County Property Appraiser
+                  </p>
+                )}
               </div>
             )}
 
             {/* Case Details */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-5">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
-                Case Details
-              </h2>
+            <SectionCard title="Case Details" icon="📋">
               <InfoRow label="Case Number" value={auction.case_number} mono />
               <InfoRow label="Auction Type" value={typeLabel(auction.auction_type)} />
               <InfoRow label="Auction Date" value={formatDate(auction.auction_date)} />
               <InfoRow label="Plaintiff" value={auction.plaintiff} />
-              <InfoRow label="Defendant" value={auction.defendant} />
-              <InfoRow label="Judgment Amount" value={auction.judgment_amount ? formatCurrency(auction.judgment_amount) : null} />
-            </div>
+              {auction.opening_bid != null && (
+                <InfoRow label="Opening Bid" value={formatCurrency(auction.opening_bid)} />
+              )}
+              {auction.source_url && (
+                <InfoRow label="Source" value="View Original" link={auction.source_url} />
+              )}
+            </SectionCard>
 
             {/* Property Details */}
-            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-5">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide mb-3">
-                Property Details
-              </h2>
+            <SectionCard title="Property Details" icon="🏠">
               <InfoRow label="Owner" value={auction.owner_name} />
-              <InfoRow label="Parcel ID" value={auction.parcel_id} mono />
+              <InfoRow
+                label="Parcel ID"
+                value={auction.parcel_id}
+                mono
+                link={bcpaoLink || undefined}
+              />
               <InfoRow label="Just Value" value={formatCurrency(auction.just_value)} />
-              <InfoRow label="Year Built" value={auction.year_built} />
-              <InfoRow label="Living Area" value={auction.total_living_area ? `${auction.total_living_area.toLocaleString()} sqft` : null} />
+              <InfoRow label="Land Value" value={formatCurrency(auction.land_value)} />
+              <InfoRow label="Year Built" value={auction.year_built && auction.year_built > 0 ? auction.year_built : null} />
+              <InfoRow label="Living Area" value={auction.total_living_area && auction.total_living_area > 0 ? `${auction.total_living_area.toLocaleString()} sqft` : null} />
               <InfoRow label="Lot Size" value={auction.lot_sqft ? `${auction.lot_sqft.toLocaleString()} sqft` : null} />
               <InfoRow label="Vacant Land" value={auction.is_vacant_land ? 'Yes' : 'No'} />
               <InfoRow label="Condo" value={auction.is_condo ? 'Yes' : 'No'} />
-            </div>
+            </SectionCard>
+
+            {/* Zoning & Classification */}
+            <SectionCard title="Zoning & Classification" icon="🗺️">
+              {auction.zoning ? (
+                <>
+                  <InfoRow label="DOR Use Code" value={auction.zoning.dor_use_code} mono />
+                  <InfoRow label="Use Description" value={auction.zoning.dor_use_description} />
+                  <InfoRow label="Zone Code" value={auction.zoning.zone_code} />
+                  <InfoRow label="Municipality" value={auction.zoning.municipality} />
+                  <InfoRow label="Future Land Use" value={auction.zoning.future_land_use} />
+                  <InfoRow label="Quality" value={auction.zoning.improvement_quality ? (QUALITY_LABELS[auction.zoning.improvement_quality] || auction.zoning.improvement_quality) : null} />
+                  <InfoRow label="Construction" value={auction.zoning.construction_class ? (CONSTRUCTION_LABELS[auction.zoning.construction_class] || auction.zoning.construction_class) : null} />
+                  {auction.zoning.last_sale_price && (
+                    <InfoRow label="Last Sale" value={`${formatCurrency(auction.zoning.last_sale_price)} (${auction.zoning.last_sale_year})`} />
+                  )}
+                  {auction.zoning.homestead_value && (
+                    <InfoRow label="Homestead Value" value={formatCurrency(auction.zoning.homestead_value)} />
+                  )}
+                </>
+              ) : (
+                <div className="py-4 text-center">
+                  <p className="text-sm text-gray-400 dark:text-slate-500">
+                    Zoning data not yet available for {auction.county} County
+                  </p>
+                  <p className="text-xs text-gray-300 dark:text-slate-600 mt-1">
+                    Parcel enrichment in progress — check back soon
+                  </p>
+                </div>
+              )}
+            </SectionCard>
           </div>
 
           {/* Right column: Map + Quick Stats */}
@@ -208,26 +285,27 @@ export default function AuctionDetail({ auctionId }: Props) {
                 </p>
               </div>
               <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4 text-center">
-                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase">Judgment</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase">Land Value</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                  {formatCurrency(auction.judgment_amount)}
+                  {formatCurrency(auction.land_value)}
                 </p>
               </div>
-              {auction.just_value && auction.judgment_amount && auction.judgment_amount > 0 && (
-                <>
-                  <div className="col-span-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4 text-center">
-                    <p className="text-xs text-gray-500 dark:text-slate-400 uppercase">Bid / Value Ratio</p>
-                    <p className={`text-lg font-bold mt-1 ${
-                      (auction.judgment_amount / auction.just_value) <= 0.6
-                        ? 'text-green-600 dark:text-green-400'
-                        : (auction.judgment_amount / auction.just_value) <= 0.75
-                          ? 'text-amber-600 dark:text-amber-400'
-                          : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {((auction.judgment_amount / auction.just_value) * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                </>
+              {auction.opening_bid != null && auction.opening_bid > 0 && (
+                <div className="col-span-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4 text-center">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 uppercase">Opening Bid</p>
+                  <p className="text-lg font-bold text-green-600 dark:text-green-400 mt-1">
+                    {formatCurrency(auction.opening_bid)}
+                  </p>
+                </div>
+              )}
+              {auction.just_value && auction.just_value > 0 && auction.land_value != null && (
+                <div className="col-span-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4 text-center">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 uppercase">Improvement Ratio</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                    {(((auction.just_value - auction.land_value) / auction.just_value) * 100).toFixed(0)}%
+                    <span className="text-xs font-normal text-gray-400 ml-1">improvements</span>
+                  </p>
+                </div>
               )}
             </div>
 
@@ -243,6 +321,24 @@ export default function AuctionDetail({ auctionId }: Props) {
               </div>
             )}
 
+            {/* Coordinates */}
+            {hasCoords && (
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-2">Coordinates</p>
+                <p className="text-xs font-mono text-gray-700 dark:text-slate-300">
+                  {auction.centroid_lat!.toFixed(6)}, {auction.centroid_lng!.toFixed(6)}
+                </p>
+                <a
+                  href={`https://www.google.com/maps?q=${auction.centroid_lat},${auction.centroid_lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-zw-navy-500 dark:text-zw-orange-400 hover:underline mt-1 inline-block"
+                >
+                  Open in Google Maps ↗
+                </a>
+              </div>
+            )}
+
             {/* Address Status */}
             {auction.address_status && (
               <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-lg p-4">
@@ -253,10 +349,35 @@ export default function AuctionDetail({ auctionId }: Props) {
               </div>
             )}
 
+            {/* External Links */}
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4 space-y-2">
+              <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-2">External Links</p>
+              {bcpaoLink && (
+                <a href={bcpaoLink} target="_blank" rel="noopener noreferrer"
+                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  BCPAO Property Page ↗
+                </a>
+              )}
+              {auction.source_url && (
+                <a href={auction.source_url} target="_blank" rel="noopener noreferrer"
+                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  Auction Source ↗
+                </a>
+              )}
+              {hasCoords && (
+                <a href={`https://www.google.com/maps/@${auction.centroid_lat},${auction.centroid_lng},17z/data=!3m1!1e3`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  Google Maps Satellite ↗
+                </a>
+              )}
+            </div>
+
             {/* Data Freshness */}
             {auction.enriched_at && (
               <p className="text-xs text-gray-400 dark:text-slate-600 text-center">
-                Last enriched: {new Date(auction.enriched_at).toLocaleDateString()}
+                Enriched: {new Date(auction.enriched_at).toLocaleDateString()} &middot;
+                Scraped: {auction.scraped_at ? new Date(auction.scraped_at).toLocaleDateString() : '—'}
               </p>
             )}
           </div>
