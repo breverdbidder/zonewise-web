@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Artifact } from '@/types'
 import { useTheme } from '@/lib/theme-context'
+import 'mapbox-gl/dist/mapbox-gl.css'
 import { OnboardingTooltip } from '@/components/onboarding'
 
 
@@ -37,7 +38,6 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
     import('mapbox-gl').then((mapboxglModule) => {
       if (cancelled || !mapContainer.current) return
       const mapboxgl = mapboxglModule.default
-      import('mapbox-gl/dist/mapbox-gl.css')
 
       mapboxgl.accessToken = MAPBOX_TOKEN
 
