@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Force clean build — Sprint 7 auth fixes
-  generateBuildId: () => `sprint7-${Date.now()}`,
+  generateBuildId: () => `auctions-detail-v1-${Date.now()}`,
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'www.bcpao.us' },
