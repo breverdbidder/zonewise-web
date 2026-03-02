@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import AuctionSummaryCards from './AuctionSummaryCards'
 import AuctionFilters from './AuctionFilters'
@@ -11,6 +12,7 @@ import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/type
 const AuctionMap = dynamic(() => import('./AuctionMap'), { ssr: false })
 
 export default function AuctionsLayout() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [auctions, setAuctions] = useState<Auction[]>([])
@@ -123,7 +125,7 @@ export default function AuctionsLayout() {
           <AuctionTable
             auctions={auctions}
             loading={false}
-            onSelectAuction={setSelectedAuction}
+            onSelectAuction={(auction) => router.push(`/auctions/${auction.id}`)}
           />
         ) : (
           <AuctionMap
