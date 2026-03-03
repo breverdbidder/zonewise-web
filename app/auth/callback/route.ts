@@ -54,8 +54,13 @@ export async function GET(request: Request) {
     )
   }
 
+  // Read optional next redirect (e.g. /reset-password for password recovery)
+  // Validate: must be a relative path (starts with / but not //)
+  const next = searchParams.get('next')
+  const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/dashboard'
+
   // SEC-002: Clear the state cookie after successful validation
-  const response = NextResponse.redirect(`${origin}/dashboard`)
+  const response = NextResponse.redirect(`${origin}${safeNext}`)
   response.cookies.set('oauth_state', '', {
     httpOnly: true,
     secure: true,
