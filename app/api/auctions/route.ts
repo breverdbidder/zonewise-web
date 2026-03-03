@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
 
   const county = searchParams.get('county')
   const type = searchParams.get('type')
+  const zoningCategory = searchParams.get('zoning_category')
   const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200)
   const offset = parseInt(searchParams.get('offset') || '0')
   const hasCoords = searchParams.get('has_coords')
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
 
   if (county) query = query.ilike('county', county)
   if (type) query = query.eq('auction_type', type)
+  if (zoningCategory) query = query.eq('zoning_category', zoningCategory)
   if (hasCoords === 'true') {
     query = query.not('centroid_lat', 'is', null).not('centroid_lng', 'is', null)
   }

@@ -23,6 +23,7 @@ export default function AuctionsLayout() {
 
   const [selectedCounty, setSelectedCounty] = useState('')
   const [selectedType, setSelectedType] = useState('')
+  const [selectedZoning, setSelectedZoning] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [selectedAuction, setSelectedAuction] = useState<Auction | null>(null)
 
@@ -46,7 +47,7 @@ export default function AuctionsLayout() {
 
   useEffect(() => {
     if (!loading) fetchAuctions()
-  }, [selectedCounty, selectedType])
+  }, [selectedCounty, selectedType, selectedZoning])
 
   async function fetchSummary() {
     try {
@@ -65,6 +66,7 @@ export default function AuctionsLayout() {
       const params = new URLSearchParams({ limit: '200' })
       if (selectedCounty) params.set('county', selectedCounty)
       if (selectedType) params.set('type', selectedType)
+      if (selectedZoning) params.set('zoning_category', selectedZoning)
 
       const res = await fetch(`/api/auctions?${params}`)
       if (res.ok) {
@@ -117,9 +119,11 @@ export default function AuctionsLayout() {
           counties={counties}
           selectedCounty={selectedCounty}
           selectedType={selectedType}
+          selectedZoning={selectedZoning}
           viewMode={viewMode}
           onCountyChange={setSelectedCounty}
           onTypeChange={setSelectedType}
+          onZoningChange={setSelectedZoning}
           onViewModeChange={setViewMode}
         />
 

@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useTheme } from '@/lib/theme-context'
 import { getRecommendation } from '@/lib/scoring'
+import { getZoningCategory, ZONING_CATEGORY_COLORS, ZONING_CATEGORY_LABELS, type ZoningCategory } from '@/lib/zoning'
 import type { Auction } from '@/types/auctions'
 
 interface Props {
@@ -12,6 +13,8 @@ interface Props {
   loading: boolean
   onSelectAuction: (auction: Auction) => void
 }
+
+type ColorMode = 'type' | 'zoning'
 
 function formatCurrency(val: number | null): string {
   if (val == null) return '—'
@@ -29,6 +32,7 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
   const [mapError, setMapError] = useState<string | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isSatellite, setIsSatellite] = useState(true)
+  const [colorMode, setColorMode] = useState<ColorMode>('type')
   const auctionLookup = useRef<Map<number, Auction>>(new Map())
   const { theme } = useTheme()
 
@@ -103,11 +107,22 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
     const style = isSatellite ? SATELLITE_STYLE : STREETS_STYLE
     mapRef.current.setStyle(style)
 
-    // Re-add sources/layers after style change
     mapRef.current.once('style.load', () => {
       addClusterLayers()
     })
   }, [isSatellite])
+
+  function getPointColor(auction: Auction): string {
+    if (colorMode === 'zoning') {
+      const cat = (auction.zoning_category as ZoningCategory) || getZoningCategory(auction.dor_use_code)
+      if (cat && ZONING_CATEGORY_COLORS[cat]) return ZONING_CATEGORY_COLORS[cat].hex
+      return '#6B7280'
+    }
+    // Type mode
+    if (auction.auction_type === 'foreclosure') return '#EF4444'
+    if (auction.auction_type === 'tax_deed') return '#F59E0B'
+    return '#6B7280'
+  }
 
   function buildGeoJSON() {
     const features = auctions
@@ -115,6 +130,7 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
       .map((a) => {
         const score = getRecommendation(a.just_value, a.opening_bid)
         auctionLookup.current.set(a.id, a)
+        const cat = (a.zoning_category as ZoningCategory) || getZoningCategory(a.dor_use_code)
         return {
           type: 'Feature' as const,
           geometry: {
@@ -131,8 +147,9 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
             auction_date: a.auction_date,
             recommendation: score.recommendation,
             rec_color: score.color,
-            // Numeric type code for color interpolation: 0=foreclosure, 1=tax_deed, 2=other
+            zoning_category: cat || 'UNKNOWN',
             type_code: a.auction_type === 'foreclosure' ? 0 : a.auction_type === 'tax_deed' ? 1 : 2,
+            zoning_code: cat === 'RES' ? 0 : cat === 'COM' ? 1 : cat === 'IND' ? 2 : cat === 'AGR' ? 3 : cat === 'INST' ? 4 : 5,
           },
         }
       })
@@ -143,11 +160,42 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
     }
   }
 
+  function getUnclusteredPaint(): any {
+    if (colorMode === 'zoning') {
+      return {
+        'circle-color': [
+          'match',
+          ['get', 'zoning_code'],
+          0, ZONING_CATEGORY_COLORS.RES.hex,
+          1, ZONING_CATEGORY_COLORS.COM.hex,
+          2, ZONING_CATEGORY_COLORS.IND.hex,
+          3, ZONING_CATEGORY_COLORS.AGR.hex,
+          4, ZONING_CATEGORY_COLORS.INST.hex,
+          ZONING_CATEGORY_COLORS.MISC.hex,
+        ],
+        'circle-radius': 7,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+      }
+    }
+    return {
+      'circle-color': [
+        'match',
+        ['get', 'type_code'],
+        0, '#EF4444',
+        1, '#F59E0B',
+        '#6B7280',
+      ],
+      'circle-radius': 7,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff',
+    }
+  }
+
   function addClusterLayers() {
     const map = mapRef.current
     if (!map) return
 
-    // Remove existing layers/source if present
     const layersToRemove = ['clusters', 'cluster-count', 'unclustered-point']
     layersToRemove.forEach((id) => {
       if (map.getLayer(id)) map.removeLayer(id)
@@ -164,7 +212,6 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
       clusterRadius: 50,
     })
 
-    // Cluster circles — colored by count
     map.addLayer({
       id: 'clusters',
       type: 'circle',
@@ -174,25 +221,22 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
         'circle-color': [
           'step',
           ['get', 'point_count'],
-          '#22C55E',  // green: < 10
-          10,
-          '#F59E0B',  // amber: 10-49
-          50,
-          '#EF4444',  // red: 50+
+          '#22C55E',
+          10, '#F59E0B',
+          50, '#EF4444',
         ],
         'circle-radius': [
           'step',
           ['get', 'point_count'],
-          18,    // small: < 10
-          10, 24, // medium: 10-49
-          50, 32, // large: 50+
+          18,
+          10, 24,
+          50, 32,
         ],
         'circle-stroke-width': 2,
         'circle-stroke-color': '#ffffff',
       },
     })
 
-    // Cluster count labels
     map.addLayer({
       id: 'cluster-count',
       type: 'symbol',
@@ -208,24 +252,12 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
       },
     })
 
-    // Individual pins — colored by auction_type
     map.addLayer({
       id: 'unclustered-point',
       type: 'circle',
       source: 'auctions',
       filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-color': [
-          'match',
-          ['get', 'type_code'],
-          0, '#EF4444',  // foreclosure = red
-          1, '#F59E0B',  // tax_deed = amber
-          '#6B7280',     // other = gray
-        ],
-        'circle-radius': 7,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff',
-      },
+      paint: getUnclusteredPaint(),
     })
 
     // Click cluster → zoom in
@@ -251,13 +283,16 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
       const recBadge = props.recommendation !== 'UNKNOWN'
         ? `<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;background:${props.rec_color}">${props.recommendation}</span>`
         : ''
+      const zoneBadge = props.zoning_category && props.zoning_category !== 'UNKNOWN'
+        ? `<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;color:#555;background:#e5e7eb;margin-left:4px">${props.zoning_category}</span>`
+        : ''
 
       new mapboxgl.Popup({ offset: 15, maxWidth: '280px' })
         .setLngLat(coords)
         .setHTML(`
           <div style="font-family:system-ui;font-size:12px;">
             <p style="font-weight:600;margin:0 0 4px 0;">${props.address}</p>
-            <p style="color:#666;margin:0 0 2px 0;">${props.county} — ${typeLabel} ${recBadge}</p>
+            <p style="color:#666;margin:0 0 2px 0;">${props.county} — ${typeLabel} ${recBadge}${zoneBadge}</p>
             ${props.just_value ? `<p style="color:#666;margin:0 0 2px 0;">Value: ${formatCurrency(props.just_value)}</p>` : ''}
             ${props.opening_bid ? `<p style="color:#666;margin:0 0 2px 0;">Opening Bid: ${formatCurrency(props.opening_bid)}</p>` : ''}
             ${props.auction_date ? `<p style="color:#666;margin:0;">Date: ${props.auction_date}</p>` : ''}
@@ -288,17 +323,21 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
     }
   }
 
-  // Update cluster data when auctions change
+  // Update cluster data when auctions or colorMode change
   useEffect(() => {
     if (!mapRef.current || !mapLoaded) return
     auctionLookup.current.clear()
 
     if (mapRef.current.getSource('auctions')) {
-      // Source exists — just update data
       const geojson = buildGeoJSON()
       mapRef.current.getSource('auctions').setData(geojson)
 
-      // Update bounds
+      // Update pin colors for color mode change
+      if (mapRef.current.getLayer('unclustered-point')) {
+        const paint = getUnclusteredPaint()
+        mapRef.current.setPaintProperty('unclustered-point', 'circle-color', paint['circle-color'])
+      }
+
       const pins = auctions.filter((a) => a.centroid_lat && a.centroid_lng)
       if (pins.length > 1) {
         const bounds = new mapboxgl.LngLatBounds()
@@ -311,10 +350,9 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
         })
       }
     } else {
-      // First time — add source + layers
       addClusterLayers()
     }
-  }, [auctions, mapLoaded])
+  }, [auctions, mapLoaded, colorMode])
 
   if (mapError) {
     return (
@@ -380,19 +418,56 @@ export default function AuctionMap({ auctions, loading, onSelectAuction }: Props
           </svg>
           {isSatellite ? 'Streets' : 'Satellite'}
         </button>
+
+        {/* Color mode toggle */}
+        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-md overflow-hidden shadow-sm">
+          <button
+            onClick={() => setColorMode('type')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              colorMode === 'type'
+                ? 'bg-zw-navy-500 text-white'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
+            }`}
+          >
+            Type
+          </button>
+          <button
+            onClick={() => setColorMode('zoning')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              colorMode === 'zoning'
+                ? 'bg-zw-navy-500 text-white'
+                : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
+            }`}
+          >
+            Zoning
+          </button>
+        </div>
       </div>
 
       {/* Legend */}
       <div className={`absolute ${isFullscreen ? 'bottom-6 left-6' : 'bottom-3 left-3'} bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm rounded-md px-3 py-2 text-xs text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-700 z-20`}>
-        <div className="flex items-center gap-3">
-          <span><span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" /> Foreclosure</span>
-          <span><span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1" /> Tax Deed</span>
-        </div>
-        <div className="flex items-center gap-3 mt-1 pt-1 border-t border-gray-200 dark:border-slate-700">
-          <span><span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-1 text-[8px] text-white text-center leading-3">n</span> &lt;10</span>
-          <span><span className="inline-block w-3 h-3 rounded-full bg-amber-500 mr-1 text-[8px] text-white text-center leading-3">n</span> 10-49</span>
-          <span><span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-1 text-[8px] text-white text-center leading-3">n</span> 50+</span>
-        </div>
+        {colorMode === 'type' ? (
+          <>
+            <div className="flex items-center gap-3">
+              <span><span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" /> Foreclosure</span>
+              <span><span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1" /> Tax Deed</span>
+            </div>
+            <div className="flex items-center gap-3 mt-1 pt-1 border-t border-gray-200 dark:border-slate-700">
+              <span><span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-1 text-[8px] text-white text-center leading-3">n</span> &lt;10</span>
+              <span><span className="inline-block w-3 h-3 rounded-full bg-amber-500 mr-1 text-[8px] text-white text-center leading-3">n</span> 10-49</span>
+              <span><span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-1 text-[8px] text-white text-center leading-3">n</span> 50+</span>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {(Object.entries(ZONING_CATEGORY_COLORS) as [ZoningCategory, typeof ZONING_CATEGORY_COLORS[ZoningCategory]][]).map(([cat, colors]) => (
+              <span key={cat} className="flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: colors.hex }} />
+                {cat}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Fullscreen: Esc hint */}

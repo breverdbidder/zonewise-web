@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { getRecommendation } from '@/lib/scoring'
+import ZoningBadge from './ZoningBadge'
 import type { Auction, SortField, SortDirection } from '@/types/auctions'
 
 interface Props {
@@ -102,6 +103,7 @@ export default function AuctionTable({ auctions, loading, onSelectAuction }: Pro
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Case #</th>
               <SortHeader field="property_address" label="Address" />
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Type</th>
+              <SortHeader field="zoning_category" label="Zone" />
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Plaintiff</th>
               <SortHeader field="just_value" label="Just Value" />
               <SortHeader field="auction_date" label="Date" />
@@ -130,6 +132,9 @@ export default function AuctionTable({ auctions, loading, onSelectAuction }: Pro
                     <span className={`text-xs font-medium ${typeColor(auction.auction_type)}`}>
                       {typeLabel(auction.auction_type)}
                     </span>
+                  </td>
+                  <td className="px-3 py-2.5 whitespace-nowrap">
+                    <ZoningBadge dorCode={auction.dor_use_code} category={auction.zoning_category as any} />
                   </td>
                   <td className="px-3 py-2.5 text-sm text-gray-600 dark:text-slate-400 max-w-[160px] truncate">{auction.plaintiff || '—'}</td>
                   <td className="px-3 py-2.5 text-sm text-gray-900 dark:text-slate-200 whitespace-nowrap">{formatCurrency(auction.just_value)}</td>

@@ -29,6 +29,11 @@ export interface Auction {
   is_condo: boolean
   is_vacant_land: boolean
   address_status: string | null
+  // Zoning intelligence fields
+  dor_use_code: string | null
+  zoning_category: string | null
+  zone_code: string | null
+  municipality: string | null
 }
 
 /** Enriched auction detail (from /api/auctions/[id]) */
@@ -58,6 +63,7 @@ export interface AuctionSummary {
   total: number
   by_county: Record<string, number>
   by_type: Record<string, number>
+  by_zoning: Record<string, number>
   with_address: number
   vacant_land: number
   condos: number
@@ -70,6 +76,6 @@ export interface AuctionsResponse {
   offset: number
 }
 
-export type SortField = 'auction_date' | 'county' | 'just_value' | 'property_address'
+export type SortField = 'auction_date' | 'county' | 'just_value' | 'property_address' | 'zoning_category'
 export type SortDirection = 'asc' | 'desc'
 export type ViewMode = 'table' | 'map' | 'calendar' | 'spreadsheet'

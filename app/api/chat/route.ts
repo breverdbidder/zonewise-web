@@ -227,6 +227,28 @@ export async function POST(request: NextRequest) {
     ))
   }
 
+  // Feature flag: proxy to agents backend when enabled
+  if (process.env.USE_AGENTS_BACKEND === 'true') {
+    try {
+      const agentsUrl = process.env.AGENTS_BACKEND_URL || 'https://zonewise-agents.onrender.com'
+      const body = await request.clone().json()
+      const proxyRes = await fetch(`${agentsUrl}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': request.headers.get('Authorization') || '',
+          'X-User-Id': authUser.userId,
+        },
+        body: JSON.stringify(body),
+      })
+      const proxyData = await proxyRes.json()
+      return addCorsHeaders(request, NextResponse.json(proxyData, { status: proxyRes.status }))
+    } catch (proxyErr: any) {
+      console.error('Agents backend proxy failed, falling back:', proxyErr.message)
+      // Fall through to local handler
+    }
+  }
+
   const remaining = await checkAndDecrementQueryLimit(authUser.userId)
   if (remaining === null) {
     return addCorsHeaders(request, NextResponse.json(
