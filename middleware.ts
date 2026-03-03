@@ -91,7 +91,32 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return await updateSession(request)
+  const { response, user } = await updateSession(request)
+  const origin = request.nextUrl.origin
+
+  // Protected routes — require authentication
+  const isProtected =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/auctions') ||
+    pathname.startsWith('/feasibility')
+
+  if (isProtected && !user) {
+    const redirectUrl = new URL('/login', origin)
+    redirectUrl.searchParams.set('redirectedFrom', pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Auth-only pages — redirect logged-in users to dashboard
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname === '/forgot-password'
+
+  if (isAuthPage && user) {
+    return NextResponse.redirect(new URL('/dashboard', origin))
+  }
+
+  return response
 }
 
 export const config = {
