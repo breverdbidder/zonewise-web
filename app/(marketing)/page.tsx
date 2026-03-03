@@ -22,6 +22,9 @@ export default function Home() {
               ▶ Live Demo
             </a>
             <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</a>
+            <a href="/login" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm font-medium">
+              Sign In
+            </a>
             <a href="#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
               Join the Beta
             </a>
@@ -48,13 +51,13 @@ export default function Home() {
           </a>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 mb-8 leading-[1.1] tracking-tight">
             The AI for<br />
-            <span className="text-zw-navy">Real Estate Intelligence</span>
+            <span className="text-zw-navy">Zoning & Real Estate Intelligence</span>
           </h1>
           <p className="text-xl sm:text-2xl text-gray-600 mb-4 max-w-2xl mx-auto leading-relaxed">
             Distressed assets decoded. For everyone. Everywhere.
           </p>
           <p className="text-sm text-gray-400 mb-10">
-            Founded by Ariel Shapira, Inventor &amp; Founder
+            Founded by Ariel Shapira
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <a href="#beta-signup" className="bg-zw-navy text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-zw-navy-700 transition-all hover:shadow-lg hover:shadow-zw-navy/20">
@@ -204,7 +207,7 @@ export default function Home() {
               { name: '67 FL Counties', value: '369 jurisdictions' },
               { name: '5,950 Districts', value: 'Indexed & searchable' },
               { name: 'District Lookup', value: 'Instant regex path' },
-              { name: 'Density Compare', value: 'Claude Sonnet 4.5' },
+              { name: 'Density Compare', value: 'AI-powered' },
               { name: 'Setback Analysis', value: 'Front/side/rear' },
               { name: 'Permitted Uses', value: 'By-right & conditional' },
             ].map((skill, i) => (
