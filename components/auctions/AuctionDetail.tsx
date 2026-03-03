@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { AuctionDetail as AuctionDetailType } from '@/types/auctions'
+import { parseDimensionalStandards } from '@/lib/zoning'
 
 const AuctionDetailMap = dynamic(() => import('./AuctionDetailMap'), { ssr: false })
 
@@ -280,6 +281,23 @@ export default function AuctionDetail({ auctionId }: Props) {
                 </div>
               )}
             </SectionCard>
+
+            {/* Dimensional Standards */}
+            {auction.zoning?.zone_code && (() => {
+              const dims = parseDimensionalStandards(auction.zoning?.zone_code ?? null, auction.zoning?.future_land_use ?? null)
+              if (!dims) return null
+              return (
+                <SectionCard title="Dimensional Standards" icon="📐">
+                  <InfoRow label="Min Lot Size" value={dims.minLotSize} />
+                  <InfoRow label="Max Height" value={dims.maxHeight} />
+                  <InfoRow label="Setbacks" value={dims.setbacks} />
+                  <InfoRow label="Density" value={dims.density} />
+                  <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-2">
+                    Estimates based on zone code pattern. Verify with local municipality.
+                  </p>
+                </SectionCard>
+              )
+            })()}
           </div>
 
           {/* Right column: Map + Quick Stats */}

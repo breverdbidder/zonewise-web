@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { downloadCSV } from '@/lib/export'
 import { getRecommendation } from '@/lib/scoring'
+import ZoningBadge from './ZoningBadge'
 import type { Auction } from '@/types/auctions'
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
   onSelectAuction: (auction: Auction) => void
 }
 
-type SpreadsheetSort = 'county' | 'auction_date' | 'just_value' | 'property_address' | 'opening_bid'
+type SpreadsheetSort = 'county' | 'auction_date' | 'just_value' | 'property_address' | 'opening_bid' | 'zoning_category'
 
 function fmt(val: number | null | undefined): string {
   if (val == null) return '--'
@@ -40,8 +41,8 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
 
   const sorted = [...auctions].sort((a, b) => {
     const dir = sortDir === 'asc' ? 1 : -1
-    const av = a[sortField]
-    const bv = b[sortField]
+    const av = (a as any)[sortField]
+    const bv = (b as any)[sortField]
     if (av == null && bv == null) return 0
     if (av == null) return 1
     if (bv == null) return -1
@@ -93,6 +94,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
               <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase whitespace-nowrap">Case #</th>
               <SortTh field="property_address" label="Address" />
               <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase whitespace-nowrap">Type</th>
+              <SortTh field="zoning_category" label="Zone" />
               <SortTh field="auction_date" label="Date" />
               <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase whitespace-nowrap">Plaintiff</th>
               <th className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase whitespace-nowrap">Defendant</th>
@@ -119,6 +121,9 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
                     <span className={a.auction_type === 'foreclosure' ? 'text-red-500' : 'text-amber-500'}>
                       {a.auction_type === 'foreclosure' ? 'FC' : 'TD'}
                     </span>
+                  </td>
+                  <td className="px-2 py-1.5 whitespace-nowrap">
+                    <ZoningBadge dorCode={a.dor_use_code} category={a.zoning_category as any} />
                   </td>
                   <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400 whitespace-nowrap">{fmtDate(a.auction_date)}</td>
                   <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400 max-w-[120px] truncate">{a.plaintiff || '--'}</td>

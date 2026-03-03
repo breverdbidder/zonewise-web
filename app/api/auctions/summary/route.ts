@@ -13,7 +13,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from('multi_county_auctions')
-    .select('county, auction_type, is_vacant_land, is_condo, property_address, just_value, address_status')
+    .select('county, auction_type, is_vacant_land, is_condo, property_address, just_value, address_status, zoning_category')
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
@@ -23,6 +23,7 @@ export async function GET() {
     total: data.length,
     by_county: {} as Record<string, number>,
     by_type: {} as Record<string, number>,
+    by_zoning: {} as Record<string, number>,
     with_address: 0,
     vacant_land: 0,
     condos: 0,
@@ -34,6 +35,9 @@ export async function GET() {
 
     const atype = row.auction_type || 'unknown'
     summary.by_type[atype] = (summary.by_type[atype] || 0) + 1
+
+    const zcat = row.zoning_category || 'UNKNOWN'
+    summary.by_zoning[zcat] = (summary.by_zoning[zcat] || 0) + 1
 
     if (row.property_address && !['', 'UNKNOWN, FL', '0 UNKNOWN'].includes(row.property_address)) {
       summary.with_address++
