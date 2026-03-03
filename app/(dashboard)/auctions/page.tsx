@@ -8,5 +8,10 @@ export const metadata = {
 }
 
 export default function AuctionsPage() {
-  return <AuctionsLayout />
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6 px-4 sm:px-6 pt-6 max-w-7xl mx-auto">Florida Foreclosure Auctions</h1>
+      <AuctionsLayout />
+    </div>
+  )
 }
