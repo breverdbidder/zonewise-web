@@ -12,7 +12,11 @@ export const metadata: Metadata = {
     title: 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate',
     description: 'Every zoning rule, every parcel, every county in Florida. AI-powered property intelligence for investors, developers, and architects. Join the beta.',
     siteName: 'ZoneWise.AI',
+    url: 'https://www.zonewise.ai',
     type: 'website',
+  },
+  alternates: {
+    canonical: 'https://www.zonewise.ai',
   },
   twitter: {
     card: 'summary_large_image',
@@ -30,7 +34,6 @@ export const viewport: Viewport = {
   themeColor: '#1E3A5F',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
