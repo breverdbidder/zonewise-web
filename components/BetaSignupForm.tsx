@@ -35,7 +35,7 @@ export default function BetaSignupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} method="post" className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
       <input
         type="email"
         required
