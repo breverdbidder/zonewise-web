@@ -1,36 +1,12 @@
 import Link from 'next/link'
 import SplitScreenPreview from '@/components/SplitScreenPreview'
 import BetaSignupForm from '@/components/BetaSignupForm'
+import NavHeader from '@/components/NavHeader'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-800">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-zw-navy rounded-lg flex items-center justify-center relative">
-              <span className="text-white font-bold">Z</span>
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-zw-orange rounded-full" />
-            </div>
-            <span className="text-xl font-bold text-slate-800">ZoneWise.AI</span>
-          </div>
-          <nav className="flex items-center gap-6">
-            <a href="#how" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">How It Works</a>
-            <a href="/kpis" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">298 KPIs</a>
-            <a href="/demo.html" className="text-zw-navy font-semibold hover:text-zw-navy-700 hidden sm:block text-sm border border-zw-navy/30 px-3 py-1 rounded-lg hover:bg-zw-navy/5 transition-all">
-              ▶ Live Demo
-            </a>
-            <a href="#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</a>
-            <a href="/login" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm font-medium">
-              Sign In
-            </a>
-            <a href="#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
-              Join the Beta
-            </a>
-          </nav>
-        </div>
-      </header>
+      <NavHeader />
 
       {/* Hero */}
       <section className="py-24 sm:py-32 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
