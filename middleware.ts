@@ -98,7 +98,8 @@ export async function middleware(request: NextRequest) {
   const isProtected =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/auctions') ||
-    pathname.startsWith('/feasibility')
+    pathname.startsWith('/feasibility') ||
+    pathname.startsWith('/chat')
 
   if (isProtected && !user) {
     const redirectUrl = new URL('/login', origin)
