@@ -1,12 +1,24 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 import ChatWidget from '@/components/ChatWidget'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'AI Chat · ZoneWise.AI',
   description: 'Ask ZoneWise AI about any Florida property, zoning rule, or auction across all 67 counties.',
 }
 
-export default function ChatPage() {
+export default async function ChatPage() {
+  // Server-side auth check — same pattern as all protected pages
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    redirect('/login?redirectedFrom=/chat')
+  }
+
   return (
     <div className="flex h-screen flex-col bg-slate-950">
       {/* Page header */}
@@ -25,9 +37,9 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Full-height chat widget */}
+      {/* Full-height chat widget — token passed server-side, no client guessing */}
       <div className="flex-1 overflow-hidden p-4">
-        <ChatWidget />
+        <ChatWidget authToken={session.access_token} />
       </div>
     </div>
   )
