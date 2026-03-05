@@ -122,7 +122,7 @@ export async function GET(
 
   // Try fl_parcels lookup using fl_parcel_id (DOR format, set by enrichment pipeline)
   // Falls back to parcel_id with ILIKE if fl_parcel_id is not populated
-  const parcelFields = 'dor_uc, zone_code, municipality, future_land_use, imp_qual, const_clas, sale_prc1, sale_yr1, jv_hmstd'
+  const parcelFields = 'dor_uc, zone_code, municipality, future_land_use, imp_qual, const_clas, sale_prc1, sale_yr1, jv_hmstd, jv, lnd_val, act_yr_blt, tot_lvg_ar, lot_size, own_name'
   let parcelData: Record<string, unknown> | null = null
 
   if (auction.fl_parcel_id) {
@@ -191,8 +191,18 @@ export async function GET(
     }
   }
 
+  // ── fl_parcels valuation fallbacks ─────────────────────────────────
+  // When multi_county_auctions fields are null (enrichment not yet run),
+  // use fl_parcels as the source of truth for property attributes.
+  const flJustValue = parcelData ? (parcelData.jv as number | null) : null
+  const flLandValue = parcelData ? (parcelData.lnd_val as number | null) : null
+  const flYearBuilt = parcelData ? (parcelData.act_yr_blt as number | null) : null
+  const flLivingArea = parcelData ? (parcelData.tot_lvg_ar as number | null) : null
+  const flLotSize = parcelData ? (parcelData.lot_size as number | null) : null
+  const flOwnerName = parcelData ? (parcelData.own_name as string | null) : null
+
   // Shapira Formula scoring
-  const justValue = auction.just_value as number | null
+  const justValue = (auction.just_value as number | null) ?? flJustValue
   const openingBid = auction.opening_bid as number | null
   let recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN' = 'UNKNOWN'
   let maxBid: number | null = null
@@ -218,9 +228,15 @@ export async function GET(
     }
   }
 
-  // Build enriched response
+  // Build enriched response — merge fl_parcels fallbacks for null KPIs
   const response = {
     ...auction,
+    just_value: (auction.just_value as number | null) ?? flJustValue,
+    land_value: (auction.land_value as number | null) ?? flLandValue,
+    year_built: (auction.year_built as number | null) ?? flYearBuilt,
+    living_area: (auction.living_area as number | null) ?? flLivingArea,
+    lot_size: (auction.lot_size as number | null) ?? flLotSize,
+    owner_name: (auction.owner_name as string | null) ?? flOwnerName,
     photo_url: photoUrl,
     bcpao_photo_url: bcpaoPhotoUrl,
     zoning,
