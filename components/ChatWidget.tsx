@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@clerk/nextjs'
 
 // ── Types ────────────────────────────────────────────────────
 interface Message {
@@ -250,20 +250,16 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const pipelineRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // ── Fetch Supabase session token on mount ────────────────
+  // ── Clerk auth — token managed automatically via cookies ──
+  const { getToken, isSignedIn } = useAuth()
+
   useEffect(() => {
     if (propToken) return // already provided
-    const supabase = createClient()
-    supabase.auth.getSession().then(({ data }) => {
-      const token = data.session?.access_token
-      if (token) setSessionToken(token)
-    })
-    // Refresh token on auth state change
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSessionToken(session?.access_token || null)
-    })
-    return () => subscription.unsubscribe()
-  }, [propToken])
+    // Clerk manages auth via cookies — just check sign-in status
+    if (isSignedIn) {
+      getToken().then(token => { if (token) setSessionToken(token) })
+    }
+  }, [propToken, isSignedIn])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -296,12 +292,10 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
     animatePipeline()
 
     try {
-      // Always get the freshest token
+      // Get fresh Clerk token
       let token = sessionToken
-      if (!token) {
-        const supabase = createClient()
-        const { data } = await supabase.auth.getSession()
-        token = data.session?.access_token || null
+      if (!token && isSignedIn) {
+        token = await getToken() || null
         if (token) setSessionToken(token)
       }
 
@@ -311,7 +305,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
       const res = await fetch(apiEndpoint, {
         method: 'POST',
         headers,
-        credentials: 'include', // send cookies as fallback
+        credentials: 'include', // Clerk reads auth cookies
         body: JSON.stringify({ messages: newMessages, sessionId }),
       })
 
@@ -319,14 +313,13 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
         const err = await res.json().catch(() => ({}))
         // If 401, try to refresh and retry once
         if (res.status === 401) {
-          const supabase = createClient()
-          const { data } = await supabase.auth.refreshSession()
-          const newToken = data.session?.access_token
+          const newToken = await getToken({ skipCache: true })
           if (newToken) {
             setSessionToken(newToken)
             const retry = await fetch(apiEndpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${newToken}` },
+              credentials: 'include',
               body: JSON.stringify({ messages: newMessages, sessionId }),
             })
             if (retry.ok) {

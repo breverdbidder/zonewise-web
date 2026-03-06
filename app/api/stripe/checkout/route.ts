@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 
 // Dynamic import to avoid build-time initialization
 async function getStripe() {
@@ -17,21 +17,23 @@ export async function POST(request: NextRequest) {
 
   try {
     const { priceId } = await request.json()
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { userId } = await auth()
 
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const user = await currentUser()
+    const email = user?.emailAddresses?.[0]?.emailAddress
+
     const stripe = await getStripe()
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
+      customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
-      metadata: { userId: user.id }
+      metadata: { userId }
     })
 
     return NextResponse.json({ url: session.url })

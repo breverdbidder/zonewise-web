@@ -1,7 +1,7 @@
-import { SignUp } from '@clerk/nextjs'
+import { SignIn } from '@clerk/nextjs'
 import Link from 'next/link'
 
-export default function SignupPage() {
+export default function SignInCatchAllPage() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div style={{ width: '100%', maxWidth: '440px' }}>
@@ -13,10 +13,7 @@ export default function SignupPage() {
             <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#f8fafc' }}>ZoneWise<span style={{ color: '#F59E0B' }}>.AI</span></span>
           </Link>
         </div>
-        <SignUp
-          fallbackRedirectUrl="/dashboard"
-          signInUrl="/login"
-        />
+        <SignIn fallbackRedirectUrl="/dashboard" signUpUrl="/sign-up" />
       </div>
     </div>
   )

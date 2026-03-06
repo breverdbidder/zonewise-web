@@ -1,10 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useTheme } from '@/lib/theme-context'
-import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { UserButton, useUser } from '@clerk/nextjs'
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard' },
@@ -14,26 +13,8 @@ const NAV_ITEMS = [
 
 export default function TopNav() {
   const pathname = usePathname()
-  const router = useRouter()
   const { theme } = useTheme()
-  const supabase = createClient()
-  const [userEmail, setUserEmail] = useState<string | null>(null)
-  const [signingOut, setSigningOut] = useState(false)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUserEmail(session?.user?.email ?? null)
-    })
-  }, [])
-
-  async function handleLogout() {
-    setSigningOut(true)
-    await supabase.auth.signOut()
-    router.push('/')
-  }
-
-  // User initial for avatar
-  const initial = userEmail ? userEmail[0].toUpperCase() : '?'
+  const { user } = useUser()
 
   return (
     <nav className="h-12 flex items-center px-6 border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
@@ -65,27 +46,21 @@ export default function TopNav() {
         })}
       </div>
 
-      {/* Right side — user + logout */}
+      {/* Right side — Clerk UserButton */}
       <div className="ml-auto flex items-center gap-3">
-        {userEmail && (
-          <div className="flex items-center gap-2">
-            {/* Avatar circle */}
-            <div className="w-7 h-7 rounded-full bg-zw-navy-600 flex items-center justify-center shrink-0">
-              <span className="text-white text-xs font-semibold">{initial}</span>
-            </div>
-            {/* Email — hidden on mobile */}
-            <span className="hidden sm:block text-xs text-gray-500 dark:text-slate-400 max-w-[160px] truncate">
-              {userEmail}
-            </span>
-          </div>
+        {user && (
+          <span className="hidden sm:block text-xs text-gray-500 dark:text-slate-400 max-w-[160px] truncate">
+            {user.primaryEmailAddress?.emailAddress}
+          </span>
         )}
-        <button
-          onClick={handleLogout}
-          disabled={signingOut}
-          className="px-3 py-1.5 text-sm font-medium rounded-md text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
-        >
-          {signingOut ? 'Signing out...' : 'Sign out'}
-        </button>
+        <UserButton
+          afterSignOutUrl="/"
+          appearance={{
+            elements: {
+              avatarBox: 'w-7 h-7',
+            },
+          }}
+        />
       </div>
     </nav>
   )

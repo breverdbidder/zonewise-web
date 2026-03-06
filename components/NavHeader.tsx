@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 export default function NavHeader() {
   const [open, setOpen] = useState(false)
@@ -10,7 +11,6 @@ export default function NavHeader() {
     { href: '/kpis', label: '298 KPIs' },
     { href: '/demo.html', label: '\u25B6 Live Demo' },
     { href: '#pricing', label: 'Pricing' },
-    { href: '/login', label: 'Sign In' },
   ]
 
   return (
@@ -34,30 +34,49 @@ export default function NavHeader() {
               className={
                 l.label === '\u25B6 Live Demo'
                   ? 'text-zw-navy font-semibold hover:text-zw-navy-700 text-sm border border-zw-navy/30 px-3 py-1 rounded-lg hover:bg-zw-navy/5 transition-all'
-                  : l.label === 'Sign In'
-                    ? 'text-gray-600 hover:text-slate-800 text-sm font-medium'
-                    : 'text-gray-600 hover:text-slate-800 text-sm'
+                  : 'text-gray-600 hover:text-slate-800 text-sm'
               }
             >
               {l.label}
             </a>
           ))}
-          <a
-            href="#beta-signup"
-            className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
-          >
-            Join the Beta
-          </a>
+
+          {/* Clerk auth buttons */}
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
+                Get Started Free
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <a
+              href="/dashboard"
+              className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
+            >
+              Dashboard
+            </a>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
         </nav>
 
-        {/* Mobile: Join Beta + Hamburger */}
+        {/* Mobile: CTA + Hamburger */}
         <div className="flex sm:hidden items-center gap-3">
-          <a
-            href="#beta-signup"
-            className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium"
-          >
-            Join the Beta
-          </a>
+          <SignedOut>
+            <SignUpButton mode="modal">
+              <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
+                Get Started
+              </button>
+            </SignUpButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
           <button
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
@@ -89,6 +108,18 @@ export default function NavHeader() {
               {l.label}
             </a>
           ))}
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
+              Dashboard
+            </a>
+          </SignedIn>
         </div>
       )}
     </header>

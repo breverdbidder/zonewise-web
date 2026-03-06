@@ -1,5 +1,5 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 /**
@@ -13,30 +13,21 @@ function getClientIp(request: NextRequest): string {
   )
 }
 
-/**
- * Extract user ID from Authorization header (Bearer token JWT).
- * Returns null if no valid auth header present.
- */
-function getUserIdFromAuth(request: NextRequest): string | null {
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader?.startsWith('Bearer ')) return null
-  try {
-    const token = authHeader.slice(7)
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    return payload.sub || null
-  } catch {
-    return null
-  }
-}
+// Protected routes — require Clerk authentication
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/auctions(.*)',
+  '/feasibility(.*)',
+  '/chat(.*)',
+])
 
-export async function middleware(request: NextRequest) {
+export default clerkMiddleware(async (auth, request) => {
   const { pathname } = request.nextUrl
 
-  // SEC-009: Rate limit auth endpoints (login, signup, callback) — 5/min per IP
-  if (pathname.startsWith('/auth/') || pathname.startsWith('/login') || pathname.startsWith('/signup')) {
+  // SEC-009: Rate limit auth endpoints — 5/min per IP
+  if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
     const ip = getClientIp(request)
     const result = checkRateLimit(`auth:${ip}`, RATE_LIMITS.auth)
-
     if (!result.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
@@ -56,7 +47,6 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/')) {
     const ip = getClientIp(request)
     const result = checkRateLimit(`api:${ip}`, RATE_LIMITS.api)
-
     if (!result.allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
@@ -72,7 +62,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // SEC-009: Per-user rate limit on authenticated API routes — 20/min per user
-    const userId = getUserIdFromAuth(request)
+    const { userId } = await auth()
     if (userId) {
       const userResult = checkRateLimit(`user:${userId}`, RATE_LIMITS.userApi)
       if (!userResult.allowed) {
@@ -91,37 +81,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const { response, user } = await updateSession(request)
-  const origin = request.nextUrl.origin
-
-  // Protected routes — require authentication
-  const isProtected =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/auctions') ||
-    pathname.startsWith('/feasibility') ||
-    pathname.startsWith('/chat')
-
-  if (isProtected && !user) {
-    const redirectUrl = new URL('/login', origin)
-    redirectUrl.searchParams.set('redirectedFrom', pathname)
-    return NextResponse.redirect(redirectUrl)
+  // Protect dashboard routes — redirect unauthenticated users to sign-in
+  if (isProtectedRoute(request)) {
+    await auth.protect()
   }
-
-  // Auth-only pages — redirect logged-in users to dashboard
-  const isAuthPage =
-    pathname === '/login' ||
-    pathname === '/signup' ||
-    pathname === '/forgot-password'
-
-  if (isAuthPage && user) {
-    return NextResponse.redirect(new URL('/dashboard', origin))
-  }
-
-  return response
-}
+})
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
   ],
 }
