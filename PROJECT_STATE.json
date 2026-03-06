@@ -1,7 +1,7 @@
 {
   "project": "zonewise-web",
   "framework": "Next.js",
-  "deployment": "Vercel \u2192 zonewise.ai",
+  "deployment": "Vercel → zonewise.ai",
   "last_updated": "2026-03-06",
   "brand": {
     "primary": "#1E3A5F",
@@ -9,12 +9,17 @@
     "font": "Inter",
     "background": "#020617"
   },
-  "workflows_active": 22,
-  "workflows_dead_estimate": 9,
+  "workflows_active": 11,
+  "workflows_dead_estimate": 0,
   "recent_decisions": [
     {
       "date": "2026-03-06",
-      "decision": "Structure compliance push \u2014 adding TODO, STATE, REPO_MAP",
+      "decision": "Deleted 10 dead workflows",
+      "rationale": "One-off debug/fix scripts from Vercel/DNS migration and vinext experiments. 21→11."
+    },
+    {
+      "date": "2026-03-06",
+      "decision": "Structure compliance push — adding TODO, STATE, REPO_MAP",
       "rationale": "Scored 6/9 on Claude Code structure audit"
     }
   ],
