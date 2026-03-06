@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { auth } from '@clerk/nextjs/server'
 import { addCorsHeaders, handlePreflight } from '@/lib/api/cors'
 
 /**
@@ -25,36 +25,16 @@ function getSupabase() {
 }
 
 /**
- * SEC-001: Authenticate the request using Supabase auth.
+ * SEC-001: Authenticate the request using Clerk auth.
  */
 async function authenticateRequest(request: NextRequest): Promise<{ userId: string; email?: string } | null> {
-  const authHeader = request.headers.get('Authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.slice(7)
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${token}` } } }
-    )
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    if (error || !user) return null
-    return { userId: user.id, email: user.email }
+  try {
+    const { userId } = await auth()
+    if (!userId) return null
+    return { userId }
+  } catch {
+    return null
   }
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) { return request.cookies.get(name)?.value },
-        set() {},
-        remove() {},
-      },
-    }
-  )
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return null
-  return { userId: user.id, email: user.email }
 }
 
 /**

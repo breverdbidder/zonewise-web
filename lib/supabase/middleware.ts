@@ -1,31 +1,14 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+/**
+ * @deprecated Supabase middleware is no longer used for authentication.
+ * Auth is handled by Clerk's clerkMiddleware() in middleware.ts.
+ * This file is kept for backwards compatibility during migration.
+ */
+
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request: { headers: request.headers } })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options })
-          response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options })
-          response = NextResponse.next({ request: { headers: request.headers } })
-          response.cookies.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
-  return { response, user }
+  const response = NextResponse.next({ request: { headers: request.headers } })
+  // Auth is now handled by Clerk — return null user to prevent breaking
+  // any code that still references this during migration
+  return { response, user: null }
 }

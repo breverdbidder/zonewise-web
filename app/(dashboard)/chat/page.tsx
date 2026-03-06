@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
+import { auth } from '@clerk/nextjs/server'
 import ChatWidget from '@/components/ChatWidget'
 
 export const dynamic = 'force-dynamic'
@@ -11,13 +10,9 @@ export const metadata: Metadata = {
 }
 
 export default async function ChatPage() {
-  // Server-side auth check — same pattern as all protected pages
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-
-  if (!session) {
-    redirect('/login?redirectedFrom=/chat')
-  }
+  // Clerk middleware protects this route — auth() provides the token
+  const { getToken } = await auth()
+  const token = await getToken()
 
   return (
     <div className="flex h-screen flex-col bg-slate-950">
@@ -37,9 +32,9 @@ export default async function ChatPage() {
         </div>
       </div>
 
-      {/* Full-height chat widget — token passed server-side, no client guessing */}
+      {/* Full-height chat widget */}
       <div className="flex-1 overflow-hidden p-4">
-        <ChatWidget authToken={session.access_token} />
+        <ChatWidget authToken={token || undefined} />
       </div>
     </div>
   )

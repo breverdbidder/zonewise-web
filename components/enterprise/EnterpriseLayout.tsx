@@ -1,11 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useUser, useClerk } from '@clerk/nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import SessionSidebar from '@/components/enterprise/SessionSidebar'
 import ChatPanel from '@/components/enterprise/ChatPanel'
 import ArtifactPanel from '@/components/enterprise/ArtifactPanel'
 import { Session, Message, Artifact, User } from '@/types'
+
+function getSupabase() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
 
 export default function EnterpriseLayout() {
   const [user, setUser] = useState<User | null>(null)
@@ -17,19 +25,20 @@ export default function EnterpriseLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loading, setLoading] = useState(true)
   
-  const supabase = createClient()
+  const { user: clerkUser, isLoaded } = useUser()
+  const { signOut } = useClerk()
+  const supabase = getSupabase()
 
-  useEffect(() => { initializeUser() }, [])
+  useEffect(() => { if (isLoaded) initializeUser() }, [isLoaded])
 
   const initializeUser = async () => {
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-      if (authUser) {
+      if (clerkUser) {
         // Authenticated user — load profile and sessions
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', authUser.id).single()
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', clerkUser.id).single()
         setUser({
-          id: authUser.id,
-          email: authUser.email || '',
+          id: clerkUser.id,
+          email: clerkUser.emailAddresses?.[0]?.emailAddress || '',
           role: (profile?.subscription_tier as any) || 'free',
           queryCount: 0,
           queryLimit: profile?.subscription_tier === 'pro' ? 500 : profile?.subscription_tier === 'investor' ? 2000 : 25,
@@ -136,7 +145,7 @@ export default function EnterpriseLayout() {
     }
   }
 
-  const handleSignOut = async () => { await supabase.auth.signOut(); window.location.href = '/' }
+  const handleSignOut = async () => { await signOut(); window.location.href = '/' }
 
   if (loading) {
     return (
