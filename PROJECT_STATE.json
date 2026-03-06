@@ -1,0 +1,22 @@
+{
+  "project": "zonewise-web",
+  "framework": "Next.js",
+  "deployment": "Vercel \u2192 zonewise.ai",
+  "last_updated": "2026-03-06",
+  "brand": {
+    "primary": "#1E3A5F",
+    "accent": "#F59E0B",
+    "font": "Inter",
+    "background": "#020617"
+  },
+  "workflows_active": 22,
+  "workflows_dead_estimate": 9,
+  "recent_decisions": [
+    {
+      "date": "2026-03-06",
+      "decision": "Structure compliance push \u2014 adding TODO, STATE, REPO_MAP",
+      "rationale": "Scored 6/9 on Claude Code structure audit"
+    }
+  ],
+  "blockers": []
+}
