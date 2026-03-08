@@ -11,6 +11,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
+    // Require admin secret to run migrations
+    const adminSecret = process.env.ADMIN_SECRET || process.env.ENRICH_SECRET
+    if (!adminSecret) {
+      return NextResponse.json({ error: 'Admin secret not configured' }, { status: 503 })
+    }
+    const body = await request.clone().json().catch(() => ({}))
+    if (body.secret !== adminSecret) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     // Get Supabase credentials from env
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
