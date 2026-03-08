@@ -195,3 +195,27 @@ dap stop                                      # end session
 5. Fix only after understanding root cause
 
 Full skill docs: `skills/debugging-code/SKILL.md`
+
+---
+
+## shadcn/ui CLI v4 (March 2026)
+
+### Skills
+The shadcn skill provides full context for component APIs, CLI commands, and composition patterns. It auto-activates when `components.json` is detected.
+
+### CLI Workflow (MANDATORY)
+1. **Before adding any component:** `npx shadcn@latest add <component> --dry-run`
+2. **Before updating any component:** `npx shadcn@latest add <component> --diff`
+3. **To check project state:** `npx shadcn@latest info`
+4. **To get component docs:** `npx shadcn@latest docs <component>`
+5. **NEVER fetch raw component files from GitHub** — always use the CLI
+
+### Brand Enforcement
+- All components use semantic colors: `bg-primary`, `text-accent`, `bg-background`
+- NEVER use raw Tailwind colors like `bg-blue-500` or `text-amber-500`
+- See `BRAND_COLORS.md` for the complete color mapping
+- Brand hex vars (`zw-navy-*`, `zw-orange-*`) available for edge cases
+
+### Component Location
+- UI primitives: `components/ui/`
+- Custom components: `components/`
