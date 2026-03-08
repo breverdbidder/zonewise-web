@@ -10,7 +10,8 @@ function getSupabase() {
 }
 
 const BATCH_SIZE = 50
-const SECRET = process.env.ENRICH_SECRET || 'enrich-2026'
+const SECRET = process.env.ENRICH_SECRET
+if (!SECRET) throw new Error('ENRICH_SECRET env var required')
 
 /**
  * POST /api/admin/enrich-zoning
