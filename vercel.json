@@ -1,18 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/app", "destination": "https://zonewise-desktop-viewer.vercel.app/" },
     { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" },
-    { "source": "/assets/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/assets/:path*" }
+    { "source": "/assets/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/assets/:path*" },
+    { "source": "/((?!api|_next|demo\\.html|robots\\.txt|manifest\\.json|sitemap\\.xml).*)", "destination": "https://zonewise-desktop-viewer.vercel.app/$1" }
   ],
   "headers": [
     {
-      "source": "/app/(.*)",
+      "source": "/(.*)",
       "headers": [
-        { "key": "X-Upstream-Source", "value": "craft-agents-oss" },
+        { "key": "X-Upstream-Source", "value": "zonewise-desktop-viewer" },
         { "key": "X-ZoneWise-Version", "value": "auto-synced" }
       ]
     },
