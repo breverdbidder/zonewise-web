@@ -1,5 +1,9 @@
 # CLAUDE.md — ZoneWise Web
 
+## Engineering Methodology (Superpowers)
+Read and follow `SUPERPOWERS.md` for verification gates, systematic debugging, code review, testing anti-patterns, and YAGNI enforcement.
+Source: [breverdbidder/superpowers](https://github.com/breverdbidder/superpowers) (forked from obra/superpowers v4.3.1, MIT)
+
 Context for Claude Code when working in `breverdbidder/zonewise-web`.
 
 ---
