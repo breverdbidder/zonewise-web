@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
   "rewrites": [
     { "source": "/app", "destination": "https://zonewise-desktop-viewer.vercel.app/" },
     { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" },
