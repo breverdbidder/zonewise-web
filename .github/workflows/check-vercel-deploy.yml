@@ -1,0 +1,28 @@
+name: Check Vercel Deployments
+on: workflow_dispatch
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List recent deployments
+        run: |
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&teamId=team_UEds2qBzyD9e7rOrX8aakj9K&limit=5" \
+            | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for d in data.get('deployments', []):
+    print(f\"{d.get('state')} | {d.get('ready','')} | {d.get('meta',{}).get('githubCommitMessage','')[:50]} | {d.get('url','')}\")
+"
+          echo "=== Project settings ==="
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+print(f'framework: {d.get(\"framework\")}')
+print(f'buildCommand: {d.get(\"buildCommand\")}')
+print(f'outputDirectory: {d.get(\"outputDirectory\")}')
+print(f'installCommand: {d.get(\"installCommand\")}')
+print(f'rootDirectory: {d.get(\"rootDirectory\")}')
+"
