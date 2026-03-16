@@ -1,0 +1,30 @@
+name: Add zonewise.ai to Vite project
+on:
+  workflow_dispatch:
+jobs:
+  add-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add zonewise.ai domain to zonewise-desktop-viewer
+        run: |
+          echo "=== Adding zonewise.ai ==="
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            -d '{"name":"zonewise.ai"}'
+
+          echo ""
+          echo "=== Adding www.zonewise.ai ==="
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            -d '{"name":"www.zonewise.ai"}'
+
+          echo ""
+          echo "=== List domains ==="
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            | python3 -c "import json,sys; [print(d['name']) for d in json.load(sys.stdin).get('domains',[])]"
