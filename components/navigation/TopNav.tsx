@@ -54,6 +54,7 @@ export default function TopNav() {
           </span>
         )}
         <UserButton
+          afterSignOutUrl="/"
           appearance={{
             elements: {
               avatarBox: 'w-7 h-7',
