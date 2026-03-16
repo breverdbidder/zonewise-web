@@ -1,0 +1,26 @@
+name: Fix Vercel Project Settings
+on:
+  workflow_dispatch:
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reset project to static proxy
+        run: |
+          echo "=== Current settings ==="
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'framework: {d.get(\"framework\")}')"
+
+          echo "=== Patching to null framework ==="
+          curl -s -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            -d '{"framework":null,"buildCommand":"","outputDirectory":"public","installCommand":""}' \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Updated framework: {d.get(\"framework\")}')"
+
+          echo "=== Verify ==="
+          curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E?teamId=team_UEds2qBzyD9e7rOrX8aakj9K" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'framework: {d.get(\"framework\")}'); print(f'buildCommand: {d.get(\"buildCommand\")}')"
