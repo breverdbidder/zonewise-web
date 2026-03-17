@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from '@/lib/theme-context'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { useSafeUser, SafeUserButton } from '@/lib/safe-clerk'
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard' },
@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 export default function TopNav() {
   const pathname = usePathname()
   const { theme } = useTheme()
-  const { user } = useUser()
+  const { user } = useSafeUser()
 
   return (
     <nav className="h-12 flex items-center px-6 border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
@@ -53,13 +53,7 @@ export default function TopNav() {
             {user.primaryEmailAddress?.emailAddress}
           </span>
         )}
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: 'w-7 h-7',
-            },
-          }}
-        />
+        <SafeUserButton appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
       </div>
     </nav>
   )

@@ -11,8 +11,13 @@ export const metadata: Metadata = {
 
 export default async function ChatPage() {
   // Clerk middleware protects this route — auth() provides the token
-  const { getToken } = await auth()
-  const token = await getToken()
+  let token: string | null = null
+  try {
+    const { getToken } = await auth()
+    token = await getToken()
+  } catch {
+    // Clerk not configured — proceed without auth token
+  }
 
   return (
     <div className="flex h-screen flex-col bg-slate-950">

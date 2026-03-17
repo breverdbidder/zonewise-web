@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useAuth } from '@clerk/nextjs'
+import { useSafeAuth } from '@/lib/safe-clerk'
 
 // ── Types ────────────────────────────────────────────────────
 interface Message {
@@ -251,7 +251,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
   const pipelineRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // ── Clerk auth — token managed automatically via cookies ──
-  const { getToken, isSignedIn } = useAuth()
+  const { getToken, isSignedIn } = useSafeAuth()
 
   useEffect(() => {
     if (propToken) return // already provided
