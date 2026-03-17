@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useUser, useClerk } from '@clerk/nextjs'
+import { useSafeUser, useSafeClerk } from '@/lib/safe-clerk'
 import { createBrowserClient } from '@supabase/ssr'
 import SessionSidebar from '@/components/enterprise/SessionSidebar'
 import ChatPanel from '@/components/enterprise/ChatPanel'
@@ -25,11 +25,30 @@ export default function EnterpriseLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loading, setLoading] = useState(true)
   
-  const { user: clerkUser, isLoaded } = useUser()
-  const { signOut } = useClerk()
+  const { user: clerkUser, isLoaded } = useSafeUser()
+  const { signOut } = useSafeClerk()
   const supabase = getSupabase()
 
   useEffect(() => { if (isLoaded) initializeUser() }, [isLoaded])
+
+  // Fallback: if Clerk never loads (e.g. missing keys), enter guest mode after 3s
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!isLoaded && loading) {
+        console.warn('Clerk not loaded after 3s, entering guest mode')
+        setUser({
+          id: 'guest',
+          email: 'guest@zonewise.ai',
+          role: 'free',
+          queryCount: 0,
+          queryLimit: 25,
+          createdAt: new Date()
+        })
+        setLoading(false)
+      }
+    }, 3000)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const initializeUser = async () => {
     try {

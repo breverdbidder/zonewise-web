@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
-import { dark } from '@clerk/themes'
+import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
 import { OnboardingProvider } from '@/components/onboarding'
 import './globals.css'
@@ -52,34 +51,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}} />
       </head>
       <body>
-        <ClerkProvider
-          appearance={{
-            baseTheme: dark,
-            variables: {
-              colorPrimary: '#1E3A5F',
-              colorDanger: '#dc2626',
-              colorSuccess: '#16a34a',
-              colorWarning: '#F59E0B',
-              fontFamily: 'Inter, system-ui, sans-serif',
-            },
-            elements: {
-              formButtonPrimary: 'bg-[#1E3A5F] hover:bg-[#2a5280] text-white',
-              card: 'shadow-lg border border-slate-700',
-              headerTitle: 'text-white',
-              headerSubtitle: 'text-slate-400',
-              socialButtonsBlockButton: 'border-slate-600 text-slate-300 hover:bg-slate-800',
-              formFieldInput: 'bg-slate-800 border-slate-600 text-white',
-              footerActionLink: 'text-[#F59E0B] hover:text-[#fbbf24]',
-              userButtonAvatarBox: 'w-7 h-7',
-            },
-          }}
-        >
+        <ConditionalClerkProvider>
           <ThemeProvider>
             <OnboardingProvider>
               {children}
             </OnboardingProvider>
           </ThemeProvider>
-        </ClerkProvider>
+        </ConditionalClerkProvider>
       </body>
     </html>
   )

@@ -1,7 +1,80 @@
 'use client'
 
 import { useState } from 'react'
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs'
+import { useSafeUser } from '@/lib/safe-clerk'
+
+const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+// Dynamic import Clerk components only when key exists
+function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mobile-drawer' }) {
+  if (!CLERK_KEY) return null
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { SignInButton, SignUpButton, Show, UserButton } = require('@clerk/nextjs')
+
+  if (variant === 'desktop') {
+    return (
+      <>
+        <Show when="signed-out">
+          <SignInButton mode="modal">
+            <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
+              Sign In
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
+              Get Started Free
+            </button>
+          </SignUpButton>
+        </Show>
+        <Show when="signed-in">
+          <a
+            href="/dashboard"
+            className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
+          >
+            Dashboard
+          </a>
+          <UserButton />
+        </Show>
+      </>
+    )
+  }
+
+  if (variant === 'mobile-cta') {
+    return (
+      <>
+        <Show when="signed-out">
+          <SignUpButton mode="modal">
+            <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
+              Get Started
+            </button>
+          </SignUpButton>
+        </Show>
+        <Show when="signed-in">
+          <UserButton />
+        </Show>
+      </>
+    )
+  }
+
+  // mobile-drawer
+  return (
+    <>
+      <Show when="signed-out">
+        <SignInButton mode="modal">
+          <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
+            Sign In
+          </button>
+        </SignInButton>
+      </Show>
+      <Show when="signed-in">
+        <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
+          Dashboard
+        </a>
+      </Show>
+    </>
+  )
+}
 
 export default function NavHeader() {
   const [open, setOpen] = useState(false)
@@ -42,41 +115,12 @@ export default function NavHeader() {
           ))}
 
           {/* Clerk auth buttons */}
-          <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
-                Sign In
-              </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
-                Get Started Free
-              </button>
-            </SignUpButton>
-          </Show>
-          <Show when="signed-in">
-            <a
-              href="/dashboard"
-              className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
-            >
-              Dashboard
-            </a>
-            <UserButton />
-          </Show>
+          <ClerkAuthButtons variant="desktop" />
         </nav>
 
         {/* Mobile: CTA + Hamburger */}
         <div className="flex sm:hidden items-center gap-3">
-          <Show when="signed-out">
-            <SignUpButton mode="modal">
-              <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
-                Get Started
-              </button>
-            </SignUpButton>
-          </Show>
-          <Show when="signed-in">
-            <UserButton />
-          </Show>
+          <ClerkAuthButtons variant="mobile-cta" />
           <button
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
@@ -108,18 +152,7 @@ export default function NavHeader() {
               {l.label}
             </a>
           ))}
-          <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
-                Sign In
-              </button>
-            </SignInButton>
-          </Show>
-          <Show when="signed-in">
-            <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
-              Dashboard
-            </a>
-          </Show>
+          <ClerkAuthButtons variant="mobile-drawer" />
         </div>
       )}
     </header>
