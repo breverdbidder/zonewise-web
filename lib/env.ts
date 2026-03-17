@@ -18,8 +18,8 @@ function optionalEnv(key: string): string | undefined {
 
 export const env = {
   clerk: {
-    publishableKey: requireEnv('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'),
-    secretKey: requireEnv('CLERK_SECRET_KEY'),
+    publishableKey: optionalEnv('NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'),
+    secretKey: optionalEnv('CLERK_SECRET_KEY'),
   },
   supabase: {
     url: requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
