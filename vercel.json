@@ -5,23 +5,19 @@
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/app", "destination": "https://zonewise-desktop-viewer.vercel.app/" },
-    { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" },
-    { "source": "/assets/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/assets/:path*" },
-    { "source": "/((?!api|_next|demo\\.html|robots\\.txt|manifest\\.json|sitemap\\.xml).*)", "destination": "https://zonewise-desktop-viewer.vercel.app/$1" }
+    { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/index.html",
       "headers": [
-        { "key": "X-Upstream-Source", "value": "zonewise-desktop-viewer" },
-        { "key": "X-ZoneWise-Version", "value": "auto-synced" }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     },
     {
-      "source": "/demo.html",
+      "source": "/(.*)",
       "headers": [
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; connect-src 'self';" },
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        { "key": "X-ZoneWise-Version", "value": "v4-landing" }
       ]
     }
   ]
