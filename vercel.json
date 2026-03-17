@@ -1,25 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "buildCommand": "",
-  "outputDirectory": "public",
-  "rewrites": [
-    { "source": "/app", "destination": "https://zonewise-desktop-viewer.vercel.app/" },
-    { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" },
-    { "source": "/assets/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/assets/:path*" },
-    { "source": "/s/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/s/:path*" }
-  ],
   "headers": [
-    {
-      "source": "/index.html",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
-    },
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-ZoneWise-Version", "value": "v4-landing-plus-viewer" }
+        { "key": "X-ZoneWise-Version", "value": "v4-nextjs-restored" }
       ]
     }
   ]
