@@ -1,0 +1,44 @@
+name: Check Vercel Deploy Status
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployments
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          PROJECT_ID="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          
+          echo "=== Project settings ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$PROJECT_ID" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          print(f'Name: {d.get(\"name\")}')
+          print(f'Framework: {d.get(\"framework\")}')
+          print(f'Build command: {d.get(\"buildCommand\")}')
+          print(f'Output dir: {d.get(\"outputDirectory\")}')
+          link = d.get('link', {}) or {}
+          print(f'Repo: {link.get(\"repo\")}')
+          print(f'Branch: {link.get(\"productionBranch\")}')
+          "
+          
+          echo "=== Recent deployments ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&limit=5" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for d in data.get('deployments', []):
+              created = d.get('created','')
+              state = d.get('readyState','')
+              url = d.get('url','')
+              target = d.get('target','')
+              source = d.get('source','')
+              meta = d.get('meta', {}) or {}
+              commit = meta.get('githubCommitMessage', '')[:50]
+              print(f'{created} | {state:12} | {target:12} | {source:8} | {commit}')
+          "
