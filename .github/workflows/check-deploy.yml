@@ -1,50 +1,25 @@
-name: Check All Deploys
+name: Force Vercel Production Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  check:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: List ALL recent deployments including failed
+      - uses: actions/checkout@v4
+      
+      - name: Install Vercel CLI and deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          echo "=== ALL deployments (including building/error) ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=10" | python3 -c "
-          import json, sys
-          from datetime import datetime
-          data = json.load(sys.stdin)
-          for d in data.get('deployments', []):
-              ts = d.get('created', 0)
-              dt = datetime.fromtimestamp(ts/1000).strftime('%H:%M:%S') if ts else '?'
-              state = d.get('readyState','')
-              target = d.get('target','') or 'preview'
-              url = d.get('url','')
-              meta = d.get('meta', {}) or {}
-              commit = meta.get('githubCommitMessage', '')[:60]
-              err = d.get('errorMessage','') or ''
-              print(f'{dt} | {state:12} | {target:12} | {commit}')
-              if err: print(f'  ERROR: {err}')
-          "
+          npm i -g vercel@latest
           
-          echo ""
-          echo "=== Force a new deployment ==="
-          RESULT=$(curl -s -X POST \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v13/deployments" \
-            -d '{"name":"zonewise-web","gitSource":{"type":"github","org":"breverdbidder","repo":"zonewise-web","ref":"main"},"target":"production"}')
+          echo "=== Pulling project settings ==="
+          vercel pull --yes --token=$VERCEL_TOKEN --environment=production 2>&1 | tail -5
           
-          echo "$RESULT" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          print(f'Deploy ID: {data.get(\"id\",\"?\")}')
-          print(f'URL: {data.get(\"url\",\"?\")}')
-          print(f'State: {data.get(\"readyState\",\"?\")}')
-          err = data.get('error', {})
-          if err:
-              print(f'Error: {err}')
-          "
+          echo "=== Building as Next.js ==="
+          vercel build --prod --token=$VERCEL_TOKEN 2>&1 | tail -20
+          
+          echo "=== Deploying to production ==="
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN 2>&1 | tail -10
