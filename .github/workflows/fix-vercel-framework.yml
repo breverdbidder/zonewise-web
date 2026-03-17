@@ -7,121 +7,84 @@ jobs:
   fix-and-redeploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Find Vercel project and reset framework
+      - name: Reset framework and redeploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          echo "=== Step 1: List Vercel projects ==="
-          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects?limit=20")
+          set -e
           
+          # List all projects and find ours
+          echo "=== Finding project ==="
+          PROJECTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?limit=50")
+          
+          # Dump all project names
           echo "$PROJECTS" | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
           for p in data.get('projects', []):
-              name = p.get('name','')
-              fwk = p.get('framework','')
-              pid = p.get('id','')
-              print(f'{name:30} | framework={fwk:15} | id={pid}')
+              fwk = p.get('framework') or 'null'
+              link = p.get('link', {}) or {}
+              repo = link.get('repo', '') or ''
+              print(f'{p[\"name\"]:30} fw={fwk:15} repo={repo}')
           "
           
-          # Find the zonewise-web project
+          # Find by linked repo
           PROJECT_ID=$(echo "$PROJECTS" | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
           for p in data.get('projects', []):
-              if 'zonewise' in p.get('name','').lower() and 'web' in p.get('name','').lower():
+              link = p.get('link', {}) or {}
+              repo = (link.get('repo', '') or '').lower()
+              name = p.get('name', '').lower()
+              if 'zonewise-web' in repo or name == 'zonewise-web' or name == 'zonewise-moat':
                   print(p['id'])
-                  break
-              elif 'zonewise' in p.get('name','').lower() and 'moat' in p.get('name','').lower():
+                  sys.exit(0)
+          # fallback: any zonewise project linked to a repo
+          for p in data.get('projects', []):
+              if 'zonewise' in p.get('name', '').lower():
                   print(p['id'])
-                  break
+                  sys.exit(0)
+          sys.exit(1)
           ")
           
-          if [ -z "$PROJECT_ID" ]; then
-            echo "Trying broader search..."
-            PROJECT_ID=$(echo "$PROJECTS" | python3 -c "
-            import json, sys
-            data = json.load(sys.stdin)
-            for p in data.get('projects', []):
-                name = p.get('name','')
-                # Check all zonewise projects
-                if 'zonewise' in name.lower():
-                    print(f'Found: {name} → {p[\"id\"]}', file=sys.stderr)
-                # Check linked repos
-                link = p.get('link', {})
-                repo = link.get('repo', '')
-                if 'zonewise-web' in repo:
-                    print(p['id'])
-                    break
-            ")
-          fi
+          echo "Found PROJECT_ID=$PROJECT_ID"
           
-          echo "PROJECT_ID=$PROJECT_ID"
-          echo "PROJECT_ID=$PROJECT_ID" >> $GITHUB_ENV
-          
-          if [ -z "$PROJECT_ID" ]; then
-            echo "❌ Could not find zonewise project. Dumping all projects:"
-            echo "$PROJECTS" | python3 -c "
-            import json, sys
-            data = json.load(sys.stdin)
-            for p in data.get('projects', []):
-                print(json.dumps({k: p[k] for k in ['id','name','framework'] if k in p}))
-            "
-            exit 1
-          fi
-
-      - name: Reset framework to Next.js
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          echo "=== Step 2: Update project framework to nextjs ==="
-          RESULT=$(curl -s -X PATCH \
+          # Reset framework to nextjs
+          echo "=== Resetting framework to nextjs ==="
+          curl -s -X PATCH \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
             "https://api.vercel.com/v9/projects/$PROJECT_ID" \
-            -d '{"framework":"nextjs","buildCommand":"next build","outputDirectory":".next"}')
+            -d '{"framework":"nextjs","buildCommand":null,"outputDirectory":null}' | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          print(f'Project: {data.get(\"name\",\"?\")}')
+          print(f'Framework: {data.get(\"framework\",\"?\")}')
+          "
+          
+          # Trigger redeploy
+          echo "=== Triggering production redeploy ==="
+          LATEST=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&limit=1&target=production" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          deps = data.get('deployments', [])
+          if deps: print(deps[0]['uid'])
+          ")
+          
+          echo "Latest deployment: $LATEST"
+          
+          RESULT=$(curl -s -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v13/deployments" \
+            -d "{\"name\":\"zonewise-web\",\"deploymentId\":\"$LATEST\",\"target\":\"production\"}")
           
           echo "$RESULT" | python3 -c "
           import json, sys
           data = json.load(sys.stdin)
-          print(f'Updated: {data.get(\"name\",\"?\")}')
-          print(f'Framework: {data.get(\"framework\",\"?\")}')
-          print(f'Build command: {data.get(\"buildCommand\",\"?\")}')
-          print(f'Output dir: {data.get(\"outputDirectory\",\"?\")}')
-          " || echo "Response: $RESULT"
-
-      - name: Trigger production redeploy
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          echo "=== Step 3: Get latest deployment and redeploy ==="
-          DEPS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&limit=1&target=production")
-          
-          DEPLOY_ID=$(echo "$DEPS" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          deps = data.get('deployments', [])
-          if deps:
-              print(deps[0]['uid'])
-          ")
-          
-          echo "Latest deployment: $DEPLOY_ID"
-          
-          # Create new deployment by redeploying
-          REDEPLOY=$(curl -s -X POST \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v13/deployments" \
-            -d "{\"name\":\"zonewise-web\",\"deploymentId\":\"$DEPLOY_ID\",\"target\":\"production\"}")
-          
-          echo "$REDEPLOY" | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
-          print(f'Redeploy ID: {data.get(\"id\",\"?\")}')
-          print(f'URL: {data.get(\"url\",\"?\")}')
-          print(f'Ready state: {data.get(\"readyState\",\"?\")}')
-          " || echo "Redeploy response: $REDEPLOY"
-          
-          echo "✅ Framework reset to Next.js and production redeploy triggered!"
+          print(f'Redeploy URL: https://{data.get(\"url\",\"?\")}')
+          print(f'State: {data.get(\"readyState\",\"?\")}')
+          print('Done!')
+          " || echo "$RESULT"
