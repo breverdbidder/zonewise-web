@@ -10,8 +10,6 @@ function getSupabase() {
 }
 
 const BATCH_SIZE = 50
-const SECRET = process.env.ENRICH_SECRET
-if (!SECRET) throw new Error('ENRICH_SECRET env var required')
 
 /**
  * POST /api/admin/enrich-zoning
@@ -24,6 +22,10 @@ if (!SECRET) throw new Error('ENRICH_SECRET env var required')
  */
 export async function POST(request: NextRequest) {
   try {
+    const SECRET = process.env.ENRICH_SECRET
+    if (!SECRET) {
+      return NextResponse.json({ error: 'ENRICH_SECRET not configured' }, { status: 500 })
+    }
     const body = await request.json()
     if (body.secret !== SECRET) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
