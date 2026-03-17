@@ -5,7 +5,9 @@
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/app", "destination": "https://zonewise-desktop-viewer.vercel.app/" },
-    { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" }
+    { "source": "/app/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/:path*" },
+    { "source": "/assets/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/assets/:path*" },
+    { "source": "/s/:path*", "destination": "https://zonewise-desktop-viewer.vercel.app/s/:path*" }
   ],
   "headers": [
     {
@@ -17,7 +19,7 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-ZoneWise-Version", "value": "v4-landing" }
+        { "key": "X-ZoneWise-Version", "value": "v4-landing-plus-viewer" }
       ]
     }
   ]
