@@ -1,4 +1,4 @@
-name: Check Vercel Deploy Status
+name: Check All Deploys
 
 on:
   workflow_dispatch:
@@ -7,38 +7,44 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Check deployments
+      - name: List ALL recent deployments including failed
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          PROJECT_ID="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
-          
-          echo "=== Project settings ==="
+          echo "=== ALL deployments (including building/error) ==="
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v9/projects/$PROJECT_ID" | python3 -c "
+            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=10" | python3 -c "
           import json, sys
-          d = json.load(sys.stdin)
-          print(f'Name: {d.get(\"name\")}')
-          print(f'Framework: {d.get(\"framework\")}')
-          print(f'Build command: {d.get(\"buildCommand\")}')
-          print(f'Output dir: {d.get(\"outputDirectory\")}')
-          link = d.get('link', {}) or {}
-          print(f'Repo: {link.get(\"repo\")}')
-          print(f'Branch: {link.get(\"productionBranch\")}')
-          "
-          
-          echo "=== Recent deployments ==="
-          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&limit=5" | python3 -c "
-          import json, sys
+          from datetime import datetime
           data = json.load(sys.stdin)
           for d in data.get('deployments', []):
-              created = d.get('created','')
+              ts = d.get('created', 0)
+              dt = datetime.fromtimestamp(ts/1000).strftime('%H:%M:%S') if ts else '?'
               state = d.get('readyState','')
+              target = d.get('target','') or 'preview'
               url = d.get('url','')
-              target = d.get('target','')
-              source = d.get('source','')
               meta = d.get('meta', {}) or {}
-              commit = meta.get('githubCommitMessage', '')[:50]
-              print(f'{created} | {state:12} | {target:12} | {source:8} | {commit}')
+              commit = meta.get('githubCommitMessage', '')[:60]
+              err = d.get('errorMessage','') or ''
+              print(f'{dt} | {state:12} | {target:12} | {commit}')
+              if err: print(f'  ERROR: {err}')
+          "
+          
+          echo ""
+          echo "=== Force a new deployment ==="
+          RESULT=$(curl -s -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v13/deployments" \
+            -d '{"name":"zonewise-web","gitSource":{"type":"github","org":"breverdbidder","repo":"zonewise-web","ref":"main"},"target":"production"}')
+          
+          echo "$RESULT" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          print(f'Deploy ID: {data.get(\"id\",\"?\")}')
+          print(f'URL: {data.get(\"url\",\"?\")}')
+          print(f'State: {data.get(\"readyState\",\"?\")}')
+          err = data.get('error', {})
+          if err:
+              print(f'Error: {err}')
           "
