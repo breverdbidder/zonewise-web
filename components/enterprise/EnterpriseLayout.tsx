@@ -44,7 +44,7 @@ export default function EnterpriseLayout() {
           queryLimit: profile?.subscription_tier === 'pro' ? 500 : profile?.subscription_tier === 'investor' ? 2000 : 25,
           createdAt: new Date()
         })
-        await loadSessions(authUser.id)
+        await loadSessions(clerkUser.id)
       } else {
         // Guest mode — render UI without Supabase sessions
         setUser({
