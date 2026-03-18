@@ -1,0 +1,72 @@
+// ZoneWise.AI — Brevard County Explorer Constants
+
+export const BCPAO_BASE = 'https://gis.brevardfl.gov/gissrv/rest/services'
+
+export const ENDPOINTS = {
+  parcelExport: `${BCPAO_BASE}/Base_Map/Parcel_New_WKID102100/MapServer/export`,
+  zoningExport: `${BCPAO_BASE}/Planning_Development/Zoning_WKID2881/MapServer/export`,
+  fluExport: `${BCPAO_BASE}/Planning_Development/FLU_WKID2881/MapServer/export`,
+  parcelIdentify: `${BCPAO_BASE}/Base_Map/Parcel_New_WKID102100/MapServer/identify`,
+} as const
+
+export const BREVARD_BOUNDS: [[number, number], [number, number]] = [
+  [-81.15, 27.82],
+  [-80.40, 28.77],
+]
+
+export const BREVARD_CENTER: [number, number] = [-80.72, 28.30]
+
+export const ZONING_COLORS: Record<string, string> = {
+  RU: '#22C55E', BU: '#3B82F6', TU: '#8B5CF6', IU: '#EF4444',
+  PUD: '#F59E0B', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
+  ARR: '#84CC16', SP: '#F472B6',
+}
+
+export const ZONING_LABELS: Record<string, string> = {
+  RU: 'Residential', BU: 'Business', TU: 'Tourist', IU: 'Industrial',
+  PUD: 'Planned Unit Dev', AU: 'Agriculture', PA: 'Public/Semi-Public',
+  GML: 'Govt Managed Lands', ARR: 'Agri Residential', SP: 'Special',
+}
+
+export function getZoningColor(code: string): string {
+  const prefix = Object.keys(ZONING_COLORS).find(k => code?.startsWith(k))
+  return prefix ? ZONING_COLORS[prefix] : '#94A3B8'
+}
+
+export function toWebMercator(lat: number, lng: number) {
+  const x = (lng * 20037508.34) / 180
+  const yRad = Math.log(Math.tan(((90 + lat) * Math.PI) / 360)) / (Math.PI / 180)
+  return { x, y: (yRad * 20037508.34) / 180 }
+}
+
+export interface ParcelAttributes {
+  PARCEL_ID: string
+  PROPERTY_ID: string
+  STREET_NUMBER: string
+  STREET_DIRECTION_PREFIX: string
+  STREET_NAME: string
+  STREET_TYPE: string
+  CITY: string
+  ZIP_CODE: string
+  OWNER_NAME1: string
+  OWNER_NAME2: string
+  BLDG_VALUE: string
+  LAND_VALUE: string
+  HOMESTEAD_VALUE: string
+  LIV_AREA: string
+  ACRES: string
+  USE_CODE_DESCRIPTION: string
+  SUBDIVISION_NAME: string
+  MILLAGE_CODE: string
+}
+
+export function formatAddress(a: ParcelAttributes): string {
+  return [a.STREET_NUMBER, a.STREET_DIRECTION_PREFIX, a.STREET_NAME, a.STREET_TYPE]
+    .filter(Boolean).join(' ').trim()
+}
+
+export function formatCurrency(val: string | number): string {
+  const n = typeof val === 'string' ? parseFloat(val) : val
+  if (isNaN(n)) return '—'
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+}
