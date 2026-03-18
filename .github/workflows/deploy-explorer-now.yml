@@ -4,7 +4,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     env:
       VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
       VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
@@ -16,6 +16,18 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm install -g vercel@latest
-      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-      - run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Check Vercel whoami
+        run: vercel whoami --token=${{ secrets.VERCEL_TOKEN }} || true
+      - name: Check team info
+        run: vercel teams ls --token=${{ secrets.VERCEL_TOKEN }} || true
+      - name: Pull config
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy with timeout
+        timeout-minutes: 3
+        run: |
+          echo "Starting deploy at $(date)"
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tee /tmp/deploy.log
+          echo "Deploy finished at $(date)"
+          echo "Exit code: $?"
