@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import Link from 'next/link'
 import SplitScreenPreview from '@/components/SplitScreenPreview'
 import BetaSignupForm from '@/components/BetaSignupForm'
