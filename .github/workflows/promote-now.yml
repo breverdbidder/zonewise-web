@@ -1,0 +1,79 @@
+name: Promote to Production
+on:
+  workflow_dispatch:
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest deployment and promote
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+        run: |
+          echo "=== Getting latest deployment ==="
+          DEPS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$TEAM_ID&limit=5&state=READY")
+          
+          echo "$DEPS" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          for dep in d.get('deployments',[])[:5]:
+            print(f'{dep[\"uid\"]} | {dep[\"state\"]} | {dep.get(\"url\",\"\")} | {dep.get(\"created\",\"\")}')" || true
+          
+          DEP_ID=$(echo "$DEPS" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          deps = d.get('deployments',[])
+          for dep in deps:
+            if dep.get('state') == 'READY':
+              print(dep['uid']); break" 2>/dev/null)
+          
+          if [ -z "$DEP_ID" ]; then
+            echo "No READY deployment found. Trying all states..."
+            DEP_ID=$(echo "$DEPS" | python3 -c "
+            import json,sys
+            d=json.load(sys.stdin)
+            deps = d.get('deployments',[])
+            if deps: print(deps[0]['uid'])" 2>/dev/null)
+          fi
+          
+          echo "Promoting deployment: $DEP_ID"
+          
+          RESULT=$(curl -s -X POST \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://api.vercel.com/v10/projects/$PROJECT_ID/promote/$DEP_ID?teamId=$TEAM_ID")
+          
+          echo "Promote result: $RESULT"
+          
+          sleep 15
+          
+          HTTP=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/explorer")
+          echo "Explorer: HTTP $HTTP"
+          
+          if [ "$HTTP" != "200" ]; then
+            echo "Trying alias approach..."
+            DEP_URL=$(echo "$DEPS" | python3 -c "
+            import json,sys
+            d=json.load(sys.stdin)
+            if d.get('deployments'): print(d['deployments'][0].get('url',''))" 2>/dev/null)
+            
+            curl -s -X POST \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.vercel.com/v2/deployments/$DEP_ID/aliases?teamId=$TEAM_ID" \
+              -d '{"alias":"zonewise.ai"}'
+            echo ""
+            
+            curl -s -X POST \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.vercel.com/v2/deployments/$DEP_ID/aliases?teamId=$TEAM_ID" \
+              -d '{"alias":"www.zonewise.ai"}'
+            echo ""
+            
+            sleep 10
+            HTTP2=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/explorer")
+            echo "Explorer after alias: HTTP $HTTP2"
+          fi
