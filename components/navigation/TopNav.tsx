@@ -7,6 +7,7 @@ import { useSafeUser, SafeUserButton } from '@/lib/safe-clerk'
 
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Explorer', href: '/explorer' },
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
 ]
@@ -46,14 +47,14 @@ export default function TopNav() {
         })}
       </div>
 
-      {/* Right side — Clerk UserButton */}
+      {/* Right side */}
       <div className="ml-auto flex items-center gap-3">
         {user && (
-          <span className="hidden sm:block text-xs text-gray-500 dark:text-slate-400 max-w-[160px] truncate">
-            {user.primaryEmailAddress?.emailAddress}
+          <span className="hidden sm:block text-xs text-gray-400 dark:text-slate-500">
+            {user.firstName || user.emailAddresses?.[0]?.emailAddress}
           </span>
         )}
-        <SafeUserButton appearance={{ elements: { avatarBox: 'w-7 h-7' } }} />
+        <SafeUserButton />
       </div>
     </nav>
   )
