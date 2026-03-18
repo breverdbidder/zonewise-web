@@ -101,7 +101,7 @@ jobs:
           - Push to main
 
           DO NOT ask questions. Execute autonomously. If blocked on something, skip it and move to the next item. Leave TODO comments for anything you skip.
-          " --allowedTools "Bash(npm run build:*),Bash(npx tsc:*),Bash(git:*),Bash(cat:*),Bash(ls:*),Bash(mkdir:*),Read,Write,Edit" --auto-mode
+          " --allowedTools "Bash(npm run build:*),Bash(npx tsc:*),Bash(git:*),Bash(cat:*),Bash(ls:*),Bash(mkdir:*),Read,Write,Edit" --dangerously-skip-permissions
 
       - name: Push changes
         run: |
