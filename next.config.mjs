@@ -4,7 +4,8 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'www.bcpao.us' },
-      { protocol: 'https', hostname: '*.supabase.co' }
+      { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: 'gis.brevardfl.gov' },
     ]
   },
   async rewrites() {
