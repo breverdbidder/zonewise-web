@@ -10,12 +10,12 @@ import {
   getZoningColor, ZONING_LABELS,
 } from '@/lib/explorer/constants'
 
-interface LayerState { parcels: boolean; zoning: boolean; flu: boolean }
+interface LayerState { parcels: boolean; zoning: boolean; flu: boolean; heatmap: boolean }
 
 export default function BrevardExplorer() {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
-  const [layers, setLayers] = useState<LayerState>({ parcels: true, zoning: true, flu: false })
+  const [layers, setLayers] = useState<LayerState>({ parcels: true, zoning: true, flu: false, heatmap: false })
   const [selectedParcel, setSelectedParcel] = useState<ParcelAttributes | null>(null)
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -30,7 +30,7 @@ export default function BrevardExplorer() {
     mapboxgl.accessToken = token
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       center: BREVARD_CENTER,
       zoom: 10,
       minZoom: 9,
@@ -51,6 +51,54 @@ export default function BrevardExplorer() {
       map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 } })
       map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.55 } })
       map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
+
+      // Heatmap source (populated on parcel identify)
+      map.addSource('value-heatmap', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] }
+      })
+      map.addLayer({
+        id: 'heatmap-layer',
+type: 'heatmap',
+        source: 'value-heatmap',
+        maxzoom: 18,
+        layout: { visibility: 'none' },
+        paint: {
+          'heatmap-weight': ['interpolate', ['linear'], ['get', 'value'], 0, 0, 500000, 1],
+          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 18, 3],
+          'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#2563EB', 0.4, '#22C55E', 0.6, '#F59E0B', 0.8, '#EF4444', 1, '#DC2626'],
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 15, 18, 30],
+          'heatmap-opacity': 0.65
+        }
+      })
+
+      // 3D buildings (like Reventure.app)
+      const bldgLayers = map.getStyle().layers
+      const labelLayer = bldgLayers?.find((l: any) => l.type === 'symbol' && l.layout?.['text-field'])
+      if (labelLayer) {
+        map.addLayer({
+          id: 'zw-3d-buildings', source: 'composite', 'source-layer': 'building',
+          filter: ['==', 'extrude', 'true'], type: 'fill-extrusion', minzoom: 14,
+          paint: {
+            'fill-extrusion-color': '#d4d4d8',
+            'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'height']],
+            'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'min_height']],
+            'fill-extrusion-opacity': 0.5,
+          },
+        }, labelLayer.id)
+      }
+
+      // Re-add BCPAO layers after style change (style switcher resets sources)
+      map.on('style.load', () => {
+        if (!map.getSource('bcpao-parcels')) {
+          addArcGISSource(map, 'bcpao-parcels', ENDPOINTS.parcelExport)
+          addArcGISSource(map, 'bcpao-zoning', ENDPOINTS.zoningExport)
+          addArcGISSource(map, 'bcpao-flu', ENDPOINTS.fluExport)
+          map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 } })
+          map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.55 } })
+          map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
+        }
+      })
 
       setMapReady(true)
     })
@@ -74,6 +122,16 @@ export default function BrevardExplorer() {
         if (data.results?.length) {
           const attrs = data.results[0].attributes as ParcelAttributes
           setSelectedParcel(attrs)
+          // Feed heatmap
+          if (map.getSource('value-heatmap')) {
+            const existing = (map.getSource('value-heatmap') as mapboxgl.GeoJSONSource)
+            const bv = parseFloat(attrs.BLDG_VALUE) + parseFloat(attrs.LAND_VALUE)
+            const prev = (window as any).__heatPts || []
+            prev.push({ type: 'Feature' as const, geometry: { type: 'Point' as const, coordinates: [lng, lat] }, properties: { value: bv } })
+            if (prev.length > 500) prev.shift()
+            ;(window as any).__heatPts = prev
+            existing.setData({ type: 'FeatureCollection', features: prev })
+          }
           new mapboxgl.Popup({ maxWidth: '340px', className: 'zw-popup' })
             .setLngLat([lng, lat])
             .setHTML(popupHtml(attrs))
@@ -102,6 +160,7 @@ export default function BrevardExplorer() {
       map.setLayoutProperty('parcels-layer', 'visibility', layers.parcels ? 'visible' : 'none')
       map.setLayoutProperty('zoning-layer', 'visibility', layers.zoning ? 'visible' : 'none')
       map.setLayoutProperty('flu-layer', 'visibility', layers.flu ? 'visible' : 'none')
+      if (map.getLayer('heatmap-layer')) map.setLayoutProperty('heatmap-layer', 'visibility', layers.heatmap ? 'visible' : 'none')
     } catch {}
   }, [layers, mapReady])
 
@@ -155,6 +214,7 @@ export default function BrevardExplorer() {
             { key: 'parcels' as const, label: 'All Brevard Parcels', color: '#F59E0B' },
             { key: 'zoning' as const, label: 'Zoning Districts', color: '#3B82F6' },
             { key: 'flu' as const, label: 'Future Land Use', color: '#A855F7' },
+            { key: 'heatmap' as const, label: 'Value Heatmap', color: '#EF4444' },
           ]).map(l => (
             <label key={l.key} className="flex items-center gap-2 py-1 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
               <input type="checkbox" checked={layers[l.key]} onChange={() => setLayers(p => ({ ...p, [l.key]: !p[l.key] }))} className="accent-zw-orange rounded" />
@@ -193,6 +253,22 @@ export default function BrevardExplorer() {
       {/* MAP */}
       <div className="flex-1 relative">
         <div ref={containerRef} className="w-full h-full" />
+        <div className="absolute top-3 left-3 flex gap-1.5 z-10">
+          {([
+            { id: 'streets-v12', label: 'Streets' },
+            { id: 'satellite-streets-v12', label: 'Satellite' },
+            { id: 'light-v11', label: 'Light' },
+            { id: 'dark-v11', label: 'Dark' },
+          ] as const).map(s => (
+            <button
+              key={s.id}
+              onClick={() => { if (mapRef.current) mapRef.current.setStyle('mapbox://styles/mapbox/' + s.id) }}
+              className="px-2.5 py-1.5 bg-white/90 border border-slate-300 rounded-md text-[11px] font-semibold text-slate-700 hover:bg-zw-orange/10 hover:border-zw-orange/50 hover:text-zw-orange-600 transition-all backdrop-blur-sm shadow-sm"
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
         {loading && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-slate-700 rounded-md px-4 py-2 text-xs text-zw-orange font-semibold backdrop-blur-sm z-10">
             Loading parcel data...
