@@ -1,0 +1,41 @@
+name: Deploy Explorer to Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Vercel diagnostics
+        run: |
+          echo "=== Who am I? ==="
+          vercel whoami --token=${{ secrets.VERCEL_TOKEN }} 2>&1 || true
+          echo ""
+          echo "=== List projects ==="
+          vercel ls --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | head -20 || true
+          echo ""
+          echo "=== Project info ==="
+          vercel inspect --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | head -20 || true
+        env:
+          VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+          VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+
+      - name: Link and deploy
+        run: |
+          echo "=== Pulling project settings ==="
+          vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1
+          echo ""
+          echo "=== Building ==="
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1
+          echo ""
+          echo "=== Deploying prebuilt ==="
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1
+        env:
+          VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+          VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
