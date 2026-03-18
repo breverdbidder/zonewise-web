@@ -60,6 +60,7 @@ export default function BrevardExplorer() {
       const { lng, lat } = e.lngLat
       const bounds = map.getBounds()
       const canvas = map.getCanvas()
+      if (!bounds) return
       const url =
         `${ENDPOINTS.parcelIdentify}?geometry=${lng},${lat}` +
         `&geometryType=esriGeometryPoint&sr=4326&layers=all:5&tolerance=4` +
