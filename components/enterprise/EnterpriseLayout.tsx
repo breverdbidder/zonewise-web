@@ -177,14 +177,75 @@ export default function EnterpriseLayout() {
     )
   }
 
+  // Mobile: tab between chat/artifact. Sidebar = overlay.
+  const [mobileTab, setMobileTab] = useState<'chat' | 'artifact'>('chat')
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
   return (
     <div className="h-full flex bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 overflow-hidden transition-colors">
-      <SessionSidebar sessions={sessions} activeSession={activeSession} collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        onSelectSession={selectSession} onNewSession={createNewSession} user={user} onSignOut={handleSignOut} />
-      <div className="flex-1 flex min-w-0">
-        <ChatPanel messages={messages} onSendMessage={handleSendMessage} activeSession={activeSession} artifacts={artifacts} onSelectArtifact={setActiveArtifact} />
-        <ArtifactPanel artifact={activeArtifact} artifacts={artifacts} onSelectArtifact={setActiveArtifact} onClose={() => setActiveArtifact(null)} />
+      {/* Mobile sidebar overlay */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileSidebarOpen(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-72 z-50">
+            <SessionSidebar sessions={sessions} activeSession={activeSession} collapsed={false}
+              onToggleCollapse={() => setMobileSidebarOpen(false)}
+              onSelectSession={(s) => { selectSession(s); setMobileSidebarOpen(false); setMobileTab('chat') }}
+              onNewSession={() => { createNewSession(); setMobileSidebarOpen(false); setMobileTab('chat') }}
+              user={user} onSignOut={handleSignOut} />
+          </div>
+        </div>
+      )}
+
+      {/* Desktop sidebar (hidden on mobile) */}
+      <div className="hidden md:block">
+        <SessionSidebar sessions={sessions} activeSession={activeSession} collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onSelectSession={selectSession} onNewSession={createNewSession} user={user} onSignOut={handleSignOut} />
+      </div>
+
+      {/* Mobile header (hidden on desktop) */}
+      <div className="md:hidden absolute top-0 left-0 right-0 z-40 h-12 flex items-center px-3 gap-2 bg-slate-900 border-b border-slate-800">
+        <button onClick={() => setMobileSidebarOpen(true)} className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        <div className="flex-1 flex items-center gap-1.5">
+          <div className="w-5 h-5 rounded bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 flex items-center justify-center">
+            <span className="text-white text-[9px] font-bold">Z</span>
+          </div>
+          <span className="text-xs font-semibold text-white">ZoneWise<span className="text-amber-500">.AI</span></span>
+        </div>
+        <button onClick={createNewSession} className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      {/* Mobile tab bar (hidden on desktop) */}
+      {activeArtifact && (
+        <div className="md:hidden absolute top-12 left-0 right-0 z-30 flex bg-slate-900/95 border-b border-slate-800 backdrop-blur-sm">
+          <button onClick={() => setMobileTab('chat')}
+            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'chat' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-500'}`}>
+            💬 Chat
+          </button>
+          <button onClick={() => setMobileTab('artifact')}
+            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'artifact' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-500'}`}>
+            📋 Artifact
+          </button>
+        </div>
+      )}
+
+      {/* Desktop: side-by-side. Mobile: tab switch */}
+      <div className="flex-1 flex min-w-0 md:pt-0 pt-12">
+        {/* Chat — always visible on desktop, conditional on mobile */}
+        <div className={`flex-1 min-w-0 ${activeArtifact && mobileTab !== 'chat' ? 'hidden md:flex' : 'flex'}`}>
+          <ChatPanel messages={messages} onSendMessage={handleSendMessage} activeSession={activeSession}
+            artifacts={artifacts} onSelectArtifact={(a) => { setActiveArtifact(a); setMobileTab('artifact') }} />
+        </div>
+        {/* Artifact — always visible on desktop when active, conditional on mobile */}
+        <div className={`${!activeArtifact ? 'hidden md:block' : ''} ${activeArtifact && mobileTab !== 'artifact' ? 'hidden md:block' : ''} ${activeArtifact && mobileTab === 'artifact' ? 'flex-1 md:flex-none' : ''}`}>
+          <ArtifactPanel artifact={activeArtifact} artifacts={artifacts} onSelectArtifact={setActiveArtifact}
+            onClose={() => { setActiveArtifact(null); setMobileTab('chat') }} />
+        </div>
       </div>
     </div>
   )
