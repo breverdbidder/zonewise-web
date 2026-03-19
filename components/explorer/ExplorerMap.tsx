@@ -316,40 +316,31 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
   }, [zoningFilter, mapReady])
 
   // ── Style switching ──────────────────────────────────────────────────────
+  const prevStyleRef = useRef(mapStyle)
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapReady) return
+    // Skip if same style (prevents wiping layers on mount)
+    if (prevStyleRef.current === mapStyle) return
+    prevStyleRef.current = mapStyle
+    
     const newUrl = `mapbox://styles/mapbox/${mapStyle}`
-    map.setStyle(newUrl)
-  }, [mapStyle, mapReady])
-
-  // Re-add layers after style change
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
+    
+    // Listen for style.load BEFORE calling setStyle
     const onStyleLoad = () => {
       try {
-        if (!map.getSource('bcpao-parcels')) {
-          addArcGISSource(map, 'bcpao-parcels', ENDPOINTS.parcelExport)
-          map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 }, layout: { visibility: 'none' } })
-        }
-        if (!map.getSource('bcpao-zoning')) {
-          addArcGISSource(map, 'bcpao-zoning', ENDPOINTS.zoningExport)
-          map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.15 }, layout: { visibility: 'none' } })
-        }
-        if (!map.getSource('bcpao-flu')) {
-          addArcGISSource(map, 'bcpao-flu', ENDPOINTS.fluExport)
-          map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
-        }
-        if (!map.getSource('choropleth-src')) {
-          map.addSource('choropleth-src', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
-        }
-        // zoom opacity re-applies on next zoom change
+        addArcGISSource(map, 'bcpao-parcels', ENDPOINTS.parcelExport)
+        addArcGISSource(map, 'bcpao-zoning', ENDPOINTS.zoningExport)
+        addArcGISSource(map, 'bcpao-flu', ENDPOINTS.fluExport)
+        map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 }, layout: { visibility: 'none' } })
+        map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.15 }, layout: { visibility: 'none' } })
+        map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
+        map.addSource('choropleth-src', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
       } catch (e) { console.warn('Style reload:', e) }
     }
-    map.on('style.load', onStyleLoad)
-    return () => { map.off('style.load', onStyleLoad) }
-  }, [mapReady])
+    map.once('style.load', onStyleLoad)
+    map.setStyle(newUrl)
+  }, [mapStyle, mapReady])
 
 
   return (
