@@ -8,6 +8,7 @@ import { useSafeUser, SafeUserButton } from '@/lib/safe-clerk'
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Explorer', href: '/explorer' },
+  { name: 'Dev Intel', href: '/explore' },
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
   { name: 'Explore', href: '/explore' },
