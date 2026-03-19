@@ -22,6 +22,7 @@ export interface ExplorerMapHandle {
 }
 
 interface Props {
+  mapStyle?: string
   onParcelClick?: (parcel: ParcelAttributes, lngLat: [number, number]) => void
   choroplethData?: ChoroplethGeoJSON | null
   choroplethMetric?: ChoroplethMetric
@@ -36,6 +37,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     choroplethMetric = 'zhvi',
     choroplethVisible = true,
     zoningFilter = 'all',
+    mapStyle = 'streets-v12',
   },
   ref,
 ) {
@@ -312,6 +314,43 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     zoningFilterRef.current = zoningFilter
     applyZoningFilter(mapRef.current, zoningFilter)
   }, [zoningFilter, mapReady])
+
+  // ── Style switching ──────────────────────────────────────────────────────
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    const newUrl = `mapbox://styles/mapbox/${mapStyle}`
+    map.setStyle(newUrl)
+  }, [mapStyle, mapReady])
+
+  // Re-add layers after style change
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const onStyleLoad = () => {
+      try {
+        if (!map.getSource('bcpao-parcels')) {
+          addArcGISSource(map, 'bcpao-parcels', ENDPOINTS.parcelExport)
+          map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 }, layout: { visibility: 'none' } })
+        }
+        if (!map.getSource('bcpao-zoning')) {
+          addArcGISSource(map, 'bcpao-zoning', ENDPOINTS.zoningExport)
+          map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.15 }, layout: { visibility: 'none' } })
+        }
+        if (!map.getSource('bcpao-flu')) {
+          addArcGISSource(map, 'bcpao-flu', ENDPOINTS.fluExport)
+          map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
+        }
+        if (!map.getSource('choropleth-src')) {
+          map.addSource('choropleth-src', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
+        }
+        applyZoomAdaptive(map)
+      } catch (e) { console.warn('Style reload:', e) }
+    }
+    map.on('style.load', onStyleLoad)
+    return () => { map.off('style.load', onStyleLoad) }
+  }, [mapReady])
+
 
   return (
     <div className="relative w-full h-full">
