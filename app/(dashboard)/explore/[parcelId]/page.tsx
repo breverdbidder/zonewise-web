@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DevIntelTab } from '@/components/envelope/DevIntelTab'
+import { ExploreWithChat } from '@/components/envelope/ExploreWithChat'
 
 interface Props {
   params: Promise<{ parcelId: string }>
@@ -15,5 +15,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ExploreParcelPage({ params }: Props) {
   const { parcelId } = await params
-  return <DevIntelTab initialParcelId={decodeURIComponent(parcelId)} />
+  return <ExploreWithChat initialParcelId={decodeURIComponent(parcelId)} />
 }
