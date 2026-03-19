@@ -344,7 +344,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         if (!map.getSource('choropleth-src')) {
           map.addSource('choropleth-src', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
         }
-        applyZoomAdaptive(map)
+        // zoom opacity re-applies on next zoom change
       } catch (e) { console.warn('Style reload:', e) }
     }
     map.on('style.load', onStyleLoad)
