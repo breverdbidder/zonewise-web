@@ -1,52 +1,23 @@
-'use client'
+// components/envelope/HBUSourceBadge.tsx
+// Indicates whether HBU scores came from the CMA Analyst agent or client-side engine
 
-/**
- * HBUSourceBadge — Deliverable 3
- *
- * Renders a small pill badge indicating whether HBU scores came from
- * the CMA Analyst agent (server-computed) or the client-side engine (fallback).
- *
- * Usage:
- *   const { fetchHBU } = useEnvelopeData()
- *   const { scenarios, source } = await fetchHBU(parcelId, parcel)
- *   <HBUSourceBadge source={source} />
- */
-
-export type HBUSource = 'server' | 'client'
-
-export interface HBUSourceBadgeProps {
-  source: HBUSource
+interface Props {
+  source: 'server' | 'client'
   className?: string
 }
 
-export function HBUSourceBadge({ source, className = '' }: HBUSourceBadgeProps) {
+/**
+ * HBUSourceBadge — Shows "AI-Computed" when using server scores from the
+ * CMA Analyst agent, or "Estimated" when using the client-side calculateHBU() fallback.
+ */
+export default function HBUSourceBadge({ source, className = '' }: Props) {
   if (source === 'server') {
     return (
       <span
-        className={className}
-        title="Scores computed by the CMA Analyst agent from real comp data"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '2px 8px',
-          borderRadius: '9999px',
-          fontSize: '11px',
-          fontWeight: 600,
-          letterSpacing: '0.03em',
-          background: 'rgba(34, 197, 94, 0.12)',
-          border: '1px solid rgba(34, 197, 94, 0.35)',
-          color: '#4ade80',
-          userSelect: 'none',
-          whiteSpace: 'nowrap',
-        }}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#1E3A5F] text-[#F59E0B] border border-[#F59E0B]/30 ${className}`}
+        title="HBU scores computed by CMA Analyst agent using full market data"
       >
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-          <path
-            d="M5 1L6.18 3.64L9 4.09L7 6.04L7.45 9L5 7.64L2.55 9L3 6.04L1 4.09L3.82 3.64L5 1Z"
-            fill="#4ade80"
-          />
-        </svg>
+        <span aria-hidden="true">✦</span>
         AI-Computed
       </span>
     )
@@ -54,31 +25,11 @@ export function HBUSourceBadge({ source, className = '' }: HBUSourceBadgeProps) 
 
   return (
     <span
-      className={className}
-      title="Scores estimated by the client-side HBU engine (no CMA report yet for this parcel)"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '2px 8px',
-        borderRadius: '9999px',
-        fontSize: '11px',
-        fontWeight: 600,
-        letterSpacing: '0.03em',
-        background: 'rgba(245, 158, 11, 0.10)',
-        border: '1px solid rgba(245, 158, 11, 0.30)',
-        color: '#F59E0B',
-        userSelect: 'none',
-        whiteSpace: 'nowrap',
-      }}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-400 border border-slate-700 ${className}`}
+      title="HBU scores estimated client-side — parcel not yet processed by CMA agent"
     >
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <rect x="1" y="1" width="8" height="8" rx="1" stroke="#F59E0B" strokeWidth="1.2" fill="none" />
-        <path d="M3 3.5h4M3 5h4M3 6.5h2.5" stroke="#F59E0B" strokeWidth="1" strokeLinecap="round" />
-      </svg>
+      <span aria-hidden="true">~</span>
       Estimated
     </span>
   )
 }
-
-export default HBUSourceBadge
