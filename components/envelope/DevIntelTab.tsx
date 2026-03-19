@@ -112,10 +112,12 @@ function ParcelDetail({
   parcel,
   onBack,
   hbuSource,
+  heightOverride,
 }: {
   parcel: Parcel
   onBack: () => void
   hbuSource?: 'server' | 'client'
+  heightOverride?: number | null
 }) {
   const [tab, setTab] = useState<'3d' | 'hbu' | 'facts'>('3d')
   const cRef = useRef<HTMLDivElement>(null)
@@ -126,10 +128,15 @@ function ParcelDetail({
   const [front, setFront] = useState(parcel.setbacks.front)
   const [side, setSide] = useState(parcel.setbacks.side)
   const [rear, setRear] = useState(parcel.setbacks.rear)
-  const [maxH, setMaxH] = useState(parcel.maxHeight)
+  const [maxH, setMaxH] = useState(heightOverride ?? parcel.maxHeight)
   const [maxCov, setMaxCov] = useState(parcel.maxCoverage)
   const [far, setFar] = useState(parcel.far)
   const [showCompare, setShowCompare] = useState(false)
+
+  // Respond to external height override from chat intent
+  useEffect(() => {
+    if (heightOverride != null) setMaxH(heightOverride)
+  }, [heightOverride])
 
   const env = useMemo(
     () => computeEnvelope(parcel.lotWidth, parcel.lotDepth, front, side, rear, maxH, maxCov, far),
@@ -542,9 +549,15 @@ function GridSkeleton() {
 export interface DevIntelTabProps {
   /** Pre-select a parcel by ID (for /explore/[parcelId] deep links) */
   initialParcelId?: string
+  /** Address string from chat — fuzzy-matched against loaded parcels */
+  chatSelectedAddress?: string | null
+  /** When true, activate comparison mode with first 2 parcels */
+  chatCompareActivate?: boolean
+  /** Override the height slider value from chat intent */
+  chatHeightOverride?: number | null
 }
 
-export function DevIntelTab({ initialParcelId }: DevIntelTabProps) {
+export function DevIntelTab({ initialParcelId, chatSelectedAddress, chatCompareActivate, chatHeightOverride }: DevIntelTabProps) {
   const { parcels: liveParcels, loading, error, fetchParcels, fetchHBU, retry } = useEnvelopeData()
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Parcel | null>(null)
@@ -565,6 +578,28 @@ export function DevIntelTab({ initialParcelId }: DevIntelTabProps) {
     const found = parcels.find((p) => p.id === initialParcelId)
     if (found) setSelected(found)
   }, [initialParcelId, parcels])
+
+  // Handle chat-driven parcel selection via fuzzy address match
+  useEffect(() => {
+    if (!chatSelectedAddress || parcels.length === 0) return
+    const lower = chatSelectedAddress.toLowerCase()
+    const found = parcels.find(
+      (p) =>
+        p.address.toLowerCase().includes(lower) ||
+        lower.includes(p.address.toLowerCase())
+    )
+    if (found) {
+      setSelected(found)
+      fetchHBU(found.id, found).then(({ source }) => setHbuSource(source))
+    }
+  }, [chatSelectedAddress]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle chat-driven compare mode activation
+  useEffect(() => {
+    if (!chatCompareActivate || parcels.length < 2) return
+    setSelected(null)
+    setCompareIds(parcels.slice(0, 2).map((p) => p.id))
+  }, [chatCompareActivate]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = parcels.filter(
     (p) =>
@@ -594,6 +629,7 @@ export function DevIntelTab({ initialParcelId }: DevIntelTabProps) {
         parcel={selected}
         onBack={() => { setSelected(null); setHbuSource(undefined) }}
         hbuSource={hbuSource}
+        heightOverride={chatHeightOverride}
       />
     )
   }

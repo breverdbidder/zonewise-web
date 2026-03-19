@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DevIntelTab } from '@/components/envelope/DevIntelTab'
+import { ExploreWithChat } from '@/components/envelope/ExploreWithChat'
 
 export const metadata: Metadata = {
   title: 'Development Intelligence — ZoneWise.AI',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function ExplorePage() {
-  return <DevIntelTab />
+  return <ExploreWithChat />
 }

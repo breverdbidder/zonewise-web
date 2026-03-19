@@ -29,6 +29,8 @@ interface ChatWidgetProps {
   apiEndpoint?: string
   /** Auth token — if omitted, widget fetches it from Supabase session */
   authToken?: string
+  /** Called with each user message before it is sent — used by ExploreWithChat to intercept intents */
+  onUserMessage?: (msg: string) => void
 }
 
 const CHIPS = [
@@ -236,7 +238,7 @@ function formatInline(text: string): string {
 }
 
 // ── Main ChatWidget ──────────────────────────────────────────
-export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propToken }: ChatWidgetProps) {
+export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propToken, onUserMessage }: ChatWidgetProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -283,6 +285,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
     const userText = text ?? input.trim()
     if (!userText || loading) return
 
+    onUserMessage?.(userText)
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
 

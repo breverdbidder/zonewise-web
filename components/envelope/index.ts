@@ -24,3 +24,6 @@ export type { Envelope3DProps } from './Envelope3D'
 
 export { DevIntelTab } from './DevIntelTab'
 export type { DevIntelTabProps } from './DevIntelTab'
+
+export { ExploreWithChat } from './ExploreWithChat'
+export type { ExploreWithChatProps } from './ExploreWithChat'
