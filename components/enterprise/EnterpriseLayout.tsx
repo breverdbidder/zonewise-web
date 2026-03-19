@@ -24,6 +24,8 @@ export default function EnterpriseLayout() {
   const [activeArtifact, setActiveArtifact] = useState<Artifact | null>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [mobileTab, setMobileTab] = useState<'chat' | 'artifact'>('chat')
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   
   const { user: clerkUser, isLoaded } = useSafeUser()
   const { signOut } = useSafeClerk()
@@ -176,10 +178,6 @@ export default function EnterpriseLayout() {
       </div>
     )
   }
-
-  // Mobile: tab between chat/artifact. Sidebar = overlay.
-  const [mobileTab, setMobileTab] = useState<'chat' | 'artifact'>('chat')
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   return (
     <div className="h-full flex bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 overflow-hidden transition-colors">
