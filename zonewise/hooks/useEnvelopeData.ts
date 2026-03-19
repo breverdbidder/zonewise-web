@@ -53,6 +53,9 @@ interface UseEnvelopeDataReturn {
   retry: () => void
 }
 
+// In-memory cache: parcel_id → { scenarios, source }
+const hbuCache = new Map<string, { scenarios: HBUScenario[]; source: 'server' | 'client' }>()
+
 export function useEnvelopeData(): UseEnvelopeDataReturn {
   const [parcels, setParcels] = useState<Parcel[]>([])
   const [loading, setLoading] = useState(false)
@@ -114,6 +117,10 @@ export function useEnvelopeData(): UseEnvelopeDataReturn {
       parcelId: string,
       parcel: Parcel
     ): Promise<{ scenarios: HBUScenario[]; source: 'server' | 'client' }> => {
+      // Return cached result if available
+      const cached = hbuCache.get(parcelId)
+      if (cached) return cached
+
       try {
         const supabase = createClient()
         const { data } = await supabase
@@ -123,7 +130,9 @@ export function useEnvelopeData(): UseEnvelopeDataReturn {
           .single()
 
         if (data?.hbu_scenarios) {
-          return { scenarios: data.hbu_scenarios as HBUScenario[], source: 'server' }
+          const result = { scenarios: data.hbu_scenarios as HBUScenario[], source: 'server' as const }
+          hbuCache.set(parcelId, result)
+          return result
         }
       } catch {
         // No server data — fall through to client-side engine
@@ -141,7 +150,9 @@ export function useEnvelopeData(): UseEnvelopeDataReturn {
         parcel.far
       )
       const scenarios = calculateHBU(parcel, envelope)
-      return { scenarios, source: 'client' }
+      const result = { scenarios, source: 'client' as const }
+      hbuCache.set(parcelId, result)
+      return result
     },
     []
   )
