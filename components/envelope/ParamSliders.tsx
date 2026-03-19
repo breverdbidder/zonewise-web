@@ -1,8 +1,6 @@
-'use client'
-
 const ORANGE = '#F59E0B'
 
-export interface ParamSliderProps {
+interface ParamSliderProps {
   label: string
   value: number
   min: number
@@ -16,9 +14,7 @@ export function ParamSlider({ label, value, min, max, step, onChange, unit = '' 
   const id = `slider-${label.replace(/\s/g, '-')}`
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor={id} className="text-[10px] text-gray-400 w-14 shrink-0">
-        {label}
-      </label>
+      <label htmlFor={id} className="text-[10px] text-gray-400 w-14 shrink-0">{label}</label>
       <input
         id={id}
         type="range"
@@ -26,7 +22,7 @@ export function ParamSlider({ label, value, min, max, step, onChange, unit = '' 
         max={max}
         step={step}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={e => onChange(Number(e.target.value))}
         aria-valuenow={value}
         aria-valuemin={min}
         aria-valuemax={max}
@@ -39,5 +35,3 @@ export function ParamSlider({ label, value, min, max, step, onChange, unit = '' 
     </div>
   )
 }
-
-export default ParamSlider
