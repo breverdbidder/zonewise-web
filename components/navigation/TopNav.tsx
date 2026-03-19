@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { name: 'Explorer', href: '/explorer' },
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
+  { name: 'Explore', href: '/explore' },
 ]
 
 export default function TopNav() {
