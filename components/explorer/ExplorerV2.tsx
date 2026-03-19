@@ -239,6 +239,7 @@ export default function ExplorerV2() {
             choroplethMetric={choroplethMetric}
             choroplethVisible={choroplethVisible}
             zoningFilter={zoningFilter}
+            mapStyle={mapStyle}
           />
         </div>
 
