@@ -67,31 +67,40 @@ function ParcelPanel({ parcel }: { parcel: ParcelAttributes }) {
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-sm font-bold text-white leading-tight">{addr || 'Unknown Address'}</h3>
-        <p className="text-[11px] text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-        <p className="text-[11px] text-slate-500 font-mono mt-0.5">{pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}</p>
+        <h3 className="text-base font-bold text-white leading-tight">{addr || 'Unknown Address'}</h3>
+        <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
+        <p className="text-[11px] text-slate-500 mt-0.5 font-mono">{pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}</p>
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
+
+      <div className="grid grid-cols-2 gap-2">
         {[
           { label: 'Building', value: formatCurrency(parcel.BLDG_VALUE) },
           { label: 'Land', value: formatCurrency(parcel.LAND_VALUE) },
-          { label: 'Sq Ft', value: `${parseInt(parcel.LIV_AREA) || '—'}` },
-          { label: 'Acres', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'}` },
+          { label: 'Living Area', value: `${parseInt(parcel.LIV_AREA) || '—'} sqft` },
+          { label: 'Lot', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
         ].map(s => (
-          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-lg p-2">
-            <div className="text-[9px] text-slate-500 uppercase tracking-wider">{s.label}</div>
-            <div className="text-xs font-bold text-white font-mono mt-0.5">{s.value}</div>
+          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
+            <div className="text-[10px] text-slate-500 uppercase tracking-wider">{s.label}</div>
+            <div className="text-sm font-bold text-white font-mono mt-0.5">{s.value}</div>
           </div>
         ))}
       </div>
-      <div className="space-y-1.5">
+
+      <div className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
+        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Owner</div>
+        <div className="text-sm font-semibold text-white">{parcel.OWNER_NAME1 || '—'}</div>
+        {parcel.OWNER_NAME2 && <div className="text-xs text-slate-400">{parcel.OWNER_NAME2}</div>}
+        <div className="text-[11px] text-slate-500 mt-1">Subdivision: {parcel.SUBDIVISION_NAME || '—'}</div>
+        <div className="text-[11px] text-slate-500">Millage: {parcel.MILLAGE_CODE || '—'} · Homestead: {parseFloat(parcel.HOMESTEAD_VALUE) > 0 ? 'Yes ✓' : 'No'}</div>
+      </div>
+
+      <div className="space-y-2 pt-1">
         <a href={`/parcel/${pidEnc}`}
-          className="flex items-center justify-center gap-2 w-full py-2 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-lg text-xs font-bold hover:bg-amber-500/25 transition-colors">
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-md text-sm font-bold hover:bg-amber-500/25 transition-colors">
           🗺️ Full ZoneWise.AI Analysis
         </a>
-        <a href={`https://www.bcpao.us/PropertySearch/#/account/${parcel.PROPERTY_ID}`}
-          target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-lg text-[11px] font-semibold hover:bg-blue-500/20 transition-colors">
+        <a href={`https://www.bcpao.us/PropertySearch/#/account/${parcel.PROPERTY_ID}`} target="_blank" rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md text-xs font-semibold hover:bg-blue-500/20 transition-colors">
           📋 View on BCPAO
         </a>
       </div>
