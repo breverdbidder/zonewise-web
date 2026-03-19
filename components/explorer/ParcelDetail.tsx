@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { getMapboxToken } from '@/lib/feasibility/constants'
 import { ENDPOINTS, type ParcelAttributes, formatAddress, formatCurrency, getZoningColor, ZONING_LABELS } from '@/lib/explorer/constants'
 import Link from 'next/link'
+import { MiniMap } from '@/components/envelope/MiniMap'
 
 interface Props { parcelId: string }
 
@@ -14,6 +15,7 @@ export default function ParcelDetail({ parcelId }: Props) {
   const [nearby, setNearby] = useState<ParcelAttributes[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -49,6 +51,9 @@ export default function ParcelDetail({ parcelId }: Props) {
           cLng = ring.reduce((s: number, c: number[]) => s + c[0], 0) / ring.length
           cLat = ring.reduce((s: number, c: number[]) => s + c[1], 0) / ring.length
         }
+
+        // Store centroid for MiniMap
+        if (cLat && cLng) setCoords({ lat: cLat, lng: cLng })
 
         // Init map
         if (containerRef.current && !mapRef.current) {
@@ -152,6 +157,11 @@ export default function ParcelDetail({ parcelId }: Props) {
       <div className="w-[420px] bg-slate-950 border-r border-slate-800 overflow-y-auto shrink-0 max-md:hidden">
         <div className="p-4 border-b border-slate-800">
           <Link href="/explorer" className="text-xs text-zw-orange hover:underline">← Back to Explorer</Link>
+          {coords && (
+            <div className="mt-3 rounded-lg overflow-hidden" style={{ height: 160 }}>
+              <MiniMap variant="gl" lat={coords.lat} lng={coords.lng} className="w-full h-full" />
+            </div>
+          )}
           <h1 className="text-lg font-bold text-white mt-2">{addr || 'Unknown Address'}</h1>
           <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
           <p className="text-[11px] text-slate-500 font-mono mt-1">{parcel.PARCEL_ID}</p>
