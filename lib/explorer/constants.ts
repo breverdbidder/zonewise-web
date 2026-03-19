@@ -1,4 +1,5 @@
 // ZoneWise.AI — Brevard County Explorer Constants
+// Explorer V2: choropleth metrics, zoning filters, Brevard ZIPs
 
 export const BCPAO_BASE = 'https://gis.brevardfl.gov/gissrv/rest/services'
 
@@ -70,3 +71,57 @@ export function formatCurrency(val: string | number): string {
   if (isNaN(n)) return '—'
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
 }
+
+// ── Explorer V2 additions ─────────────────────────────────────────────────────
+
+export const BREVARD_ZIPS = [
+  '32754', '32780', '32796', '32901', '32903', '32904', '32905', '32907',
+  '32908', '32909', '32920', '32922', '32925', '32926', '32927', '32931',
+  '32934', '32935', '32937', '32940', '32949', '32950', '32951', '32952',
+  '32953', '32955', '32976',
+] as const
+
+export type BrevardZip = typeof BREVARD_ZIPS[number]
+
+export const CHOROPLETH_METRICS = [
+  { value: 'zhvi', label: 'Median Home Value' },
+  { value: 'zori', label: 'Median Rent' },
+  { value: 'yoy',  label: 'YoY Change %' },
+] as const
+
+export type ChoroplethMetric = typeof CHOROPLETH_METRICS[number]['value']
+
+export const ZONING_FILTERS = [
+  { value: 'all',  label: 'All Zones' },
+  { value: 'RU',   label: 'Residential (RU)' },
+  { value: 'BU',   label: 'Business (BU)' },
+  { value: 'PUD',  label: 'Planned Unit (PUD)' },
+  { value: 'AU',   label: 'Agriculture (AU)' },
+  { value: 'IU',   label: 'Industrial (IU)' },
+  { value: 'TU',   label: 'Tourist (TU)' },
+] as const
+
+export type ZoningFilter = typeof ZONING_FILTERS[number]['value']
+
+// Blue → green → yellow/orange → red
+export const CHOROPLETH_COLOR_STOPS: [number, string][] = [
+  [0,       '#2563EB'],
+  [180000,  '#22C55E'],
+  [280000,  '#EAB308'],
+  [380000,  '#F97316'],
+  [500000,  '#EF4444'],
+  [700000,  '#DC2626'],
+]
+
+// Free tier limits
+export const FREE_PARCEL_CLICKS  = 5
+export const FREE_CHAT_MESSAGES  = 3
+
+export const EXPLORER_CHIPS = [
+  { icon: '🏠', text: 'What is the zoning at 798 Ocean Dr, Satellite Beach?' },
+  { icon: '📍', text: 'Show me RU-1 residential parcels in Merritt Island' },
+  { icon: '🔥', text: 'Show median home values heatmap by ZIP code' },
+  { icon: '⚖️', text: 'What foreclosure auctions are coming up in Brevard?' },
+  { icon: '💰', text: 'Best ZIP codes for investment in Brevard County' },
+  { icon: '🏗️', text: 'Where can I build multi-family in Palm Bay?' },
+] as const

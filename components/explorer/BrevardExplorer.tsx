@@ -48,9 +48,25 @@ export default function BrevardExplorer() {
       addArcGISSource(map, 'bcpao-zoning', ENDPOINTS.zoningExport)
       addArcGISSource(map, 'bcpao-flu', ENDPOINTS.fluExport)
 
-      map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 } })
-      map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.55 } })
+      map.addLayer({ id: 'parcels-layer', type: 'raster', source: 'bcpao-parcels', paint: { 'raster-opacity': 0.8 }, layout: { visibility: 'none' } })
+      map.addLayer({ id: 'zoning-layer', type: 'raster', source: 'bcpao-zoning', paint: { 'raster-opacity': 0.15 }, layout: { visibility: 'none' } })
       map.addLayer({ id: 'flu-layer', type: 'raster', source: 'bcpao-flu', paint: { 'raster-opacity': 0.5 }, layout: { visibility: 'none' } })
+
+      // Zoom-adaptive layer opacity
+      const applyZoomOpacity = () => {
+        const z = map.getZoom()
+        // Zoning: hidden <12, subtle 12-14, full 15+
+        const zoningVisible = z >= 12
+        const zoningOpacity = z < 13 ? 0.15 : z < 15 ? 0.35 : 0.55
+        try {
+          map.setLayoutProperty('zoning-layer', 'visibility', zoningVisible ? 'visible' : 'none')
+          map.setPaintProperty('zoning-layer', 'raster-opacity', zoningOpacity)
+          // Parcels: only at street level 14+
+          map.setLayoutProperty('parcels-layer', 'visibility', z >= 14 ? 'visible' : 'none')
+        } catch {}
+      }
+      map.on('zoom', applyZoomOpacity)
+      applyZoomOpacity()
 
       // Heatmap source (populated on parcel identify)
       map.addSource('value-heatmap', {
