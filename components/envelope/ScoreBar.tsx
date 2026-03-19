@@ -1,10 +1,8 @@
-'use client'
-
 const GREEN = '#22c55e'
 const ORANGE = '#F59E0B'
 const RED = '#ef4444'
 
-export interface ScoreBarProps {
+interface ScoreBarProps {
   score: number
   label: string
 }
@@ -27,11 +25,7 @@ export function ScoreBar({ score, label }: ScoreBarProps) {
           style={{ width: `${score}%`, background: color }}
         />
       </div>
-      <span className="text-xs font-bold w-7 text-right" style={{ color }}>
-        {score}
-      </span>
+      <span className="text-xs font-bold w-7 text-right" style={{ color }}>{score}</span>
     </div>
   )
 }
-
-export default ScoreBar
