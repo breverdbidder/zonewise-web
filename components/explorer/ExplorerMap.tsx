@@ -262,10 +262,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         if (data.results?.length) {
           const attrs = data.results[0].attributes as ParcelAttributes
           onParcelClick?.(attrs, [lng, lat])
-          new mapboxgl.Popup({ maxWidth: '340px', className: 'zw-popup' })
-            .setLngLat([lng, lat])
-            .setHTML(popupHtml(attrs))
-            .addTo(map)
+          // Popup removed — sidebar panel shows full detail
         }
       } catch {}
       setLoading(false)
