@@ -356,10 +356,10 @@ export async function getBrevardJurisdictions(): Promise<JurisdictionStat[]> {
 
     // Client-side aggregation: group by jurisdiction, nest zone_sources
     const map = new Map<string, { count: number; sources: Map<string, number> }>()
-    for (const row of data as Array<{ jurisdiction: string; zone_source: string; count: string }>) {
+    for (const row of data as Array<{ jurisdiction: string; zone_source: string; count: number }>) {
       const j = row.jurisdiction ?? 'Unknown'
       const s = row.zone_source ?? 'unknown'
-      const c = parseInt(String(row.count)) || 0
+      const c = Number(row.count) || 0
       if (!map.has(j)) map.set(j, { count: 0, sources: new Map() })
       const entry = map.get(j)!
       entry.count += c
