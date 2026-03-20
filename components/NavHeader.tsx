@@ -2,38 +2,43 @@
 
 import { useState } from 'react'
 import { useSafeUser } from '@/lib/safe-clerk'
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { SignInButton, SignUpButton, UserButton } from '@clerk/nextjs'
 
 const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
-// Clerk auth buttons — uses SignedIn/SignedOut (stable Clerk v7 API, works in SSR)
+// Clerk auth buttons — uses useAuth() hook (Clerk v7 compatible)
 function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mobile-drawer' }) {
+  const { isSignedIn } = useSafeUser()
   if (!CLERK_KEY) return null
 
   if (variant === 'desktop') {
     return (
       <>
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
-              Sign In
-            </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
-              Get Started Free
-            </button>
-          </SignUpButton>
-        </SignedOut>
-        <SignedIn>
-          <a
-            href="/dashboard"
-            className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
-          >
-            Dashboard
-          </a>
-          <UserButton />
-        </SignedIn>
+        {!isSignedIn && (
+          <>
+            <SignInButton mode="modal">
+              <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
+                Get Started Free
+              </button>
+            </SignUpButton>
+          </>
+        )}
+        {isSignedIn && (
+          <>
+            <a
+              href="/dashboard"
+              className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
+            >
+              Dashboard
+            </a>
+            <UserButton />
+          </>
+        )}
       </>
     )
   }
@@ -41,16 +46,14 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
   if (variant === 'mobile-cta') {
     return (
       <>
-        <SignedOut>
+        {!isSignedIn && (
           <SignUpButton mode="modal">
             <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
               Get Started
             </button>
           </SignUpButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        )}
+        {isSignedIn && <UserButton />}
       </>
     )
   }
@@ -58,18 +61,18 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
   // mobile-drawer
   return (
     <>
-      <SignedOut>
+      {!isSignedIn && (
         <SignInButton mode="modal">
           <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
             Sign In
           </button>
         </SignInButton>
-      </SignedOut>
-      <SignedIn>
+      )}
+      {isSignedIn && (
         <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
           Dashboard
         </a>
-      </SignedIn>
+      )}
     </>
   )
 }
