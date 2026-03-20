@@ -29,8 +29,8 @@ interface ChatWidgetProps {
   apiEndpoint?: string
   /** Auth token — if omitted, widget fetches it from Supabase session */
   authToken?: string
-  /** Called with each user message before it is sent — used by ExploreWithChat to intercept intents */
-  onUserMessage?: (msg: string) => void
+  /** Called whenever the assistant produces a new message */
+  onAssistantMessage?: (content: string) => void
 }
 
 const CHIPS = [
@@ -238,7 +238,7 @@ function formatInline(text: string): string {
 }
 
 // ── Main ChatWidget ──────────────────────────────────────────
-export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propToken, onUserMessage }: ChatWidgetProps) {
+export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propToken, onAssistantMessage }: ChatWidgetProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -285,7 +285,6 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
     const userText = text ?? input.trim()
     if (!userText || loading) return
 
-    onUserMessage?.(userText)
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
 
@@ -343,7 +342,9 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
       }
 
       const data = await res.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response || '' }])
+      const assistantContent = data.response || ''
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantContent }])
+      onAssistantMessage?.(assistantContent)
       if (data.artifacts?.length) {
         const best = data.artifacts.find((a: Artifact) => a.type === 'table') || data.artifacts[0]
         setActiveArtifact(best)
