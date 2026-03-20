@@ -1,0 +1,33 @@
+name: Vercel Diagnostic
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: List Vercel Projects
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+        run: |
+          echo "=== All projects ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects?teamId=$TEAM_ID&limit=20" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          for p in d.get('projects',[]):
+            domains = [a.get('domain','') for a in p.get('alias',[])]
+            framework = p.get('framework','')
+            print(f'{p[\"id\"]} | {p[\"name\"]:30s} | {framework:10s} | domains: {domains}')
+          "
+
+          echo ""
+          echo "=== Deployments for zonewise-ai project ==="
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&teamId=$TEAM_ID&limit=3&state=READY" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          for dep in d.get('deployments',[]):
+            print(f'  {dep[\"uid\"]} | {dep.get(\"url\",\"\")} | {dep[\"created\"]}')
+          "
