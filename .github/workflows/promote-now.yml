@@ -4,76 +4,106 @@ on:
 jobs:
   promote:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Get latest deployment and promote
+      - name: Find and promote latest deployment
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
           TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
         run: |
-          echo "=== Getting latest deployment ==="
-          DEPS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$TEAM_ID&limit=5&state=READY")
-          
-          echo "$DEPS" | python3 -c "
+          echo "=== Finding domain owner ==="
+          for PROJ in prj_B478bSAAf0yLnY3owbhN7a1W7mQs prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E; do
+            echo "Checking project $PROJ for domains..."
+            DOMAINS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v9/projects/$PROJ/domains?teamId=$TEAM_ID")
+            echo "$DOMAINS" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          doms = [x.get('name','') for x in d.get('domains',[])]
+          print(f'  Domains: {doms}')
+          if any('zonewise' in x for x in doms):
+            print(f'  >>> THIS IS THE DOMAIN PROJECT: $PROJ')
+          " 2>/dev/null || echo "  (no domains)"
+          done
+
+          echo ""
+          echo "=== Getting latest READY deployments for BOTH projects ==="
+          for PROJ in prj_B478bSAAf0yLnY3owbhN7a1W7mQs prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E; do
+            echo ""
+            echo "Project: $PROJ"
+            curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=$PROJ&teamId=$TEAM_ID&limit=5" | python3 -c "
           import json,sys
           d=json.load(sys.stdin)
           for dep in d.get('deployments',[])[:5]:
-            print(f'{dep[\"uid\"]} | {dep[\"state\"]} | {dep.get(\"url\",\"\")} | {dep.get(\"created\",\"\")}')" || true
-          
-          DEP_ID=$(echo "$DEPS" | python3 -c "
+            uid = dep.get('uid','?')
+            state = dep.get('state','?')
+            url = dep.get('url','?')
+            meta = dep.get('meta',{})
+            commit = meta.get('githubCommitMessage','?')[:50]
+            print(f'  {uid} | state:{state:10s} | {url[:50]} | {commit}')
+          "
+          done
+
+          echo ""
+          echo "=== Promoting latest READY from zonewise-web ==="
+          DEP_ID=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&teamId=$TEAM_ID&limit=5&state=READY" | python3 -c "
           import json,sys
           d=json.load(sys.stdin)
           deps = d.get('deployments',[])
-          for dep in deps:
-            if dep.get('state') == 'READY':
-              print(dep['uid']); break" 2>/dev/null)
-          
-          if [ -z "$DEP_ID" ]; then
-            echo "No READY deployment found. Trying all states..."
-            DEP_ID=$(echo "$DEPS" | python3 -c "
-            import json,sys
-            d=json.load(sys.stdin)
-            deps = d.get('deployments',[])
-            if deps: print(deps[0]['uid'])" 2>/dev/null)
-          fi
-          
-          echo "Promoting deployment: $DEP_ID"
-          
-          RESULT=$(curl -s -X POST \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.vercel.com/v10/projects/$PROJECT_ID/promote/$DEP_ID?teamId=$TEAM_ID")
-          
-          echo "Promote result: $RESULT"
-          
-          sleep 15
-          
-          HTTP=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/explorer")
-          echo "Explorer: HTTP $HTTP"
-          
-          if [ "$HTTP" != "200" ]; then
-            echo "Trying alias approach..."
-            DEP_URL=$(echo "$DEPS" | python3 -c "
-            import json,sys
-            d=json.load(sys.stdin)
-            if d.get('deployments'): print(d['deployments'][0].get('url',''))" 2>/dev/null)
-            
+          if deps: print(deps[0]['uid'])
+          ")
+          echo "Deployment to promote: $DEP_ID"
+
+          if [ -n "$DEP_ID" ]; then
+            echo "Promoting via promote API..."
             curl -s -X POST \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
-              "https://api.vercel.com/v2/deployments/$DEP_ID/aliases?teamId=$TEAM_ID" \
-              -d '{"alias":"zonewise.ai"}'
+              "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/promote/$DEP_ID?teamId=$TEAM_ID"
             echo ""
-            
+
+            echo "Adding aliases..."
+            for DOMAIN in zonewise.ai www.zonewise.ai; do
+              echo "  Aliasing $DOMAIN..."
+              curl -s -X POST \
+                -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                "https://api.vercel.com/v2/deployments/$DEP_ID/aliases?teamId=$TEAM_ID" \
+                -d "{\"alias\":\"$DOMAIN\"}"
+              echo ""
+            done
+          fi
+
+          echo ""
+          echo "=== Also try promoting from zonewise-ai ==="
+          DEP_ID2=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=prj_B478bSAAf0yLnY3owbhN7a1W7mQs&teamId=$TEAM_ID&limit=5&state=READY" | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          deps = d.get('deployments',[])
+          if deps: print(deps[0]['uid'])
+          ")
+          echo "zonewise-ai deployment: $DEP_ID2"
+
+          if [ -n "$DEP_ID2" ]; then
             curl -s -X POST \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
-              "https://api.vercel.com/v2/deployments/$DEP_ID/aliases?teamId=$TEAM_ID" \
-              -d '{"alias":"www.zonewise.ai"}'
+              "https://api.vercel.com/v10/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/promote/$DEP_ID2?teamId=$TEAM_ID"
             echo ""
-            
-            sleep 10
-            HTTP2=$(curl -s -o /dev/null -w "%{http_code}" "https://www.zonewise.ai/explorer")
-            echo "Explorer after alias: HTTP $HTTP2"
           fi
+
+          sleep 20
+          echo "=== Verify ==="
+          HTTP_HOME=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai")
+          HTTP_EXPLORER=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/explorer")
+          HTTP_DASH=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/dashboard")
+          HTTP_AUCTIONS=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/auctions")
+          HTTP_PRICING=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/pricing")
+          echo "/ → $HTTP_HOME"
+          echo "/explorer → $HTTP_EXPLORER"
+          echo "/dashboard → $HTTP_DASH"
+          echo "/auctions → $HTTP_AUCTIONS"
+          echo "/pricing → $HTTP_PRICING"
