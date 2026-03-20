@@ -2,20 +2,18 @@
 
 import { useState } from 'react'
 import { useSafeUser } from '@/lib/safe-clerk'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 
 const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
-// Dynamic import Clerk components only when key exists
+// Clerk auth buttons — uses SignedIn/SignedOut (stable Clerk v7 API, works in SSR)
 function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mobile-drawer' }) {
   if (!CLERK_KEY) return null
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { SignInButton, SignUpButton, Show, UserButton } = require('@clerk/nextjs')
 
   if (variant === 'desktop') {
     return (
       <>
-        <Show when="signed-out">
+        <SignedOut>
           <SignInButton mode="modal">
             <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
               Sign In
@@ -26,8 +24,8 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
               Get Started Free
             </button>
           </SignUpButton>
-        </Show>
-        <Show when="signed-in">
+        </SignedOut>
+        <SignedIn>
           <a
             href="/dashboard"
             className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
@@ -35,7 +33,7 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
             Dashboard
           </a>
           <UserButton />
-        </Show>
+        </SignedIn>
       </>
     )
   }
@@ -43,16 +41,16 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
   if (variant === 'mobile-cta') {
     return (
       <>
-        <Show when="signed-out">
+        <SignedOut>
           <SignUpButton mode="modal">
             <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
               Get Started
             </button>
           </SignUpButton>
-        </Show>
-        <Show when="signed-in">
+        </SignedOut>
+        <SignedIn>
           <UserButton />
-        </Show>
+        </SignedIn>
       </>
     )
   }
@@ -60,18 +58,18 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
   // mobile-drawer
   return (
     <>
-      <Show when="signed-out">
+      <SignedOut>
         <SignInButton mode="modal">
           <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
             Sign In
           </button>
         </SignInButton>
-      </Show>
-      <Show when="signed-in">
+      </SignedOut>
+      <SignedIn>
         <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
           Dashboard
         </a>
-      </Show>
+      </SignedIn>
     </>
   )
 }
