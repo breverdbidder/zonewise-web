@@ -56,11 +56,11 @@ export default function Home() {
 
           <AnimatedSection delay={0.5}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <GlowButton href="#beta-signup" variant="secondary">
-                Join the Beta
+              <GlowButton href="/explore" variant="secondary">
+                Explore the Map — Free
               </GlowButton>
-              <GlowButton href="/demo.html" variant="outline">
-                ▶ Watch BidWise Live
+              <GlowButton href="#beta-signup" variant="outline">
+                Join the Beta
               </GlowButton>
               <a href="#how" className="text-zw-navy font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
                 See how it works
@@ -160,12 +160,12 @@ export default function Home() {
       <section className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
           <AnimatedSection>
-            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Meet your real estate intelligence partner</h2>
-            <p className="text-center text-gray-500 mb-12 max-w-xl mx-auto">Tackle any property question — from zoning setbacks to foreclosure due diligence — in one conversation.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4 text-slate-900">Explore Brevard County — Live</h2>
+            <p className="text-center text-gray-500 mb-12 max-w-xl mx-auto">Interactive heatmap with 262K+ parcels, Zillow market data, and AI zoning chat. Try it free — no account needed.</p>
           </AnimatedSection>
           <AnimatedSection delay={0.2} direction="none">
             <div className="relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-zw-orange text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow-md">PREVIEW &mdash; Coming Soon</div>
+              
               <SplitScreenPreview />
             </div>
           </AnimatedSection>
