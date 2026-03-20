@@ -1,16 +1,13 @@
 import type { Metadata } from 'next'
-import { ExploreWithChat } from '@/components/envelope/ExploreWithChat'
+import ExploreWithChat from '@/components/enterprise/ExploreWithChat'
+
+export const metadata: Metadata = {
+  title: 'Development Intelligence — ZoneWise.AI',
+  description: '3D buildable envelope, HBU analysis, and max bid calculator for Brevard County parcels.',
+}
 
 interface Props {
   params: Promise<{ parcelId: string }>
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { parcelId } = await params
-  return {
-    title: `Parcel ${decodeURIComponent(parcelId)} — Development Intelligence — ZoneWise.AI`,
-    description: `3D building envelope, HBU analysis, and max bid calculator for parcel ${decodeURIComponent(parcelId)}.`,
-  }
 }
 
 export default async function ExploreParcelPage({ params }: Props) {
