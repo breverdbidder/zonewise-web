@@ -1,22 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(*)",
-      "Read(*)",
-      "Write(*)",
-      "Edit(*)",
-      "MultiEdit(*)",
-      "WebFetch(*)",
-      "WebSearch(*)",
-      "TodoRead(*)",
-      "TodoWrite(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "LS(*)"
-    ],
+    "allow": ["Bash(*)", "Write(*)", "Edit(*)", "Read(*)"],
     "deny": []
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }
