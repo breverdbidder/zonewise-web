@@ -56,7 +56,7 @@ export default function Home() {
 
           <AnimatedSection delay={0.5}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <GlowButton href="/explore" variant="secondary">
+              <GlowButton href="/explorer" variant="secondary">
                 Explore the Map — Free
               </GlowButton>
               <GlowButton href="#beta-signup" variant="outline">
