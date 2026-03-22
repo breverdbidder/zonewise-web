@@ -2,44 +2,31 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { STATIC_KPIS, type KPI } from '@/lib/kpi-data'
 
-
-interface KPI {
-  kpi_code: string
-  kpi_name: string
-  category: string
-  subcategory: string | null
-  description: string | null
-  data_source: string | null
-  is_exclusive: boolean
-  competitive_source: string | null
-  ui_panel: string | null
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  'Property': 'bg-blue-100 text-blue-800',
-  'Zoning': 'bg-emerald-100 text-emerald-800',
-  'Auction': 'bg-red-100 text-red-800',
-  'Financial': 'bg-amber-100 text-amber-800',
-  'Liens': 'bg-rose-100 text-rose-800',
-  'ML': 'bg-violet-100 text-violet-800',
-  'Physical': 'bg-slate-100 text-slate-800',
-  'Investment': 'bg-green-100 text-green-800',
-  'Demographics': 'bg-cyan-100 text-cyan-800',
-  'Market': 'bg-orange-100 text-orange-800',
-  'Comps': 'bg-teal-100 text-teal-800',
-  'HBU': 'bg-indigo-100 text-indigo-800',
-  'CMA': 'bg-fuchsia-100 text-fuchsia-800',
-  'Risk': 'bg-red-100 text-red-800',
-  'Red Flags': 'bg-pink-100 text-pink-800',
-  'Development': 'bg-lime-100 text-lime-800',
-  'Environmental': 'bg-emerald-100 text-emerald-800',
+const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
+  'Property':      { bg: 'rgba(59,130,246,.15)',  text: '#60A5FA' },
+  'Zoning':        { bg: 'rgba(34,197,94,.15)',   text: '#4ADE80' },
+  'Auction':       { bg: 'rgba(239,68,68,.15)',   text: '#F87171' },
+  'Financial':     { bg: 'rgba(245,158,11,.15)',  text: '#FCD34D' },
+  'Liens':         { bg: 'rgba(239,68,68,.15)',   text: '#F87171' },
+  'ML':            { bg: 'rgba(167,139,250,.15)', text: '#A78BFA' },
+  'Physical':      { bg: 'rgba(100,116,139,.15)', text: '#94A3B8' },
+  'Investment':    { bg: 'rgba(34,197,94,.15)',   text: '#4ADE80' },
+  'Demographics':  { bg: 'rgba(6,182,212,.15)',   text: '#22D3EE' },
+  'Market':        { bg: 'rgba(249,115,22,.15)',  text: '#FB923C' },
+  'Comps':         { bg: 'rgba(20,184,166,.15)',  text: '#2DD4BF' },
+  'HBU':           { bg: 'rgba(99,102,241,.15)',  text: '#818CF8' },
+  'CMA':           { bg: 'rgba(217,70,239,.15)',  text: '#E879F9' },
+  'Risk':          { bg: 'rgba(239,68,68,.15)',   text: '#F87171' },
+  'Red Flags':     { bg: 'rgba(244,63,94,.15)',   text: '#FB7185' },
+  'Development':   { bg: 'rgba(132,204,22,.15)',  text: '#A3E635' },
+  'Environmental': { bg: 'rgba(34,197,94,.15)',   text: '#4ADE80' },
 }
 
 export default function KPIsPage() {
   const [kpis, setKPIs] = useState<KPI[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
   const [showExclusiveOnly, setShowExclusiveOnly] = useState(false)
@@ -50,9 +37,11 @@ export default function KPIsPage() {
         const res = await fetch('/api/kpis')
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
+        if (!Array.isArray(data) || data.length === 0) throw new Error('No data returned')
         setKPIs(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load KPIs')
+      } catch {
+        // Fallback to static KPI data
+        setKPIs(STATIC_KPIS)
       } finally {
         setLoading(false)
       }
@@ -77,118 +66,114 @@ export default function KPIsPage() {
   const categoryCount = new Set(kpis.map(k => k.category)).size
 
   return (
-    <div className="min-h-screen bg-white text-slate-800">
+    <div style={{ minHeight: '100vh', background: '#020617', color: '#F1F5F9' }}>
+
       {/* Header */}
-      <header className="border-b sticky top-0 bg-white/95 backdrop-blur z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-zw-navy rounded-lg flex items-center justify-center relative">
-              <span className="text-white font-bold">Z</span>
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-zw-orange rounded-full" />
+      <header style={{ borderBottom: '1px solid #1E293B', position: 'sticky', top: 0, background: 'rgba(2,6,23,.97)', backdropFilter: 'blur(8px)', zIndex: 50 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+            <div style={{ width: 32, height: 32, background: '#1E3A5F', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16 }}>Z</span>
+              <div style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, background: '#F59E0B', borderRadius: '50%' }} />
             </div>
-            <span className="text-xl font-bold text-slate-800">ZoneWise.AI</span>
+            <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 18 }}>ZoneWise.AI</span>
           </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/#how" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">How It Works</Link>
-            <span className="text-zw-navy font-medium text-sm hidden sm:block">298 KPIs</span>
-            <Link href="/#pricing" className="text-gray-600 hover:text-slate-800 hidden sm:block text-sm">Pricing</Link>
-            <a href="/#beta-signup" className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors">
-              Join the Beta
-            </a>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <Link href="/#how" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>How It Works</Link>
+            <span style={{ color: '#F59E0B', fontWeight: 600, fontSize: 14 }}>298 KPIs</span>
+            <Link href="/#pricing" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
+            <a href="/#beta-signup" style={{ background: '#F59E0B', color: '#020617', padding: '8px 18px', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>Join the Beta</a>
           </nav>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="py-16 sm:py-20 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-zw-navy font-medium tracking-wide text-sm mb-4 uppercase">The ZoneWise Advantage</p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-[1.1] tracking-tight">
+      <section style={{ padding: '64px 24px 48px', background: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#F59E0B', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 12 }}>The ZoneWise Advantage</p>
+          <h1 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, lineHeight: 1.06, letterSpacing: '-.03em', marginBottom: 20, color: '#F1F5F9' }}>
             {totalKPIs || 298} KPIs.<br />
-            <span className="text-zw-navy">{categoryCount || 17} Categories.</span><br />
-            <span className="text-zw-orange">3x PropertyOnion.</span>
+            <span style={{ color: '#1E3A5F' }}>{categoryCount || 17} Categories.</span><br />
+            <span style={{ color: '#F59E0B' }}>3x PropertyOnion.</span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            The most comprehensive real estate intelligence framework in Florida.
-            Every metric an investor needs &mdash; from zoning setbacks to ML predictions.
+          <p style={{ fontSize: 17, color: '#94A3B8', maxWidth: 560, margin: '0 auto', lineHeight: 1.72 }}>
+            The most comprehensive real estate intelligence framework in Florida. Every metric an investor needs — from zoning setbacks to ML predictions.
           </p>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-8 bg-zw-navy">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">{totalKPIs || 298}</p>
-            <p className="text-slate-300 text-sm mt-1">Total KPIs</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">{exclusiveKPIs || 200}+</p>
-            <p className="text-slate-300 text-sm mt-1">Exclusive to ZoneWise</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">{categoryCount || 17}</p>
-            <p className="text-slate-300 text-sm mt-1">Categories</p>
-          </div>
-          <div>
-            <p className="text-3xl sm:text-4xl font-bold text-zw-orange">3x</p>
-            <p className="text-slate-300 text-sm mt-1">vs PropertyOnion</p>
-          </div>
+      {/* Stats Bar */}
+      <section style={{ background: '#1E3A5F', padding: '20px 24px' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, textAlign: 'center' }}>
+          {[
+            { v: totalKPIs || 298,         label: 'Total KPIs' },
+            { v: `${exclusiveKPIs || 200}+`, label: 'Exclusive to ZoneWise' },
+            { v: categoryCount || 17,       label: 'Categories' },
+            { v: '3x',                       label: 'vs PropertyOnion' },
+          ].map(s => (
+            <div key={s.label}>
+              <p style={{ fontSize: 36, fontWeight: 800, color: '#F59E0B', margin: 0 }}>{s.v}</p>
+              <p style={{ color: '#94A3B8', fontSize: 13, margin: '4px 0 0' }}>{s.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4">
+      <section style={{ padding: '40px 24px 80px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <div className="w-12 h-12 border-4 border-zw-navy/20 border-t-zw-navy rounded-full animate-spin mb-4" />
-              <p className="text-lg text-gray-500">Loading {totalKPIs || 298} KPIs...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-24">
-              <p className="text-red-500 text-lg mb-4">{error}</p>
-              <button onClick={() => window.location.reload()} className="text-zw-navy underline">Try again</button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 0' }}>
+              <div style={{ width: 48, height: 48, border: '4px solid rgba(245,158,11,.2)', borderTopColor: '#F59E0B', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }} />
+              <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
+              <p style={{ fontSize: 16, color: '#64748B' }}>Loading {totalKPIs || 298} KPIs...</p>
             </div>
           ) : (
             <>
               {/* Filters */}
-              <div className="bg-slate-50 rounded-xl p-6 mb-8 border border-gray-100">
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
+              <div style={{ background: '#0F172A', borderRadius: 12, padding: 24, marginBottom: 24, border: '1px solid #1E293B' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: 240 }}>
                       <input
                         type="text"
                         placeholder="Search KPIs by name, code, or subcategory..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-zw-navy focus:border-transparent text-sm"
+                        onChange={e => setSearchTerm(e.target.value)}
+                        style={{
+                          width: '100%', padding: '10px 14px', background: '#020617',
+                          border: '1px solid #1E293B', borderRadius: 8, color: '#F1F5F9',
+                          fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                        }}
                       />
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                       <input
                         type="checkbox"
                         checked={showExclusiveOnly}
-                        onChange={(e) => setShowExclusiveOnly(e.target.checked)}
-                        className="w-4 h-4 text-zw-navy rounded border-gray-300 focus:ring-zw-navy"
+                        onChange={e => setShowExclusiveOnly(e.target.checked)}
+                        style={{ width: 16, height: 16, accentColor: '#F59E0B' }}
                       />
-                      <span className="text-sm font-medium text-gray-700">Exclusive only</span>
+                      <span style={{ fontSize: 14, color: '#94A3B8' }}>Exclusive only</span>
                     </label>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {categories.map(cat => (
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          selectedCategory === cat
-                            ? 'bg-zw-navy text-white'
-                            : 'bg-white text-gray-600 border border-gray-200 hover:border-zw-navy/30'
-                        }`}
+                        style={{
+                          padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+                          cursor: 'pointer', transition: 'all .2s',
+                          background: selectedCategory === cat ? '#F59E0B' : '#1E293B',
+                          color: selectedCategory === cat ? '#020617' : '#94A3B8',
+                          border: selectedCategory === cat ? 'none' : '1px solid #334155',
+                        }}
                       >
                         {cat}
                         {cat !== 'All' && (
-                          <span className="ml-1 opacity-60">
+                          <span style={{ marginLeft: 4, opacity: 0.7 }}>
                             ({kpis.filter(k => k.category === cat).length})
                           </span>
                         )}
@@ -198,72 +183,60 @@ export default function KPIsPage() {
                 </div>
               </div>
 
-              {/* Results Info */}
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-gray-500">
-                  Showing <span className="font-semibold text-slate-800">{filteredKPIs.length}</span> of{' '}
-                  <span className="font-semibold text-slate-800">{totalKPIs}</span> KPIs
+              {/* Results count */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+                  Showing <strong style={{ color: '#F1F5F9' }}>{filteredKPIs.length}</strong> of{' '}
+                  <strong style={{ color: '#F1F5F9' }}>{totalKPIs}</strong> KPIs
                 </p>
               </div>
 
               {/* KPI Table */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-slate-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Code</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">KPI Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Subcategory</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Source</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Status</th>
+              <div style={{ background: '#0F172A', borderRadius: 12, border: '1px solid #1E293B', overflow: 'hidden' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ minWidth: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#1E293B' }}>
+                        {['Code', 'KPI Name', 'Category', 'Subcategory', 'Source', 'Status'].map(h => (
+                          <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.08em', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {filteredKPIs.map((kpi) => (
-                        <tr key={kpi.kpi_code} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-mono font-bold text-zw-navy">
-                            {kpi.kpi_code}
-                          </td>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                            {kpi.kpi_name}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${CATEGORY_COLORS[kpi.category] || 'bg-gray-100 text-gray-800'}`}>
-                              {kpi.category}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
-                            {kpi.subcategory || '\u2014'}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
-                            {kpi.data_source || '\u2014'}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            {kpi.is_exclusive ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zw-navy/10 text-zw-navy">
-                                ZW Exclusive
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500">
-                                Shared
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                    <tbody>
+                      {filteredKPIs.map((kpi, idx) => {
+                        const cc = CATEGORY_COLORS[kpi.category] ?? { bg: 'rgba(100,116,139,.15)', text: '#94A3B8' }
+                        return (
+                          <tr key={kpi.kpi_code} style={{ borderTop: '1px solid #1E293B', background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.015)' }}>
+                            <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                              <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>{kpi.kpi_code}</span>
+                            </td>
+                            <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, color: '#F1F5F9' }}>{kpi.kpi_name}</td>
+                            <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                              <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: cc.bg, color: cc.text }}>{kpi.category}</span>
+                            </td>
+                            <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap' }}>{kpi.subcategory ?? '—'}</td>
+                            <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap' }}>{kpi.data_source ?? '—'}</td>
+                            <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                              {kpi.is_exclusive ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(245,158,11,.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,.2)' }}>ZW Exclusive</span>
+                              ) : (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 500, background: '#1E293B', color: '#64748B' }}>Shared</span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>
               </div>
 
               {filteredKPIs.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg mb-2">No KPIs match your filters</p>
+                <div style={{ textAlign: 'center', padding: '48px 0', color: '#64748B' }}>
+                  <p style={{ fontSize: 16, marginBottom: 8 }}>No KPIs match your filters</p>
                   <button
                     onClick={() => { setSearchTerm(''); setSelectedCategory('All'); setShowExclusiveOnly(false) }}
-                    className="text-zw-navy underline text-sm"
+                    style={{ color: '#F59E0B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}
                   >
                     Clear all filters
                   </button>
@@ -275,38 +248,38 @@ export default function KPIsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-zw-navy">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+      <section style={{ padding: '64px 24px', background: '#1E3A5F' }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#F1F5F9', marginBottom: 12 }}>
             Get access to all {totalKPIs || 298} KPIs
           </h2>
-          <p className="text-slate-300 mb-8 max-w-xl mx-auto">
+          <p style={{ color: '#94A3B8', marginBottom: 32, lineHeight: 1.6, maxWidth: 480, margin: '0 auto 32px' }}>
             Join the beta and start making data-driven real estate decisions with the most comprehensive KPI framework in Florida.
           </p>
-          <a href="/#beta-signup" className="inline-block bg-white text-zw-navy px-8 py-3 rounded-xl font-semibold hover:bg-slate-100 transition-colors">
+          <a href="/#beta-signup" style={{ display: 'inline-block', background: '#F59E0B', color: '#020617', padding: '14px 32px', borderRadius: 10, fontWeight: 700, fontSize: 16, textDecoration: 'none' }}>
             Join the Beta
           </a>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-zw-navy-800 text-slate-400">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-zw-navy rounded flex items-center justify-center">
-                <span className="text-white font-bold text-xs">Z</span>
+      <footer style={{ background: '#020617', borderTop: '1px solid #1E293B', padding: '32px 24px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, background: '#1E3A5F', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 13 }}>Z</span>
               </div>
-              <span className="text-white font-medium">ZoneWise.AI</span>
+              <span style={{ color: '#F1F5F9', fontWeight: 600, fontSize: 14 }}>ZoneWise.AI</span>
             </div>
-            <div className="flex gap-8 text-sm">
-              <Link href="/" className="hover:text-white transition-colors">Home</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <div style={{ display: 'flex', gap: 24, fontSize: 13 }}>
+              <Link href="/" style={{ color: '#64748B', textDecoration: 'none' }}>Home</Link>
+              <Link href="/terms" style={{ color: '#64748B', textDecoration: 'none' }}>Terms</Link>
+              <Link href="/privacy" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy</Link>
             </div>
           </div>
-          <p className="text-center text-xs mt-6 text-slate-500">
-            &copy; 2026 ZoneWise.AI &mdash; The AI for Real Estate Intelligence.
+          <p style={{ textAlign: 'center', fontSize: 12, color: '#475569', marginTop: 24 }}>
+            © 2026 ZoneWise.AI — The AI for Real Estate Intelligence.
           </p>
         </div>
       </footer>
