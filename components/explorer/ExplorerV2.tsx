@@ -262,6 +262,8 @@ export default function ExplorerV2() {
           chatCount={chatCount}
           onChatCountChange={handleChatCountChange}
           onGate={handleGate}
+          selectedParcel={selectedParcel}
+          onParcelClose={() => setSelectedParcel(null)}
         />
       </div>
 
