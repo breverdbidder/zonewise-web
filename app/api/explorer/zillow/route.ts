@@ -16,6 +16,10 @@ const ZHVI_URL =
   'https://files.zillowstatic.com/research/public_csvs/zhvi/' +
   'Zip_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv'
 
+const ZORI_URL =
+  'https://files.zillowstatic.com/research/public_csvs/zori/' +
+  'Zip_zori_uc_sfrcondomfr_sm_month.csv'
+
 const CENSUS_URL =
   'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/' +
   'PUMA_TAD_TAZ_UGA_ZCTA/MapServer/2/query'
@@ -29,7 +33,17 @@ export async function GET() {
     return NextResponse.json(_cache.data)
   }
 
-  const metrics = await fetchZillowMetrics()
+  const [zhviMetrics, zoriMap] = await Promise.all([
+    fetchZhviMetrics(),
+    fetchZoriMetrics(),
+  ])
+
+  // Merge ZORI into ZHVI metrics
+  const metrics = zhviMetrics.map(m => ({
+    ...m,
+    zori: zoriMap.get(m.zip) ?? m.zori,
+  }))
+
   const geojson = await buildGeoJSON(metrics)
 
   _cache = { data: geojson, ts: Date.now() }
@@ -40,19 +54,54 @@ export async function GET() {
 
 // ── Zillow CSV fetch + parse ──────────────────────────────────────────────────
 
-async function fetchZillowMetrics(): Promise<ZipMetrics[]> {
+async function fetchZhviMetrics(): Promise<ZipMetrics[]> {
   try {
     const res = await fetch(ZHVI_URL, {
       next: { revalidate: 86400 },
-      signal: AbortSignal.timeout(10_000),
+      signal: AbortSignal.timeout(12_000),
+      headers: { 'User-Agent': 'Mozilla/5.0 ZoneWise.AI/1.0' },
     })
-    if (!res.ok) throw new Error(`Zillow HTTP ${res.status}`)
+    if (!res.ok) throw new Error(`Zillow ZHVI HTTP ${res.status}`)
     const csv = await res.text()
     return parseZhviCsv(csv)
   } catch {
-    // Fallback to hardcoded data
     return BREVARD_FALLBACK_METRICS
   }
+}
+
+async function fetchZoriMetrics(): Promise<Map<string, number>> {
+  const result = new Map<string, number>()
+  try {
+    const res = await fetch(ZORI_URL, {
+      next: { revalidate: 86400 },
+      signal: AbortSignal.timeout(12_000),
+      headers: { 'User-Agent': 'Mozilla/5.0 ZoneWise.AI/1.0' },
+    })
+    if (!res.ok) throw new Error(`Zillow ZORI HTTP ${res.status}`)
+    const csv = await res.text()
+    const lines = csv.split('\n')
+    const headers = lines[0].split(',')
+    const zipIdx = headers.indexOf('RegionName')
+    if (zipIdx < 0) return result
+
+    const dateCols = headers.reduce<number[]>((acc, h, i) => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(h.trim())) acc.push(i)
+      return acc
+    }, [])
+    const latestIdx = dateCols[dateCols.length - 1]
+    const brevardSet = new Set(BREVARD_ZIPS as readonly string[])
+
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',')
+      const zip = cols[zipIdx]?.trim()
+      if (!brevardSet.has(zip)) continue
+      const val = parseFloat(cols[latestIdx])
+      if (!isNaN(val)) result.set(zip, Math.round(val))
+    }
+  } catch {
+    // Fail silently — ZHVI-derived estimates remain
+  }
+  return result
 }
 
 function parseZhviCsv(csv: string): ZipMetrics[] {
