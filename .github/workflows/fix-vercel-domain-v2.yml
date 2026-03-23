@@ -1,0 +1,81 @@
+name: "Fix Vercel Domain Config V2"
+on:
+  workflow_dispatch: {}
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Fix domain configuration"
+        run: |
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          API="https://api.vercel.com"
+          
+          echo "=== Current domains ==="
+          curl -s "$API/v9/projects/$PROJECT/domains" -H "Authorization: Bearer $TOKEN" | \
+            python3 -c "import json,sys; [print(f'  {d[\"name\"]:25} verified={d.get(\"verified\")} redirect={d.get(\"redirect\",\"-\")}') for d in json.load(sys.stdin).get('domains',[])]"
+          
+          echo ""
+          echo "=== Step 1: Remove broken zonewise.ai (redirect + unverified) ==="
+          curl -s -X DELETE "$API/v9/projects/$PROJECT/domains/zonewise.ai" \
+            -H "Authorization: Bearer $TOKEN" | \
+            python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ Removed' if not d.get('error') else f'⚠️ {d}')"
+          
+          sleep 2
+          
+          echo ""
+          echo "=== Step 2: Re-add zonewise.ai as PRIMARY (no redirect) ==="
+          curl -s -X POST "$API/v10/projects/$PROJECT/domains" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"zonewise.ai"}' | \
+            python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          if d.get('name'):
+              print(f'✅ Added: {d[\"name\"]} verified={d.get(\"verified\")}')
+              for v in d.get('verification',[]):
+                  print(f'  Verify: {v[\"type\"]} {v[\"domain\"]} = {v[\"value\"]}')
+          elif d.get('error'):
+              print(f'⚠️ {d[\"error\"].get(\"message\",str(d)[:200])}')
+          "
+          
+          sleep 2
+          
+          echo ""
+          echo "=== Step 3: Set www.zonewise.ai to redirect TO zonewise.ai ==="
+          curl -s -X DELETE "$API/v9/projects/$PROJECT/domains/www.zonewise.ai" \
+            -H "Authorization: Bearer $TOKEN" | \
+            python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ Removed www' if not d.get('error') else f'⚠️ {d}')"
+          
+          sleep 2
+          
+          curl -s -X POST "$API/v10/projects/$PROJECT/domains" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"www.zonewise.ai","redirect":"zonewise.ai","redirectStatusCode":308}' | \
+            python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          if d.get('name'):
+              print(f'✅ Added: {d[\"name\"]} redirect={d.get(\"redirect\")} verified={d.get(\"verified\")}')
+          elif d.get('error'):
+              print(f'⚠️ {d[\"error\"].get(\"message\",str(d)[:200])}')
+          "
+          
+          echo ""
+          echo "=== Step 4: Final domain state ==="
+          curl -s "$API/v9/projects/$PROJECT/domains" -H "Authorization: Bearer $TOKEN" | \
+            python3 -c "import json,sys; [print(f'  {d[\"name\"]:25} verified={d.get(\"verified\")} redirect={d.get(\"redirect\",\"-\")}') for d in json.load(sys.stdin).get('domains',[])]"
+
+      - name: "Notify"
+        if: always()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BIDDEED_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.BIDDEED_BOT_CHAT_ID }}" \
+            -d "parse_mode=Markdown" \
+            --data-urlencode "text=🔧 *Vercel Domain Fix V2*: ${{ job.status }}
+          Removed broken zonewise.ai redirect config
+          Re-added as primary domain
+          Set www → zonewise.ai redirect" || true
