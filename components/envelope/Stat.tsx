@@ -1,4 +1,4 @@
-interface StatProps {
+export interface StatProps {
   label: string
   value: string | number
   unit?: string

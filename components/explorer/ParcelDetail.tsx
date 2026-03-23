@@ -159,7 +159,7 @@ export default function ParcelDetail({ parcelId }: Props) {
           <Link href="/explorer" className="text-xs text-zw-orange hover:underline">← Back to Explorer</Link>
           {coords && (
             <div className="mt-3 rounded-lg overflow-hidden" style={{ height: 160 }}>
-              <MiniMap variant="gl" lat={coords.lat} lng={coords.lng} className="w-full h-full" />
+              <MiniMap lat={coords.lat} lng={coords.lng} className="w-full h-full" />
             </div>
           )}
           <h1 className="text-lg font-bold text-white mt-2">{addr || 'Unknown Address'}</h1>

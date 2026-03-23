@@ -1,6 +1,6 @@
 'use client'
 
-interface MiniMapProps {
+export interface MiniMapProps {
   lat: number | null
   lng: number | null
   zoom?: number

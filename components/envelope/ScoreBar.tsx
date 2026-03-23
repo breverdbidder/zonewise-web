@@ -2,7 +2,7 @@ const GREEN = '#22c55e'
 const ORANGE = '#F59E0B'
 const RED = '#ef4444'
 
-interface ScoreBarProps {
+export interface ScoreBarProps {
   score: number
   label: string
 }
