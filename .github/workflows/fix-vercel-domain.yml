@@ -1,0 +1,60 @@
+name: "Fix Vercel Domain Assignment"
+on:
+  workflow_dispatch: {}
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Install Vercel CLI"
+        run: npm install -g vercel@latest
+
+      - name: "Remove domain from deprecated project"
+        continue-on-error: true
+        run: |
+          echo "=== Removing zonewise.ai from deprecated project ==="
+          curl -s -X DELETE "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains/zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | head -c 500
+          echo ""
+          curl -s -X DELETE "https://api.vercel.com/v9/projects/prj_B478bSAAf0yLnY3owbhN7a1W7mQs/domains/www.zonewise.ai" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | head -c 500
+          echo ""
+          echo "=== Done removing from deprecated ==="
+
+      - name: "Add domain to correct project"
+        run: |
+          echo "=== Adding zonewise.ai to zonewise-web ==="
+          curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"zonewise.ai"}' | python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ zonewise.ai added' if 'name' in d else f'⚠️ {d}')"
+
+          curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"www.zonewise.ai","redirect":"zonewise.ai"}' | python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ www redirect added' if 'name' in d else f'⚠️ {d}')"
+
+      - name: "Verify domains"
+        run: |
+          echo "=== Current domains on zonewise-web ==="
+          curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
+            python3 -c "import json,sys; [print(f'  {d[\"name\"]}: {d.get(\"verified\",\"?\")}') for d in json.load(sys.stdin).get('domains',[])]"
+
+      - name: "Trigger fresh production deploy"
+        run: |
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+          VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+
+      - name: "Notify"
+        if: always()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BIDDEED_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.BIDDEED_BOT_CHAT_ID }}" \
+            -d "parse_mode=Markdown" \
+            --data-urlencode "text=🔧 *Vercel Domain Fix*: ${{ job.status }}
+          Removed zonewise.ai from deprecated project
+          Added to zonewise-web (prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E)
+          Triggered fresh prod deploy" || true
