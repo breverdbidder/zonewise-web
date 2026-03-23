@@ -1,6 +1,6 @@
 const ORANGE = '#F59E0B'
 
-interface ParamSliderProps {
+export interface ParamSliderProps {
   label: string
   value: number
   min: number

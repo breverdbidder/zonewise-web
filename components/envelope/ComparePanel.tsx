@@ -12,7 +12,7 @@ function fmt$(n: number) {
   return n >= 1000000 ? `$${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `$${(n / 1000).toFixed(0)}K` : `$${n}`
 }
 
-interface ComparePanelProps {
+export interface ComparePanelProps {
   parcels: Parcel[]
   onClose: () => void
 }

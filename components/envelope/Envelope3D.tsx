@@ -7,7 +7,7 @@ import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
 const SLATE = '#020617'
 const ORANGE = '#F59E0B'
 
-interface Envelope3DProps {
+export interface Envelope3DProps {
   lotW: number
   lotD: number
   front: number

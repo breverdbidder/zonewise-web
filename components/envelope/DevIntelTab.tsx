@@ -356,7 +356,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
 }
 
 // ─── MAIN TAB ─────────────────────────────────────────────────
-interface DevIntelTabProps {
+export interface DevIntelTabProps {
   onParcelSelect?: (parcel: Parcel | null) => void
   externalSelectedParcel?: string | null
   compareMode?: boolean
