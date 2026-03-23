@@ -1,0 +1,59 @@
+name: "Check Vercel Domain Status"
+on:
+  workflow_dispatch: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: "Domain status"
+        run: |
+          echo "=== All domains on project ==="
+          curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          for dom in d.get('domains', []):
+              print(f'  {dom[\"name\"]:25} verified={dom.get(\"verified\")} redirect={dom.get(\"redirect\",\"-\")}')
+              v = dom.get('verification', [])
+              for item in v:
+                  print(f'    NEED: {item[\"type\"]} {item[\"domain\"]} = {item[\"value\"][:60]}')
+          "
+          
+          echo ""
+          echo "=== Deployment protection settings ==="
+          curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          prot = d.get('protectionBypass', {})
+          sso = d.get('ssoProtection', {})
+          checks = d.get('deploymentExpiration', {})
+          print(f'  SSO Protection: {sso}')
+          print(f'  Protection Bypass: {prot}')
+          print(f'  passwordProtection: {d.get(\"passwordProtection\",{})}')
+          print(f'  vercelAuthentication: {d.get(\"vercelAuthentication\",{})}')
+          "
+          
+          echo ""
+          echo "=== Latest deployments ==="
+          curl -s "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=3&target=production" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          for dep in d.get('deployments', []):
+              print(f'  {dep.get(\"url\",\"?\"):50} state={dep.get(\"readyState\",\"?\")} target={dep.get(\"target\",\"?\")}')
+          "
+
+          echo ""
+          echo "=== Try adding TXT via Cloudflare ==="
+          ZONE="b32406b78aaaefd55557d77c843a5940"
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"type":"TXT","name":"_vercel.zonewise.ai","content":"vc-domain-verify=zonewise.ai,631ceebdf84c5c5d2f44","ttl":1}' | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          if d.get('success'): print('✅ TXT added via CLOUDFLARE_API_TOKEN')
+          else: print(f'❌ {d.get(\"errors\",[{}])[0].get(\"message\",str(d)[:200])}')
+          "
