@@ -148,3 +148,21 @@ When reviewing code changes, apply the Fix-First heuristic from `docs/GSTACK_REV
 - Commands: /diff-review, /plan-review, /project-recap, /generate-web-diagram, /generate-slides, /fact-check
 - Brand preset: templates/biddeed-brand-preset.html (Navy #1E3A5F + Orange #F59E0B)
 - Auto-trigger: Any table with 4+ rows or 3+ columns renders as HTML instead of ASCII
+
+## gh-aw Integration (Mar 23, 2026)
+
+### Active Agentic Workflows
+- `doc-sync-agent.md` — Auto-updates docs on code push (auto-merge)
+- `issue-triage-agent.md` — Labels new issues P0-P3 + type
+- `ci-failure-agent.md` — Diagnoses CI failures, opens fix issues
+- `pr-gate-agent.md` — Classifies PR risk: LOW/MEDIUM/HIGH
+- `dep-guardian-agent.md` — Weekly dependency updates (Monday 3AM EST)
+- `changelog-agent.md` — Auto-changelog on release
+
+### Merge Strategy
+- LOW risk: auto-merge (docs, deps patch, style, tests)
+- MEDIUM risk: merge after CI green
+- HIGH risk: needs-human-review label → Ariel reviews
+
+### Engine
+All workflows use `engine: claude` with ANTHROPIC_API_KEY secret.
