@@ -209,3 +209,5 @@ export default function PricingPage() {
     </div>
   )
 }
+
+// Vercel rebuild trigger
