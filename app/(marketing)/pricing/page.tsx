@@ -1,98 +1,194 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Pricing — ZoneWise.AI',
-  description: 'Early access pricing for Florida\'s AI-powered real estate intelligence platform.',
+  description: 'Start free. Unlock full Florida foreclosure intelligence with Starter $39/mo or Pro $99/mo.',
+  openGraph: {
+    title: 'ZoneWise.AI Pricing',
+    description: 'Free tier with 5 parcel clicks/day. Starter $39/mo. Pro $99/mo unlimited.',
+    images: ['/og-pricing.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
+
+const TIERS = [
+  {
+    name: 'Free',
+    price: '$0',
+    period: '',
+    sub: 'No credit card needed',
+    badge: null,
+    features: [
+      'Choropleth heatmap — all ZIPs',
+      '5 parcel clicks/day',
+      '3 AI chat messages/day',
+      'Basic zoning overlay',
+      'Auction calendar view',
+    ],
+    cta: 'Explore Now',
+    ctaHref: '/explorer',
+    ctaStyle: 'secondary',
+  },
+  {
+    name: 'Starter',
+    price: '$39',
+    period: '/mo',
+    sub: 'For serious investors',
+    badge: null,
+    features: [
+      'Everything in Free',
+      '50 parcel clicks/day',
+      '50 AI chat messages/day',
+      'Zoning filters & overlays',
+      'Auction calendar + alerts',
+      'Export CSV reports',
+    ],
+    cta: 'Start Starter',
+    ctaHref: '/sign-up?plan=starter',
+    ctaStyle: 'secondary',
+  },
+  {
+    name: 'Pro',
+    price: '$99',
+    period: '/mo',
+    sub: 'Full platform — no limits',
+    badge: 'Most Popular',
+    features: [
+      'Everything in Starter',
+      'Unlimited parcel clicks',
+      'Unlimited AI chat',
+      'Full 67-county heatmap',
+      'PDF deal analysis reports',
+      'BidWise score + auction intel',
+      'API access',
+    ],
+    cta: 'Go Pro',
+    ctaHref: '/sign-up?plan=pro',
+    ctaStyle: 'primary',
+  },
+]
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-800">
-      {/* Nav */}
-      <nav className="h-14 flex items-center px-6 border-b border-gray-200 bg-white">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1E3A5F] to-[#2d5a8f] flex items-center justify-center">
-            <span className="text-white text-xs font-bold">Z</span>
-          </div>
-          <span className="text-sm font-semibold text-gray-900">
-            ZoneWise<span className="text-[#F59E0B]">.AI</span>
-          </span>
-        </Link>
-        <div className="ml-auto flex items-center gap-4">
-          <Link href="/explore" className="text-sm text-gray-600 hover:text-gray-900">Explore</Link>
-          <Link href="/#beta-signup" className="text-sm bg-[#1E3A5F] text-white px-4 py-2 rounded-lg hover:bg-[#2d5a8f]">Join Beta</Link>
-        </div>
-      </nav>
+    <div style={{ minHeight: '100vh', background: '#020617', color: '#F1F5F9', fontFamily: 'Inter, sans-serif' }}>
+      <Navbar />
 
-      {/* Pricing */}
-      <section className="py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold text-center mb-4 text-slate-900">
-            Simple, transparent pricing
-          </h1>
-          <p className="text-center text-gray-500 mb-16 max-w-xl mx-auto text-lg">
-            Start free. Upgrade when you need more.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Free */}
-            <div className="bg-white rounded-2xl p-8 border-2 border-gray-200 relative">
-              <h3 className="font-bold text-lg text-slate-800">Free</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$0</p>
-              <p className="text-sm text-gray-400 mb-6">No credit card needed</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                {['Choropleth heatmap (all ZIPs)', '5 parcel clicks/day', '3 AI chat messages/day', 'Basic zoning overlay'].map(f => (
-                  <li key={f} className="flex items-start gap-2">
-                    <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/explore" className="block text-center py-3 bg-[#1E3A5F] text-white rounded-xl font-bold text-sm hover:bg-[#2d5a8f] transition-colors">
-                Explore Now
-              </Link>
-            </div>
-
-            {/* Pro */}
-            <div className="bg-white rounded-2xl p-8 border-2 border-[#1E3A5F] relative shadow-lg">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-white text-xs px-4 py-1 rounded-full font-medium">Most Popular</span>
-              <h3 className="font-bold text-lg text-slate-800">Pro</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">$29<span className="text-lg font-normal text-gray-400">/mo</span></p>
-              <p className="text-sm text-gray-400 mb-6">For active investors & developers</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                {['Everything in Free', 'Unlimited parcel clicks', 'Unlimited AI chat', 'Zoning filters & overlays', 'Export CSV/PDF reports', 'Auction calendar integration'].map(f => (
-                  <li key={f} className="flex items-start gap-2">
-                    <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/#beta-signup" className="block text-center py-3 bg-[#F59E0B] text-slate-900 rounded-xl font-bold text-sm hover:brightness-110 transition-all">
-                Start Free Trial
-              </Link>
-            </div>
-
-            {/* Enterprise */}
-            <div className="bg-white rounded-2xl p-8 border-2 border-gray-200 relative">
-              <h3 className="font-bold text-lg text-slate-800">Enterprise</h3>
-              <p className="text-4xl font-bold my-4 text-slate-900">Custom</p>
-              <p className="text-sm text-gray-400 mb-6">For municipalities & teams</p>
-              <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                {['Everything in Pro', 'API & MCP access', 'Citizen-facing zoning chatbot', 'Bulk parcel analysis', 'Custom integrations', 'Dedicated support'].map(f => (
-                  <li key={f} className="flex items-start gap-2">
-                    <svg className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="mailto:ariel@everestcapitalusa.com" className="block text-center py-3 border border-gray-300 rounded-xl text-gray-600 font-bold text-sm hover:bg-gray-50 transition-colors">
-                Contact Us
-              </a>
-            </div>
-          </div>
-        </div>
+      {/* Hero */}
+      <section style={{ paddingTop: 80, paddingBottom: 24, textAlign: 'center', padding: '80px 24px 32px' }}>
+        <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#F59E0B', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 16 }}>
+          PRICING
+        </p>
+        <h1 style={{ fontSize: 'clamp(32px,5vw,52px)', fontWeight: 800, color: '#F1F5F9', lineHeight: 1.1, letterSpacing: '-.02em', marginBottom: 16 }}>
+          Simple, transparent pricing
+        </h1>
+        <p style={{ fontSize: 18, color: '#94A3B8', maxWidth: 480, margin: '0 auto' }}>
+          Start free. Upgrade when you need more.
+        </p>
       </section>
+
+      {/* Tiers */}
+      <section style={{ padding: '32px 24px 80px' }}>
+        <div style={{
+          maxWidth: 960,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 20,
+          alignItems: 'start',
+        }}>
+          {TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              style={{
+                position: 'relative',
+                background: tier.ctaStyle === 'primary' ? '#0F1F35' : '#0B1321',
+                border: `2px solid ${tier.ctaStyle === 'primary' ? '#1E3A5F' : '#1E293B'}`,
+                borderRadius: 20,
+                padding: '32px 28px',
+                boxShadow: tier.ctaStyle === 'primary' ? '0 0 40px rgba(30,58,95,0.4)' : 'none',
+              }}
+            >
+              {tier.badge && (
+                <span style={{
+                  position: 'absolute',
+                  top: -14,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: '#F59E0B',
+                  color: '#020617',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: '4px 16px',
+                  borderRadius: 99,
+                  letterSpacing: '.08em',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {tier.badge}
+                </span>
+              )}
+
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F1F5F9', marginBottom: 8 }}>
+                {tier.name}
+              </h3>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                <span style={{ fontSize: 44, fontWeight: 800, color: '#F1F5F9', lineHeight: 1 }}>{tier.price}</span>
+                {tier.period && <span style={{ fontSize: 16, color: '#64748B' }}>{tier.period}</span>}
+              </div>
+              <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>{tier.sub}</p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {tier.features.map((f) => (
+                  <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: '#CBD5E1' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <path d="M5 13l4 4L19 7" />
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href={tier.ctaHref}
+                style={{
+                  display: 'block',
+                  textAlign: 'center',
+                  padding: '14px 0',
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  textDecoration: 'none',
+                  transition: 'filter 0.15s',
+                  ...(tier.ctaStyle === 'primary'
+                    ? { background: '#F59E0B', color: '#020617' }
+                    : { background: '#1E3A5F', color: '#F1F5F9' }),
+                }}
+              >
+                {tier.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* FAQ nudge */}
+        <p style={{ textAlign: 'center', marginTop: 48, fontSize: 14, color: '#475569' }}>
+          Questions?{' '}
+          <a href="mailto:ariel@everestcapitalusa.com" style={{ color: '#F59E0B', textDecoration: 'none' }}>
+            Email us
+          </a>
+          {' · '}
+          <Link href="/explorer" style={{ color: '#94A3B8', textDecoration: 'none' }}>
+            Try it free →
+          </Link>
+        </p>
+      </section>
+
+      <Footer />
     </div>
   )
 }
