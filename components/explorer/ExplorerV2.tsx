@@ -7,12 +7,14 @@ import ExplorerMobileSheet from './ExplorerMobileSheet'
 import type { ExplorerMapHandle } from './ExplorerMap'
 import type { ChoroplethGeoJSON } from '@/lib/explorer/zillow'
 import {
-  CHOROPLETH_METRICS, ZONING_FILTERS, FREE_PARCEL_CLICKS, FREE_CHAT_MESSAGES,
-  ZONING_LABELS, getZoningColor,
+  ZONING_FILTERS, FREE_PARCEL_CLICKS, FREE_CHAT_MESSAGES,
   type ChoroplethMetric, type ZoningFilter,
 } from '@/lib/explorer/constants'
 import type { ParcelAttributes } from '@/lib/explorer/constants'
-import { formatCurrency, formatAddress } from '@/lib/explorer/constants'
+import ChoroplethLayer from './ChoroplethLayer'
+import LayerControls from './LayerControls'
+import ZoningLegend from './ZoningLegend'
+import ParcelIdentify from './ParcelIdentify'
 
 const ExplorerMap = dynamic(() => import('./ExplorerMap'), { ssr: false, loading: () => null })
 
@@ -53,56 +55,6 @@ function UpgradeModal({ reason, onClose }: { reason: 'parcel' | 'chat'; onClose:
             </div>
           ))}
         </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Parcel Detail Sidebar Panel ────────────────────────────────────────────────
-function ParcelPanel({ parcel }: { parcel: ParcelAttributes }) {
-  const addr = formatAddress(parcel)
-  const pid = parcel.PARCEL_ID || ''
-  const pidEnc = encodeURIComponent(pid)
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <h3 className="text-base font-bold text-white leading-tight">{addr || 'Unknown Address'}</h3>
-        <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-        <p className="text-[11px] text-slate-500 mt-0.5 font-mono">{pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        {[
-          { label: 'Building', value: formatCurrency(parcel.BLDG_VALUE) },
-          { label: 'Land', value: formatCurrency(parcel.LAND_VALUE) },
-          { label: 'Living Area', value: `${parseInt(parcel.LIV_AREA) || '—'} sqft` },
-          { label: 'Lot', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
-        ].map(s => (
-          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider">{s.label}</div>
-            <div className="text-sm font-bold text-white font-mono mt-0.5">{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-        <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Owner</div>
-        <div className="text-sm font-semibold text-white">{parcel.OWNER_NAME1 || '—'}</div>
-        {parcel.OWNER_NAME2 && <div className="text-xs text-slate-400">{parcel.OWNER_NAME2}</div>}
-        <div className="text-[11px] text-slate-500 mt-1">Subdivision: {parcel.SUBDIVISION_NAME || '—'}</div>
-        <div className="text-[11px] text-slate-500">Millage: {parcel.MILLAGE_CODE || '—'} · Homestead: {parseFloat(parcel.HOMESTEAD_VALUE) > 0 ? 'Yes ✓' : 'No'}</div>
-      </div>
-
-      <div className="space-y-2 pt-1">
-        <a href={`/parcel/${pidEnc}`}
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-md text-sm font-bold hover:bg-amber-500/25 transition-colors">
-          🗺️ Full ZoneWise.AI Analysis
-        </a>
-        <a href={`https://www.bcpao.us/PropertySearch/#/account/${parcel.PROPERTY_ID}`} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md text-xs font-semibold hover:bg-blue-500/20 transition-colors">
-          📋 View on BCPAO
-        </a>
       </div>
     </div>
   )
@@ -221,23 +173,14 @@ export default function ExplorerV2() {
         </div>
 
         {/* Choropleth metric selector */}
-        {choroplethVisible && (
-          <div className="absolute top-3 right-3 z-10">
-            <select
-              value={choroplethMetric}
-              onChange={e => {
-                const m = e.target.value as ChoroplethMetric
-                setChoroplethMetric(m)
-                mapRef.current?.setChoroplethMetric(m)
-              }}
-              className="bg-slate-900/90 border border-slate-700 rounded-md px-2.5 py-1.5 text-[11px] text-white backdrop-blur-sm shadow-sm focus:outline-none focus:border-amber-500/60"
-            >
-              {CHOROPLETH_METRICS.map(m => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="absolute top-3 right-3 z-10">
+          <ChoroplethLayer
+            metric={choroplethMetric}
+            visible={choroplethVisible}
+            onMetricChange={m => { setChoroplethMetric(m); mapRef.current?.setChoroplethMetric(m) }}
+            onVisibleChange={v => setChoroplethVisible(v)}
+          />
+        </div>
 
         {/* Map */}
         <div className="flex-1">
@@ -255,63 +198,16 @@ export default function ExplorerV2() {
         {/* Bottom controls bar */}
         <div className="absolute bottom-8 left-3 right-3 z-10 flex items-end gap-2 pointer-events-none">
           {/* Layer controls */}
-          <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm pointer-events-auto">
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2">Layers</div>
-            <div className="space-y-1.5">
-              {/* Choropleth toggle */}
-              <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={choroplethVisible}
-                  onChange={e => setChoroplethVisible(e.target.checked)}
-                  className="accent-amber-500 w-3 h-3"
-                />
-                <span className="w-2.5 h-2.5 rounded-sm shrink-0 bg-gradient-to-r from-blue-500 to-red-500" />
-                Heatmap
-              </label>
-              {/* Zoning toggle */}
-              <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={layers.zoning}
-                  onChange={e => {
-                    setLayers(l => ({ ...l, zoning: e.target.checked }))
-                    mapRef.current?.toggleLayer('zoning-layer', e.target.checked)
-                  }}
-                  className="accent-amber-500 w-3 h-3"
-                />
-                <span className="w-2.5 h-2.5 rounded-sm shrink-0 bg-blue-500" />
-                Zoning
-              </label>
-              {/* Parcels toggle */}
-              <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={layers.parcels}
-                  onChange={e => {
-                    setLayers(l => ({ ...l, parcels: e.target.checked }))
-                    mapRef.current?.toggleLayer('parcels-layer', e.target.checked)
-                  }}
-                  className="accent-amber-500 w-3 h-3"
-                />
-                <span className="w-2.5 h-2.5 rounded-sm shrink-0 bg-amber-500" />
-                Parcels
-              </label>
-              {/* FLU toggle */}
-              <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200">
-                <input
-                  type="checkbox"
-                  checked={layers.flu}
-                  onChange={e => {
-                    setLayers(l => ({ ...l, flu: e.target.checked }))
-                    mapRef.current?.toggleLayer('flu-layer', e.target.checked)
-                  }}
-                  className="accent-amber-500 w-3 h-3"
-                />
-                <span className="w-2.5 h-2.5 rounded-sm shrink-0 bg-purple-500" />
-                FLU
-              </label>
-            </div>
+          <div className="pointer-events-auto">
+            <LayerControls
+              layers={layers}
+              choroplethVisible={choroplethVisible}
+              onToggleLayer={(id, on, key) => {
+                setLayers(l => ({ ...l, [key]: on }))
+                mapRef.current?.toggleLayer(id, on)
+              }}
+              onToggleChoropleth={v => setChoroplethVisible(v)}
+            />
           </div>
 
           {/* Zoning filter */}
@@ -328,25 +224,20 @@ export default function ExplorerV2() {
             </select>
           </div>
 
-          {/* Selected parcel mini-card */}
+          {/* Selected parcel detail card */}
           {selectedParcel && (
-            <div className="flex-1 bg-slate-950/90 border border-amber-500/30 rounded-xl p-3 backdrop-blur-sm pointer-events-auto max-w-[260px]">
-              <ParcelPanel parcel={selectedParcel} />
+            <div className="flex-1 pointer-events-auto max-w-[280px]">
+              <ParcelIdentify
+                parcel={selectedParcel}
+                onClose={() => setSelectedParcel(null)}
+              />
             </div>
           )}
 
-          {/* Zoning legend */}
+          {/* Zoning legend when no parcel selected */}
           {!selectedParcel && (
-            <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm pointer-events-auto">
-              <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Legend</div>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-                {Object.entries(ZONING_LABELS).slice(0, 6).map(([code, label]) => (
-                  <div key={code} className="flex items-center gap-1.5 text-[10px] text-slate-500">
-                    <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: getZoningColor(code) }} />
-                    {code}
-                  </div>
-                ))}
-              </div>
+            <div className="pointer-events-auto">
+              <ZoningLegend />
             </div>
           )}
         </div>
