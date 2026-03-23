@@ -15,6 +15,7 @@ import ChoroplethLayer from './ChoroplethLayer'
 import LayerControls from './LayerControls'
 import ZoningLegend from './ZoningLegend'
 import ParcelIdentify from './ParcelIdentify'
+import { trackEvent } from '@/lib/explorer/tracking'
 
 const ExplorerMap = dynamic(() => import('./ExplorerMap'), { ssr: false, loading: () => null })
 
@@ -37,9 +38,10 @@ function UpgradeModal({ reason, onClose }: { reason: 'parcel' | 'chat'; onClose:
         <div className="space-y-2">
           <a
             href="/pricing"
+            onClick={() => trackEvent({ event: 'cta_clicked', cta_label: 'upgrade_modal_pricing' })}
             className="flex items-center justify-center gap-2 w-full py-3 bg-amber-500 text-slate-950 rounded-xl font-bold text-sm hover:brightness-110 transition-all"
           >
-            Start Free Trial — $29/mo
+            See Plans — From $39/mo
           </a>
           <button
             onClick={onClose}
@@ -124,8 +126,10 @@ export default function ExplorerV2() {
     setParcelClicks(next)
     persistParcelClicks(next)
     setSelectedParcel(parcel)
+    trackEvent({ event: 'parcel_click', parcel_id: parcel.PARCEL_ID, zip: parcel.ZIP_CODE })
     if (next > FREE_PARCEL_CLICKS) {
       setGateModal('parcel')
+      trackEvent({ event: 'upgrade_modal_shown' })
     }
   }, [parcelClicks, persistParcelClicks])
 
