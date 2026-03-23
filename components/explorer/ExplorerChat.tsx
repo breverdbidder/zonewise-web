@@ -2,7 +2,10 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { EXPLORER_CHIPS, FREE_CHAT_MESSAGES } from '@/lib/explorer/constants'
+import { FREE_CHAT_MESSAGES } from '@/lib/explorer/constants'
+import { handleMapResponse, stripMapActions } from '@/lib/explorer/chat-actions'
+import { trackEvent } from '@/lib/explorer/tracking'
+import SearchChips from './SearchChips'
 import type { ExplorerMapHandle } from './ExplorerMap'
 
 interface Message {
@@ -16,46 +19,6 @@ interface Props {
   chatCount: number
   onChatCountChange: (n: number) => void
   onGate: () => void
-}
-
-// Parse [MAP:*] commands from AI response and dispatch to map
-function dispatchMapActions(text: string, mapRef: React.RefObject<ExplorerMapHandle | null>) {
-  const map = mapRef.current
-  if (!map) return
-
-  const actionRe = /\[MAP:(\w+)\s+([^\]]+)\]/g
-  let m: RegExpExecArray | null
-  while ((m = actionRe.exec(text)) !== null) {
-    const [, action, args] = m
-    try {
-      switch (action) {
-        case 'FLY': {
-          const parts = args.trim().split(/,\s*/)
-          const lat = parseFloat(parts[0])
-          const lng = parseFloat(parts[1])
-          const zoom = parts[2] ? parseFloat(parts[2]) : 14
-          if (!isNaN(lat) && !isNaN(lng)) map.flyTo(lat, lng, zoom)
-          break
-        }
-        case 'CHOROPLETH':
-          map.setChoroplethMetric(args.trim() as 'zhvi' | 'zori' | 'yoy')
-          break
-        case 'FILTER':
-          map.filterZoning(args.trim() as 'all' | 'RU' | 'BU' | 'PUD' | 'AU' | 'IU' | 'TU')
-          break
-        case 'LAYER': {
-          const [layerId, onOff] = args.trim().split(/\s+/)
-          map.toggleLayer(layerId, onOff === 'on')
-          break
-        }
-      }
-    } catch {}
-  }
-}
-
-// Strip [MAP:*] commands from display text
-function stripMapActions(text: string): string {
-  return text.replace(/\[MAP:[^\]]+\]\n?/g, '').trim()
 }
 
 export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onGate }: Props) {
@@ -84,6 +47,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
     setInput('')
     setStreaming(true)
     onChatCountChange(chatCount + 1)
+    trackEvent({ event: 'chat_message' })
 
     try {
       const history = [...messages, userMsg].map(m => ({
@@ -116,7 +80,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
       }
 
       // Dispatch map actions from full response
-      dispatchMapActions(fullText, mapRef)
+      handleMapResponse(fullText, mapRef)
 
       // Finalize message (strip action commands from display)
       setMessages(prev => {
@@ -200,18 +164,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
       {/* Chips */}
       {messages.length === 0 && (
         <div className="px-3 pb-2 shrink-0">
-          <div className="grid grid-cols-2 gap-1.5">
-            {EXPLORER_CHIPS.slice(0, 4).map((chip) => (
-              <button
-                key={chip.text}
-                onClick={() => sendMessage(chip.text)}
-                className="text-left px-2.5 py-2 bg-slate-900 border border-slate-800 rounded-lg text-[11px] text-slate-400 hover:border-amber-500/40 hover:text-slate-200 transition-colors leading-tight"
-              >
-                <span className="mr-1">{chip.icon}</span>
-                {chip.text.length > 38 ? chip.text.slice(0, 38) + '…' : chip.text}
-              </button>
-            ))}
-          </div>
+          <SearchChips onSelect={sendMessage} max={4} layout="grid" />
         </div>
       )}
 
