@@ -65,6 +65,17 @@ Line 1: model | context% | session_cost | session_clock
 Line 2: git_branch | git_worktree
 ```
 
+## 3-Layer CLAUDE.md Hierarchy (Claude Architect Standard)
+```yaml
+layer_1_user: ~/.claude/CLAUDE.md  # personal prefs, not version-controlled
+layer_2_project: ./CLAUDE.md       # THIS FILE — team rules, architecture, triggers
+layer_3_path_rules: .claude/rules/ # pattern-matched, loaded ONLY when editing matching files
+  deployed: [components(src/components/**), data(src/lib/**), deploy(.github/workflows/**)]
+  principle: lean context window — rules load only when relevant
+  enforcement: hooks for 100% reliability (finance/security), prompts for style/tone
+```
+
+
 ---
 
 # GSTACK PATTERNS (Cherry-picked from garrytan/gstack, MIT License)
