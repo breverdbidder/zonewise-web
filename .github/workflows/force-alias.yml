@@ -28,7 +28,7 @@ jobs:
           if [ -n "$READY_URL" ]; then
             echo ""
             echo "=== Alias to zonewise.ai ==="
-            vercel alias set "$READY_URL" zonewise.ai --token=$TOKEN --scope=team_UEds2qBzyD9e7rOrX8aakj9K --yes 2>&1
+            vercel alias set "$READY_URL" zonewise.ai --token=$TOKEN --scope=team_UEds2qBzyD9e7rOrX8aakj9K 2>&1
             
             echo ""
             echo "=== Verify ==="
