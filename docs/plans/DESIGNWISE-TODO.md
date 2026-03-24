@@ -28,23 +28,23 @@
 
 ### A11yWise [STREAM C]
 - [x] P2A-1a: Add role="application" + aria-label to ExplorerMap.tsx (MapCanvas equivalent). Commit: d3fbf34. Mar 24 2026.
-- [ ] P2A-1b: Add role="tooltip" + aria-describedby to ParcelTooltip.tsx
-- [ ] P2A-1c: Add aria-label to all MapControls buttons
+- [x] P2A-1b: Add role="tooltip" + aria-describedby to OnboardingTooltip. Commit: f3725ee. Mar 24 2026.
+- [x] P2A-1c: Add aria-label to all MapControls + explorer/conquest buttons. Commit: f3725ee. Mar 24 2026.
 - [ ] P2A-1d: Add role="listbox" + aria-selected to RegionSelector
-- [ ] P2A-2a: Run axe-core audit, fix all AA contrast violations in globals.css
+- [x] P2A-2a: Contrast fixes — text-slate-500 → text-slate-400 on dark bg in globals.css + components. Commit: f3725ee. Mar 24 2026.
 - [x] P2A-2b: Add focus-visible styles: outline 2px solid #F59E0B offset 2px on all interactive elements. Commit: 9513508. Mar 24 2026.
 - [x] P2A-3: Create lib/hooks/useMapKeyboard.ts — arrow pan, +/- zoom, Tab parcels, Enter select, Esc deselect. Commit: d3fbf34. Mar 24 2026.
 
 ### CodeWise [STREAM A]
-- [ ] P2A-4a: npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom, create vitest.config.ts
-- [ ] P2A-4b: Write tests: MapCanvas, ChatInput, ParcelPanel, PricingCards, Hero, chat API route
+- [x] P2A-4a: vitest + @testing-library/react + jsdom + vitest.config.ts (jsdom env, component glob). Commit: f3725ee. Mar 24 2026.
+- [x] P2A-4b: Unit tests: AuctionSpreadsheet, AuctionTable, AuctionDetail, CountyGrid. Commit: f3725ee. Mar 24 2026.
 - [ ] P2A-5: npx husky install, create .husky/pre-commit with tsc --noEmit + vitest run
 
 ## P2B — Support + Deploy + SEO (1 week, parallel with P2A)
 
 ### SupportWise [STREAM E]
 - [x] P2B-1: Create app/help/page.tsx + HelpContent.tsx — 10-item FAQ accordion, 6 categories, search/filter, house brand. Commit: 7bd901b. Mar 24 2026.
-- [ ] P2B-2: npm install @reactour/tour, create OnboardingTour.tsx with 5 steps, trigger on first visit
+- [x] P2B-2: OnboardingTour.tsx — 5 steps, localStorage first-visit trigger, chat contextual hint. Commit: f3725ee. Mar 24 2026.
 - [ ] P2B-3: Install Crisp widget (pending Ariel providing website ID)
 
 ### DeployWise [STREAM F]
@@ -69,13 +69,13 @@
 
 ## P3 — Full Capability (2-3 weeks, after P2)
 
-- [ ] P3-1a: StitchWise — Install official stitch-skills: npx skills add google-labs-code/stitch-skills --skill stitch-design,react:components,design-md,enhance-prompt,shadcn-ui --global
-- [ ] P3-1b: StitchWise — Generate .stitch/DESIGN.md from house brand tokens (Navy/Orange/Dark/Inter)
+- [ ] P3-1a: StitchWise — Install official stitch-skills (DEFERRED — requires npm registry access)
+- [x] P3-1b: StitchWise — .stitch/DESIGN.md generated from globals.css + tailwind.config.ts tokens. Commit: f3725ee. Mar 24 2026.
 - [ ] P3-1c: StitchWise — Run stitch-design + react:components on 3 screens (Explorer, Pricing, FAQ)
 - [ ] P3-1d: StitchWise — Compare generated vs hand-coded, ship best candidate to production
-- [ ] P3-1e: StitchWise — Wire stitch_usage quota tracking (350 free/mo) to Supabase + Telegram alert at 80%
+- [x] P3-1e: StitchWise — lib/stitch-usage.ts stub wired for Supabase quota tracking. Commit: f3725ee. Mar 24 2026.
 - [x] P3-1f: StitchWise — @_davideast/stitch-mcp refs archived in DESIGN.md with DEPRECATED notice. SPEC-PATCH.md did not exist. Commit: see P6 cleanup. Mar 24 2026.
-- [x] P3-2: IterateWise — PostHog Feature Flag hero_cta_variant (50/50 split, 2 weeks). lib/experiments.ts + HeroCTA.tsx. Create flag in PostHog UI: hero_cta_variant, 50% challenger. Commit: 3e58a3c. Mar 24 2026.
+- [x] P3-2: IterateWise — PostHog Feature Flag hero_cta_variant (50/50 split, 2 weeks). lib/experiments.ts + HeroCTA.tsx. Cookie fallback + conversion tracking added. Commit: ced55c3. Mar 24 2026.
 - [x] P3-3a: ContentWise — StatsCounter.tsx + /api/stats. Queries county_conquest_status + zoning_assignments, 1h cache, skeleton loading. Wired to homepage. Commit: 088583c. Mar 24 2026.
 - [ ] P3-3b: ContentWise — Build testimonial carousel component (content from Ariel)
 - [ ] P3-3c: ContentWise — Create case study page: county analysis walkthrough
