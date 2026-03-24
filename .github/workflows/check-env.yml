@@ -1,0 +1,23 @@
+name: "Check Vercel Env Vars"
+on:
+  workflow_dispatch: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: "List Vercel env vars"
+        run: |
+          curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          envs = d.get('envs', [])
+          print(f'Total env vars: {len(envs)}')
+          for e in sorted(envs, key=lambda x: x.get('key','')):
+              key = e.get('key','')
+              target = e.get('target', [])
+              val = e.get('value','')
+              masked = val[:8] + '...' if len(val) > 8 else val
+              print(f'  {key:45} target={target} value={masked}')
+          "
