@@ -1,4 +1,8 @@
+import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo-metadata'
 import Link from 'next/link'
+
+export const metadata: Metadata = pageMetadata.terms
 
 export default function TermsPage() {
   return (
