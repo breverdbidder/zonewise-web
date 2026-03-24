@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/seo-metadata'
 import Link from 'next/link'
+import PricingTracker from '@/components/PricingTracker'
 
 export const metadata: Metadata = pageMetadata.pricing
 
@@ -68,6 +69,7 @@ const TIERS = [
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[#020617] text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <PricingTracker source="direct" />
       {/* Nav */}
       <nav className="h-14 flex items-center px-6 border-b border-slate-800">
         <Link href="/" className="flex items-center gap-2">

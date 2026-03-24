@@ -16,6 +16,7 @@ import LayerControls from './LayerControls'
 import ZoningLegend from './ZoningLegend'
 import ParcelIdentify from './ParcelIdentify'
 import { trackEvent } from '@/lib/explorer/tracking'
+import { track } from '@/lib/posthog'
 
 const ExplorerMap = dynamic(() => import('./ExplorerMap'), { ssr: false, loading: () => null })
 
@@ -85,6 +86,11 @@ export default function ExplorerV2() {
 
   // Active map style
   const [mapStyle, setMapStyle] = useState<'streets-v12' | 'satellite-streets-v12' | 'light-v11'>('streets-v12')
+
+  // Track explorer open on mount
+  useEffect(() => {
+    track({ name: 'explorer_opened', properties: { county: 'brevard' } })
+  }, [])
 
   // ── Load counters from localStorage ──────────────────────────────────────
   useEffect(() => {
@@ -163,7 +169,7 @@ export default function ExplorerV2() {
             return (
               <button
                 key={s}
-                onClick={() => setMapStyle(s)}
+                onClick={() => { setMapStyle(s); track({ name: 'explorer_opened', properties: { county: 'brevard' } }) }}
                 className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold backdrop-blur-sm shadow-sm transition-all border ${
                   mapStyle === s
                     ? 'bg-amber-500 border-amber-500 text-slate-950'

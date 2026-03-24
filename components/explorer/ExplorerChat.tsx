@@ -47,7 +47,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
     setInput('')
     setStreaming(true)
     onChatCountChange(chatCount + 1)
-    trackEvent({ event: 'chat_message' })
+    trackEvent({ event: 'chat_message', query: text })
 
     try {
       const history = [...messages, userMsg].map(m => ({

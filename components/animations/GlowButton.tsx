@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { track } from '@/lib/posthog'
 
 interface GlowButtonProps {
   href: string
@@ -40,6 +41,7 @@ export default function GlowButton({
     >
       <Component
         href={href}
+        onClick={() => track({ name: 'signup_clicked', properties: { location: `hero_${variant ?? 'primary'}` } })}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         className={`${baseClasses} ${variantClasses[variant]} ${className}`}
         style={{
