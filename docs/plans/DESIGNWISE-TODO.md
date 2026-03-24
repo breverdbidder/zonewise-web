@@ -27,13 +27,13 @@
 ## P2A — Code Quality + Accessibility (1 week)
 
 ### A11yWise [STREAM C]
-- [ ] P2A-1a: Add role="application" + aria-label to MapCanvas.tsx
+- [x] P2A-1a: Add role="application" + aria-label to ExplorerMap.tsx (MapCanvas equivalent). Commit: d3fbf34. Mar 24 2026.
 - [ ] P2A-1b: Add role="tooltip" + aria-describedby to ParcelTooltip.tsx
 - [ ] P2A-1c: Add aria-label to all MapControls buttons
 - [ ] P2A-1d: Add role="listbox" + aria-selected to RegionSelector
 - [ ] P2A-2a: Run axe-core audit, fix all AA contrast violations in globals.css
-- [ ] P2A-2b: Add focus-visible styles: outline 2px solid #F59E0B offset 2px on all interactive elements
-- [ ] P2A-3: Integrate useMapKeyboard.ts hook into MapCanvas — arrow pan, +/- zoom, Tab parcels, Enter select, Esc deselect
+- [x] P2A-2b: Add focus-visible styles: outline 2px solid #F59E0B offset 2px on all interactive elements. Commit: 9513508. Mar 24 2026.
+- [x] P2A-3: Create lib/hooks/useMapKeyboard.ts — arrow pan, +/- zoom, Tab parcels, Enter select, Esc deselect. Commit: d3fbf34. Mar 24 2026.
 
 ### CodeWise [STREAM A]
 - [ ] P2A-4a: npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom, create vitest.config.ts
@@ -43,17 +43,17 @@
 ## P2B — Support + Deploy + SEO (1 week, parallel with P2A)
 
 ### SupportWise [STREAM E]
-- [ ] P2B-1: Create src/app/help/page.tsx with 10-item FAQ accordion, house brand styling, search filter
+- [x] P2B-1: Create app/help/page.tsx + HelpContent.tsx — 10-item FAQ accordion, 6 categories, search/filter, house brand. Commit: 7bd901b. Mar 24 2026.
 - [ ] P2B-2: npm install @reactour/tour, create OnboardingTour.tsx with 5 steps, trigger on first visit
 - [ ] P2B-3: Install Crisp widget (pending Ariel providing website ID)
 
 ### DeployWise [STREAM F]
-- [ ] P2B-4a: Create src/app/api/health/route.ts — env check + Supabase connectivity
+- [x] P2B-4a: Enhance app/api/health/route.ts — env check (4 vars) + Supabase connectivity + 503 on fail. Commit: 8f19228. Mar 24 2026.
 - [ ] P2B-4b: Patch deploy-prod.yml with health check + rollback + Telegram alert on failure
 
 ### SEOWise [STREAM B]
-- [ ] P2B-5a: Create src/lib/seo-metadata.ts with unique metadata for all routes
-- [ ] P2B-5b: Update every page.tsx to use route-specific metadata from seo-metadata.ts
+- [x] P2B-5a: Create lib/seo-metadata.ts with unique metadata for 9 routes + breadcrumbJsonLd. Commit: 7bd901b. Mar 24 2026.
+- [x] P2B-5b: Update explorer, pricing, privacy, terms pages to use route-specific metadata. Commit: 7b2c24d. Mar 24 2026.
 - [ ] P2B-5c: Create BreadcrumbJsonLd component for explorer drill-down pages
 - [ ] P2B-6: Run Lighthouse SEO on all 8 routes, fix all flagged issues, target ≥95
 
@@ -64,7 +64,7 @@
 - [ ] P2C-2: Create scripts/oauth-refresh.sh (attempt refresh + update GitHub secret + Telegram confirm)
 
 ### Sentinel V2 [STREAM F]
-- [ ] P2C-3: Add STALE_WORKFLOW_FILTER array to sentinel-patrol.sh, suppress known 422s from Telegram
+- [x] P2C-3: Create scripts/sentinel-patrol.sh with STALE_WORKFLOW_FILTER (9 stale workflows), suppress 422s from Telegram. Commit: ad4d3ed. Mar 24 2026.
 - [ ] P2C-4: Create sentinel-weekly.yml — Sunday 9AM cron, aggregate sentinel_runs 7d, Telegram summary
 
 ## P3 — Full Capability (2-3 weeks, after P2)
