@@ -6,11 +6,11 @@
 ## P0 — Quick Wins (< 2h total) [PARALLEL]
 
 - [x] P0-1: A11yWise — Add SkipToContent.tsx component, import in layout.tsx, add id="main-content" to main wrapper
-- [ ] P0-2: A11yWise — Run Lighthouse CLI on zonewise.ai, store baseline scores in Supabase designwise_scores table
+- [ ] P0-2: A11yWise — Run Lighthouse CLI on zonewise.ai (DEFERRED to Hetzner Chrome headless)
 - [x] P0-3: AnalyticsWise — @vercel/analytics + @vercel/speed-insights added to package.json, VercelAnalytics wired into layout.tsx
 - [x] P0-4: SEOWise — app/sitemap.ts (1099B) + public/robots.txt already exist with sitemap ref. GSC submission = ARIEL HITL.
 
-## P1 — Unblock Dependencies (1-2 days) [PARALLEL STREAMS]
+## P1 — Unblock Dependencies (1-2 days) [PARALLEL STREAMS] ← 🔥 ACTIVE
 
 ### Stream D: Analytics
 - [ ] P1-1: AnalyticsWise — npm install posthog-js, create src/lib/posthog.ts + src/components/PostHogProvider.tsx, wrap layout.tsx
@@ -84,7 +84,7 @@
 - [ ] P3-5b: QAWise — Add mobile viewport E2E (375px + 768px), verify no horizontal overflow
 
 ## ARIEL HITL (< 5 min total)
-- [ ] Submit sitemap to Google Search Console (after P0-4)
-- [ ] Create PostHog project + provide API key (before P1-1) — OR approve Claude Code API creation
+- [x] Submit sitemap to Google Search Console — VERIFIED + sitemap.xml submitted Mar 24 2026
+- [x] Create PostHog project — phc_zUQ...Ts14 in Vercel env + GitHub secret. US Cloud project 35462x.
 - [ ] Create Crisp account + provide website ID (before P2B-3)
 - [ ] Reach out to 3 beta users for testimonials (before P3-3b)
