@@ -1,13 +1,12 @@
 // app/api/health/route.ts
 // P2B-4: DeployWise — Health check endpoint
-// Checks env vars + Supabase connectivity. Returns 503 on failure.
+// Uses anon key + REST ping — no table dependency
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 const REQUIRED_ENV = [
   'NEXT_PUBLIC_SUPABASE_URL',
-  'SUPABASE_SERVICE_ROLE_KEY',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   'NEXT_PUBLIC_MAPBOX_TOKEN',
   'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
 ];
@@ -25,18 +24,20 @@ export async function GET() {
       ? { status: 'ok' }
       : { status: 'fail', detail: `Missing: ${missingEnv.join(', ')}` };
 
-  // Check Supabase connection
+  // Supabase connectivity — ping REST endpoint with anon key
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceKey) {
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !anonKey) {
       checks.supabase = { status: 'fail', detail: 'Missing Supabase env vars' };
     } else {
-      const supabase = createClient(supabaseUrl, serviceKey);
-      const { error } = await supabase.from('fl_counties').select('count').limit(1).single();
-      checks.supabase = error
-        ? { status: 'fail', detail: error.message }
-        : { status: 'ok' };
+      const res = await fetch(`${supabaseUrl}/rest/v1/`, {
+        headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+        signal: AbortSignal.timeout(5000),
+      });
+      checks.supabase = res.ok
+        ? { status: 'ok' }
+        : { status: 'fail', detail: `HTTP ${res.status}` };
     }
   } catch (e) {
     checks.supabase = { status: 'fail', detail: String(e) };
@@ -48,10 +49,7 @@ export async function GET() {
   return NextResponse.json(
     {
       status: allOk ? 'ok' : 'degraded',
-      version:
-        process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ||
-        process.env.NEXT_PUBLIC_APP_VERSION ||
-        'dev',
+      version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'dev',
       timestamp: new Date().toISOString(),
       duration_ms: duration,
       checks,
