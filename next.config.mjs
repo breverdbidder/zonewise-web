@@ -8,6 +8,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'www.bcpao.us' },
       { protocol: 'https', hostname: '*.supabase.co' },
       { protocol: 'https', hostname: 'gis.brevardfl.gov' },
+      { protocol: 'https', hostname: 'api.mapbox.com' },
     ]
   },
   async rewrites() {
@@ -23,6 +24,10 @@ const nextConfig = {
       {
         source: '/viewer-assets/:path*',
         destination: 'https://zonewise-desktop-viewer.vercel.app/assets/:path*',
+      },
+      {
+        source: '/demo.html',
+        destination: '/demo',
       },
     ]
   },
