@@ -5,6 +5,7 @@ import SplitScreenPreview from '@/components/SplitScreenPreview'
 import BetaSignupForm from '@/components/BetaSignupForm'
 import NavHeader from '@/components/NavHeader'
 import StatsCounter from '@/components/StatsCounter'
+import HeroCTA from '@/components/HeroCTA'
 import {
   AnimatedSection,
   StaggerChildren,
@@ -56,18 +57,7 @@ export default function Home() {
           </AnimatedSection>
 
           <AnimatedSection delay={0.5}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <GlowButton href="/explorer" variant="secondary">
-                Explore the Map — Free
-              </GlowButton>
-              <GlowButton href="#beta-signup" variant="outline">
-                Join the Beta
-              </GlowButton>
-              <a href="#how" className="text-zw-navy font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
-                See how it works
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </a>
-            </div>
+            <HeroCTA />
           </AnimatedSection>
 
           <AnimatedSection delay={0.65}>
