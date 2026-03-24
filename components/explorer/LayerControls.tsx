@@ -24,7 +24,7 @@ const LAYER_ITEMS = [
 export default function LayerControls({ layers, choroplethVisible, onToggleLayer, onToggleChoropleth }: Props) {
   return (
     <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-      <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2">Layers</div>
+      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Layers</div>
       <div className="space-y-1.5">
         {/* Heatmap */}
         <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200 min-h-[44px] md:min-h-0">

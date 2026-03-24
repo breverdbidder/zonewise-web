@@ -164,12 +164,12 @@ export default function ParcelDetail({ parcelId }: Props) {
           )}
           <h1 className="text-lg font-bold text-white mt-2">{addr || 'Unknown Address'}</h1>
           <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-          <p className="text-[11px] text-slate-500 font-mono mt-1">{parcel.PARCEL_ID}</p>
+          <p className="text-[11px] text-slate-400 font-mono mt-1">{parcel.PARCEL_ID}</p>
         </div>
 
         {/* Values */}
         <div className="p-4 border-b border-slate-800">
-          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Property Values</h3>
+          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Property Values</h3>
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: 'Total Value', value: formatCurrency(totalValue) },
@@ -180,7 +180,7 @@ export default function ParcelDetail({ parcelId }: Props) {
               { label: 'Lot Size', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
             ].map(s => (
               <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-                <div className="text-[10px] text-slate-500 uppercase tracking-wider">{s.label}</div>
+                <div className="text-[10px] text-slate-400 uppercase tracking-wider">{s.label}</div>
                 <div className="text-sm font-bold text-white font-mono mt-0.5">{s.value}</div>
               </div>
             ))}
@@ -189,7 +189,7 @@ export default function ParcelDetail({ parcelId }: Props) {
 
         {/* Owner & Details */}
         <div className="p-4 border-b border-slate-800">
-          <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Owner & Details</h3>
+          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Owner & Details</h3>
           <div className="space-y-1.5 text-xs">
             {[
               ['Owner', parcel.OWNER_NAME1 || '—'],
@@ -198,7 +198,7 @@ export default function ParcelDetail({ parcelId }: Props) {
               ['Millage Code', parcel.MILLAGE_CODE || '—'],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between">
-                <span className="text-slate-500">{k}</span>
+                <span className="text-slate-400">{k}</span>
                 <span className="text-white font-medium text-right max-w-[60%]">{v}</span>
               </div>
             ))}
@@ -220,14 +220,14 @@ export default function ParcelDetail({ parcelId }: Props) {
         {/* Nearby */}
         {nearby.length > 0 && (
           <div className="p-4">
-            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nearby Parcels</h3>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nearby Parcels</h3>
             {nearby.map(n => {
               const nAddr = [n.STREET_NUMBER, n.STREET_NAME, n.STREET_TYPE].filter(Boolean).join(' ')
               return (
                 <Link key={n.PARCEL_ID} href={`/parcel/${encodeURIComponent(n.PARCEL_ID)}`}
                   className="block bg-slate-900 border border-slate-800 rounded-md p-2 mb-1.5 hover:border-zw-orange/50 transition-colors">
                   <div className="text-xs font-semibold text-white">{nAddr || n.PARCEL_ID}</div>
-                  <div className="flex gap-3 mt-0.5 text-[10px] text-slate-500">
+                  <div className="flex gap-3 mt-0.5 text-[10px] text-slate-400">
                     <span>Bldg: <span className="text-zw-orange font-mono">{formatCurrency(n.BLDG_VALUE)}</span></span>
                     <span>{parseInt(n.LIV_AREA) || '—'} sqft</span>
                   </div>

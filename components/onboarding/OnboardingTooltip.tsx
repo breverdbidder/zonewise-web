@@ -26,8 +26,12 @@ export const OnboardingTooltip = () => {
   }
 
   return (
-    <div className="fixed top-20 right-6 z-50 max-w-sm">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg shadow-2xl border border-blue-500">
+    <div className="fixed top-20 right-6 z-50 max-w-sm" aria-describedby="parcel-tooltip">
+      <div
+        id="parcel-tooltip"
+        role="tooltip"
+        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg shadow-2xl border border-blue-500"
+      >
         <div className="flex items-start">
           <div className="flex-shrink-0">
             <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -60,6 +64,7 @@ export const OnboardingTooltip = () => {
               setIsVisible(false);
               completeOnboarding();
             }}
+            aria-label="Dismiss tooltip"
             className="flex-shrink-0 ml-2 text-white hover:text-blue-200"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

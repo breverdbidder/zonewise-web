@@ -75,7 +75,7 @@ function KpiCard({ data }: { data: any }) {
             ].map(m => (
               <div key={m.label} className="rounded-lg border border-slate-700 bg-slate-800 p-2 text-center">
                 <div className="font-mono text-sm text-amber-400">{m.val}</div>
-                <div className="mt-1 text-xs text-slate-500">{m.label}</div>
+                <div className="mt-1 text-xs text-slate-400">{m.label}</div>
               </div>
             ))}
           </div>
@@ -93,7 +93,7 @@ function KpiCard({ data }: { data: any }) {
                 ['Max Bid', kpi.maxBid ? `$${Number(kpi.maxBid).toLocaleString()}` : null],
               ].map(([k, v]) => v ? (
                 <div key={k as string} className="flex justify-between">
-                  <span className="text-xs text-slate-500">{k}</span>
+                  <span className="text-xs text-slate-400">{k}</span>
                   <span className="font-mono text-xs text-slate-200">{v}</span>
                 </div>
               ) : null)}
@@ -131,13 +131,13 @@ function ZoneTable({ data }: { data: any }) {
               </span>
               <span className="text-sm text-slate-200">{d.zoneName || d.name}</span>
             </div>
-            <div className="text-xs text-slate-500">{d.jurisdiction} · {d.county} County</div>
+            <div className="text-xs text-slate-400">{d.jurisdiction} · {d.county} County</div>
             {(d.maxHeight || d.setbacks) && (
               <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1">
-                {d.maxHeight && <div className="flex justify-between text-xs"><span className="text-slate-500">Max Height</span><span className="font-mono text-slate-300">{d.maxHeight} ft</span></div>}
-                {d.coverage && <div className="flex justify-between text-xs"><span className="text-slate-500">Coverage</span><span className="font-mono text-slate-300">{d.coverage}%</span></div>}
-                {d.far && <div className="flex justify-between text-xs"><span className="text-slate-500">FAR</span><span className="font-mono text-slate-300">{d.far}</span></div>}
-                {d.setbacks?.front && <div className="flex justify-between text-xs"><span className="text-slate-500">Front Setback</span><span className="font-mono text-slate-300">{d.setbacks.front} ft</span></div>}
+                {d.maxHeight && <div className="flex justify-between text-xs"><span className="text-slate-400">Max Height</span><span className="font-mono text-slate-300">{d.maxHeight} ft</span></div>}
+                {d.coverage && <div className="flex justify-between text-xs"><span className="text-slate-400">Coverage</span><span className="font-mono text-slate-300">{d.coverage}%</span></div>}
+                {d.far && <div className="flex justify-between text-xs"><span className="text-slate-400">FAR</span><span className="font-mono text-slate-300">{d.far}</span></div>}
+                {d.setbacks?.front && <div className="flex justify-between text-xs"><span className="text-slate-400">Front Setback</span><span className="font-mono text-slate-300">{d.setbacks.front} ft</span></div>}
               </div>
             )}
           </div>
@@ -158,7 +158,7 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
         </p>
         <div className="mt-2 flex flex-col gap-2 w-full max-w-sm">
           {['Ask about any FL parcel or address', 'Get 128-KPI property intelligence', 'View zoning rules + permitted uses', 'FEMA flood zone + Census data'].map((s, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-800/30 px-3 py-2 text-xs text-slate-500">
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-800/30 px-3 py-2 text-xs text-slate-400">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-700 font-mono text-xs text-slate-600">{i+1}</span>
               {s}
             </div>
@@ -170,7 +170,7 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
   return (
     <div className="p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="font-mono text-xs uppercase tracking-widest text-slate-500">
+        <div className="font-mono text-xs uppercase tracking-widest text-slate-400">
           {artifact.type === 'table' ? '📊 Analysis' : artifact.type === 'map' ? '🗺️ Map' : '📄 Report'}
         </div>
         {artifact.metadata?.jurisdiction && (
@@ -217,7 +217,7 @@ function MessageContent({ content }: { content: string }) {
         )
         if (line.match(/^\d+\.\s/)) return (
           <div key={i} className="flex gap-2">
-            <span className="font-mono text-xs text-slate-500 shrink-0 mt-0.5">{line.match(/^(\d+)/)?.[1]}.</span>
+            <span className="font-mono text-xs text-slate-400 shrink-0 mt-0.5">{line.match(/^(\d+)/)?.[1]}.</span>
             <span dangerouslySetInnerHTML={{ __html: formatInline(line.replace(/^\d+\.\s/, '')) }} />
           </div>
         )
@@ -382,8 +382,8 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
             <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
           </div>
-          <span className="ml-1 font-mono text-xs text-slate-500">ZoneWise AI · Florida Real Estate</span>
-          <div className={`ml-auto flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-xs ${authReady ? 'border-amber-500/20 bg-amber-500/5 text-amber-400' : 'border-slate-700 bg-slate-800/50 text-slate-500'}`}>
+          <span className="ml-1 font-mono text-xs text-slate-400">ZoneWise AI · Florida Real Estate</span>
+          <div className={`ml-auto flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-xs ${authReady ? 'border-amber-500/20 bg-amber-500/5 text-amber-400' : 'border-slate-700 bg-slate-800/50 text-slate-400'}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${authReady ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'}`} />
             {authReady ? 'LIVE · Claude Sonnet' : 'Connecting…'}
           </div>
@@ -393,7 +393,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
           {messages.length === 0 && (
             <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
               <div className="mb-1 font-semibold text-slate-200">ZoneWise AI 🏛</div>
-              <p className="mb-4 text-sm text-slate-500 leading-relaxed">
+              <p className="mb-4 text-sm text-slate-400 leading-relaxed">
                 Ask me anything about Florida zoning, parcels, foreclosures, or tax deed auctions across all 67 counties.
               </p>
               <div className="flex flex-col gap-2">
@@ -462,7 +462,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`rounded-t-lg border-b-2 px-4 py-2 font-mono text-xs capitalize transition ${activeTab === tab
                 ? 'border-amber-500 text-amber-400 bg-slate-950'
-                : 'border-transparent text-slate-500 hover:text-slate-300'}`}>
+                : 'border-transparent text-slate-400 hover:text-slate-300'}`}>
               {tab}
             </button>
           ))}
@@ -513,7 +513,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
             <div className="p-4 space-y-4">
               <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
                 <div className="mb-2 font-semibold text-slate-200">ZoneWise AI</div>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className="text-sm text-slate-400 leading-relaxed">
                   Florida real estate intelligence across all 67 counties. 10.5M+ parcels, 5,395 zoning districts, 128-KPI scoring.
                 </p>
               </div>
@@ -527,7 +527,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
                 { label: 'Auction Coverage', val: '⚖️ Foreclosure + 🏛 Tax Deed' },
               ].map(r => (
                 <div key={r.label} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2">
-                  <span className="text-xs text-slate-500">{r.label}</span>
+                  <span className="text-xs text-slate-400">{r.label}</span>
                   <span className="font-mono text-xs text-slate-300">{r.val}</span>
                 </div>
               ))}

@@ -22,7 +22,7 @@ function StatCard({ label, value, sub, highlight }: StatCardProps) {
       >
         {value}
       </span>
-      {sub && <span className="text-xs text-slate-500">{sub}</span>}
+      {sub && <span className="text-xs text-slate-400">{sub}</span>}
     </div>
   )
 }

@@ -26,14 +26,14 @@ export default function ParcelIdentify({ parcel, onClose }: Props) {
           <p className="text-[11px] text-slate-400 mt-0.5">
             {(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}
           </p>
-          <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
+          <p className="text-[10px] text-slate-400 font-mono mt-0.5 truncate">
             {pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}
           </p>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="shrink-0 w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-300 text-lg leading-none"
+            className="shrink-0 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-300 text-lg leading-none"
             aria-label="Close"
           >
             ×
@@ -50,7 +50,7 @@ export default function ParcelIdentify({ parcel, onClose }: Props) {
           { label: 'Lot',      value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
         ].map(s => (
           <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2">
-            <div className="text-[9px] text-slate-500 uppercase tracking-wider">{s.label}</div>
+            <div className="text-[9px] text-slate-400 uppercase tracking-wider">{s.label}</div>
             <div className="text-xs font-bold text-white font-mono mt-0.5">{s.value}</div>
           </div>
         ))}
@@ -58,7 +58,7 @@ export default function ParcelIdentify({ parcel, onClose }: Props) {
 
       {/* Owner */}
       <div className="bg-slate-900 border border-slate-800 rounded-md px-2.5 py-2 mb-2">
-        <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">Owner</div>
+        <div className="text-[9px] text-slate-400 uppercase tracking-wider mb-0.5">Owner</div>
         <div className="text-xs font-semibold text-white truncate">{parcel.OWNER_NAME1 || '—'}</div>
         {parcel.OWNER_NAME2 && (
           <div className="text-[10px] text-slate-400 truncate">{parcel.OWNER_NAME2}</div>

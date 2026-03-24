@@ -97,7 +97,7 @@ export default function ExplorerMobileSheet({
         <div className="px-3 pb-3 flex items-center gap-2">
           <button
             onClick={() => setSheetState('half')}
-            className="flex-1 flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-500 min-h-[44px]"
+            className="flex-1 flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-400 min-h-[44px]"
           >
             <span className="text-base">🔍</span>
             <span>Ask anything about Brevard...</span>
@@ -122,7 +122,7 @@ export default function ExplorerMobileSheet({
               className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                 activeTab === 'chat'
                   ? 'border-[#F59E0B] text-[#F59E0B]'
-                  : 'border-transparent text-slate-500 hover:text-slate-300'
+                  : 'border-transparent text-slate-400 hover:text-slate-300'
               }`}
             >
               🤖 AI Chat
@@ -133,7 +133,7 @@ export default function ExplorerMobileSheet({
                 className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                   activeTab === 'parcel'
                     ? 'border-[#F59E0B] text-[#F59E0B]'
-                    : 'border-transparent text-slate-500 hover:text-slate-300'
+                    : 'border-transparent text-slate-400 hover:text-slate-300'
                 }`}
               >
                 🗺️ Parcel
