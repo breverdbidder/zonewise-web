@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // tsc verified locally (npx tsc --noEmit passes clean). Skip in build to avoid OOM.
+  // TS is clean: npx tsc --noEmit returns 0 errors (Mar 2026, docs/ excluded in tsconfig).
+  // ignoreBuildErrors=true: build worker OOMs on TS check in Vercel/CI environment.
+  // CI should enforce: tsc --noEmit must pass (pre-commit or CI step).
   typescript: { ignoreBuildErrors: true },
   generateBuildId: () => `v4-nextjs-restored-${Date.now()}`,
   images: {
