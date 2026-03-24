@@ -342,7 +342,13 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
 
   return (
     <div className="relative w-full h-full">
-      <div ref={containerRef} className="w-full h-full" />
+      <div
+        ref={containerRef}
+        className="w-full h-full"
+        role="application"
+        aria-label="Interactive zoning map of Brevard County, Florida. Use arrow keys to pan, plus and minus to zoom."
+        tabIndex={0}
+      />
       {loading && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-slate-700 rounded-md px-4 py-2 text-xs text-amber-400 font-semibold backdrop-blur-sm z-10 pointer-events-none">
           Loading parcel data...
