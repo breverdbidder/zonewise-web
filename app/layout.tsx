@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/lib/theme-context'
 import { OnboardingProvider } from '@/components/onboarding'
 import SkipToContent from '@/components/SkipToContent'
 import VercelAnalytics from '@/components/VercelAnalytics'
+import PostHogProvider from '@/components/PostHogProvider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -84,13 +85,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SkipToContent />
         <VercelAnalytics />
         <ConditionalClerkProvider>
-          <ThemeProvider>
-            <OnboardingProvider>
-              <main id="main-content">
-                {children}
-              </main>
-            </OnboardingProvider>
-          </ThemeProvider>
+          <PostHogProvider>
+            <ThemeProvider>
+              <OnboardingProvider>
+                <main id="main-content">
+                  {children}
+                </main>
+              </OnboardingProvider>
+            </ThemeProvider>
+          </PostHogProvider>
         </ConditionalClerkProvider>
       </body>
     </html>
