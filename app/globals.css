@@ -277,7 +277,7 @@ input, textarea {
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--slate-500);
+  color: var(--slate-400);
 }
 
 /* Button hover effects */

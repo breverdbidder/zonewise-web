@@ -21,7 +21,7 @@ export default function ChoroplethLayer({ metric, visible, onMetricChange, onVis
     <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
       {/* Header row */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Heatmap</span>
+        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Heatmap</span>
         <label className="flex items-center gap-1.5 cursor-pointer">
           <input
             type="checkbox"
@@ -29,7 +29,7 @@ export default function ChoroplethLayer({ metric, visible, onMetricChange, onVis
             onChange={e => onVisibleChange(e.target.checked)}
             className="accent-amber-500 w-3 h-3"
           />
-          <span className="text-[10px] text-slate-500">{visible ? 'On' : 'Off'}</span>
+          <span className="text-[10px] text-slate-400">{visible ? 'On' : 'Off'}</span>
         </label>
       </div>
 
@@ -50,7 +50,7 @@ export default function ChoroplethLayer({ metric, visible, onMetricChange, onVis
           {legend.map(({ label, color }) => (
             <div key={label} className="flex items-center gap-1.5">
               <span className="w-3 h-2 rounded-sm shrink-0" style={{ background: color }} />
-              <span className="text-[10px] text-slate-500">{label}</span>
+              <span className="text-[10px] text-slate-400">{label}</span>
             </div>
           ))}
         </div>

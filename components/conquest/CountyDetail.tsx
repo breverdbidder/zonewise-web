@@ -24,24 +24,24 @@ function ConqueredView({ detail }: CountyDetailProps) {
         <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Coverage</span>
           <span className="text-3xl font-bold text-emerald-400">100%</span>
-          <span className="text-xs text-slate-500">Fully conquered</span>
+          <span className="text-xs text-slate-400">Fully conquered</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Zoned Parcels</span>
           <span className="text-3xl font-bold text-white tabular-nums">
             {county.zoned_parcels.toLocaleString()}
           </span>
-          <span className="text-xs text-slate-500">zoning_assignments</span>
+          <span className="text-xs text-slate-400">zoning_assignments</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Jurisdictions</span>
           <span className="text-3xl font-bold text-white tabular-nums">{jurisdictions.length || 17}</span>
-          <span className="text-xs text-slate-500">municipalities</span>
+          <span className="text-xs text-slate-400">municipalities</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Last Run</span>
           <span className="text-lg font-bold text-white">{county.last_run ?? '—'}</span>
-          <span className="text-xs text-slate-500">pipeline date</span>
+          <span className="text-xs text-slate-400">pipeline date</span>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ function ConqueredView({ detail }: CountyDetailProps) {
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-semibold text-white">Jurisdiction Breakdown</h2>
-          <span className="text-xs text-slate-500">{jurisdictions.length} jurisdictions</span>
+          <span className="text-xs text-slate-400">{jurisdictions.length} jurisdictions</span>
         </div>
         <JurisdictionTable jurisdictions={jurisdictions} totalZoned={totalZoned} />
       </div>
@@ -88,13 +88,13 @@ function PendingView({ detail }: CountyDetailProps) {
           <div className="text-2xl font-bold text-white tabular-nums">
             ~{(county.total_parcels / 1000).toFixed(0)}K
           </div>
-          <div className="text-xs text-slate-500 mt-1">Est. Parcels</div>
+          <div className="text-xs text-slate-400 mt-1">Est. Parcels</div>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
           <div className="text-2xl font-bold text-white">
             {REGION_LABELS[county.region]}
           </div>
-          <div className="text-xs text-slate-500 mt-1">Region</div>
+          <div className="text-xs text-slate-400 mt-1">Region</div>
         </div>
       </div>
     </div>

@@ -51,7 +51,7 @@ function UpgradeModal({ reason, onClose }: { reason: 'parcel' | 'chat'; onClose:
             Maybe later
           </button>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500">
+        <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
           {['Unlimited parcel clicks', 'Unlimited AI chat', 'Zoning filters', 'Export CSV/PDF'].map(f => (
             <div key={f} className="flex items-center gap-1.5">
               <span className="text-amber-500">✓</span> {f}
@@ -166,10 +166,14 @@ export default function ExplorerV2() {
         <div className="absolute top-3 left-3 flex gap-1.5 z-10">
           {(['streets-v12', 'satellite-streets-v12', 'light-v11'] as const).map(s => {
             const labels = { 'streets-v12': 'Streets', 'satellite-streets-v12': 'Satellite', 'light-v11': 'Light' }
+            const handleStyleChange = () => { setMapStyle(s); track({ name: 'explorer_opened', properties: { county: 'brevard' } }) }
             return (
               <button
                 key={s}
-                onClick={() => { setMapStyle(s); track({ name: 'explorer_opened', properties: { county: 'brevard' } }) }}
+                onClick={handleStyleChange}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleStyleChange() } }}
+                aria-label={`Switch to ${labels[s]} map style`}
+                aria-pressed={mapStyle === s}
                 className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold backdrop-blur-sm shadow-sm transition-all border ${
                   mapStyle === s
                     ? 'bg-amber-500 border-amber-500 text-slate-950'
@@ -222,7 +226,7 @@ export default function ExplorerV2() {
 
           {/* Zoning filter */}
           <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm pointer-events-auto">
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2">Zone Filter</div>
+            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Zone Filter</div>
             <select
               value={zoningFilter}
               onChange={e => setZoningFilter(e.target.value as ZoningFilter)}

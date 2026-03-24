@@ -10,10 +10,10 @@ const LEGEND_CODES = ['RU', 'BU', 'PUD', 'AU', 'IU', 'TU'] as const
 export default function ZoningLegend() {
   return (
     <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-      <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Zoning</div>
+      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Zoning</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
         {LEGEND_CODES.map(code => (
-          <div key={code} className="flex items-center gap-1.5 text-[10px] text-slate-500">
+          <div key={code} className="flex items-center gap-1.5 text-[10px] text-slate-400">
             <span
               className="w-2 h-2 rounded-sm shrink-0"
               style={{ background: ZONING_COLORS[code] ?? '#94A3B8' }}

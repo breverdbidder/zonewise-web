@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
-import { OnboardingProvider } from '@/components/onboarding'
+import { OnboardingProvider, OnboardingTour } from '@/components/onboarding'
 import SkipToContent from '@/components/SkipToContent'
 import VercelAnalytics from '@/components/VercelAnalytics'
 import PostHogProvider from '@/components/PostHogProvider'
@@ -88,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PostHogProvider>
             <ThemeProvider>
               <OnboardingProvider>
+                <OnboardingTour />
                 <main id="main-content">
                   {children}
                 </main>

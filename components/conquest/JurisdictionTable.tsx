@@ -40,7 +40,7 @@ function QualityBadge({ count, total }: { count: number; total: number }) {
 export default function JurisdictionTable({ jurisdictions, totalZoned }: JurisdictionTableProps) {
   if (jurisdictions.length === 0) {
     return (
-      <div className="text-slate-500 text-sm py-8 text-center">
+      <div className="text-slate-400 text-sm py-8 text-center">
         No jurisdiction data available.
       </div>
     )
@@ -82,7 +82,7 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
                 <td className="py-3 px-2 text-right text-slate-300 tabular-nums font-mono text-xs">
                   {j.count.toLocaleString()}
                 </td>
-                <td className="py-3 px-2 text-right text-slate-500 tabular-nums text-xs hidden sm:table-cell">
+                <td className="py-3 px-2 text-right text-slate-400 tabular-nums text-xs hidden sm:table-cell">
                   {sharePct}%
                 </td>
                 <td className="py-3 px-2 hidden md:table-cell">
