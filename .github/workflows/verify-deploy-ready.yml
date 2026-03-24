@@ -1,0 +1,104 @@
+name: "Verify Deploy Pipeline"
+on:
+  workflow_dispatch: {}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Domain + Deploy Status"
+        run: |
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+
+          echo "=== 1. DOMAINS ==="
+          curl -s "https://api.vercel.com/v9/projects/$PROJECT/domains" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin).get('domains',[]):
+              print(f'  {d[\"name\"]:30} verified={d.get(\"verified\")} redirect={d.get(\"redirect\",\"-\")}')
+              for v in d.get('verification',[]):
+                  print(f'    PENDING: {v[\"type\"]} {v[\"domain\"]} = {v[\"value\"][:50]}')
+          "
+
+          echo ""
+          echo "=== 2. LATEST DEPLOYMENTS ==="
+          curl -s "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin).get('deployments',[]):
+              state = d.get('readyState','?')
+              target = d.get('target','?')
+              url = d.get('url','?')
+              sha = d.get('meta',{}).get('githubCommitSha','?')[:8]
+              msg = d.get('meta',{}).get('githubCommitMessage','?')[:50]
+              print(f'  {state:10} {target:12} {sha} {url[:55]}')
+              print(f'    {msg}')
+          "
+
+          echo ""
+          echo "=== 3. CURRENT PRODUCTION ALIAS ==="
+          curl -s "https://api.vercel.com/v3/now/aliases?projectId=$PROJECT&limit=5" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          for a in d.get('aliases',[]):
+              print(f'  {a.get(\"alias\",\"?\"):30} → {a.get(\"deployment\",{}).get(\"url\",\"?\")}')
+          " 2>/dev/null || echo "  (aliases API not available)"
+
+          echo ""
+          echo "=== 4. PROJECT SETTINGS ==="
+          curl -s "https://api.vercel.com/v9/projects/$PROJECT" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          print(f'  name: {d.get(\"name\")}')
+          print(f'  framework: {d.get(\"framework\")}')
+          print(f'  autoAssignCustomDomains: {d.get(\"autoAssignCustomDomains\")}')
+          print(f'  gitRepository: {d.get(\"link\",{}).get(\"repo\",\"?\")}')
+          print(f'  productionBranch: {d.get(\"link\",{}).get(\"productionBranch\",\"?\")}')
+          sso = d.get('ssoProtection',{})
+          print(f'  ssoProtection: {sso}')
+          dc = d.get('deploymentExpiration',{})
+          print(f'  deploymentExpiration: {dc}')
+          "
+
+          echo ""
+          echo "=== 5. ENV VARS ==="
+          curl -s "https://api.vercel.com/v9/projects/$PROJECT/env" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          for e in sorted(json.load(sys.stdin).get('envs',[]), key=lambda x: x.get('key','')):
+              print(f'  {e[\"key\"]:45} target={e.get(\"target\",[])}')
+          "
+
+      - name: "Test force-alias workflow"
+        run: |
+          TOKEN="${{ secrets.VERCEL_TOKEN }}"
+          PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+
+          echo "=== Find latest READY deployment ==="
+          READY_URL=$(curl -s "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5&target=production" \
+            -H "Authorization: Bearer $TOKEN" | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin).get('deployments',[]):
+              if d.get('readyState') == 'READY':
+                  print(d['url'])
+                  break
+          ")
+          echo "  Latest READY: $READY_URL"
+
+          echo ""
+          echo "=== Verify alias mechanism works ==="
+          npm install -g vercel@latest 2>/dev/null
+          vercel alias set "$READY_URL" zonewise.ai --token=$TOKEN --scope=team_UEds2qBzyD9e7rOrX8aakj9K 2>&1 || echo "Alias failed"
+
+          echo ""
+          echo "=== Smoke test live site ==="
+          sleep 5
+          for page in "" explorer pricing; do
+            HTTP=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/$page")
+            echo "  /$page: HTTP $HTTP"
+          done
