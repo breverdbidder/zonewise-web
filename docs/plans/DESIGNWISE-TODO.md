@@ -69,7 +69,12 @@
 
 ## P3 — Full Capability (2-3 weeks, after P2)
 
-- [ ] P3-1: StitchWise — Process 3 real Figma frames end-to-end, ship 1 production component, wire stitch_usage tracking
+- [ ] P3-1a: StitchWise — Install official stitch-skills: npx skills add google-labs-code/stitch-skills --skill stitch-design,react:components,design-md,enhance-prompt,shadcn-ui --global
+- [ ] P3-1b: StitchWise — Generate .stitch/DESIGN.md from house brand tokens (Navy/Orange/Dark/Inter)
+- [ ] P3-1c: StitchWise — Run stitch-design + react:components on 3 screens (Explorer, Pricing, FAQ)
+- [ ] P3-1d: StitchWise — Compare generated vs hand-coded, ship best candidate to production
+- [ ] P3-1e: StitchWise — Wire stitch_usage quota tracking (350 free/mo) to Supabase + Telegram alert at 80%
+- [ ] P3-1f: StitchWise — Deprecate custom 840 LOC harness → src/legacy/stitchwise-v1/. Remove @google/stitch-sdk refs from SPEC-PATCH.md
 - [ ] P3-2: IterateWise — PostHog Feature Flag hero_cta_variant, run 2-week experiment, document in ab_tests table
 - [ ] P3-3a: ContentWise — Build live usage counter from Supabase parcel_data count
 - [ ] P3-3b: ContentWise — Build testimonial carousel component (content from Ariel)
