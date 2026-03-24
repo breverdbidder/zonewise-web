@@ -475,7 +475,14 @@ Style: Centered modal, bg var(--color-surface), radius-xl
    - Screen 8: Demo page (agent pipeline + live report)
 5. Export DESIGN.md back after generation for Claude Code consumption
 
-### Stitch MCP Integration (Claude Code)
+### Stitch MCP Integration (DEPRECATED — 2026-03-24)
+
+> **ARCHIVED**: `@_davideast/stitch-mcp` and `@google/stitch-sdk` toolchain is deprecated.
+> Replaced by hand-coded animated components (see `components/animations/`).
+> Reference kept for historical context only — do not install or use.
+
+<details>
+<summary>Legacy config (archived)</summary>
 
 ```json
 {
@@ -488,19 +495,12 @@ Style: Centered modal, bg var(--color-surface), radius-xl
 }
 ```
 
-Commands for Claude Code:
+Commands (archived):
 ```bash
-# Pull generated screen HTML into project
 npx @_davideast/stitch-mcp tool get_screen_code --screenId <id>
-
-# Build full site from Stitch screens mapped to Next.js routes
-npx @_davideast/stitch-mcp tool build_site --projectId <id> --routes '[
-  {"screenId":"landing","route":"/"},
-  {"screenId":"app","route":"/app"},
-  {"screenId":"demo","route":"/demo"},
-  {"screenId":"pricing","route":"/pricing"}
-]'
+npx @_davideast/stitch-mcp tool build_site --projectId <id> --routes '[...]'
 ```
+</details>
 
 ---
 

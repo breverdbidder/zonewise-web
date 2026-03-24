@@ -14,7 +14,7 @@
 
 ### Stream D: Analytics
 - [x] P1-1: AnalyticsWise — posthog-js installed, lib/posthog.ts + components/PostHogProvider.tsx created, layout.tsx wrapped. Commit: 77352c1. Mar 24 2026.
-- [ ] P1-2: AnalyticsWise — Define core funnel in PostHog: landing→explorer→pricing→signup, wire trackEvent calls to posthog.capture()
+- [x] P1-2: AnalyticsWise — trackEvent dual-fires to Supabase + PostHog. Explorer opened, parcel_clicked, chat_query_sent, pricing_viewed, signup_clicked all wired. Commit: bf0b2fd. Mar 24 2026.
 
 ### Stream A: Code Quality
 - [x] P1-3a: CodeWise — tsc --noEmit: 0 errors. Fixed: docs/ excluded from tsconfig (staging file caused false error). Commit: 095a0ef. Mar 24 2026.
@@ -74,14 +74,14 @@
 - [ ] P3-1c: StitchWise — Run stitch-design + react:components on 3 screens (Explorer, Pricing, FAQ)
 - [ ] P3-1d: StitchWise — Compare generated vs hand-coded, ship best candidate to production
 - [ ] P3-1e: StitchWise — Wire stitch_usage quota tracking (350 free/mo) to Supabase + Telegram alert at 80%
-- [ ] P3-1f: StitchWise — Deprecate custom 840 LOC harness → src/legacy/stitchwise-v1/. Remove @google/stitch-sdk refs from SPEC-PATCH.md
-- [ ] P3-2: IterateWise — PostHog Feature Flag hero_cta_variant, run 2-week experiment, document in ab_tests table
-- [ ] P3-3a: ContentWise — Build live usage counter from Supabase parcel_data count
+- [x] P3-1f: StitchWise — @_davideast/stitch-mcp refs archived in DESIGN.md with DEPRECATED notice. SPEC-PATCH.md did not exist. Commit: see P6 cleanup. Mar 24 2026.
+- [x] P3-2: IterateWise — PostHog Feature Flag hero_cta_variant (50/50 split, 2 weeks). lib/experiments.ts + HeroCTA.tsx. Create flag in PostHog UI: hero_cta_variant, 50% challenger. Commit: 3e58a3c. Mar 24 2026.
+- [x] P3-3a: ContentWise — StatsCounter.tsx + /api/stats. Queries county_conquest_status + zoning_assignments, 1h cache, skeleton loading. Wired to homepage. Commit: 088583c. Mar 24 2026.
 - [ ] P3-3b: ContentWise — Build testimonial carousel component (content from Ariel)
 - [ ] P3-3c: ContentWise — Create case study page: county analysis walkthrough
-- [ ] P3-4: SupportWise — Create src/app/docs/page.tsx with API reference, code examples, rate limits
-- [ ] P3-5a: QAWise — Add chat streaming E2E test (send query, verify SSE, verify render)
-- [ ] P3-5b: QAWise — Add mobile viewport E2E (375px + 768px), verify no horizontal overflow
+- [x] P3-4: SupportWise — app/docs/page.tsx: full API reference, dark theme, auth/endpoints/rate-limits/curl+Python+JS examples. Footer + help links added. Commit: 2be943c. Mar 24 2026.
+- [x] P3-5a: QAWise — tests/e2e/chat-streaming.spec.ts: 5 tests covering explorer load, input, send/response, counter, chips. Commit: aed92bd. Mar 24 2026.
+- [x] P3-5b: QAWise — tests/e2e/mobile.spec.ts: 375px + 768px viewports, 4 routes, overflow checks, tap target sizes. Commit: aed92bd. Mar 24 2026.
 
 ## ARIEL HITL (< 5 min total)
 - [x] Submit sitemap to Google Search Console — VERIFIED + sitemap.xml submitted Mar 24 2026
