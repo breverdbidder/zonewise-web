@@ -1,33 +1,72 @@
 name: Deploy to Vercel Production
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
   push:
     branches: [main]
 
 concurrency:
   group: deploy-prod
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
-      - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Pull + Build
+        run: |
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy (prebuilt)
+        id: deploy
+        run: |
+          # Deploy prebuilt artifacts — capture URL, don't wait for promotion
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | grep -oE 'https://zonewise-[a-z0-9]+-ariel-shapira-s-projects\.vercel\.app' | tail -1)
+          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "Deployed: $DEPLOY_URL"
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-      - name: Deploy to Production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        timeout-minutes: 3
+
+      - name: Force Alias (if deploy hangs)
+        if: failure() || steps.deploy.outputs.url == ''
+        run: |
+          echo "Deploy step failed or hung — using force alias"
+          READY_URL=$(curl -s "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=5&target=production" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          import json,sys
+          for d in json.load(sys.stdin).get('deployments',[]):
+              if d.get('readyState') == 'READY':
+                  print(d['url'])
+                  break
+          ")
+          echo "Aliasing: $READY_URL"
+          vercel alias set "$READY_URL" zonewise.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=team_UEds2qBzyD9e7rOrX8aakj9K
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+
+      - name: Alias to zonewise.ai
+        if: steps.deploy.outputs.url != ''
+        run: |
+          vercel alias set "${{ steps.deploy.outputs.url }}" zonewise.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=team_UEds2qBzyD9e7rOrX8aakj9K
+          echo "✅ zonewise.ai aliased"
+
+      - name: Smoke Test
+        if: always()
+        run: |
+          sleep 10
+          for page in "" explorer pricing; do
+            HTTP=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/$page")
+            echo "/$page: HTTP $HTTP"
+          done
