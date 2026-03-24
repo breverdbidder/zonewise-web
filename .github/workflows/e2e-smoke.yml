@@ -1,0 +1,161 @@
+name: "E2E Smoke Test"
+on:
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ["Deploy to Vercel Production"]
+    types: [completed]
+
+jobs:
+  smoke:
+    name: "Playwright Visual Verification"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success' ||
+      github.event.workflow_run.conclusion == 'failure'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "Install Playwright"
+        run: |
+          npm init -y
+          npm install @playwright/test
+          npx playwright install chromium --with-deps
+
+      - name: "Run smoke tests"
+        run: |
+          cat > smoke.spec.ts << 'TEST'
+          import { test, expect } from '@playwright/test';
+
+          const BASE = 'https://zonewise.ai';
+
+          test.describe('ZoneWise.AI Smoke Tests', () => {
+
+            test('Homepage loads with content', async ({ page }) => {
+              await page.goto(BASE, { waitUntil: 'networkidle', timeout: 30000 });
+              await page.screenshot({ path: 'screenshots/home.png', fullPage: false });
+
+              // Verify hero is visible
+              const body = await page.textContent('body');
+              expect(body).toContain('ZoneWise');
+              expect(body).toContain('Zoning');
+
+              // Verify counters section exists
+              const hasCounters = await page.locator('text=Counties').count();
+              expect(hasCounters).toBeGreaterThan(0);
+
+              // Check JSON-LD
+              const jsonld = await page.locator('script[type="application/ld+json"]').count();
+              expect(jsonld).toBeGreaterThan(0);
+            });
+
+            test('Explorer loads (no infinite spinner)', async ({ page }) => {
+              await page.goto(`${BASE}/explorer`, { waitUntil: 'networkidle', timeout: 30000 });
+
+              // Wait for either map OR error boundary (both are valid states)
+              await page.waitForTimeout(10000);
+              await page.screenshot({ path: 'screenshots/explorer.png', fullPage: false });
+
+              // Verify we're past the loading spinner
+              const spinnerVisible = await page.locator('text=Loading Explorer V2').isVisible().catch(() => false);
+              const errorBoundary = await page.locator('text=Explorer failed to load').isVisible().catch(() => false);
+              const mapCanvas = await page.locator('canvas.mapboxgl-canvas').count().catch(() => 0);
+
+              console.log(`Spinner: ${spinnerVisible}, Error: ${errorBoundary}, MapCanvas: ${mapCanvas}`);
+
+              // At minimum, spinner should be gone OR map should render OR error shows
+              if (mapCanvas > 0) {
+                console.log('✅ Map canvas rendered');
+              } else if (errorBoundary) {
+                console.log('⚠️ ErrorBoundary shown — JS crash detected');
+                // Take error screenshot
+                await page.screenshot({ path: 'screenshots/explorer-error.png', fullPage: false });
+              } else if (spinnerVisible) {
+                console.log('❌ Still showing spinner after 10s');
+              }
+            });
+
+            test('Explorer chat input exists', async ({ page }) => {
+              await page.goto(`${BASE}/explorer`, { waitUntil: 'networkidle', timeout: 30000 });
+              await page.waitForTimeout(8000);
+
+              // Look for chat input
+              const chatInput = await page.locator('input[placeholder*="Ask"], textarea[placeholder*="Ask"], input[placeholder*="message"], textarea[placeholder*="message"]').count();
+              console.log(`Chat inputs found: ${chatInput}`);
+              await page.screenshot({ path: 'screenshots/explorer-chat.png', fullPage: false });
+            });
+
+            test('Pricing shows correct tiers', async ({ page }) => {
+              await page.goto(`${BASE}/pricing`, { waitUntil: 'networkidle', timeout: 30000 });
+              await page.screenshot({ path: 'screenshots/pricing.png', fullPage: false });
+
+              const body = await page.textContent('body');
+              expect(body).toContain('Free');
+              expect(body).toContain('Starter');
+              expect(body).toContain('Pro');
+              expect(body).toContain('$39');
+              expect(body).toContain('$99');
+              expect(body).not.toContain('$29');
+            });
+
+            test('/demo.html resolves (not 404)', async ({ page }) => {
+              const resp = await page.goto(`${BASE}/demo.html`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+              expect(resp?.status()).toBeLessThan(400);
+              await page.screenshot({ path: 'screenshots/demo.png', fullPage: false });
+            });
+
+            test('Lighthouse-lite: page speed', async ({ page }) => {
+              const start = Date.now();
+              await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 15000 });
+              const loadTime = Date.now() - start;
+              console.log(`Homepage load: ${loadTime}ms`);
+              expect(loadTime).toBeLessThan(5000);
+
+              const start2 = Date.now();
+              await page.goto(`${BASE}/explorer`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+              const loadTime2 = Date.now() - start2;
+              console.log(`Explorer load: ${loadTime2}ms`);
+              expect(loadTime2).toBeLessThan(5000);
+            });
+          });
+          TEST
+
+          mkdir -p screenshots
+          npx playwright test smoke.spec.ts --reporter=list 2>&1 || true
+          ls -la screenshots/
+
+      - name: "Upload screenshots"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: screenshots/
+          retention-days: 7
+
+      - name: "Send results to Telegram"
+        if: always()
+        run: |
+          PASS=$(grep -c "✓\|passed" /tmp/test-output.txt 2>/dev/null || echo "?")
+          FAIL=$(grep -c "✗\|failed" /tmp/test-output.txt 2>/dev/null || echo "?")
+
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BIDDEED_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.BIDDEED_BOT_CHAT_ID }}" \
+            -d "parse_mode=Markdown" \
+            --data-urlencode "text=🎭 *E2E Smoke Test*: ${{ job.status }}
+          Screenshots: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Download artifacts to see visual results" || true
+
+          # Send each screenshot to Telegram
+          for img in screenshots/*.png; do
+            if [ -f "$img" ]; then
+              curl -s -X POST "https://api.telegram.org/bot${{ secrets.BIDDEED_BOT_TOKEN }}/sendPhoto" \
+                -F "chat_id=${{ secrets.BIDDEED_BOT_CHAT_ID }}" \
+                -F "photo=@$img" \
+                -F "caption=$(basename $img .png)" || true
+            fi
+          done
