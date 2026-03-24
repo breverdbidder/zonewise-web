@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
 import { OnboardingProvider } from '@/components/onboarding'
+import SkipToContent from '@/components/SkipToContent'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -78,10 +79,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <noscript><style>{"[style*='opacity: 0'],[style*='opacity:0']{opacity:1!important;transform:none!important;}"}</style></noscript>
       </head>
       <body>
+        <SkipToContent />
         <ConditionalClerkProvider>
           <ThemeProvider>
             <OnboardingProvider>
-              {children}
+              <main id="main-content">
+                {children}
+              </main>
             </OnboardingProvider>
           </ThemeProvider>
         </ConditionalClerkProvider>
