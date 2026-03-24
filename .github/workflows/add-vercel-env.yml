@@ -1,0 +1,35 @@
+name: "Add Vercel Env Var"
+on:
+  workflow_dispatch:
+    inputs:
+      key:
+        description: "Env var name"
+        required: true
+      secret_name:
+        description: "GitHub secret to read value from"
+        required: true
+
+jobs:
+  add-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add env var to Vercel
+        run: |
+          # Map secret name to value
+          case "${{ inputs.secret_name }}" in
+            SUPABASE_SERVICE_ROLE_KEY) VALUE="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ;;
+            *) echo "Unknown secret"; exit 1 ;;
+          esac
+
+          curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"key\": \"${{ inputs.key }}\",
+              \"value\": \"${VALUE}\",
+              \"type\": \"encrypted\",
+              \"target\": [\"production\", \"preview\", \"development\"]
+            }" | head -c 200
+
+          echo ""
+          echo "Done"
