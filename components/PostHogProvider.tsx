@@ -4,14 +4,15 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { initPostHog, identifyUser, resetUser, posthog } from '@/lib/posthog';
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || '';
 
-export default function PostHogProvider({ children }: { children: React.ReactNode }) {
+// Inner component uses useSearchParams — must be wrapped in Suspense
+function PostHogTracking() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { isSignedIn, userId } = useAuth();
@@ -45,5 +46,16 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
     }
   }, [isSignedIn, userId, user]);
 
-  return <>{children}</>;
+  return null;
+}
+
+export default function PostHogProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <PostHogTracking />
+      </Suspense>
+      {children}
+    </>
+  );
 }
