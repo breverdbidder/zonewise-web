@@ -57,8 +57,9 @@ streams:
   G_stitch:
     agents: [StitchWise, BrandGuard]
     repo: zonewise-web
-    files: [src/components/generated/**, .stitch/**]
+    files: [src/components/generated/**, .stitch/**, skills/**]
     depends_on: [A_quality, C_a11y]
+    toolchain: google-labs-code/stitch-skills (official Agent Skills)
 ```
 
 ---
@@ -440,18 +441,57 @@ FILE: .github/workflows/sentinel-weekly.yml (NEW)
 ---
 
 ## P3 — FULL CAPABILITY (2-3 weeks, after P2 complete)
-
-### P3-1: StitchWise — Real Figma pipeline test (13h) [STREAM G]
+### P3-1: StitchWise — Official Stitch Skills Integration (10h) [STREAM G]
 ```
 DEPENDS_ON: P2A complete (TypeScript clean, tests passing)
+SOURCE: https://github.com/google-labs-code/stitch-skills (Apache-2.0)
 
-1. Export 3 real Figma frames from ZoneWise design files
-2. Process through StitchWise pipeline
-3. Compare output vs hand-coded components
-4. Fix pipeline issues found
-5. Ship 1 generated component to production
-6. Wire stitch_usage quota tracking to Supabase
-7. Add regression test for generated component
+STEP 0: Install official Stitch Agent Skills (replaces custom 840 LOC harness)
+  npx skills add google-labs-code/stitch-skills --skill stitch-design --global
+  npx skills add google-labs-code/stitch-skills --skill react:components --global
+  npx skills add google-labs-code/stitch-skills --skill design-md --global
+  npx skills add google-labs-code/stitch-skills --skill enhance-prompt --global
+  npx skills add google-labs-code/stitch-skills --skill shadcn-ui --global
+
+STEP 1: Generate .stitch/DESIGN.md from ZoneWise brand tokens
+  - Use design-md skill to analyze existing components
+  - Map house brand (Navy #1E3A5F, Orange #F59E0B, Dark #020617, Inter font)
+  - Output: .stitch/DESIGN.md as design system source of truth
+
+STEP 2: Run stitch-design skill on 3 ZoneWise screens
+  - Targets: Explorer map panel, Pricing cards, Help FAQ accordion
+  - enhance-prompt preprocesses vague descriptions into Stitch-optimized prompts
+  - stitch-design generates high-fidelity HTML screens via Stitch MCP
+
+STEP 3: Convert to React via react:components skill
+  - Pipeline: Stitch HTML → retrieval via curl → token mapping via style-guide.json → AST validation
+  - Output: src/components/generated/ with validated React components
+  - Built-in AST validation catches syntax errors before commit
+
+STEP 4: Compare generated vs hand-coded components
+  - Side-by-side visual diff
+  - Lighthouse score comparison (perf, a11y)
+  - If generated ≥ 90% quality: ship to production
+  - If not: document gaps, file upstream issue
+
+STEP 5: Ship 1 generated component to production
+  - Merge best candidate into src/components/
+  - Add Vitest snapshot test
+  - Verify npm run build passes
+
+STEP 6: Wire stitch_usage quota tracking to Supabase
+  - Track: generations used / 350 free monthly
+  - Alert at 80% usage via Telegram
+
+STEP 7: Deprecate custom 840 LOC StitchWise harness
+  - Archive to src/legacy/stitchwise-v1/
+  - Update CLAUDE.md to reference official skills
+  - Remove @google/stitch-sdk and @_davideast references from SPEC-PATCH.md
+
+NOTE: Official skills follow Agent Skills open standard — compatible with
+Claude Code, Gemini CLI, Cursor, Antigravity. Structure per skill:
+  SKILL.md (mission control) + scripts/ (validation) + resources/ (style guides) + examples/ (gold standard)
+```
 ```
 
 ### P3-2: IterateWise — First A/B test (depends on P1-1, P1-2)
@@ -553,7 +593,7 @@ after_P2:
   Sentinel: 8.5 → 9.0       # filter + weekly summary
 
 after_P3:
-  StitchWise: 4.5 → 8.5     # real pipeline proven
+  StitchWise: 4.5 → 8.5     # official google-labs-code/stitch-skills integrated
   IterateWise: 1.5 → 7.0    # first A/B complete
   ContentWise: 8.5 → 9.0    # social proof live
   SupportWise: 7.5 → 8.5    # API docs added
