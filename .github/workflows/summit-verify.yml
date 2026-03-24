@@ -1,0 +1,142 @@
+name: "Summit: DesignWise Verify — Screenshots to Telegram"
+on:
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    name: "Visual Verification"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install @playwright/test
+          npx playwright install chromium --with-deps
+
+      - name: Run verification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          mkdir -p screenshots
+
+          cat > verify.spec.ts << 'TESTEOF'
+          import { test, expect } from '@playwright/test';
+          const BASE = 'https://zonewise.ai';
+          const R: string[] = [];
+          function chk(p: boolean, m: string) { R.push((p ? '✅' : '❌') + ' ' + m); }
+
+          test('DesignWise 14-Agent Verification', async ({ page }) => {
+            // HOMEPAGE
+            await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await page.waitForTimeout(8000);
+            chk(!!(await page.$('a[href="#main-content"]')), 'A11y SkipToContent');
+            chk(!!(await page.$('#main-content')), 'A11y main-content id');
+            chk(!!(await page.$('meta[name="google-site-verification"]')), 'SEO GSC meta');
+            chk(!!(await page.$('meta[property="og:title"]')), 'SEO OG title');
+            chk(!!(await page.$('script[type="application/ld+json"]')), 'SEO JSON-LD');
+
+            const body = await page.textContent('body') || '';
+            chk(/parcels/i.test(body), 'Content StatsCounter parcels');
+            chk(/counties/i.test(body), 'Content StatsCounter counties');
+
+            const tourCount = await page.evaluate(() => {
+              let n = 0;
+              document.querySelectorAll('*').forEach(e => {
+                const c = (e as HTMLElement).className;
+                if (typeof c === 'string' && /tour|onboard|step|welcome/i.test(c)) n++;
+              });
+              return n;
+            });
+            chk(tourCount > 0, 'Support Onboarding tour (' + tourCount + ' els)');
+
+            await page.keyboard.press('Tab');
+            await page.waitForTimeout(500);
+            const focused = await page.evaluate(() => {
+              const el = document.activeElement;
+              if (!el || el === document.body) return null;
+              return window.getComputedStyle(el).outlineColor;
+            });
+            chk(!!focused, 'A11y Focus-visible (' + focused + ')');
+
+            const html = await page.content();
+            chk(html.includes('posthog') || html.includes('phc_'), 'Analytics PostHog in page');
+            await page.screenshot({ path: 'screenshots/01-home.png' });
+
+            // HELP
+            await page.goto(BASE + '/help', { waitUntil: 'domcontentloaded', timeout: 20000 });
+            await page.waitForTimeout(5000);
+            const h1 = await page.textContent('h1') || '';
+            chk(/help/i.test(h1), 'Support /help heading: ' + h1);
+            const btns = await page.$$('button');
+            chk(btns.length >= 5, 'Support FAQ (' + btns.length + ' buttons)');
+            if (btns.length > 2) await btns[2].click().catch(() => {});
+            await page.waitForTimeout(500);
+            await page.screenshot({ path: 'screenshots/02-help.png' });
+
+            // DOCS
+            await page.goto(BASE + '/docs', { waitUntil: 'domcontentloaded', timeout: 20000 });
+            await page.waitForTimeout(5000);
+            const docs = await page.textContent('body') || '';
+            chk(/endpoint|API|auth/i.test(docs), 'Support /docs API ref');
+            chk(/curl|python|javascript/i.test(docs), 'Support /docs code examples');
+            await page.screenshot({ path: 'screenshots/03-docs.png' });
+
+            // EXPLORER
+            await page.goto(BASE + '/explorer', { waitUntil: 'domcontentloaded', timeout: 25000 });
+            await page.waitForTimeout(8000);
+            const ariaCount = await page.evaluate(() => document.querySelectorAll('[aria-label]').length);
+            chk(ariaCount > 0, 'A11y ARIA labels (' + ariaCount + ')');
+            chk(!!(await page.$('[role="application"]')), 'A11y role=application');
+            chk(!!(await page.$('input, textarea')), 'QA Chat input');
+            chk(!!(await page.$('canvas, .mapboxgl-canvas, [class*="map"]')), 'QA Map rendered');
+            await page.screenshot({ path: 'screenshots/04-explorer.png' });
+
+            // PRICING
+            await page.goto(BASE + '/pricing', { waitUntil: 'domcontentloaded', timeout: 20000 });
+            await page.waitForTimeout(5000);
+            const prc = await page.textContent('body') || '';
+            chk(/\$39|\$99/i.test(prc), 'Content Pricing tiers');
+            await page.screenshot({ path: 'screenshots/05-pricing.png' });
+
+            // HEALTH
+            const hResp = await (await page.goto(BASE + '/api/health', { timeout: 10000 }))?.json().catch(() => ({})) || {};
+            chk(hResp.status === 'ok', 'Deploy Health ' + JSON.stringify(hResp).slice(0, 60));
+
+            // MOBILE
+            await page.setViewportSize({ width: 375, height: 812 });
+            await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 20000 });
+            await page.waitForTimeout(5000);
+            const ov = await page.evaluate(() => document.documentElement.scrollWidth > 380);
+            chk(!ov, 'QA Mobile 375px no overflow');
+            await page.screenshot({ path: 'screenshots/06-mobile.png' });
+
+            // PRINT RESULTS
+            const p = R.filter(r => r.startsWith('✅')).length;
+            const f = R.filter(r => r.startsWith('❌')).length;
+            console.log('\n' + R.join('\n'));
+            console.log('\nTOTAL ' + R.length + ' checks | PASS ' + p + ' | FAIL ' + f);
+          });
+          TESTEOF
+
+          npx playwright test verify.spec.ts --reporter=list --timeout=180000 2>&1 | tee /tmp/out.txt || true
+
+          SUMMARY=$(grep -E "✅|❌|TOTAL|PASS|FAIL" /tmp/out.txt | tail -30)
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="HTML" \
+            --data-urlencode "text=<b>DesignWise Full Verification</b>
+          $(echo "$SUMMARY" | sed 's/&/&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' | head -25)" || true
+
+          for img in screenshots/*.png; do
+            [ -f "$img" ] && curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto" \
+              -F chat_id="${TELEGRAM_CHAT_ID}" \
+              -F photo=@"$img" \
+              -F caption="$(basename $img .png)" || true
+          done
