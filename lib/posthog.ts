@@ -37,7 +37,8 @@ export type AnalyticsEvent =
   | { name: 'upgrade_modal_cta_clicked'; properties: { plan: string } }
   | { name: 'help_page_viewed'; properties: { section?: string } }
   | { name: 'onboarding_step_completed'; properties: { step: number; step_name: string } }
-  | { name: 'onboarding_skipped'; properties: { at_step: number } };
+  | { name: 'onboarding_skipped'; properties: { at_step: number } }
+  | { name: 'cta_clicked'; properties: { variant: string; location: string; button_text: string } };
 
 export function track(event: AnalyticsEvent) {
   if (typeof window === 'undefined') return;
