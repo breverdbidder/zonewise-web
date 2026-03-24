@@ -1,0 +1,67 @@
+# .github/workflows/deploy-prod.yml
+# P2B-4: DeployWise — deploy-prod with health check + auto-rollback
+# PATCH: Add these steps AFTER the existing deploy step
+
+# --- ADD AFTER DEPLOY STEP ---
+
+      - name: Post-deploy health check
+        id: health_check
+        run: |
+          echo "⏳ Waiting 30s for deployment to propagate..."
+          sleep 30
+          
+          MAX_RETRIES=3
+          RETRY_DELAY=10
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "🔍 Health check attempt $i/$MAX_RETRIES..."
+            
+            HTTP_STATUS=$(curl -sf -o /tmp/health-response.json -w "%{http_code}" \
+              "https://zonewise.ai/api/health" || echo "000")
+            
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "✅ Health check passed (HTTP $HTTP_STATUS)"
+              cat /tmp/health-response.json | jq .
+              echo "health_ok=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            
+            echo "⚠️ Health check returned HTTP $HTTP_STATUS"
+            [ -f /tmp/health-response.json ] && cat /tmp/health-response.json
+            
+            if [ $i -lt $MAX_RETRIES ]; then
+              echo "Retrying in ${RETRY_DELAY}s..."
+              sleep $RETRY_DELAY
+            fi
+          done
+          
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          echo "health_ok=false" >> $GITHUB_OUTPUT
+          exit 1
+
+      - name: Rollback on failure
+        if: failure() && steps.health_check.outputs.health_ok == 'false'
+        run: |
+          echo "🔄 Rolling back to previous deployment..."
+          
+          # Get previous deployment URL from Vercel
+          PREV_DEPLOY=$(npx vercel ls --token=${{ secrets.VERCEL_TOKEN }} \
+            --scope=${{ secrets.VERCEL_ORG_ID }} 2>/dev/null | \
+            grep "Ready" | head -2 | tail -1 | awk '{print $2}')
+          
+          if [ -n "$PREV_DEPLOY" ]; then
+            npx vercel alias set "$PREV_DEPLOY" zonewise.ai \
+              --token=${{ secrets.VERCEL_TOKEN }} \
+              --scope=${{ secrets.VERCEL_ORG_ID }}
+            echo "✅ Rolled back to: $PREV_DEPLOY"
+          else
+            echo "⚠️ Could not find previous deployment for rollback"
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="🚨 *DEPLOY FAILED* — zonewise.ai%0AHealth check failed after deploy.%0ARollback attempted.%0ARun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

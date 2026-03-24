@@ -1,0 +1,67 @@
+# .github/workflows/sentinel-weekly.yml
+# P2C-4: Sentinel V2 — Weekly health summary
+# Aggregates sentinel_runs for last 7 days → Telegram
+
+name: Sentinel Weekly Summary
+
+on:
+  schedule:
+    - cron: '0 14 * * 0'  # Sunday 9AM EST (14:00 UTC)
+  workflow_dispatch: {}
+
+jobs:
+  weekly-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Sentinel Runs
+        id: query
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          SINCE=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          
+          RESPONSE=$(curl -sf \
+            "${SUPABASE_URL}/rest/v1/sentinel_runs?created_at=gte.${SINCE}&select=pattern,action,success,created_at&order=created_at.desc" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+          
+          TOTAL=$(echo "$RESPONSE" | jq 'length')
+          FIXED=$(echo "$RESPONSE" | jq '[.[] | select(.success == true)] | length')
+          FAILED=$(echo "$RESPONSE" | jq '[.[] | select(.success == false)] | length')
+          
+          # Top patterns
+          PATTERNS=$(echo "$RESPONSE" | jq -r '[.[] | .pattern] | group_by(.) | map({pattern: .[0], count: length}) | sort_by(-.count) | .[0:5] | .[] | "  • \(.pattern): \(.count)x"' | head -5)
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "fixed=$FIXED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          
+          # Multiline output
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "patterns<<$EOF" >> $GITHUB_OUTPUT
+          echo "$PATTERNS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Telegram Summary
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MSG="🛡️ *Sentinel Weekly Summary*
+          _$(date -u -d '7 days ago' +%b\ %d) — $(date -u +%b\ %d)_
+          
+          📊 *Totals*
+          Runs: ${{ steps.query.outputs.total }}
+          Auto-fixed: ${{ steps.query.outputs.fixed }} ✅
+          Failed: ${{ steps.query.outputs.failed }} ❌
+          
+          🔝 *Top Patterns*
+          ${{ steps.query.outputs.patterns }}
+          
+          _Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_"
+          
+          curl -sf -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="Markdown" \
+            -d text="$MSG"
