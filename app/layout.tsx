@@ -3,6 +3,7 @@ import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
 import { OnboardingProvider } from '@/components/onboarding'
 import SkipToContent from '@/components/SkipToContent'
+import VercelAnalytics from '@/components/VercelAnalytics'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <SkipToContent />
+        <VercelAnalytics />
         <ConditionalClerkProvider>
           <ThemeProvider>
             <OnboardingProvider>

@@ -7,7 +7,7 @@
 
 - [x] P0-1: A11yWise — Add SkipToContent.tsx component, import in layout.tsx, add id="main-content" to main wrapper
 - [ ] P0-2: A11yWise — Run Lighthouse CLI on zonewise.ai, store baseline scores in Supabase designwise_scores table
-- [ ] P0-3: AnalyticsWise — npm install @vercel/analytics @vercel/speed-insights, add VercelAnalytics component to layout.tsx
+- [x] P0-3: AnalyticsWise — @vercel/analytics + @vercel/speed-insights added to package.json, VercelAnalytics wired into layout.tsx
 - [x] P0-4: SEOWise — app/sitemap.ts (1099B) + public/robots.txt already exist with sitemap ref. GSC submission = ARIEL HITL.
 
 ## P1 — Unblock Dependencies (1-2 days) [PARALLEL STREAMS]
