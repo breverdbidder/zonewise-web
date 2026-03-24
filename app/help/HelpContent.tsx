@@ -188,8 +188,22 @@ export default function HelpContent() {
           })}
         </div>
 
+        {/* API Docs Link */}
+        <div className="mt-8 rounded-xl border border-[#1E3A5F]/40 bg-[#1E3A5F]/10 p-5 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-200">Building on ZoneWise?</p>
+            <p className="text-xs text-slate-500 mt-0.5">REST API, authentication, rate limits, and code examples</p>
+          </div>
+          <a
+            href="/docs"
+            className="shrink-0 inline-block rounded-lg border border-[#1E3A5F] px-4 py-2 text-xs font-semibold text-[#F59E0B] hover:bg-[#1E3A5F]/30 transition"
+          >
+            API Docs →
+          </a>
+        </div>
+
         {/* Contact CTA */}
-        <div className="mt-12 rounded-xl border border-slate-800 bg-slate-900/50 p-6 text-center">
+        <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6 text-center">
           <p className="mb-1 text-sm font-medium text-slate-200">Still need help?</p>
           <p className="mb-4 text-xs text-slate-500">
             Our team typically responds within 24 hours

@@ -22,6 +22,7 @@ export default function Footer() {
           <span style={{ color: '#F1F5F9', fontWeight: 600, fontSize: 15 }}>ZoneWise.AI</span>
         </div>
         <div style={{ display: 'flex', gap: 32, fontSize: 13, color: '#64748B' }}>
+          <Link href="/docs" style={{ color: '#64748B', textDecoration: 'none' }}>API Docs</Link>
           <Link href="/help" style={{ color: '#64748B', textDecoration: 'none' }}>Help</Link>
           <Link href="/terms" style={{ color: '#64748B', textDecoration: 'none' }}>Terms</Link>
           <Link href="/privacy" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy</Link>
