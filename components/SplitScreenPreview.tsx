@@ -95,7 +95,7 @@ export default function SplitScreenPreview() {
               className="px-3 py-1.5 bg-white/10 text-white/80 text-xs rounded-full border border-white/10"
             >
               {chip}
-            </span>
+            </a>
           ))}
         </div>
       </div>
