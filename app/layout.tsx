@@ -42,6 +42,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "ZoneWise.AI",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "description": "AI-powered zoning and real estate intelligence for all 67 Florida counties. Parcel analysis, foreclosure tracking, and investment scoring.",
+              "url": "https://zonewise.ai",
+              "author": {
+                "@type": "Organization",
+                "name": "Everest Capital USA",
+                "url": "https://everestcapitalusa.com"
+              },
+              "offers": {
+                "@type": "AggregateOffer",
+                "lowPrice": "0",
+                "highPrice": "99",
+                "priceCurrency": "USD"
+              }
+            })
+          }}
+        />
         <script dangerouslySetInnerHTML={{ __html: `
           try {
             if (localStorage.getItem('zw-theme') === 'light') {
