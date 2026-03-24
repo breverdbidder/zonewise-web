@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo-metadata'
 import Link from 'next/link'
 
-export const metadata: Metadata = {
-  title: 'Pricing — ZoneWise.AI',
-  description: "Florida's AI-powered real estate intelligence. Free heatmap, then upgrade for unlimited parcel analysis.",
-}
+export const metadata: Metadata = pageMetadata.pricing
 
 // ── Tier definitions ──────────────────────────────────────────────────────────
 const TIERS = [

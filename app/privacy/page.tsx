@@ -1,4 +1,8 @@
+import type { Metadata } from 'next'
+import { pageMetadata } from '@/lib/seo-metadata'
 import Link from 'next/link'
+
+export const metadata: Metadata = pageMetadata.privacy
 
 export default function PrivacyPage() {
   return (
