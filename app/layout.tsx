@@ -74,6 +74,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }
           } catch(e) {}
         `}} />
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('hydrated');" }} />
+        <noscript><style>{"[style*='opacity: 0'],[style*='opacity:0']{opacity:1!important;transform:none!important;}"}</style></noscript>
       </head>
       <body>
         <ConditionalClerkProvider>
