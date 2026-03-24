@@ -4,6 +4,7 @@ import Link from 'next/link'
 import SplitScreenPreview from '@/components/SplitScreenPreview'
 import BetaSignupForm from '@/components/BetaSignupForm'
 import NavHeader from '@/components/NavHeader'
+import StatsCounter from '@/components/StatsCounter'
 import {
   AnimatedSection,
   StaggerChildren,
@@ -77,6 +78,14 @@ export default function Home() {
               </span>
             </div>
           </AnimatedSection>
+        </div>
+      </section>
+
+      {/* Live Stats — Real Supabase counts */}
+      <section className="py-8 bg-[#1E3A5F]/20 border-y border-[#1E3A5F]/30">
+        <div className="max-w-4xl mx-auto px-4">
+          <p className="text-center text-xs text-slate-400 uppercase tracking-widest mb-4 font-medium">Live Platform Stats</p>
+          <StatsCounter />
         </div>
       </section>
 
