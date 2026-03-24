@@ -89,7 +89,8 @@ export default function SplitScreenPreview() {
         {/* Suggested Chips */}
         <div className="px-4 py-3 border-t border-white/10 flex gap-2 flex-wrap">
           {suggestedChips.map((chip) => (
-            <span
+            <a
+              href={`/explorer?q=${encodeURIComponent(chip.toLowerCase())}`}
               key={chip}
               className="px-3 py-1.5 bg-white/10 text-white/80 text-xs rounded-full border border-white/10"
             >
