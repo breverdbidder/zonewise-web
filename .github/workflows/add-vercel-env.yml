@@ -1,35 +1,63 @@
-name: "Add Vercel Env Var"
+name: "Push Env to Vercel"
 on:
   workflow_dispatch:
     inputs:
       key:
-        description: "Env var name"
+        description: "Env var name (e.g. GEMINI_API_KEY)"
         required: true
       secret_name:
-        description: "GitHub secret to read value from"
+        description: "GitHub secret name to read from"
         required: true
 
 jobs:
-  add-env:
+  push-env:
     runs-on: ubuntu-latest
     steps:
-      - name: Add env var to Vercel
+      - name: Push secret to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
+          SECRET_NAME="${{ inputs.secret_name }}"
+          ENV_KEY="${{ inputs.key }}"
+          
           # Map secret name to value
-          case "${{ inputs.secret_name }}" in
-            SUPABASE_SERVICE_ROLE_KEY) VALUE="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" ;;
-            *) echo "Unknown secret"; exit 1 ;;
+          VALUE=""
+          case "$SECRET_NAME" in
+            GEMINI_API_KEY) VALUE="$GEMINI_API_KEY" ;;
+            SUPABASE_SERVICE_ROLE_KEY) VALUE="$SUPABASE_SERVICE_ROLE_KEY" ;;
+            NEXT_PUBLIC_SUPABASE_URL) VALUE="$NEXT_PUBLIC_SUPABASE_URL" ;;
+            NEXT_PUBLIC_SUPABASE_ANON_KEY) VALUE="$NEXT_PUBLIC_SUPABASE_ANON_KEY" ;;
+            *) echo "Unknown secret: $SECRET_NAME"; exit 1 ;;
           esac
-
-          curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/env" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          
+          if [ -z "$VALUE" ]; then
+            echo "Secret $SECRET_NAME is empty"
+            exit 1
+          fi
+          
+          echo "Setting $ENV_KEY on Vercel..."
+          RESULT=$(curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"key\": \"${{ inputs.key }}\",
-              \"value\": \"${VALUE}\",
+              \"key\": \"$ENV_KEY\",
+              \"value\": \"$VALUE\",
               \"type\": \"encrypted\",
               \"target\": [\"production\", \"preview\", \"development\"]
-            }" | head -c 200
-
+            }")
+          
+          echo "$RESULT" | head -c 300
+          
+          # Check for error
+          if echo "$RESULT" | grep -q '"error"'; then
+            echo ""
+            echo "FAILED — check VERCEL_TOKEN validity"
+            exit 1
+          fi
+          
           echo ""
-          echo "Done"
+          echo "SUCCESS: $ENV_KEY set on Vercel"
