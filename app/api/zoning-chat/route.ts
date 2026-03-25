@@ -20,7 +20,8 @@ const FALLBACK_CONTROLS: Record<string, {
   parking_per_1000sf: number; max_density_du_acre: number;
 }> = {
   SFR:          { zone_name: 'Single Family Residential', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
-  'VAC-RES':    { zone_name: 'Vacant Residential', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
+  // NOTE: 'VAC-RES' removed — it is a BCPAO USE_CODE value, NOT a zoning designation.
+  // Mapping it to development standards was producing fabricated data (35ft/2-story).
   'R-1A':       { zone_name: 'Single Family Residential A', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 6 },
   'R-1AA':      { zone_name: 'Single Family Residential AA', max_height_ft: 35, max_stories: 2, front_setback_ft: 30, side_setback_ft: 10, rear_setback_ft: 25, max_lot_coverage_pct: 35, max_far: 0.4, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 4 },
   'R1AA':       { zone_name: 'Single Family Residential AA', max_height_ft: 35, max_stories: 2, front_setback_ft: 30, side_setback_ft: 10, rear_setback_ft: 25, max_lot_coverage_pct: 35, max_far: 0.4, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 4 },
@@ -82,7 +83,7 @@ function classifyIntent(message: string): Intent {
 }
 
 function extractZoneCode(message: string): string | null {
-  const match = message.match(/\b(R-1AA?|R-1B|R-[1-9]\w*|RM-?\w*|MFR-?\w*|SFR|RE\b|REU|SRE|BU-\w+|C-\w+|PUD\w*|TR-\w+|GML|ACREAGE|CP|OFFICE|TOWNHOUSE|GOV-MUNI|SCHOOL-PUB|VAC-RES)\b/i)
+  const match = message.match(/\b(R-1AA?|R-1B|R-[1-9]\w*|RM-?\w*|MFR-?\w*|SFR|RE\b|REU|SRE|BU-\w+|C-\w+|PUD\w*|TR-\w+|GML|ACREAGE|CP|OFFICE|TOWNHOUSE|GOV-MUNI|SCHOOL-PUB)\b/i)
   return match ? match[1].toUpperCase() : null
 }
 
@@ -446,6 +447,17 @@ function buildContextString(ctx: ZoningContext): string {
     if (p.use_description) lines.push(`Current Use: ${p.use_description.trim()} (code ${p.use_code})`)
   }
 
+  if (ctx.parcel && !ctx.zoning) {
+    // Parcel found but no zoning_assignment exists — do NOT fabricate.
+    const city = ctx.parcel.city ?? 'Brevard County'
+    const dept = ctx.parcel.city ? `the ${ctx.parcel.city} Planning Department` : 'the local Planning Department'
+    lines.push('')
+    lines.push('=== ZONING DATA ===')
+    lines.push('STATUS: NO ZONING DATA AVAILABLE IN DATABASE')
+    lines.push(`The property is in ${city}.`)
+    lines.push(`INSTRUCTION: Tell the user that zoning data is not yet available for this parcel in our database. Direct them to verify the zoning designation with ${dept} or visit their municipal code. Do NOT estimate, infer, or fabricate any zoning code, development standards, height limits, or setbacks.`)
+  }
+
   if (ctx.zoning) {
     const z = ctx.zoning
     const s = z.standards
@@ -544,6 +556,7 @@ RULES:
 - When citing development standards, use natural sentences like "The maximum building height is 35 feet" instead of listing raw fields.
 - Bold key numbers with **value** for emphasis.
 - If the data shows estimated/fallback controls, mention that the user should verify with the local jurisdiction.
+- If the context shows "NO ZONING DATA AVAILABLE IN DATABASE", tell the user: "Zoning data is not yet available for this parcel in our database. The property is in [CITY] — please verify the zoning designation with the [CITY] Planning Department or visit their municipal code." Do NOT estimate or infer any zone code or development standards from the use code description.
 - Keep answers concise — 2-4 paragraphs max.
 - End with a practical tip or suggestion when relevant (e.g., "You may want to check with [jurisdiction] for any overlay districts").
 - Never fabricate zoning codes, regulations, or numbers not present in the context data.`
@@ -782,6 +795,14 @@ function formatFallbackResponse(ctx: ZoningContext): string {
     lines.push(`Parcel ID: ${p.parcel_id}`)
     if (p.acres) lines.push(`Lot Size: **${p.acres} acres** (${Math.round(p.acres * 43560).toLocaleString()} sq ft)`)
     if (p.use_description) lines.push(`Current Use: ${p.use_description.trim()}`)
+    lines.push('')
+  }
+
+  if (ctx.parcel && !ctx.zoning) {
+    const city = ctx.parcel.city ?? 'Brevard County'
+    const dept = ctx.parcel.city ? `the ${ctx.parcel.city} Planning Department` : 'the local Planning Department'
+    lines.push(`**Zoning:** Not available in our database`)
+    lines.push(`Zoning data is not yet available for this parcel. The property is in **${city}** — please verify the zoning designation with ${dept} or visit their municipal code.`)
     lines.push('')
   }
 
