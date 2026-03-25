@@ -22,6 +22,59 @@ export interface SiteData {
   livingUnits: number
   lat: number
   lng: number
+  // Water setback fields (CP5)
+  waterBody?: string          // e.g. "Indian River Lagoon", "canal", "ocean"
+  waterBodyType?: string      // seawall | canal | ocean | river | lagoon
+  waterDistanceFt?: number    // distance from parcel boundary to water body
+  setbackWater?: number       // required setback distance in feet
+  setbackWaterfrontType?: string // regulation type: seawall | canal | ocean/river
+  waterSetbackSource?: string // e.g. "Satellite Beach LDC §22-87"
+}
+
+// Lodging/STR permission types (CP5)
+export type LodgingPermitStatus = 'permitted' | 'conditional' | 'not_permitted' | 'unknown'
+
+export interface LodgingPermissions {
+  hotel: LodgingPermitStatus
+  motel: LodgingPermitStatus
+  vacation_rental: LodgingPermitStatus
+  str: LodgingPermitStatus       // short-term rental (Airbnb-style, <30 days)
+  bnb: LodgingPermitStatus       // bed and breakfast
+  notes?: string
+  ordinanceRef?: string
+}
+
+export interface NearbyLodgingParcel {
+  address: string
+  zone: string
+  distanceMi: number
+  type: string   // e.g. "hotel", "vacation rental"
+  units?: number
+}
+
+// Market demographics (CP5)
+export interface MarketDemographics {
+  zip: string
+  medianHHIncome: number
+  medianHHIncomeYoY?: number      // % change YoY
+  population: number
+  populationGrowthPct?: number    // % change
+  vacancyRate: number             // % vacant housing units
+  medianHomeValue: number
+  medianHomeValueYoY?: number     // % change YoY
+  ownerOccupiedPct: number        // % owner-occupied
+  renterOccupiedPct: number       // % renter-occupied
+  dataYear?: number               // e.g. 2024
+  dataSource?: string             // e.g. "Census ACS 5-Year 2024"
+}
+
+export interface MarketScore {
+  total: number    // 1–10
+  incomeScore: number
+  vacancyScore: number
+  growthScore: number
+  appreciationScore: number
+  breakdown: string
 }
 
 export interface ZoningControl {
@@ -87,6 +140,6 @@ export interface ProFormaOutputs {
   adjustedUnits: number
 }
 
-export type FeasibilityTab = 'Site' | 'Market' | 'Comps' | 'Capacity' | 'Develop' | 'Generate'
+export type FeasibilityTab = 'Site' | 'Market' | 'Lodging' | 'Comps' | 'Capacity' | 'Develop' | 'Generate'
 export type SiteSubTab = 'Summary' | 'Zoning' | 'Map View'
 export type CompsView = 'Map' | 'Table' | 'Charts'
