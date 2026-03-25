@@ -41,7 +41,8 @@
     "stripe": "17.2.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.183.2"
+    "three": "^0.183.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

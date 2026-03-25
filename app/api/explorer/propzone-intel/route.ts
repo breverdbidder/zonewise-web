@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { parcelIdSchema, SECURITY_HEADERS } from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,10 +14,15 @@ export const dynamic = 'force-dynamic'
  * Returns 200 JSON with PropZone intel when found.
  */
 export async function GET(req: NextRequest) {
-  const parcelId = req.nextUrl.searchParams.get('parcelId')?.trim()
-  if (!parcelId) {
-    return NextResponse.json({ error: 'parcelId is required' }, { status: 400 })
+  const rawParcelId = req.nextUrl.searchParams.get('parcelId')?.trim()
+  const parsed = parcelIdSchema.safeParse(rawParcelId)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid parcelId' },
+      { status: 400, headers: SECURITY_HEADERS }
+    )
   }
+  const parcelId = parsed.data
 
   try {
     const supabase = createServiceClient()
@@ -30,18 +36,21 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       // Table may not exist yet — return empty rather than 500
-      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
+      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200, headers: SECURITY_HEADERS })
     }
 
     if (!data) {
-      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
+      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200, headers: SECURITY_HEADERS })
     }
 
     return NextResponse.json(data, {
-      headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' },
+      headers: {
+        ...SECURITY_HEADERS,
+        'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400',
+      },
     })
   } catch {
     // Fail gracefully — competitor comparison is non-critical
-    return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
+    return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200, headers: SECURITY_HEADERS })
   }
 }
