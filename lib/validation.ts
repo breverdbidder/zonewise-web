@@ -38,6 +38,17 @@ export function sanitizeChatMessage(message: string): string {
   return sanitized
 }
 
+export const chatFeedbackSchema = z.object({
+  sessionId:    z.string().min(1).max(100),
+  query:        z.string().min(1).max(500).trim(),
+  response:     z.string().min(1).max(10_000).trim(),
+  rating:       z.enum(['positive', 'negative']),
+  feedbackText: z.string().max(200).trim().optional(),
+  parcelId:     z.string().max(50).optional(),
+  zoneCode:     z.string().max(30).optional(),
+  municipality: z.string().max(100).optional(),
+})
+
 export const SECURITY_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',

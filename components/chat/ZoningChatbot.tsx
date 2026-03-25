@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
 import PropertyCard, { type BcpaoPropertyData } from './PropertyCard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -331,15 +331,90 @@ function formatMarkdown(text: string): string {
     .replace(/^(.+)$/, '<p>$1</p>')
 }
 
+// ─── Feedback state per message ───────────────────────────────────────────────
+type FeedbackStatus = 'idle' | 'negative-expand' | 'submitted'
+
+interface FeedbackState {
+  status: FeedbackStatus
+  text: string
+}
+
+// ─── Feedback buttons component ───────────────────────────────────────────────
+function FeedbackButtons({
+  messageId,
+  state,
+  onThumbsUp,
+  onThumbsDown,
+  onTextChange,
+  onSubmitNegative,
+}: {
+  messageId: string
+  state: FeedbackState
+  onThumbsUp: (id: string) => void
+  onThumbsDown: (id: string) => void
+  onTextChange: (id: string, text: string) => void
+  onSubmitNegative: (id: string) => void
+}) {
+  if (state.status === 'submitted') {
+    return (
+      <p className="text-xs text-gray-400 dark:text-slate-500 px-1 mt-1">
+        Thanks for your feedback
+      </p>
+    )
+  }
+
+  return (
+    <div className="px-1 mt-1 space-y-1.5">
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => onThumbsUp(messageId)}
+          title="Good response"
+          className="flex items-center gap-1 px-2 py-1 rounded border border-[#1E3A5F]/40 text-[#1E3A5F] dark:text-slate-400 dark:border-slate-600 hover:bg-[#1E3A5F]/10 transition-colors text-xs"
+        >
+          <ThumbsUp className="w-3 h-3" />
+        </button>
+        <button
+          onClick={() => onThumbsDown(messageId)}
+          title="Bad response"
+          className="flex items-center gap-1 px-2 py-1 rounded border border-[#1E3A5F]/40 text-[#1E3A5F] dark:text-slate-400 dark:border-slate-600 hover:bg-[#1E3A5F]/10 transition-colors text-xs"
+        >
+          <ThumbsDown className="w-3 h-3" />
+        </button>
+      </div>
+
+      {state.status === 'negative-expand' && (
+        <div className="flex items-end gap-1.5">
+          <input
+            type="text"
+            value={state.text}
+            onChange={e => onTextChange(messageId, e.target.value)}
+            placeholder="What went wrong? (optional)"
+            maxLength={200}
+            className="flex-1 text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none focus:border-[#1E3A5F]/60"
+            autoFocus
+          />
+          <button
+            onClick={() => onSubmitNegative(messageId)}
+            className="shrink-0 px-2.5 py-1.5 rounded bg-[#1E3A5F] text-white text-xs hover:bg-[#1E3A5F]/80 transition-colors"
+          >
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ZoningChatbot() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [sessionId, setSessionId] = useState<string | undefined>()
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID())
   const [contextParcel, setContextParcel] = useState<ParcelData | undefined>()
   const [contextZoning, setContextZoning] = useState<ZoningData | undefined>()
   const [contextPanelOpen, setContextPanelOpen] = useState(true)
+  const [feedbackMap, setFeedbackMap] = useState<Record<string, FeedbackState>>({})
 
   // Property card modal
   const [propertyCardData, setPropertyCardData] = useState<BcpaoPropertyData | null>(null)
@@ -382,7 +457,7 @@ export default function ZoningChatbot() {
 
       setMessages(prev => prev.map(m => m.id === loadingMsg.id ? assistantMsg : m))
 
-      if (data.sessionId && !sessionId) setSessionId(data.sessionId)
+      if (data.sessionId && !sessionId) setSessionId(data.sessionId as string)
       if (data.parcel) setContextParcel(data.parcel)
       if (data.zoning) setContextZoning(data.zoning)
     } catch (err) {
@@ -413,6 +488,60 @@ export default function ZoningChatbot() {
       setPropertyCardLoading(false)
     }
   }, [])
+
+  // ── Feedback helpers ───────────────────────────────────────────────────────
+  const submitFeedback = useCallback(async (
+    messageId: string,
+    rating: 'positive' | 'negative',
+    feedbackText?: string,
+  ) => {
+    const msg = messages.find(m => m.id === messageId)
+    if (!msg) return
+    // find the user query just before this message
+    const msgIndex = messages.findIndex(m => m.id === messageId)
+    const userMsg = msgIndex > 0 ? messages[msgIndex - 1] : null
+
+    setFeedbackMap(prev => ({ ...prev, [messageId]: { status: 'submitted', text: '' } }))
+
+    try {
+      await fetch('/api/chat-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          query:        userMsg?.content ?? '',
+          response:     msg.content,
+          rating,
+          feedbackText: feedbackText?.trim() || undefined,
+          parcelId:     msg.parcel?.parcel_id,
+          zoneCode:     msg.zoning?.zone_code,
+          municipality: msg.zoning?.jurisdiction ?? undefined,
+        }),
+      })
+    } catch {
+      // fire-and-forget — UI already shows "thanks"
+    }
+  }, [messages, sessionId])
+
+  const handleThumbsUp = useCallback((id: string) => {
+    submitFeedback(id, 'positive')
+  }, [submitFeedback])
+
+  const handleThumbsDown = useCallback((id: string) => {
+    setFeedbackMap(prev => ({
+      ...prev,
+      [id]: { status: 'negative-expand', text: prev[id]?.text ?? '' },
+    }))
+  }, [])
+
+  const handleFeedbackTextChange = useCallback((id: string, text: string) => {
+    setFeedbackMap(prev => ({ ...prev, [id]: { ...prev[id], text } }))
+  }, [])
+
+  const handleSubmitNegative = useCallback((id: string) => {
+    const text = feedbackMap[id]?.text ?? ''
+    submitFeedback(id, 'negative', text)
+  }, [feedbackMap, submitFeedback])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -453,11 +582,22 @@ export default function ZoningChatbot() {
             </div>
           ) : (
             messages.map(msg => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                onViewPropertyDetails={fetchPropertyCard}
-              />
+              <div key={msg.id}>
+                <MessageBubble
+                  message={msg}
+                  onViewPropertyDetails={fetchPropertyCard}
+                />
+                {msg.role === 'assistant' && !msg.isLoading && (
+                  <FeedbackButtons
+                    messageId={msg.id}
+                    state={feedbackMap[msg.id] ?? { status: 'idle', text: '' }}
+                    onThumbsUp={handleThumbsUp}
+                    onThumbsDown={handleThumbsDown}
+                    onTextChange={handleFeedbackTextChange}
+                    onSubmitNegative={handleSubmitNegative}
+                  />
+                )}
+              </div>
             ))
           )}
           <div ref={messagesEndRef} />
