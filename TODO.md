@@ -1,5 +1,12 @@
 # ZoneWise Web — TODO
 
+## CP5 — Feasibility Intelligence (Mar 25, 2026)
+- [x] Task 1: Water setback detection in SiteTab ZoningReport — branch feat/cp5-feasibility
+- [x] Task 2: Lodging/STR zoning intelligence — LodgingTab.tsx
+- [x] Task 3: Market Context Panel — MarketContext.tsx with demographics + Market Score 1-10
+- [ ] Migration: run 20260325_add_water_setback_lodging_columns.sql on prod Supabase
+- [ ] Replace demo data with live Supabase queries (Issue #23)
+
 ## ACTIVE SPRINT (Mar 2026)
 
 ### P0 — Production

@@ -1,10 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import type { FeasibilityTab, SiteData, ZoningControl, RentComp, UnitRent, UnitMix } from '@/types/feasibility'
+import type {
+  FeasibilityTab, SiteData, ZoningControl, RentComp, UnitRent, UnitMix,
+  LodgingPermissions, NearbyLodgingParcel, MarketDemographics, MarketScore,
+} from '@/types/feasibility'
 import { COLORS } from '@/lib/feasibility/constants'
 import SiteTab from './SiteTab'
-import MarketTab from './MarketTab'
+import MarketContext from './MarketContext'
+import LodgingTab from './LodgingTab'
 import CompsTab from './CompsTab'
 import CapacityTab from './CapacityTab'
 import DevelopTab from './DevelopTab'
@@ -16,9 +20,13 @@ interface FeasibilityLayoutProps {
   comps: RentComp[]
   unitRents: UnitRent[]
   unitMix: UnitMix[]
+  lodging: LodgingPermissions
+  nearbyLodging?: NearbyLodgingParcel[]
+  demographics: MarketDemographics
+  marketScore: MarketScore
 }
 
-const TABS: FeasibilityTab[] = ['Site', 'Market', 'Comps', 'Capacity', 'Develop', 'Generate']
+const TABS: FeasibilityTab[] = ['Site', 'Market', 'Lodging', 'Comps', 'Capacity', 'Develop', 'Generate']
 
 export default function FeasibilityLayout({
   site,
@@ -26,6 +34,10 @@ export default function FeasibilityLayout({
   comps,
   unitRents,
   unitMix,
+  lodging,
+  nearbyLodging = [],
+  demographics,
+  marketScore,
 }: FeasibilityLayoutProps) {
   const [tab, setTab] = useState<FeasibilityTab>('Site')
 
@@ -103,14 +115,20 @@ export default function FeasibilityLayout({
               Flood: {site.flood}
             </span>
           )}
+          {site.waterBody && (
+            <span className="text-[11px] bg-blue-50 px-2 py-0.5 rounded-md text-blue-800 font-semibold">
+              🌊 {site.waterBody}
+            </span>
+          )}
         </div>
 
         {/* Tab Content */}
-        {tab === 'Site' && <SiteTab site={site} zoningControls={zoningControls} />}
-        {tab === 'Market' && <MarketTab site={site} />}
-        {tab === 'Comps' && <CompsTab site={site} comps={comps} unitRents={unitRents} />}
+        {tab === 'Site'     && <SiteTab site={site} zoningControls={zoningControls} />}
+        {tab === 'Market'   && <MarketContext site={site} demographics={demographics} score={marketScore} />}
+        {tab === 'Lodging'  && <LodgingTab site={site} lodging={lodging} nearbyLodging={nearbyLodging} />}
+        {tab === 'Comps'    && <CompsTab site={site} comps={comps} unitRents={unitRents} />}
         {tab === 'Capacity' && <CapacityTab site={site} />}
-        {tab === 'Develop' && <DevelopTab site={site} unitMix={unitMix} />}
+        {tab === 'Develop'  && <DevelopTab site={site} unitMix={unitMix} />}
         {tab === 'Generate' && <ExportTab site={site} />}
       </main>
     </div>
