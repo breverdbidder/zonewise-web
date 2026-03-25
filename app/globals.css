@@ -415,3 +415,37 @@ html:not(.hydrated) [style*="opacity: 0"],
 html:not(.hydrated) [style*="opacity:0"] {
   animation: force-visible 0.5s ease-out 4s forwards;
 }
+
+/* ─── ZoneWise Report Print Styles ──────────────────────────────────────────── */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-family: Inter, sans-serif;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide nav, sidebars, non-report elements */
+  nav, header, aside, footer,
+  [class*="sidebar"], [class*="Navbar"], [class*="NavHeader"],
+  .print\:hidden { display: none !important; }
+
+  /* Show print-only elements */
+  .hidden.print\:block, .hidden.print\:flex { display: flex !important; }
+
+  /* Page setup */
+  @page {
+    size: letter portrait;
+    margin: 0.75in 0.65in;
+  }
+
+  /* Section break handling */
+  section { page-break-inside: avoid; }
+
+  /* Ensure colors render in print */
+  .bg-\[\#1E3A5F\] { background-color: #1E3A5F !important; }
+  .text-\[\#1E3A5F\] { color: #1E3A5F !important; }
+  .text-\[\#F59E0B\] { color: #F59E0B !important; }
+}

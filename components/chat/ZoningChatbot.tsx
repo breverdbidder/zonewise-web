@@ -201,7 +201,7 @@ function ContextCard({
             </div>
           )}
 
-          {/* View Property Details + 3D Massing */}
+          {/* View Property Details + Zoning Report + 3D Massing */}
           {parcel && (
             <div className="flex flex-col gap-1.5">
               {onViewPropertyDetails && (
@@ -213,6 +213,13 @@ function ContextCard({
                   View Property Details
                 </button>
               )}
+              <a
+                href={`/report?parcel=${encodeURIComponent(parcel.parcel_id)}`}
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B]/10 text-xs font-semibold transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                View Full Zoning Report
+              </a>
               <a
                 href={`/massing?address=${encodeURIComponent(parcel.address)}`}
                 className="flex items-center gap-1.5 text-xs text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
@@ -286,16 +293,25 @@ function MessageBubble({
           </div>
         )}
 
-        {/* View Property Details button */}
-        {!isUser && message.parcel && onViewPropertyDetails && (
-          <div className="px-1">
-            <button
-              onClick={() => onViewPropertyDetails(message.parcel!.parcel_id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
+        {/* View Property Details + Zoning Report buttons */}
+        {!isUser && message.parcel && (
+          <div className="px-1 flex flex-wrap gap-1.5">
+            {onViewPropertyDetails && (
+              <button
+                onClick={() => onViewPropertyDetails(message.parcel!.parcel_id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
+              >
+                <Building2 className="w-3.5 h-3.5" />
+                View Property Details
+              </button>
+            )}
+            <a
+              href={`/report?parcel=${encodeURIComponent(message.parcel.parcel_id)}`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B]/10 text-xs font-semibold transition-colors"
             >
-              <Building2 className="w-3.5 h-3.5" />
-              View Property Details
-            </button>
+              <ExternalLink className="w-3.5 h-3.5" />
+              Full Zoning Report
+            </a>
           </div>
         )}
       </div>
