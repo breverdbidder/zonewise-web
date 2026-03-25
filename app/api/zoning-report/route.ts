@@ -157,6 +157,13 @@ export async function GET(req: NextRequest) {
     //    For TaxAcct inputs (pure digits), GIS returns the DOR format needed by zoning_assignments.
     const gisAttrs = await fetchBcpaoGis(parcelId)
 
+    if (!gisAttrs) {
+      return NextResponse.json(
+        { error: 'Parcel not found', parcelId },
+        { status: 404 }
+      )
+    }
+
     // Use the GIS-resolved PARCEL_ID (DOR format like "27 3701-50-7-4") for zoning lookup.
     // Fall back to the decoded input parcelId if GIS returned nothing.
     const zoningParcelId = gisAttrs?.PARCEL_ID ?? parcelId

@@ -793,8 +793,8 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[zoning-chat] POST error:', err)
     return NextResponse.json(
-      { error: 'Internal server error', details: err instanceof Error ? err.message : 'unknown' },
-      { status: 500, headers: CORS }
+      { error: 'Service unavailable', fallback: true },
+      { status: 503, headers: CORS }
     )
   }
 }

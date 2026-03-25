@@ -388,7 +388,7 @@ export default function ZoningChatbot() {
     } catch (err) {
       setMessages(prev => prev.map(m =>
         m.id === loadingMsg.id
-          ? { ...m, content: 'Request failed. Please try again.', isLoading: false }
+          ? { ...m, content: "I'm having trouble connecting. Please try again in a moment.", isLoading: false }
           : m
       ))
     } finally {

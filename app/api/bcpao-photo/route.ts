@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    return new NextResponse('Proxy error', { status: 500 })
+    console.error('[bcpao-photo] proxy error:', error)
+    return new NextResponse('Proxy error', { status: 502 })
   }
 }
