@@ -73,10 +73,10 @@ function str(val: unknown): string {
 // ─── Section wrapper ──────────────────────────────────────────────────────────
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="border border-slate-700 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1E3A5F]/60 border-b border-slate-700">
+    <div className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-[#1E3A5F]/60 border-b border-gray-200 dark:border-slate-700">
         <span className="text-[#F59E0B]">{icon}</span>
-        <span className="text-xs font-semibold text-slate-200 uppercase tracking-wider">{title}</span>
+        <span className="text-xs font-semibold text-gray-700 dark:text-slate-200 uppercase tracking-wider">{title}</span>
       </div>
       <div className="px-4 py-3 space-y-2">{children}</div>
     </div>
@@ -86,8 +86,8 @@ function Section({ icon, title, children }: { icon: React.ReactNode; title: stri
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-3 text-sm">
-      <span className="text-slate-400 shrink-0">{label}</span>
-      <span className="text-slate-100 text-right break-all">{value}</span>
+      <span className="text-gray-500 dark:text-slate-400 shrink-0">{label}</span>
+      <span className="text-gray-800 dark:text-slate-100 text-right break-all">{value}</span>
     </div>
   )
 }
@@ -95,8 +95,8 @@ function Row({ label, value }: { label: string; value: string }) {
 function ValueRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="flex justify-between gap-3 text-sm">
-      <span className="text-slate-400 shrink-0">{label}</span>
-      <span className={highlight ? 'text-[#F59E0B] font-semibold' : 'text-slate-100'}>{value}</span>
+      <span className="text-gray-500 dark:text-slate-400 shrink-0">{label}</span>
+      <span className={highlight ? 'text-[#F59E0B] font-semibold' : 'text-gray-800 dark:text-slate-100'}>{value}</span>
     </div>
   )
 }
@@ -156,7 +156,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
       <div
         className="
           relative w-full sm:w-[560px] max-h-[92dvh] sm:max-h-[85dvh]
-          bg-slate-900 border border-slate-700 shadow-2xl
+          bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-2xl
           rounded-t-2xl sm:rounded-2xl
           flex flex-col
           animate-slide-up
@@ -166,7 +166,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
           aria-label="Close property card"
         >
           <X className="w-4 h-4" />
@@ -187,20 +187,20 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
             </div>
           ) : (
-            <div className="w-full h-28 rounded-t-2xl bg-gradient-to-br from-[#1E3A5F] to-slate-800 flex items-center justify-center">
+            <div className="w-full h-28 rounded-t-2xl bg-gradient-to-br from-[#1E3A5F] to-gray-300 dark:to-slate-800 flex items-center justify-center">
               <Home className="w-12 h-12 text-[#F59E0B]/40" />
             </div>
           )}
 
           {/* Address block */}
-          <div className="px-4 pt-3 pb-3 border-b border-slate-700">
+          <div className="px-4 pt-3 pb-3 border-b border-gray-200 dark:border-slate-700">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold text-white leading-snug">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white leading-snug">
                   {address || 'Unknown Address'}
                 </h2>
                 {cityLine && (
-                  <p className="text-sm text-slate-400 mt-0.5">{cityLine}</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{cityLine}</p>
                 )}
               </div>
               <span className="shrink-0 mt-0.5 px-2 py-0.5 rounded-md bg-[#1E3A5F] text-[#F59E0B] text-xs font-mono font-semibold whitespace-nowrap">
