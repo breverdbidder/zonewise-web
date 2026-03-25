@@ -302,7 +302,7 @@ async function getSessionHistory(sessionId: string): Promise<{ role: string; con
   }
 }
 
-// ─── Gemini LLM call ──────────────────────────────────────────────────────────
+// ─── LLM call with Smart Router (Gemini → DeepSeek fallback) ──────────────────
 function buildSystemPrompt(hasContext: boolean): string {
   if (hasContext) {
     return `You are ZoneWise AI, a Florida zoning intelligence assistant for Brevard County.
@@ -331,24 +331,12 @@ RULES:
 - Focus on Florida-specific context when applicable.`
 }
 
-async function callGemini(message: string, context: string, history: { role: string; content: string }[]): Promise<string> {
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY
-  if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured')
-
-  const hasContext = context.length > 0
-  const systemPrompt = buildSystemPrompt(hasContext)
-
-  const historyText = history.length > 0
-    ? '\n\nPREVIOUS CONVERSATION:\n' + history.map(h => `${h.role.toUpperCase()}: ${h.content}`).join('\n')
-    : ''
-
-  const fullPrompt = systemPrompt
-    + (hasContext ? '\n\nCONTEXT:\n' + context : '')
-    + historyText
-    + '\n\nUSER: ' + message
+async function callGemini(fullPrompt: string): Promise<string> {
+  const key = process.env.GEMINI_API_KEY
+  if (!key) throw new Error('GEMINI_API_KEY not configured')
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -361,11 +349,75 @@ async function callGemini(message: string, context: string, history: { role: str
 
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(`Gemini API error ${res.status}: ${err}`)
+    throw new Error(`Gemini ${res.status}: ${err.slice(0, 200)}`)
   }
 
   const json = await res.json()
-  return json.candidates?.[0]?.content?.parts?.[0]?.text ?? 'No response generated.'
+  const text = json.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text) throw new Error('Gemini returned empty response')
+  return text
+}
+
+async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<string> {
+  const key = process.env.DEEPSEEK_API_KEY
+  if (!key) throw new Error('DEEPSEEK_API_KEY not configured')
+
+  const res = await fetch('https://api.deepseek.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userMessage },
+      ],
+      temperature: 0.3,
+      max_tokens: 1024,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`DeepSeek ${res.status}: ${err.slice(0, 200)}`)
+  }
+
+  const json = await res.json()
+  const text = json.choices?.[0]?.message?.content
+  if (!text) throw new Error('DeepSeek returned empty response')
+  return text
+}
+
+async function callLLM(message: string, context: string, history: { role: string; content: string }[]): Promise<string> {
+  const hasContext = context.length > 0
+  const systemPrompt = buildSystemPrompt(hasContext)
+
+  const historyText = history.length > 0
+    ? '\n\nPREVIOUS CONVERSATION:\n' + history.map(h => `${h.role.toUpperCase()}: ${h.content}`).join('\n')
+    : ''
+
+  const userContent = (hasContext ? 'CONTEXT:\n' + context + '\n\n' : '')
+    + historyText
+    + 'USER: ' + message
+
+  // Smart Router: Gemini Free → DeepSeek Cheap
+  // Try Gemini first (free tier)
+  try {
+    const fullPrompt = systemPrompt + '\n\n' + userContent
+    return await callGemini(fullPrompt)
+  } catch (geminiErr) {
+    console.log(`[zoning-chat] Gemini failed: ${geminiErr instanceof Error ? geminiErr.message.slice(0, 100) : 'unknown'}, falling back to DeepSeek`)
+  }
+
+  // Fallback to DeepSeek ($0.28/1M tokens)
+  try {
+    return await callDeepSeek(systemPrompt, userContent)
+  } catch (deepseekErr) {
+    console.log(`[zoning-chat] DeepSeek failed: ${deepseekErr instanceof Error ? deepseekErr.message.slice(0, 100) : 'unknown'}`)
+    throw deepseekErr // Let caller handle with formatted fallback
+  }
 }
 
 // ─── Citation extractor ───────────────────────────────────────────────────────
@@ -426,7 +478,7 @@ export async function POST(req: NextRequest) {
         const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
         let responseText: string
         try {
-          responseText = await callGemini(message, combinedCtx, history.slice(-5))
+          responseText = await callLLM(message, combinedCtx, history.slice(-5))
         } catch {
           responseText = `**${codes[0]}:** ${r1.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r1 })}\n\n**${codes[1]}:** ${r2.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r2 })}`
         }
@@ -444,9 +496,8 @@ export async function POST(req: NextRequest) {
 
     let responseText: string
     try {
-      responseText = await callGemini(message, contextString, history.slice(-5))
-    } catch (geminiErr: any) {
-      console.error("[zoning-chat] Gemini error:", geminiErr?.message ?? geminiErr)
+      responseText = await callLLM(message, contextString, history.slice(-5))
+    } catch (geminiErr) {
       // Fallback: structured response without LLM formatting
       if (contextString) {
         // Even in fallback, format nicely instead of raw dump
@@ -542,4 +593,3 @@ function formatFallbackResponse(ctx: ZoningContext): string {
 
   return lines.join('\n')
 }
-
