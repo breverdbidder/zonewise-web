@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAnonClient } from '@/lib/supabase/server'
 import { chatQuerySchema, sanitizeChatMessage, SECURITY_HEADERS } from '@/lib/validation'
+import { resilientLLM } from '@/lib/llm-resilience'
+import { logLLMCall } from '@/lib/llm-metrics'
 
 // ─── CORS headers ─────────────────────────────────────────────────────────────
 const CORS = {
@@ -590,66 +592,13 @@ RULES:
 - Focus on Florida-specific context when applicable.`
 }
 
-async function callGemini(fullPrompt: string): Promise<string> {
-  const key = process.env.GEMINI_API_KEY
-  if (!key) throw new Error('GEMINI_API_KEY not configured')
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: fullPrompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-      }),
-    }
-  )
-
-  if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Gemini ${res.status}: ${err.slice(0, 200)}`)
-  }
-
-  const json = await res.json()
-  const text = json.candidates?.[0]?.content?.parts?.[0]?.text
-  if (!text) throw new Error('Gemini returned empty response')
-  return text
-}
-
-async function callDeepSeek(systemPrompt: string, userMessage: string): Promise<string> {
-  const key = process.env.DEEPSEEK_API_KEY
-  if (!key) throw new Error('DEEPSEEK_API_KEY not configured')
-
-  const res = await fetch('https://api.deepseek.com/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`,
-    },
-    body: JSON.stringify({
-      model: 'deepseek-chat',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
-      temperature: 0.3,
-      max_tokens: 1024,
-    }),
-  })
-
-  if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`DeepSeek ${res.status}: ${err.slice(0, 200)}`)
-  }
-
-  const json = await res.json()
-  const text = json.choices?.[0]?.message?.content
-  if (!text) throw new Error('DeepSeek returned empty response')
-  return text
-}
-
-async function callLLM(message: string, context: string, history: { role: string; content: string }[]): Promise<string> {
+async function callLLM(
+  message: string,
+  context: string,
+  history: { role: string; content: string }[],
+  ctx: ZoningContext,
+  fallbackOverride?: () => string,
+): Promise<string> {
   const hasContext = context.length > 0
   const systemPrompt = buildSystemPrompt(hasContext)
 
@@ -661,22 +610,23 @@ async function callLLM(message: string, context: string, history: { role: string
     + historyText
     + 'USER: ' + message
 
-  // Smart Router: Gemini Free → DeepSeek Cheap
-  // Try Gemini first (free tier)
-  try {
-    const fullPrompt = systemPrompt + '\n\n' + userContent
-    return await callGemini(fullPrompt)
-  } catch (geminiErr) {
-    console.log(`[zoning-chat] Gemini failed: ${geminiErr instanceof Error ? geminiErr.message.slice(0, 100) : 'unknown'}, falling back to DeepSeek`)
-  }
+  const result = await resilientLLM.callWithFallback(
+    { systemPrompt, userContent },
+    fallbackOverride ?? (() => formatFallbackResponse(ctx)),
+  )
 
-  // Fallback to DeepSeek ($0.28/1M tokens)
-  try {
-    return await callDeepSeek(systemPrompt, userContent)
-  } catch (deepseekErr) {
-    console.log(`[zoning-chat] DeepSeek failed: ${deepseekErr instanceof Error ? deepseekErr.message.slice(0, 100) : 'unknown'}`)
-    throw deepseekErr // Let caller handle with formatted fallback
-  }
+  // Fire-and-forget metrics log
+  logLLMCall({
+    provider: result.provider,
+    model: result.provider === 'gemini' ? 'gemini-2.5-flash'
+      : result.provider === 'deepseek' ? 'deepseek-chat'
+      : 'db_fallback',
+    latencyMs: result.latencyMs,
+    success: result.provider !== 'db_fallback',
+    route: '/api/zoning-chat',
+  }).catch(() => { /* non-fatal */ })
+
+  return result.text
 }
 
 // ─── Citation extractor ───────────────────────────────────────────────────────
@@ -743,12 +693,15 @@ export async function POST(req: NextRequest) {
         const combinedCtx = ctxStr1 + '\n\n' + ctxStr2
         const activeSession = await getOrCreateSession(sessionId)
         const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
-        let responseText: string
-        try {
-          responseText = await callLLM(message, combinedCtx, history.slice(-5))
-        } catch {
-          responseText = `**${codes[0]}:** ${r1.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r1 })}\n\n**${codes[1]}:** ${r2.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r2 })}`
-        }
+        const comparisonFallback = () =>
+          `**${codes[0]}:** ${r1.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r1 })}\n\n**${codes[1]}:** ${r2.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r2 })}`
+        const responseText = await callLLM(
+          message,
+          combinedCtx,
+          history.slice(-5),
+          { parcel: null, zoning: r1.zoning ?? null, error: null },
+          comparisonFallback,
+        )
         const citations = [...extractCitations({ parcel: null, ...r1 }), ...extractCitations({ parcel: null, ...r2 })]
         await persistMessages(activeSession, message, responseText)
         return NextResponse.json({ response: responseText, citations, sessionId: activeSession }, { headers: { ...CORS, ...SECURITY_HEADERS } })
@@ -761,20 +714,12 @@ export async function POST(req: NextRequest) {
     const activeSession = await getOrCreateSession(sessionId)
     const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
 
-    let responseText: string
-    try {
-      responseText = await callLLM(message, contextString, history.slice(-5))
-    } catch (geminiErr) {
-      // Fallback: structured response without LLM formatting
-      if (contextString) {
-        // Even in fallback, format nicely instead of raw dump
-        responseText = formatFallbackResponse(ctx)
-      } else {
-        responseText = ctx.error
-          ? `I was unable to find that information. ${ctx.error}`
-          : "I couldn't process that request right now. Try asking about a specific address (e.g., \"What can I build at 123 Main St?\") or zone code (e.g., \"What does R-1A allow?\")."
-      }
-    }
+    const noContextFallback = !contextString
+      ? () => ctx.error
+        ? `I was unable to find that information. ${ctx.error}`
+        : "I couldn't process that request right now. Try asking about a specific address (e.g., \"What can I build at 123 Main St?\") or zone code (e.g., \"What does R-1A allow?\")."
+      : undefined
+    const responseText = await callLLM(message, contextString, history.slice(-5), ctx, noContextFallback)
 
     const citations = extractCitations(ctx)
     await persistMessages(activeSession, message, responseText)
