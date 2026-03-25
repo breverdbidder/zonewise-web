@@ -14,7 +14,8 @@
     "audit:zoning": "npx tsx scripts/audit_zoning_accuracy.ts",
     "audit:bcpao": "npx tsx scripts/audit_zoning_bcpao.ts",
     "audit:report": "npx tsx scripts/audit_report.ts",
-    "audit:full": "npm run audit:zoning && npm run audit:bcpao && npm run audit:report"
+    "audit:full": "npm run audit:zoning && npm run audit:bcpao && npm run audit:report",
+    "feedback:digest": "npx tsx scripts/feedback_digest.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.30.0",
