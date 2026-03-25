@@ -49,7 +49,9 @@ export async function GET(req: NextRequest) {
     const taxAcct = attrs.TaxAcct != null ? String(attrs.TaxAcct) : null
     const photoUrl = taxAcct && taxAcct.length >= 4 ? buildBcpaoPhotoUrl(taxAcct) : null
 
-    return NextResponse.json({ ...attrs, photoUrl })
+    const proxyPhotoUrl = photoUrl ? `/api/bcpao-photo?url=${encodeURIComponent(photoUrl)}` : null
+
+    return NextResponse.json({ ...attrs, photoUrl, proxyPhotoUrl })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
