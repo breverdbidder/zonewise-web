@@ -56,7 +56,8 @@ function getFallbackControls(zoneCode: string) {
   if (c.startsWith('PUD') || c.startsWith('MU') || c.startsWith('MXD')) return FALLBACK_CONTROLS['PUD']
   if (c.startsWith('AG') || c.startsWith('AU')) return FALLBACK_CONTROLS['ACREAGE']
   if (c.includes('MULTIPLE') || c.includes('MULTI')) return FALLBACK_CONTROLS['MFR-CONDO']
-  return { ...FALLBACK_CONTROLS['SFR'], zone_name: 'Unknown Zone: ' + c }
+  // Unknown zone code — no basis for fabricating development standards
+  return null
 }
 
 // ─── Intent classification ────────────────────────────────────────────────────
@@ -389,6 +390,12 @@ async function fetchZoningByCode(zoneCode: string, jurisdiction?: string | null)
 
     if (!zd) {
       const fb = getFallbackControls(zoneCode)
+      // If getFallbackControls returns null, this is a truly unknown code (e.g. a BCPAO
+      // use-code like VAC-RES that was mistakenly stored as a zoning designation).
+      // Return no-zoning so buildContextString injects the "NO ZONING DATA AVAILABLE" block.
+      if (!fb) {
+        return { zoning: null, error: `No zoning data available for code: ${zoneCode}` }
+      }
       return {
         zoning: {
           zone_code: zoneCode,
@@ -420,6 +427,9 @@ async function fetchZoningByCode(zoneCode: string, jurisdiction?: string | null)
     }
   } catch (e) {
     const fb = getFallbackControls(zoneCode)
+    if (!fb) {
+      return { zoning: null, error: `No zoning data available for code: ${zoneCode}` }
+    }
     return {
       zoning: {
         zone_code: zoneCode,
