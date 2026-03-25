@@ -1,45 +1,38 @@
 import type { Metadata } from 'next'
-import { auth } from '@clerk/nextjs/server'
-import ChatWidget from '@/components/ChatWidget'
+import ZoningChatbot from '@/components/chat/ZoningChatbot'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'AI Chat · ZoneWise.AI',
-  description: 'Ask ZoneWise AI about any Florida property, zoning rule, or auction across all 67 counties.',
+  title: 'AI Zoning Assistant | ZoneWise.AI',
+  description: 'Ask ZoneWise AI about Brevard County zoning codes, permitted uses, setbacks, height limits, and more. Cited answers from our own Supabase data.',
 }
 
-export default async function ChatPage() {
-  // Clerk middleware protects this route — auth() provides the token
-  let token: string | null = null
-  try {
-    const { getToken } = await auth()
-    token = await getToken()
-  } catch {
-    // Clerk not configured — proceed without auth token
-  }
-
+export default function ZoningChatPage() {
   return (
-    <div className="flex h-screen flex-col bg-slate-950">
+    <div className="flex h-full flex-col bg-[#020617]">
       {/* Page header */}
       <div className="shrink-0 border-b border-slate-800 bg-slate-900/80 px-6 py-3 flex items-center justify-between">
         <div>
-          <h1 className="text-sm font-semibold text-slate-200">AI Analyst</h1>
-          <p className="text-xs text-slate-500">67 FL Counties · 10.5M Parcels · 128 KPIs · Claude Sonnet</p>
+          <h1 className="text-sm font-semibold text-slate-200">AI Zoning Assistant</h1>
+          <p className="text-xs text-slate-500">Brevard County · Structured RAG · Cited answers · Gemini Flash</p>
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded border border-slate-700 bg-slate-800/60 px-2 py-1 font-mono text-xs text-slate-400">
-            ⚖️ Foreclosure
+            🏛 Zoning
           </span>
           <span className="rounded border border-slate-700 bg-slate-800/60 px-2 py-1 font-mono text-xs text-slate-400">
-            🏛 Tax Deed
+            📋 Permitted Uses
+          </span>
+          <span className="rounded border border-emerald-800 bg-emerald-900/30 px-2 py-1 font-mono text-xs text-emerald-400">
+            ✓ Own Data
           </span>
         </div>
       </div>
 
-      {/* Full-height chat widget */}
-      <div className="flex-1 overflow-hidden p-4">
-        <ChatWidget authToken={token || undefined} />
+      {/* Full-height chatbot */}
+      <div className="flex-1 overflow-hidden">
+        <ZoningChatbot />
       </div>
     </div>
   )
