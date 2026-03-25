@@ -164,31 +164,96 @@ export async function GET(req: NextRequest) {
     ])
 
     const zoneCode: string | null = zoningAssignment.data?.zone_code ?? null
+    const jurisdiction: string | null = zoningAssignment.data?.jurisdiction ?? null
 
     // 2. Fetch zoning district + standards + permitted uses based on zone_code
+    // Uses compatibility views (zoning_districts_by_code, zone_standards_by_code, permitted_uses_by_code)
+    // created by migration 011_cp3_deep_zoning_intel.sql
+    // Falls back to direct table queries with correct column names if views are unavailable
     const [districtRes, standardsRes, usesRes] = await Promise.all([
       zoneCode
         ? supabase
-            .from('zoning_districts')
+            .from('zoning_districts_by_code')
             .select('zone_district, zone_description')
             .eq('zone_code', zoneCode)
             .maybeSingle()
+            .then(async (res) => {
+              // Fallback: query zoning_districts directly using 'code' column
+              if (res.error || !res.data) {
+                return supabase
+                  .from('zoning_districts')
+                  .select('name, description')
+                  .eq('code', zoneCode)
+                  .maybeSingle()
+                  .then((r) => ({
+                    data: r.data ? { zone_district: r.data.name, zone_description: r.data.description } : null,
+                  }))
+              }
+              return res
+            })
         : Promise.resolve({ data: null }),
       zoneCode
         ? supabase
-            .from('zone_standards')
+            .from('zone_standards_by_code')
             .select(
               'far, max_height_ft, lot_coverage_pct, open_space_pct, residential_density_du_acre, front_setback_ft, side_setback_ft, rear_setback_ft, corner_setback_ft, water_setback_ft'
             )
             .eq('zone_code', zoneCode)
             .maybeSingle()
+            .then(async (res) => {
+              // Fallback: join through zoning_districts
+              if (res.error || !res.data) {
+                const distLookup = await supabase
+                  .from('zoning_districts')
+                  .select('id')
+                  .eq('code', zoneCode)
+                  .limit(1)
+                if (distLookup.data?.[0]?.id) {
+                  return supabase
+                    .from('zone_standards')
+                    .select(
+                      'max_far as far, max_height_ft, max_lot_coverage_pct as lot_coverage_pct, min_open_space_pct as open_space_pct, max_density_du_acre as residential_density_du_acre, front_setback_ft, side_setback_ft, rear_setback_ft, corner_setback_ft, water_setback_ft'
+                    )
+                    .eq('zoning_district_id', distLookup.data[0].id)
+                    .maybeSingle()
+                }
+              }
+              return res
+            })
         : Promise.resolve({ data: null }),
       zoneCode
         ? supabase
-            .from('permitted_uses')
+            .from('permitted_uses_by_code')
             .select('use_name, category, permission_type')
             .eq('zone_code', zoneCode)
             .limit(50)
+            .then(async (res) => {
+              // Fallback: join through zoning_districts
+              if (res.error || !res.data || res.data.length === 0) {
+                const distLookup = await supabase
+                  .from('zoning_districts')
+                  .select('id')
+                  .eq('code', zoneCode)
+                  .limit(1)
+                if (distLookup.data?.[0]?.id) {
+                  return supabase
+                    .from('permitted_uses')
+                    .select('use_description, use_type, is_commercial, is_industrial, is_single_family, is_multi_family, is_adu, use_category, requires_special_permit, requires_public_hearing')
+                    .eq('zoning_district_id', distLookup.data[0].id)
+                    .limit(50)
+                    .then((r) => ({
+                      data: (r.data ?? []).map((u) => ({
+                        use_name: u.use_description,
+                        category: u.is_commercial ? 'commercial' : u.is_industrial ? 'industrial' : 'residential',
+                        permission_type: u.use_type === 'prohibited' ? 'not_permitted'
+                          : (u.requires_special_permit || u.requires_public_hearing || u.use_type === 'conditional') ? 'conditional'
+                          : 'by_right',
+                      })),
+                    }))
+                }
+              }
+              return res
+            })
         : Promise.resolve({ data: [] }),
     ])
 
