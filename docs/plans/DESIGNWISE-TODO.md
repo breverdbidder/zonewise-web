@@ -36,8 +36,8 @@
 - [x] P2A-3: Create lib/hooks/useMapKeyboard.ts — arrow pan, +/- zoom, Tab parcels, Enter select, Esc deselect. Commit: d3fbf34. Mar 24 2026.
 
 ### CodeWise [STREAM A]
-- [x] P2A-4a: vitest + @testing-library/react + jsdom + vitest.config.ts (jsdom env, component glob). Commit: f3725ee. Mar 24 2026.
-- [x] P2A-4b: Unit tests: AuctionSpreadsheet, AuctionTable, AuctionDetail, CountyGrid. Commit: f3725ee. Mar 24 2026.
+- [x] P2A-4a: vitest + @testing-library/react + jsdom + vitest.config.ts (jsdom env, component glob, fileParallelism: false). Commit: f3725ee. Updated: Mar 24 2026.
+- [x] P2A-4b: Unit tests: AuctionSpreadsheet, AuctionTable, AuctionDetail, CountyGrid + smoke tests for ChatWidget, AuctionMap, DevIntelTab, ExplorerMap. Commit: f3725ee + CodeWise P2A-4. Mar 24 2026.
 - [ ] P2A-5: npx husky install, create .husky/pre-commit with tsc --noEmit + vitest run
 
 ## P2B — Support + Deploy + SEO (1 week, parallel with P2A)

@@ -7,8 +7,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    pool: 'forks',
+    fileParallelism: false,
     setupFiles: ['./tests/setup.ts', './vitest.setup.ts'],
-    include: ['tests/**/*.test.ts', 'components/**/*.test.tsx', 'components/**/__tests__/**/*.test.tsx'],
+    include: ['tests/**/*.test.ts', 'components/**/*.test.tsx', 'components/**/__tests__/**/*.test.tsx', '__tests__/**/*.test.tsx', '__tests__/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
