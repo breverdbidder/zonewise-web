@@ -50,12 +50,18 @@ const EXAMPLE_PROMPTS = [
 // ─── Typing indicator ─────────────────────────────────────────────────────────
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1 px-4 py-3">
+    <div
+      className="flex items-center gap-1 px-4 py-3"
+      role="status"
+      aria-live="polite"
+      aria-label="ZoneWise AI is typing"
+    >
       {[0, 1, 2].map((i) => (
         <span
           key={i}
           className="w-2 h-2 rounded-full bg-slate-400 animate-bounce"
           style={{ animationDelay: `${i * 0.15}s` }}
+          aria-hidden="true"
         />
       ))}
     </div>
@@ -384,7 +390,7 @@ export default function ZoningChatbot() {
               onKeyDown={handleKeyDown}
               placeholder="Ask about zoning in Brevard County..."
               rows={1}
-              className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 resize-none outline-none min-h-[24px] max-h-32 leading-6"
+              className="flex-1 bg-transparent text-sm text-white placeholder-slate-400 resize-none outline-none min-h-[24px] max-h-32 leading-6"
               style={{ overflowY: input.split('\n').length > 4 ? 'auto' : 'hidden' }}
               disabled={isLoading}
               autoFocus
@@ -392,13 +398,13 @@ export default function ZoningChatbot() {
             <button
               onClick={() => sendMessage(input)}
               disabled={!input.trim() || isLoading}
-              className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#F59E0B] hover:bg-[#F59E0B]/80"
+              className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#F59E0B] hover:bg-[#F59E0B]/80"
               aria-label="Send message"
             >
               <Send className="w-4 h-4 text-white" />
             </button>
           </div>
-          <p className="text-xs text-slate-600 mt-1.5 text-center">
+          <p className="text-xs text-slate-400 mt-1.5 text-center">
             Answers sourced from Supabase · Brevard County zoning data
           </p>
         </div>
