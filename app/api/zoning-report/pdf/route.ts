@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { parcelIdSchema, SECURITY_HEADERS } from '@/lib/validation'
 
 /**
  * GET /api/zoning-report/pdf?parcelId=XXXXX
@@ -16,11 +17,16 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const parcelId = searchParams.get('parcelId')?.trim()
+  const rawParcelId = searchParams.get('parcelId')?.trim()
 
-  if (!parcelId) {
-    return NextResponse.json({ error: 'parcelId is required' }, { status: 400 })
+  const parsed = parcelIdSchema.safeParse(rawParcelId)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid parcelId' },
+      { status: 400, headers: SECURITY_HEADERS }
+    )
   }
+  const parcelId = parsed.data
 
   try {
     // Redirect to the printable report page with ?print=1
@@ -30,11 +36,12 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(reportUrl, {
       headers: {
+        ...SECURITY_HEADERS,
         'X-ZoneWise-Parcel': parcelId,
       },
     })
   } catch (err) {
     console.error('[zoning-report/pdf] error:', err)
-    return NextResponse.json({ error: 'PDF generation failed' }, { status: 500 })
+    return NextResponse.json({ error: 'PDF generation failed' }, { status: 500, headers: SECURITY_HEADERS })
   }
 }
