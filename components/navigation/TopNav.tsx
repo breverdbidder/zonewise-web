@@ -5,13 +5,16 @@ import { usePathname } from 'next/navigation'
 import { useTheme } from '@/lib/theme-context'
 import { useSafeUser, SafeUserButton } from '@/lib/safe-clerk'
 
-const NAV_ITEMS = [
+interface NavItem { name: string; href: string; highlight?: boolean }
+
+const NAV_ITEMS: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Explorer', href: '/explorer' },
   { name: 'Dev Intel', href: '/explore' },
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
   { name: 'Massing', href: '/massing' },
+  { name: 'AI Chat', href: '/chat', highlight: true },
 ]
 
 export default function TopNav() {
@@ -38,8 +41,12 @@ export default function TopNav() {
               key={item.href}
               href={item.href}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                isActive
+                isActive && item.highlight
+                  ? 'text-[#F59E0B] bg-[#F59E0B]/10 dark:bg-[#F59E0B]/10'
+                  : isActive
                   ? 'text-zw-navy-700 dark:text-zw-orange-400 bg-zw-navy-50 dark:bg-zw-navy-600/20'
+                  : item.highlight
+                  ? 'text-[#F59E0B]/80 hover:text-[#F59E0B] hover:bg-[#F59E0B]/10'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800'
               }`}
             >
