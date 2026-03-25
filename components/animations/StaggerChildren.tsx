@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 
 interface StaggerChildrenProps {
@@ -40,6 +40,16 @@ export function StaggerChildren({
 }: StaggerChildrenProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-40px 0px' })
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // SSR: render children visible, no opacity:0 inline style on items
+  if (!mounted) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <motion.div

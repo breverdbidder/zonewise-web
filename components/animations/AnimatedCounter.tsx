@@ -22,10 +22,15 @@ export default function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: '-40px 0px' })
+  const [mounted, setMounted] = useState(false)
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    if (!isInView) return
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted || !isInView) return
 
     let start = 0
     const step = (timestamp: number) => {
@@ -37,11 +42,12 @@ export default function AnimatedCounter({
       if (progress < 1) requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
-  }, [isInView, end, duration])
+  }, [mounted, isInView, end, duration])
 
-  const formatted = decimals > 0
-    ? count.toFixed(decimals)
-    : Math.floor(count).toLocaleString()
+  // SSR: render real value so crawlers and no-JS users see correct numbers
+  const formatted = mounted
+    ? (decimals > 0 ? count.toFixed(decimals) : Math.floor(count).toLocaleString())
+    : (decimals > 0 ? end.toFixed(decimals) : end.toLocaleString())
 
   return (
     <span ref={ref} className={className}>

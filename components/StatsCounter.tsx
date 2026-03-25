@@ -38,21 +38,15 @@ function StatItem({ label, value, formatter, suffix, loading }: StatItemProps) {
 }
 
 export default function StatsCounter() {
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Initialize with real values — no skeleton flash on load
+  const [stats, setStats] = useState<Stats>({ counties: 67, parcels: 10_800_000 })
+  const [loading] = useState(false)
 
   useEffect(() => {
     fetch('/api/stats')
       .then(r => r.json())
-      .then((data: Stats) => {
-        setStats(data)
-        setLoading(false)
-      })
-      .catch(() => {
-        // Fallback to known real numbers
-        setStats({ counties: 67, parcels: 10_800_000 })
-        setLoading(false)
-      })
+      .then((data: Stats) => setStats(data))
+      .catch(() => {}) // keep fallback values on error
   }, [])
 
   return (
