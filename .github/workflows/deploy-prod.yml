@@ -36,7 +36,7 @@ jobs:
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-        timeout-minutes: 3
+        timeout-minutes: 6
 
       - name: Force Alias (if deploy hangs)
         if: failure() || steps.deploy.outputs.url == ''
@@ -66,7 +66,11 @@ jobs:
         if: always()
         run: |
           sleep 10
-          for page in "" explorer pricing; do
+          for page in "" explorer pricing chat; do
+          # API smoke test
+          API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://zonewise.ai/api/zoning-chat" -H "Content-Type: application/json" -d '{"message":"test"}');
+          echo "/api/zoning-chat: HTTP $API_HTTP"
             HTTP=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/$page")
             echo "/$page: HTTP $HTTP"
           done
+
