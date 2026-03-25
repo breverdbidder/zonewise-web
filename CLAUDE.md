@@ -54,7 +54,11 @@ These plugins MUST be installed in every Claude Code environment:
 3. **cctop** — Claude Code sessions dashboard. Monitor all sessions from one TUI: status, context %, tokens, errors, git branch. Install: `curl -fsSL https://raw.githubusercontent.com/DeanLa/cctop/main/install.sh | bash`. Run `cctop` in separate terminal. Fork: breverdbidder/cctop.
 
 ### Context Window Rules
-- **50% RULE:** Kill and restart session when context reaches ~50%. Claude degrades well before 100%.
+- **Context Brackets** (replaces 50% rule):
+  - **FRESH (>70%):** Full file reads OK. Complex multi-step work OK. Parallel ops OK.
+  - **MODERATE (40-70%):** Re-read STATE before decisions. Summaries over full files. Single-concern tasks.
+  - **DEEP (20-40%):** Finish current task ONLY. Prepare session summary. No new complex work.
+  - **CRITICAL (<20%):** Write session summary NOW. Update TODO.md. No new file reads. Exit.
 - **NEVER /compact.** Worst of both worlds — loses working context but keeps stale/poisoned context. Always start fresh.
 - **Sub-agents for heavy work.** Dispatch sub-agents (via Superpowers execute-plan) so main orchestrator context stays clean.
 - **cli-anything harnesses:** Add context checkpoint between HARNESS.md phases. If context > 50% mid-pipeline, save state and restart.
@@ -73,6 +77,64 @@ layer_3_path_rules: .claude/rules/ # pattern-matched, loaded ONLY when editing m
   deployed: [components(src/components/**), data(src/lib/**), deploy(.github/workflows/**)]
   principle: lean context window — rules load only when relevant
   enforcement: hooks for 100% reliability (finance/security), prompts for style/tone
+```
+
+
+## Loop Discipline (Mar 25, 2026)
+
+### Evidence-Before-Claims (upgrades NEVER-LIE)
+```yaml
+# The evidence chain: Execute → Verify → Read output → Compare to spec → THEN claim.
+# Breaking ANY link = false completion.
+anti_rationalization:
+  "Should work now":           "Run the verify command and read its output"
+  "I already checked this":    "Check it again fresh — memory of checking ≠ verification"
+  "It's close enough":         "Compare against the AC/spec word by word"
+  "The test passes":           "Also compare against the spec — tests can be incomplete"
+  "This is a minor deviation": "Log it explicitly — minor deviations compound into drift"
+  "I'm confident it works":    "Run it and prove it — confidence without evidence is failure cause #1"
+rules:
+  - NEVER mark a task [x] in TODO.md without fresh verification evidence in same session
+  - NEVER claim a DB count, %, or metric without running the actual query first
+  - When wrong: say "I was wrong" — not "I misspoke" or "let me clarify"
+```
+
+### Scope Classification (pre-step to all tasks)
+```yaml
+# Before executing ANY task, classify scope FIRST:
+scope_classification:
+  quick_fix:
+    signals: "Fits 1 sentence AND 1-2 files AND no architectural implications"
+    ceremony: "No spec. Execute directly. Mark [x] with 1-line commit."
+  standard:
+    signals: "3-5 files OR design decision needed OR multiple components"
+    ceremony: "Spec recommended. Full protocol. Session summary required."
+  complex:
+    signals: "6+ files OR architectural change OR multi-repo OR new patterns/deps"
+    ceremony: "Spec MANDATORY (BRAINSTORM_PROTOCOL). Must split into sub-tasks."
+# Classify BEFORE work starts. When uncertain → choose HIGHER ceremony.
+```
+
+### Boundaries Enforcement
+```yaml
+# Every spec/plan SHOULD include a boundaries section.
+# When present, boundaries are HARD constraints, not suggestions.
+boundaries:
+  DO_NOT_CHANGE: "STOP and confirm before ANY modification to listed items"
+  SCOPE_LIMITS: "Log to deferred issues if encountered, do not address"
+# No boundaries in spec? → ask once at session start: "Any files I should avoid touching?"
+# SUMMIT-dispatched work → treat spec as full scope, nothing beyond it.
+```
+
+### Session Summary Loop Closure
+```yaml
+# Every session summary MUST include (in addition to Status Board):
+loop_closure:
+  plan_vs_actual: "| Task | Planned | Actual | Deviation | — ALWAYS required"
+  deviation_log: "What changed, why, downstream impact — required if any deviation"
+  verification_evidence: "Command run → output observed → spec comparison — required if any task completed"
+# The session summary IS the loop closure. No summary = orphaned loop.
+# Evidence-Before-Claims applies: don't claim DONE without proof in the summary.
 ```
 
 
