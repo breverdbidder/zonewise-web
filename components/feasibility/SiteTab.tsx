@@ -5,6 +5,7 @@ import type { SiteData, ZoningControl, SiteSubTab } from '@/types/feasibility'
 import { COLORS, fmt, fmtD } from '@/lib/feasibility/constants'
 import { Badge, Card, SectionLabel } from './ui'
 import MapboxMap from './MapboxMap'
+import DemoDataBadge from '@/components/ui/DemoDataBadge'
 
 interface SiteTabProps {
   site: SiteData
@@ -194,6 +195,10 @@ function WaterSetbackSection({ site }: { site: SiteData }) {
     <div className="mt-6">
       <div className="flex items-center gap-2 mb-3">
         <div className="text-sm font-bold">3. Water / Coastal Setbacks</div>
+        <DemoDataBadge
+          label="Sample Data"
+          tooltip="Water setback coverage: 3 of 16 Brevard municipalities. Expanding weekly."
+        />
         {hasWater ? (
           <span
             className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
