@@ -158,7 +158,7 @@ export async function GET(req: NextRequest) {
       fetchBcpaoGis(parcelId),
       supabase
         .from('zoning_assignments')
-        .select('zone_code, jurisdiction, municipal_code_url')
+        .select('zone_code, jurisdiction')
         .eq('parcel_id', parcelId)
         .maybeSingle(),
     ])
@@ -320,7 +320,7 @@ export async function GET(req: NextRequest) {
       zone_district: districtRes.data?.zone_district ?? null,
       zone_description: districtRes.data?.zone_description ?? null,
       jurisdiction: zoningAssignment.data?.jurisdiction ?? 'Brevard County',
-      municipal_code_url: zoningAssignment.data?.municipal_code_url ?? null,
+      municipal_code_url: jurisdiction ? `https://library.municode.com/fl/${jurisdiction}/codes/code_of_ordinances` : null,
       // Development capacity
       far,
       max_height_ft: standards?.max_height_ft ?? null,
