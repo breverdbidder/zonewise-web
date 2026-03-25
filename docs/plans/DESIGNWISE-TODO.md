@@ -28,10 +28,10 @@
 
 ### A11yWise [STREAM C]
 - [x] P2A-1a: Add role="application" + aria-label to ExplorerMap.tsx (MapCanvas equivalent). Commit: d3fbf34. Mar 24 2026.
-- [x] P2A-1b: Add role="tooltip" + aria-describedby to OnboardingTooltip. Commit: f3725ee. Mar 24 2026.
-- [x] P2A-1c: Add aria-label to all MapControls + explorer/conquest buttons. Commit: f3725ee. Mar 24 2026.
-- [ ] P2A-1d: Add role="listbox" + aria-selected to RegionSelector
-- [x] P2A-2a: Contrast fixes — text-slate-500 → text-slate-400 on dark bg in globals.css + components. Commit: f3725ee. Mar 24 2026.
+- [x] P2A-1b: Add role="tooltip" + aria-describedby to OnboardingTooltip. Also: created ParcelTooltip.tsx with role=tooltip + aria-live. Commit: f3725ee + A11yWise. Mar 24 2026.
+- [x] P2A-1c: Add aria-label to all MapControls + explorer/conquest buttons. Also: MapControls.tsx component with aria-label + aria-pressed + role=group. Commit: f3725ee + A11yWise. Mar 24 2026.
+- [x] P2A-1d: Create RegionSelector.tsx with role="listbox" + aria-selected + keyboard nav (Enter/Space). Wired into ExplorerV2. Commit: A11yWise. Mar 24 2026.
+- [x] P2A-2a: Contrast fixes — text-slate-500 → text-slate-400 on dark bg in globals.css + components + placeholder color. Commit: f3725ee + A11yWise. Mar 24 2026.
 - [x] P2A-2b: Add focus-visible styles: outline 2px solid #F59E0B offset 2px on all interactive elements. Commit: 9513508. Mar 24 2026.
 - [x] P2A-3: Create lib/hooks/useMapKeyboard.ts — arrow pan, +/- zoom, Tab parcels, Enter select, Esc deselect. Commit: d3fbf34. Mar 24 2026.
 

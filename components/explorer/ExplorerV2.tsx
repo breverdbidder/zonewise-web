@@ -7,7 +7,7 @@ import ExplorerMobileSheet from './ExplorerMobileSheet'
 import type { ExplorerMapHandle } from './ExplorerMap'
 import type { ChoroplethGeoJSON } from '@/lib/explorer/zillow'
 import {
-  ZONING_FILTERS, FREE_PARCEL_CLICKS, FREE_CHAT_MESSAGES,
+  FREE_PARCEL_CLICKS, FREE_CHAT_MESSAGES,
   type ChoroplethMetric, type ZoningFilter,
 } from '@/lib/explorer/constants'
 import type { ParcelAttributes } from '@/lib/explorer/constants'
@@ -15,6 +15,8 @@ import ChoroplethLayer from './ChoroplethLayer'
 import LayerControls from './LayerControls'
 import ZoningLegend from './ZoningLegend'
 import ParcelIdentify from './ParcelIdentify'
+import MapControls from './MapControls'
+import RegionSelector from './RegionSelector'
 import { trackEvent } from '@/lib/explorer/tracking'
 import { track } from '@/lib/posthog'
 
@@ -163,27 +165,11 @@ export default function ExplorerV2() {
       {/* ── RIGHT: Map + controls ─────────────────────────────────────────── */}
       <div className="flex-1 relative flex flex-col">
         {/* Map style switcher */}
-        <div className="absolute top-3 left-3 flex gap-1.5 z-10">
-          {(['streets-v12', 'satellite-streets-v12', 'light-v11'] as const).map(s => {
-            const labels = { 'streets-v12': 'Streets', 'satellite-streets-v12': 'Satellite', 'light-v11': 'Light' }
-            const handleStyleChange = () => { setMapStyle(s); track({ name: 'explorer_opened', properties: { county: 'brevard' } }) }
-            return (
-              <button
-                key={s}
-                onClick={handleStyleChange}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleStyleChange() } }}
-                aria-label={`Switch to ${labels[s]} map style`}
-                aria-pressed={mapStyle === s}
-                className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold backdrop-blur-sm shadow-sm transition-all border ${
-                  mapStyle === s
-                    ? 'bg-amber-500 border-amber-500 text-slate-950'
-                    : 'bg-white/90 border-slate-300 text-slate-700 hover:bg-amber-500/10 hover:border-amber-500/50'
-                }`}
-              >
-                {labels[s]}
-              </button>
-            )
-          })}
+        <div className="absolute top-3 left-3 z-10">
+          <MapControls
+            current={mapStyle}
+            onChange={s => { setMapStyle(s); track({ name: 'explorer_opened', properties: { county: 'brevard' } }) }}
+          />
         </div>
 
         {/* Choropleth metric selector */}
@@ -225,17 +211,11 @@ export default function ExplorerV2() {
           </div>
 
           {/* Zoning filter */}
-          <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm pointer-events-auto">
-            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Zone Filter</div>
-            <select
+          <div className="pointer-events-auto">
+            <RegionSelector
               value={zoningFilter}
-              onChange={e => setZoningFilter(e.target.value as ZoningFilter)}
-              className="bg-slate-900 border border-slate-700 rounded-md px-2 py-1 text-[11px] text-white focus:outline-none focus:border-amber-500/60 w-full"
-            >
-              {ZONING_FILTERS.map(f => (
-                <option key={f.value} value={f.value}>{f.label}</option>
-              ))}
-            </select>
+              onChange={v => { setZoningFilter(v); mapRef.current?.filterZoning(v) }}
+            />
           </div>
 
           {/* Selected parcel detail card */}
