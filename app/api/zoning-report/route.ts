@@ -153,109 +153,88 @@ export async function GET(req: NextRequest) {
   try {
     const supabase = createServiceClient()
 
-    // 1. Fetch BCPAO GIS data in parallel with Supabase queries
+    // 1. Fetch BCPAO GIS data in parallel with zoning_assignments lookup
     const [gisAttrs, zoningAssignment] = await Promise.all([
       fetchBcpaoGis(parcelId),
       supabase
         .from('zoning_assignments')
-        .select('zone_code, jurisdiction')
+        .select('zone_code, jurisdiction, municipal_code_url')
         .eq('parcel_id', parcelId)
-        .maybeSingle(),
+        .limit(1)
+        .single(),
     ])
 
     const zoneCode: string | null = zoningAssignment.data?.zone_code ?? null
     const jurisdiction: string | null = zoningAssignment.data?.jurisdiction ?? null
+    const assignmentMunicipalCodeUrl: string | null = zoningAssignment.data?.municipal_code_url ?? null
 
-    // 2. Fetch zoning district + standards + permitted uses based on zone_code
-    // Uses compatibility views (zoning_districts_by_code, zone_standards_by_code, permitted_uses_by_code)
-    // created by migration 011_cp3_deep_zoning_intel.sql
-    // Falls back to direct table queries with correct column names if views are unavailable
-    const [districtRes, standardsRes, usesRes] = await Promise.all([
-      zoneCode
+    // 2. Fetch zoning district using the same pattern as the chatbot (direct table query by code)
+    const zdRes = zoneCode
+      ? await supabase
+          .from('zoning_districts')
+          .select('id, code, name, description')
+          .eq('code', zoneCode)
+          .limit(1)
+          .single()
+      : null
+
+    const zd = zdRes?.data ?? null
+
+    // 3. Fetch zone_standards + permitted_uses in parallel using zoning_district_id FK
+    //    (same pattern as chatbot's fetchZoningByCode — select('*') then read actual column names)
+    const [standardsRes, usesRes] = await Promise.all([
+      zd?.id
         ? supabase
-            .from('zoning_districts_by_code')
-            .select('zone_district, zone_description')
-            .eq('zone_code', zoneCode)
-            .maybeSingle()
-            .then(async (res) => {
-              // Fallback: query zoning_districts directly using 'code' column
-              if (res.error || !res.data) {
-                return supabase
-                  .from('zoning_districts')
-                  .select('name, description')
-                  .eq('code', zoneCode)
-                  .maybeSingle()
-                  .then((r) => ({
-                    data: r.data ? { zone_district: r.data.name, zone_description: r.data.description } : null,
-                  }))
-              }
-              return res
-            })
+            .from('zone_standards')
+            .select('*')
+            .eq('zoning_district_id', zd.id)
+            .limit(1)
+            .single()
         : Promise.resolve({ data: null }),
-      zoneCode
+      zd?.id
         ? supabase
-            .from('zone_standards_by_code')
-            .select(
-              'far, max_height_ft, lot_coverage_pct, open_space_pct, residential_density_du_acre, front_setback_ft, side_setback_ft, rear_setback_ft, corner_setback_ft, water_setback_ft'
-            )
-            .eq('zone_code', zoneCode)
-            .maybeSingle()
-            .then(async (res) => {
-              // Fallback: join through zoning_districts
-              if (res.error || !res.data) {
-                const distLookup = await supabase
-                  .from('zoning_districts')
-                  .select('id')
-                  .eq('code', zoneCode)
-                  .limit(1)
-                if (distLookup.data?.[0]?.id) {
-                  return supabase
-                    .from('zone_standards')
-                    .select(
-                      'max_far as far, max_height_ft, max_lot_coverage_pct as lot_coverage_pct, min_open_space_pct as open_space_pct, max_density_du_acre as residential_density_du_acre, front_setback_ft, side_setback_ft, rear_setback_ft, corner_setback_ft, water_setback_ft'
-                    )
-                    .eq('zoning_district_id', distLookup.data[0].id)
-                    .maybeSingle()
-                }
-              }
-              return res
-            })
-        : Promise.resolve({ data: null }),
-      zoneCode
-        ? supabase
-            .from('permitted_uses_by_code')
-            .select('use_name, category, permission_type')
-            .eq('zone_code', zoneCode)
+            .from('permitted_uses')
+            .select('use_description, use_type, is_commercial, is_industrial, is_single_family, is_multi_family, is_adu, use_category, requires_special_permit, requires_public_hearing')
+            .eq('zoning_district_id', zd.id)
             .limit(50)
-            .then(async (res) => {
-              // Fallback: join through zoning_districts
-              if (res.error || !res.data || res.data.length === 0) {
-                const distLookup = await supabase
-                  .from('zoning_districts')
-                  .select('id')
-                  .eq('code', zoneCode)
-                  .limit(1)
-                if (distLookup.data?.[0]?.id) {
-                  return supabase
-                    .from('permitted_uses')
-                    .select('use_description, use_type, is_commercial, is_industrial, is_single_family, is_multi_family, is_adu, use_category, requires_special_permit, requires_public_hearing')
-                    .eq('zoning_district_id', distLookup.data[0].id)
-                    .limit(50)
-                    .then((r) => ({
-                      data: (r.data ?? []).map((u) => ({
-                        use_name: u.use_description,
-                        category: u.is_commercial ? 'commercial' : u.is_industrial ? 'industrial' : 'residential',
-                        permission_type: u.use_type === 'prohibited' ? 'not_permitted'
-                          : (u.requires_special_permit || u.requires_public_hearing || u.use_type === 'conditional') ? 'conditional'
-                          : 'by_right',
-                      })),
-                    }))
-                }
-              }
-              return res
-            })
         : Promise.resolve({ data: [] }),
     ])
+
+    // Map permitted_uses rows to the report's PermittedUse shape
+    const districtRes = {
+      data: zd ? { zone_district: zd.name, zone_description: zd.description } : null,
+    }
+
+    // zone_standards uses real column names (max_far, max_lot_coverage_pct, max_density_du_acre, etc.)
+    const rawStandards = standardsRes.data as Record<string, unknown> | null
+    const mappedStandards = rawStandards
+      ? {
+          far: rawStandards.max_far as number | null ?? null,
+          max_height_ft: rawStandards.max_height_ft as number | null ?? null,
+          lot_coverage_pct: rawStandards.max_lot_coverage_pct as number | null ?? null,
+          open_space_pct: rawStandards.min_open_space_pct as number | null ?? null,
+          residential_density_du_acre: rawStandards.max_density_du_acre as number | null ?? null,
+          front_setback_ft: rawStandards.front_setback_ft as number | null ?? null,
+          side_setback_ft: rawStandards.side_setback_ft as number | null ?? null,
+          rear_setback_ft: rawStandards.rear_setback_ft as number | null ?? null,
+          corner_setback_ft: rawStandards.corner_setback_ft as number | null ?? null,
+          water_setback_ft: rawStandards.water_setback_ft as number | null ?? null,
+        }
+      : null
+
+    const mappedUses: PermittedUse[] = ((usesRes.data ?? []) as Array<{
+      use_description: string; use_type: string; is_commercial: boolean; is_industrial: boolean;
+      is_single_family: boolean; is_multi_family: boolean; is_adu: boolean;
+      use_category: string | null; requires_special_permit: boolean; requires_public_hearing: boolean;
+    }>).map((u) => ({
+      use_name: u.use_description,
+      category: u.is_commercial ? 'commercial' : u.is_industrial ? 'industrial' : 'residential',
+      permission_type: (u.use_type === 'prohibited'
+        ? 'not_permitted'
+        : (u.requires_special_permit || u.requires_public_hearing || u.use_type === 'conditional')
+          ? 'conditional'
+          : 'by_right') as 'by_right' | 'conditional' | 'not_permitted',
+    }))
 
     // 3. Extract GIS attributes
     const acres: number | null = gisAttrs?.ACRES != null ? Number(gisAttrs.ACRES) : null
@@ -267,8 +246,8 @@ export async function GET(req: NextRequest) {
         ? `/api/bcpao-photo?url=${encodeURIComponent(`https://www.bcpao.us/photos/${taxAcct.substring(0, 2)}/${taxAcct}011.jpg`)}`
         : null
 
-    // 4. Standards
-    const standards = standardsRes.data
+    // 4. Standards (now using mapped column names)
+    const standards = mappedStandards
     const far: number | null = standards?.far ?? null
     const lotCoverage: number | null = standards?.lot_coverage_pct ?? null
     const density: number | null = standards?.residential_density_du_acre ?? null
@@ -320,7 +299,7 @@ export async function GET(req: NextRequest) {
       zone_district: districtRes.data?.zone_district ?? null,
       zone_description: districtRes.data?.zone_description ?? null,
       jurisdiction: zoningAssignment.data?.jurisdiction ?? 'Brevard County',
-      municipal_code_url: jurisdiction ? `https://library.municode.com/fl/${jurisdiction}/codes/code_of_ordinances` : null,
+      municipal_code_url: assignmentMunicipalCodeUrl ?? (jurisdiction ? `https://library.municode.com/fl/${jurisdiction}/codes/code_of_ordinances` : null),
       // Development capacity
       far,
       max_height_ft: standards?.max_height_ft ?? null,
@@ -337,7 +316,7 @@ export async function GET(req: NextRequest) {
       corner_setback_ft: standards?.corner_setback_ft ?? null,
       water_setback_ft: standards?.water_setback_ft ?? null,
       // Permitted uses
-      permitted_uses: (usesRes.data ?? []) as PermittedUse[],
+      permitted_uses: mappedUses,
       // Media
       aerial_photo_url: aerialPhotoUrl,
       zoning_map_url: null,
