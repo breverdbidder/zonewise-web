@@ -63,23 +63,18 @@ type Intent = 'ADDRESS_LOOKUP' | 'ZONE_QUESTION' | 'PERMITTED_USE' | 'CAPACITY' 
 
 function classifyIntent(message: string): Intent {
   const m = message.toLowerCase()
-  // ADDRESS_LOOKUP: contains a digit followed by a street name pattern
   if (/\b\d+\s+\w+\s+(dr|ln|ave|blvd|st|rd|ct|way|cir|pl|terr?|trail|pkwy|hwy)\b/i.test(message)) {
     return 'ADDRESS_LOOKUP'
   }
-  // ZONE_QUESTION: mentions a zone code
   if (/\b(r-1|r-2|r-3|r-4|r-1a|r-1aa|r-1b|r-3a|rm-|mfr|sfr|bu-|c-|pud|re\b|reu|sre|tr-|office|cp|gml|acreage|townhouse)\b/i.test(message)) {
     return 'ZONE_QUESTION'
   }
-  // PERMITTED_USE
   if (/can i build|is .+ allowed|permitted use|allowed use|can i put|can i operate|is .+ permitted/i.test(m)) {
     return 'PERMITTED_USE'
   }
-  // CAPACITY
   if (/how many unit|how tall|max height|how high|maximum height|density|floor area|far\b|lot coverage|how much can i build|what can i build/i.test(m)) {
     return 'CAPACITY'
   }
-  // COMPARISON
   if (/difference between|compare|vs\.?|versus/i.test(m)) {
     return 'COMPARISON'
   }
@@ -217,7 +212,7 @@ function buildContextString(ctx: ZoningContext): string {
     lines.push(`Address: ${p.address}${p.city ? ', ' + p.city : ''}`)
     lines.push(`Parcel ID: ${p.parcel_id}`)
     if (p.acres) lines.push(`Lot Size: ${p.acres} acres (${Math.round(p.acres * 43560).toLocaleString()} sq ft)`)
-    if (p.use_description) lines.push(`Current Use: ${p.use_description} (code ${p.use_code})`)
+    if (p.use_description) lines.push(`Current Use: ${p.use_description.trim()} (code ${p.use_code})`)
   }
 
   if (ctx.zoning) {
@@ -308,23 +303,47 @@ async function getSessionHistory(sessionId: string): Promise<{ role: string; con
 }
 
 // ─── Gemini LLM call ──────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are ZoneWise AI, a Florida zoning intelligence assistant for Brevard County.
-Answer using ONLY the data provided in CONTEXT below. Never fabricate zoning codes or regulations.
-Format: Use bullet points for lists. Bold key numbers with **value**. Cite sources as [Source: District Code, Jurisdiction].
-If data is insufficient, say exactly: "I don't have that specific information. Try searching for an address to get detailed zoning data."
-Keep answers concise — 2-4 paragraphs max.
-Always cite where data came from — database record or estimated controls.`
+function buildSystemPrompt(hasContext: boolean): string {
+  if (hasContext) {
+    return `You are ZoneWise AI, a Florida zoning intelligence assistant for Brevard County.
+You have access to real zoning data from Brevard County's parcel and zoning records.
+
+RULES:
+- Use the CONTEXT data below as your primary source. Present it in clear, conversational language — NOT as raw data dumps.
+- When citing development standards, use natural sentences like "The maximum building height is 35 feet" instead of listing raw fields.
+- Bold key numbers with **value** for emphasis.
+- If the data shows estimated/fallback controls, mention that the user should verify with the local jurisdiction.
+- Keep answers concise — 2-4 paragraphs max.
+- End with a practical tip or suggestion when relevant (e.g., "You may want to check with [jurisdiction] for any overlay districts").
+- Never fabricate zoning codes, regulations, or numbers not present in the context data.`
+  }
+
+  return `You are ZoneWise AI, a Florida zoning intelligence assistant for Brevard County.
+The user is asking a general zoning question without referencing a specific address or zone code.
+
+RULES:
+- Answer using your general knowledge of zoning concepts, Florida land use law, and Brevard County practices.
+- Be helpful and educational. Explain concepts clearly with practical examples.
+- Bold key terms with **term** for emphasis.
+- Keep answers concise — 2-4 paragraphs max.
+- When relevant, suggest the user search for a specific address or zone code for detailed data (e.g., "Try asking about a specific address like '123 Main St' to get exact development standards").
+- Never fabricate specific Brevard County regulations. If unsure about a local detail, say so.
+- Focus on Florida-specific context when applicable.`
+}
 
 async function callGemini(message: string, context: string, history: { role: string; content: string }[]): Promise<string> {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY
   if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not configured')
 
+  const hasContext = context.length > 0
+  const systemPrompt = buildSystemPrompt(hasContext)
+
   const historyText = history.length > 0
     ? '\n\nPREVIOUS CONVERSATION:\n' + history.map(h => `${h.role.toUpperCase()}: ${h.content}`).join('\n')
     : ''
 
-  const fullPrompt = SYSTEM_PROMPT
-    + (context ? '\n\nCONTEXT:\n' + context : '')
+  const fullPrompt = systemPrompt
+    + (hasContext ? '\n\nCONTEXT:\n' + context : '')
     + historyText
     + '\n\nUSER: ' + message
 
@@ -394,7 +413,6 @@ export async function POST(req: NextRequest) {
         ctx = { parcel: null, ...result }
       }
     } else if (intent === 'COMPARISON') {
-      // Extract up to 2 zone codes for comparison
       const codes = [...(message.matchAll(/\b(R-1AA?|R-1B|R-[1-9]\w*|RM-?\w*|MFR-?\w*|SFR|RE\b|REU|SRE|BU-\w+|C-\w+|PUD\w*|TR-\w+|GML|ACREAGE|CP|OFFICE|TOWNHOUSE)\b/gi))].map(m => m[1].toUpperCase())
       if (codes.length >= 2) {
         const [r1, r2] = await Promise.all([
@@ -418,6 +436,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // GENERAL intent or any intent that didn't extract a zone/address —
+    // still goes through Gemini (with or without context)
     const contextString = buildContextString(ctx)
     const activeSession = await getOrCreateSession(sessionId)
     const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
@@ -426,16 +446,14 @@ export async function POST(req: NextRequest) {
     try {
       responseText = await callGemini(message, contextString, history.slice(-5))
     } catch (geminiErr) {
-      // Fallback: return raw structured data without LLM formatting
+      // Fallback: structured response without LLM formatting
       if (contextString) {
-        responseText = `Here is the raw zoning data I found:\n\n\`\`\`\n${contextString}\n\`\`\``
-        if (ctx.zoning?.isFallback) {
-          responseText += '\n\n[Source: Estimated controls — verify with local jurisdiction]'
-        }
+        // Even in fallback, format nicely instead of raw dump
+        responseText = formatFallbackResponse(ctx)
       } else {
         responseText = ctx.error
           ? `I was unable to find that information. ${ctx.error}`
-          : "I don't have that specific information. Try searching for an address to get detailed zoning data."
+          : "I couldn't process that request right now. Try asking about a specific address (e.g., \"What can I build at 123 Main St?\") or zone code (e.g., \"What does R-1A allow?\")."
       }
     }
 
@@ -466,4 +484,60 @@ export async function POST(req: NextRequest) {
       { status: 500, headers: CORS }
     )
   }
+}
+
+// ─── Fallback response formatter (when Gemini is down) ────────────────────────
+function formatFallbackResponse(ctx: ZoningContext): string {
+  const lines: string[] = []
+
+  if (ctx.parcel) {
+    const p = ctx.parcel
+    lines.push(`**${p.address.trim()}${p.city ? ', ' + p.city.trim() : ''}**`)
+    lines.push(`Parcel ID: ${p.parcel_id}`)
+    if (p.acres) lines.push(`Lot Size: **${p.acres} acres** (${Math.round(p.acres * 43560).toLocaleString()} sq ft)`)
+    if (p.use_description) lines.push(`Current Use: ${p.use_description.trim()}`)
+    lines.push('')
+  }
+
+  if (ctx.zoning) {
+    const z = ctx.zoning
+    const s = z.standards as Record<string, number>
+    lines.push(`**Zoning: ${z.zone_code} — ${z.district_name}**`)
+    if (z.jurisdiction) lines.push(`Jurisdiction: ${z.jurisdiction}`)
+    if (z.isFallback) lines.push('*Note: These are estimated controls — verify with the local jurisdiction.*')
+    lines.push('')
+
+    const standards: string[] = []
+    if (s.max_height_ft) standards.push(`Max height: **${s.max_height_ft} ft** (${s.max_stories ?? '?'} stories)`)
+    if (s.front_setback_ft) standards.push(`Setbacks: front **${s.front_setback_ft}'**, side **${s.side_setback_ft}'**, rear **${s.rear_setback_ft}'**`)
+    if (s.max_lot_coverage_pct) standards.push(`Max lot coverage: **${s.max_lot_coverage_pct}%**`)
+    if (s.max_far) standards.push(`Max FAR: **${s.max_far}**`)
+    if (s.max_density_du_acre) standards.push(`Max density: **${s.max_density_du_acre} units/acre**`)
+    if (s.parking_per_unit && s.parking_per_unit > 0) standards.push(`Parking: **${s.parking_per_unit} spaces/unit**`)
+
+    if (standards.length > 0) {
+      lines.push('Development Standards:')
+      for (const st of standards) lines.push(`• ${st}`)
+    }
+
+    if (z.permitted_uses.length > 0) {
+      lines.push('')
+      lines.push('Permitted Uses:')
+      const byType: Record<string, string[]> = {}
+      for (const u of z.permitted_uses) {
+        const t = u.use_type || 'permitted'
+        if (!byType[t]) byType[t] = []
+        byType[t].push(u.use_description)
+      }
+      for (const [type, uses] of Object.entries(byType)) {
+        lines.push(`• **${type}:** ${uses.join(', ')}`)
+      }
+    }
+  }
+
+  if (lines.length === 0) {
+    return "I couldn't find data for that query. Try searching for a specific address or zone code."
+  }
+
+  return lines.join('\n')
 }
