@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { X, ExternalLink, Home, User, DollarSign, MapPin, FileText, Building2 } from 'lucide-react'
+import Link from 'next/link'
+import { X, ExternalLink, Home, User, DollarSign, MapPin, FileText, Building2, ClipboardList } from 'lucide-react'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 export interface BcpaoPropertyData extends Record<string, unknown> {
@@ -290,11 +291,21 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
             )}
             <a
               href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white text-xs font-medium transition-colors"
             >
               <MapPin className="w-3.5 h-3.5" />
               View 3D Massing
             </a>
+          </div>
+          {/* Full Report CTA */}
+          <div className="pb-2">
+            <Link
+              href={`/report/${encodeURIComponent(parcelId)}`}
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#F59E0B] hover:bg-amber-500 text-white text-xs font-semibold transition-colors"
+            >
+              <ClipboardList className="w-3.5 h-3.5" />
+              View Full Zoning Report
+            </Link>
           </div>
 
         </div>
