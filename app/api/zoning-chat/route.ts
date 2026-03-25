@@ -63,7 +63,7 @@ type Intent = 'ADDRESS_LOOKUP' | 'ZONE_QUESTION' | 'PERMITTED_USE' | 'CAPACITY' 
 
 function classifyIntent(message: string): Intent {
   const m = message.toLowerCase()
-  if (/\b\d+\s+\w+\s+(dr|ln|ave|blvd|st|rd|ct|way|cir|pl|terr?|trail|pkwy|hwy)\b/i.test(message)) {
+  if (/\d+\s+\w+\s+(dr|drive|ln|lane|ave|avenue|blvd|boulevard|st|street|rd|road|ct|court|way|cir|circle|pl|place|terr|terrace|trail|pkwy|parkway|hwy|highway|cswy|causeway|cr|sr)\b/i.test(message)) {
     return 'ADDRESS_LOOKUP'
   }
   if (/\b(r-1|r-2|r-3|r-4|r-1a|r-1aa|r-1b|r-3a|rm-|mfr|sfr|bu-|c-|pud|re\b|reu|sre|tr-|office|cp|gml|acreage|townhouse)\b/i.test(message)) {
@@ -86,8 +86,25 @@ function extractZoneCode(message: string): string | null {
   return match ? match[1].toUpperCase() : null
 }
 
+// ─── Street type normalization map ───────────────────────────────────────────
+const STREET_TYPE_MAP: Record<string, string> = {
+  street: 'st', drive: 'dr', lane: 'ln', avenue: 'ave',
+  boulevard: 'blvd', road: 'rd', court: 'ct', circle: 'cir',
+  place: 'pl', terrace: 'ter', parkway: 'pkwy', highway: 'hwy',
+  causeway: 'cswy',
+}
+
+function normalizeStreetType(addr: string): string {
+  let normalized = addr.toUpperCase()
+  for (const [full, abbr] of Object.entries(STREET_TYPE_MAP)) {
+    const re = new RegExp(`\\b${full}\\b`, 'gi')
+    normalized = normalized.replace(re, abbr.toUpperCase())
+  }
+  return normalized
+}
+
 function extractAddress(message: string): string | null {
-  const match = message.match(/(\d+\s+[\w\s]+(dr|ln|ave|blvd|st|rd|ct|way|cir|pl|terr?|trail|pkwy|hwy)\b[\w\s,]*)/i)
+  const match = message.match(/(\d+\s+[\w\s]+(dr|drive|ln|lane|ave|avenue|blvd|boulevard|st|street|rd|road|ct|court|way|cir|circle|pl|place|terr|terrace|trail|pkwy|parkway|hwy|highway|cswy|causeway|cr|sr)\b[\w\s,]*)/i)
   return match ? match[1].trim() : null
 }
 
@@ -106,14 +123,64 @@ interface ZoningContext {
   error: string | null
 }
 
-async function fetchZoningByAddress(address: string): Promise<ZoningContext> {
+// ─── City extractor ───────────────────────────────────────────────────────────
+const BREVARD_CITIES = [
+  'satellite beach', 'cocoa beach', 'melbourne', 'palm bay', 'titusville',
+  'rockledge', 'cocoa', 'merritt island', 'cape canaveral', 'indialantic',
+  'indian harbour beach', 'brevard', 'viera', 'west melbourne', 'mims',
+  'grant', 'micco', 'barefoot bay', 'palm shores',
+]
+
+function extractCity(message: string): string | null {
+  const lower = message.toLowerCase()
+  for (const city of BREVARD_CITIES) {
+    if (lower.includes(city)) return city
+  }
+  return null
+}
+
+async function fetchZoningByAddress(address: string, originalMessage?: string): Promise<ZoningContext> {
   const supabase = createAnonClient()
   try {
-    const { data: parcels } = await supabase
+    // Bug 3: Normalize address — convert full street type words to abbreviations, uppercase
+    const normalizedAddr = normalizeStreetType(address)
+
+    // Attempt 1: search with normalized address
+    let { data: parcels } = await supabase
       .from('sample_properties')
       .select('parcel_id, address, acres, use_code, use_description, city')
-      .ilike('address', `%${address}%`)
+      .ilike('address', `%${normalizedAddr}%`)
       .limit(5)
+
+    // Attempt 2: fallback — search with street number + first word of street name
+    if (!parcels || parcels.length === 0) {
+      const parts = normalizedAddr.trim().split(/\s+/)
+      if (parts.length >= 2) {
+        const shortSearch = `%${parts[0]} ${parts[1]}%`
+        const result = await supabase
+          .from('sample_properties')
+          .select('parcel_id, address, acres, use_code, use_description, city')
+          .ilike('address', shortSearch)
+          .limit(5)
+        parcels = result.data
+      }
+    }
+
+    // Bug 5: City filtering — if still no results, try address + city
+    if ((!parcels || parcels.length === 0) && originalMessage) {
+      const city = extractCity(originalMessage)
+      if (city) {
+        const parts = normalizedAddr.trim().split(/\s+/)
+        const shortSearch = parts.length >= 2 ? `%${parts[0]} ${parts[1]}%` : `%${normalizedAddr}%`
+        const result = await supabase
+          .from('sample_properties')
+          .select('parcel_id, address, acres, use_code, use_description, city')
+          .ilike('address', shortSearch)
+          .ilike('city', `%${city}%`)
+          .limit(5)
+        parcels = result.data
+      }
+    }
 
     if (!parcels || parcels.length === 0) {
       return { parcel: null, zoning: null, error: `No parcels found for "${address}"` }
@@ -457,7 +524,7 @@ export async function POST(req: NextRequest) {
 
     if (intent === 'ADDRESS_LOOKUP') {
       const addr = extractAddress(message)
-      if (addr) ctx = await fetchZoningByAddress(addr)
+      if (addr) ctx = await fetchZoningByAddress(addr, message)
     } else if (intent === 'ZONE_QUESTION' || intent === 'PERMITTED_USE' || intent === 'CAPACITY') {
       const zoneCode = extractZoneCode(message)
       if (zoneCode) {
