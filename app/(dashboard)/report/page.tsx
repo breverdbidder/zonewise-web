@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, AlertTriangle } from 'lucide-react'
 import ZoningReport, { type ZoningReportData } from '@/components/reports/ZoningReport'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import ZoningDisclaimer from '@/components/ZoningDisclaimer'
 
 interface ReportPageProps {
   searchParams: Promise<{ parcel?: string; print?: string }>
@@ -106,6 +107,9 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
       <ErrorBoundary>
         <ZoningReport data={data} />
       </ErrorBoundary>
+
+      {/* Accuracy disclaimer — hidden when accuracy >= 99% */}
+      {!isPrint && <ZoningDisclaimer />}
     </div>
   )
 }

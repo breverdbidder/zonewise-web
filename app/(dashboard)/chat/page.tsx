@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import ZoningChatbot from '@/components/chat/ZoningChatbot'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import ZoningDisclaimer from '@/components/ZoningDisclaimer'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +38,9 @@ export default function ZoningChatPage() {
           <ZoningChatbot />
         </ErrorBoundary>
       </div>
+
+      {/* Accuracy disclaimer — hidden when accuracy >= 99% */}
+      <ZoningDisclaimer />
     </div>
   )
 }
