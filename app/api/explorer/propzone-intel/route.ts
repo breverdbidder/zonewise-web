@@ -30,11 +30,11 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       // Table may not exist yet — return empty rather than 500
-      return NextResponse.json({ found: false }, { status: 200 })
+      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
     }
 
     if (!data) {
-      return NextResponse.json({ found: false }, { status: 200 })
+      return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
     }
 
     return NextResponse.json(data, {
@@ -42,6 +42,6 @@ export async function GET(req: NextRequest) {
     })
   } catch {
     // Fail gracefully — competitor comparison is non-critical
-    return NextResponse.json({ found: false }, { status: 200 })
+    return NextResponse.json({ data: null, found: false, message: 'No competitor data' }, { status: 200 })
   }
 }

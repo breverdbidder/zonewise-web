@@ -221,6 +221,8 @@ export default function MassingEngine() {
   const [isFallback, setIsFallback] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
 
+  const [webglLost, setWebglLost] = useState(false)
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const overlayRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
@@ -378,6 +380,14 @@ export default function MassingEngine() {
     rendererRef.current = renderer
     sceneRef.current = scene
     cameraRef.current = camera
+
+    // ── WebGL context lost handler ──
+    const handleContextLost = (e: Event) => {
+      e.preventDefault()
+      cancelAnimationFrame(frameRef.current)
+      setWebglLost(true)
+    }
+    canvas.addEventListener('webglcontextlost', handleContextLost)
 
     // ── 3-Point Architectural Lighting ──
     // Key light — warm sunlight
@@ -981,6 +991,7 @@ export default function MassingEngine() {
       canvas.removeEventListener('touchstart', onTS)
       canvas.removeEventListener('touchend', onTE)
       canvas.removeEventListener('touchmove', onTM)
+      canvas.removeEventListener('webglcontextlost', handleContextLost)
       if (overlayRef.current) overlayRef.current.innerHTML = ''
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1195,14 +1206,29 @@ export default function MassingEngine() {
                   </div>
                 </div>
                 <div style={{ position: 'relative', width: '100%', height: 420 }}>
-                  <canvas
-                    ref={canvasRef}
-                    style={{ width: '100%', height: 420, display: 'block', cursor: 'grab' }}
-                  />
-                  <div
-                    ref={overlayRef}
-                    style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-                  />
+                  {webglLost ? (
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#020617] text-center">
+                      <span className="text-2xl">⚠️</span>
+                      <p className="text-sm font-medium text-slate-300">3D rendering unavailable — try refreshing</p>
+                      <button
+                        onClick={() => { setWebglLost(false) }}
+                        className="rounded-lg bg-[#F59E0B] px-4 py-1.5 text-xs font-semibold text-slate-900 hover:bg-[#F59E0B]/90"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <canvas
+                        ref={canvasRef}
+                        style={{ width: '100%', height: 420, display: 'block', cursor: 'grab' }}
+                      />
+                      <div
+                        ref={overlayRef}
+                        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+                      />
+                    </>
+                  )}
                 </div>
                 {/* Legend */}
                 <div className="px-4 py-2.5 border-t border-slate-800 flex items-center gap-4 flex-wrap">

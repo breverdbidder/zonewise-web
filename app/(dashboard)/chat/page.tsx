@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ZoningChatbot from '@/components/chat/ZoningChatbot'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +33,9 @@ export default function ZoningChatPage() {
 
       {/* Full-height chatbot */}
       <div className="flex-1 overflow-hidden">
-        <ZoningChatbot />
+        <ErrorBoundary>
+          <ZoningChatbot />
+        </ErrorBoundary>
       </div>
     </div>
   )

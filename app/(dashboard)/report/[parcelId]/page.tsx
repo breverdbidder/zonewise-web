@@ -5,6 +5,7 @@ import ZoningReport, {
   type ZoningReportData,
 } from '@/components/report/ZoningReport'
 import { Suspense } from 'react'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 interface Props {
   params: { parcelId: string }
@@ -58,12 +59,14 @@ export default function ReportPage({ params }: Props) {
   const parcelId = decodeURIComponent(params.parcelId)
 
   return (
-    <Suspense fallback={
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <ZoningReportSkeleton />
-      </div>
-    }>
-      <ReportContent parcelId={parcelId} />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <ZoningReportSkeleton />
+        </div>
+      }>
+        <ReportContent parcelId={parcelId} />
+      </Suspense>
+    </ErrorBoundary>
   )
 }
