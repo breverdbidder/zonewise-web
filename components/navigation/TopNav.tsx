@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { name: 'Dev Intel', href: '/explore' },
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
-  { name: 'Explore', href: '/explore' },
+  { name: 'Massing', href: '/massing' },
 ]
 
 export default function TopNav() {
