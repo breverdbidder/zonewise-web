@@ -1,0 +1,29 @@
+name: "Test Gemini Key"
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Gemini API
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo "Key prefix: ${GEMINI_API_KEY:0:10}"
+          echo "Key length: ${#GEMINI_API_KEY}"
+          
+          RESULT=$(curl -s -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"contents":[{"parts":[{"text":"What is FAR in zoning? One sentence."}]}],"generationConfig":{"temperature":0.3,"maxOutputTokens":100}}')
+          
+          echo "Raw result: $RESULT" | head -c 500
+          
+          if echo "$RESULT" | grep -q "candidates"; then
+            echo ""
+            echo "SUCCESS: Gemini responding"
+          elif echo "$RESULT" | grep -q "error"; then
+            echo ""
+            echo "FAILED: $(echo $RESULT | python3 -c 'import json,sys; print(json.load(sys.stdin)["error"]["message"][:200])' 2>/dev/null || echo 'unknown')"
+          fi
