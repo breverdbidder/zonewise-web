@@ -2,7 +2,7 @@
   "project": "zonewise-web",
   "framework": "Next.js",
   "deployment": "Vercel → zonewise.ai",
-  "last_updated": "2026-03-06",
+  "last_updated": "2026-03-25",
   "brand": {
     "primary": "#1E3A5F",
     "accent": "#F59E0B",
@@ -11,7 +11,40 @@
   },
   "workflows_active": 11,
   "workflows_dead_estimate": 0,
+  "checkpoints": {
+    "CP1": "complete",
+    "CP2": "complete",
+    "CP3": "complete",
+    "CP4": "complete",
+    "CP5": {
+      "status": "in_progress",
+      "branch": "feat/cp5-feasibility",
+      "tasks": {
+        "water_setback_analysis": "complete",
+        "lodging_str_intelligence": "complete",
+        "market_context_panel": "complete"
+      },
+      "new_files": [
+        "components/feasibility/LodgingTab.tsx",
+        "components/feasibility/MarketContext.tsx",
+        "migrations/20260325_add_water_setback_lodging_columns.sql"
+      ],
+      "modified_files": [
+        "components/feasibility/SiteTab.tsx",
+        "components/feasibility/FeasibilityLayout.tsx",
+        "components/feasibility/index.ts",
+        "types/feasibility.ts",
+        "lib/feasibility/demo-data.ts",
+        "app/(dashboard)/feasibility/page.tsx"
+      ]
+    }
+  },
   "recent_decisions": [
+    {
+      "date": "2026-03-25",
+      "decision": "CP5 — ZoneWise Feasibility Intelligence: water setbacks, lodging/STR intel, market context",
+      "rationale": "Investor workflow needs waterfront setback warnings, rental income type viability, and ZIP-level market scoring before committing to a deal"
+    },
     {
       "date": "2026-03-06",
       "decision": "Deleted 10 dead workflows",

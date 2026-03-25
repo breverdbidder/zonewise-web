@@ -1,7 +1,10 @@
 // ZoneWise.AI — Demo Data (Phase 1)
 // TODO: Replace with Supabase queries in Phase 2 (Issue #23)
 
-import type { SiteData, ZoningControl, RentComp, UnitRent, UnitMix } from '@/types/feasibility'
+import type {
+  SiteData, ZoningControl, RentComp, UnitRent, UnitMix,
+  LodgingPermissions, NearbyLodgingParcel, MarketDemographics, MarketScore,
+} from '@/types/feasibility'
 
 export const DEMO_SITE: SiteData = {
   address: '1233 Highway A1A, Satellite Beach, FL 32937',
@@ -25,6 +28,13 @@ export const DEMO_SITE: SiteData = {
   livingUnits: 1,
   lat: 28.1764,
   lng: -80.5901,
+  // Water setback — this parcel is ~180ft from the Indian River Lagoon
+  waterBody: 'Indian River Lagoon',
+  waterBodyType: 'lagoon',
+  waterDistanceFt: 180,
+  setbackWater: 25,
+  setbackWaterfrontType: 'seawall',
+  waterSetbackSource: 'Satellite Beach LDC §22-87',
 }
 
 export const DEMO_ZONING_CONTROLS: ZoningControl[] = [
@@ -58,3 +68,45 @@ export const DEMO_UNIT_MIX: UnitMix[] = [
   { type: 'Two BR', pct: 35, sf: 950, rent: 2320 },
   { type: 'Three BR', pct: 15, sf: 1250, rent: 2850 },
 ]
+
+// CP5 — Lodging/STR permissions for demo site (Satellite Beach GU zone)
+export const DEMO_LODGING: LodgingPermissions = {
+  hotel: 'conditional',
+  motel: 'conditional',
+  vacation_rental: 'not_permitted',
+  str: 'not_permitted',
+  bnb: 'conditional',
+  notes: 'GU (General Use) zone requires conditional use permit for lodging. STR and vacation rentals prohibited by Satellite Beach Ord. 2022-08.',
+  ordinanceRef: 'Satellite Beach LDC §22-165, Ord. 2022-08',
+}
+
+export const DEMO_NEARBY_LODGING: NearbyLodgingParcel[] = [
+  { address: '1390 Hwy A1A, Satellite Beach', zone: 'C-1', distanceMi: 0.4, type: 'hotel', units: 48 },
+  { address: '800 S Patrick Dr, Satellite Beach', zone: 'C-1', distanceMi: 0.7, type: 'vacation rental', units: 6 },
+  { address: '2101 Hwy A1A, Indian Harbour Beach', zone: 'C-2', distanceMi: 1.1, type: 'hotel', units: 72 },
+]
+
+// CP5 — Market demographics for ZIP 32937 (Satellite Beach)
+export const DEMO_MARKET_DEMOGRAPHICS: MarketDemographics = {
+  zip: '32937',
+  medianHHIncome: 82100,
+  medianHHIncomeYoY: 3.8,
+  population: 11420,
+  populationGrowthPct: 2.6,
+  vacancyRate: 4.2,
+  medianHomeValue: 415000,
+  medianHomeValueYoY: 5.2,
+  ownerOccupiedPct: 68,
+  renterOccupiedPct: 32,
+  dataYear: 2024,
+  dataSource: 'Census ACS 5-Year 2024',
+}
+
+export const DEMO_MARKET_SCORE: MarketScore = {
+  total: 8,
+  incomeScore: 8,
+  vacancyScore: 9,
+  growthScore: 7,
+  appreciationScore: 8,
+  breakdown: 'Strong income base ($82K median) + low vacancy (4.2%) + steady 2.6% population growth. Coastal market with consistent appreciation.',
+}
