@@ -77,6 +77,7 @@ export default function ExplorerV2() {
   // Layer / filter state
   const [zoningFilter, setZoningFilter] = useState<ZoningFilter>('all')
   const [layers, setLayers] = useState({ parcels: true, zoning: true, flu: false })
+  const [zoningOverlayVisible, setZoningOverlayVisible] = useState(false)
 
   // Conversion gate state (persisted in localStorage)
   const [parcelClicks, setParcelClicks] = useState(0)
@@ -191,6 +192,7 @@ export default function ExplorerV2() {
             choroplethMetric={choroplethMetric}
             choroplethVisible={choroplethVisible}
             zoningFilter={zoningFilter}
+            zoningOverlayVisible={zoningOverlayVisible}
             mapStyle={mapStyle}
           />
         </div>
@@ -202,11 +204,16 @@ export default function ExplorerV2() {
             <LayerControls
               layers={layers}
               choroplethVisible={choroplethVisible}
+              zoningOverlayVisible={zoningOverlayVisible}
               onToggleLayer={(id, on, key) => {
                 setLayers(l => ({ ...l, [key]: on }))
                 mapRef.current?.toggleLayer(id, on)
               }}
               onToggleChoropleth={v => setChoroplethVisible(v)}
+              onToggleZoningOverlay={v => {
+                setZoningOverlayVisible(v)
+                mapRef.current?.setZoningOverlay(v)
+              }}
             />
           </div>
 
@@ -228,10 +235,10 @@ export default function ExplorerV2() {
             </div>
           )}
 
-          {/* Zoning legend when no parcel selected */}
-          {!selectedParcel && (
+          {/* Zoning legend when overlay is on and no parcel selected */}
+          {!selectedParcel && zoningOverlayVisible && (
             <div className="pointer-events-auto">
-              <ZoningLegend />
+              <ZoningLegend visible />
             </div>
           )}
         </div>

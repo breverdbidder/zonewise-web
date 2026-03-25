@@ -19,6 +19,7 @@ export interface ExplorerMapHandle {
   filterZoning: (prefix: ZoningFilter) => void
   toggleLayer: (id: string, on: boolean) => void
   setChoroplethMetric: (metric: ChoroplethMetric) => void
+  setZoningOverlay: (visible: boolean) => void
 }
 
 interface Props {
@@ -28,6 +29,7 @@ interface Props {
   choroplethMetric?: ChoroplethMetric
   choroplethVisible?: boolean
   zoningFilter?: ZoningFilter
+  zoningOverlayVisible?: boolean
 }
 
 const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
@@ -37,6 +39,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     choroplethMetric = 'zhvi',
     choroplethVisible = true,
     zoningFilter = 'all',
+    zoningOverlayVisible = false,
     mapStyle = 'streets-v12',
   },
   ref,
@@ -47,6 +50,8 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
   const [loading, setLoading] = useState(false)
   const zoningFilterRef = useRef(zoningFilter)
   const choroplethMetricRef = useRef(choroplethMetric)
+  const zoningOverlayVisibleRef = useRef(zoningOverlayVisible)
+  const overlayFetchControllerRef = useRef<AbortController | null>(null)
 
   // ── Imperative handle ───────────────────────────────────────────────────────
   useImperativeHandle(ref, () => ({
@@ -68,6 +73,17 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     setChoroplethMetric(metric) {
       choroplethMetricRef.current = metric
       applyChoroplethPaint(mapRef.current, metric)
+    },
+    setZoningOverlay(visible) {
+      zoningOverlayVisibleRef.current = visible
+      const map = mapRef.current
+      if (!map) return
+      const vis = visible ? 'visible' : 'none'
+      try {
+        map.setLayoutProperty('zoning-overlay-fill', 'visibility', vis)
+        map.setLayoutProperty('zoning-overlay-line', 'visibility', vis)
+      } catch {}
+      if (visible) fetchOverlayForCurrentBounds(map)
     },
   }))
 
@@ -182,6 +198,42 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
           },
         }, labelLayer.id)
       }
+
+      // ── Supabase-colored Zoning Overlay (GeoJSON fill layer) ─────────────
+      map.addSource('zoning-overlay-src', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      })
+      // Data-driven fill: each feature carries zone_color property from API
+      map.addLayer({
+        id: 'zoning-overlay-fill',
+        type: 'fill',
+        source: 'zoning-overlay-src',
+        paint: {
+          'fill-color': ['coalesce', ['get', 'zone_color'], '#94A3B8'],
+          'fill-opacity': 0.35,
+        },
+        layout: { visibility: 'none' },
+      })
+      map.addLayer({
+        id: 'zoning-overlay-line',
+        type: 'line',
+        source: 'zoning-overlay-src',
+        paint: {
+          'line-color': ['coalesce', ['get', 'zone_color'], '#94A3B8'],
+          'line-opacity': 0.6,
+          'line-width': 0.8,
+        },
+        layout: { visibility: 'none' },
+      })
+
+      // Fetch on moveend when overlay is active (debounced via AbortController)
+      const onMoveEnd = () => {
+        if (zoningOverlayVisibleRef.current && map.getZoom() >= 13) {
+          fetchOverlayForCurrentBounds(map)
+        }
+      }
+      map.on('moveend', onMoveEnd)
 
       // ── Zoom-adaptive opacity ─────────────────────────────────────────────
       const applyZoomOpacity = () => {
@@ -312,6 +364,21 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     applyZoningFilter(mapRef.current, zoningFilter)
   }, [zoningFilter, mapReady])
 
+  // ── Toggle zoning overlay visibility ──────────────────────────────────────
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    zoningOverlayVisibleRef.current = zoningOverlayVisible
+    const vis = zoningOverlayVisible ? 'visible' : 'none'
+    try {
+      map.setLayoutProperty('zoning-overlay-fill', 'visibility', vis)
+      map.setLayoutProperty('zoning-overlay-line', 'visibility', vis)
+    } catch {}
+    if (zoningOverlayVisible && map.getZoom() >= 13) {
+      fetchOverlayForCurrentBounds(map)
+    }
+  }, [zoningOverlayVisible, mapReady])
+
   // ── Style switching ──────────────────────────────────────────────────────
   const prevStyleRef = useRef(mapStyle)
   useEffect(() => {
@@ -359,6 +426,28 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
 })
 
 export default ExplorerMap
+
+// ── Overlay fetch ─────────────────────────────────────────────────────────────
+
+function fetchOverlayForCurrentBounds(map: mapboxgl.Map) {
+  const bounds = map.getBounds()
+  if (!bounds) return
+  const west  = bounds.getWest()
+  const south = bounds.getSouth()
+  const east  = bounds.getEast()
+  const north = bounds.getNorth()
+  const url = `/api/explorer/zoning-overlay?west=${west}&south=${south}&east=${east}&north=${north}`
+  fetch(url)
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data) return
+      try {
+        const src = map.getSource('zoning-overlay-src') as mapboxgl.GeoJSONSource | undefined
+        if (src) src.setData(data)
+      } catch {}
+    })
+    .catch(() => {})
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
