@@ -1,4 +1,4 @@
-name: Run CP3 Migration
+name: Run Migration
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
       migration_file:
         description: 'Migration file to run (relative to supabase/migrations/)'
         required: false
-        default: '011_cp3_deep_zoning_intel.sql'
+        default: '20260325_add_water_setback_lodging_columns.sql'
 
 jobs:
   migrate:
