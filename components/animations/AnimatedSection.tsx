@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
 
 interface AnimatedSectionProps {
@@ -30,7 +30,17 @@ export default function AnimatedSection({
 }: AnimatedSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-60px 0px' })
+  const [mounted, setMounted] = useState(false)
   const offset = directionMap[direction]
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // SSR: render children visible, no opacity:0 inline style
+  if (!mounted) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <motion.div
