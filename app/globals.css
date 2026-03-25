@@ -277,6 +277,7 @@ input, textarea {
 }
 
 input::placeholder, textarea::placeholder {
+  /* P2A-2a: slate-400 (rgb 148 163 184) for AA contrast on dark backgrounds */
   color: var(--slate-400);
 }
 
