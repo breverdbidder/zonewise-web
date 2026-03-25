@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import * as THREE from 'three'
 import { createClient } from '@/lib/supabase/client'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
@@ -209,6 +210,7 @@ function getFallbackControls(zoneCode: string) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function MassingEngine() {
+  const searchParams = useSearchParams()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<ParcelResult[]>([])
   const [selected, setSelected] = useState<ParcelResult | null>(null)
@@ -325,6 +327,23 @@ export default function MassingEngine() {
       setLoadingZoning(false)
     }
   }, [])
+
+  // ── Deep link: ?parcel= ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const parcelParam = searchParams.get('parcel')
+    if (parcelParam) {
+      const supabase = createClient()
+      supabase
+        .from('sample_properties')
+        .select('parcel_id, address, acres, geometry, use_code, use_description')
+        .eq('parcel_id', parcelParam)
+        .limit(1)
+        .single()
+        .then(({ data }) => {
+          if (data) handleSelect(data)
+        })
+    }
+  }, []) // run once on mount
 
   // ── Three.js renderer ───────────────────────────────────────────────────────
   useEffect(() => {

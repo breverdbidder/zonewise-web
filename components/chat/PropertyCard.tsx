@@ -9,6 +9,7 @@ export interface BcpaoPropertyData extends Record<string, unknown> {
   TaxAcct?: string | number | null
   PARCEL_ID?: string | null
   photoUrl?: string | null
+  proxyPhotoUrl?: string | null
 
   // Address
   STREET_NUMBER?: string | number | null
@@ -175,11 +176,11 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
         {/* ── Header ── */}
         <div className="shrink-0">
           {/* Photo */}
-          {data.photoUrl ? (
+          {(data.photoUrl || data.proxyPhotoUrl) ? (
             <div className="relative w-full h-44 sm:h-52 overflow-hidden rounded-t-2xl sm:rounded-t-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={data.photoUrl}
+                src={data.proxyPhotoUrl || (data.photoUrl ? `/api/bcpao-photo?url=${encodeURIComponent(data.photoUrl)}` : '')}
                 alt={address || 'Property photo'}
                 className="w-full h-full object-cover"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
