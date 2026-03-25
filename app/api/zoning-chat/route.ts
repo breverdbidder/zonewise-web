@@ -129,7 +129,8 @@ interface ZoningContext {
   } | null
   zoning: {
     zone_code: string; jurisdiction: string | null;
-    district_name: string; standards: Record<string, unknown>;
+    district_name: string; zone_description?: string | null;
+    standards: Record<string, unknown>;
     permitted_uses: { use_description: string; use_type: string }[];
     isFallback: boolean;
   } | null
@@ -384,7 +385,7 @@ async function fetchZoningByCode(zoneCode: string, jurisdiction?: string | null)
   try {
     const { data: zd } = await supabase
       .from('zoning_districts')
-      .select('id, code, name')
+      .select('id, code, name, description')
       .eq('code', zoneCode)
       .limit(1)
       .single()
@@ -420,6 +421,7 @@ async function fetchZoningByCode(zoneCode: string, jurisdiction?: string | null)
         zone_code: zoneCode,
         jurisdiction: jurisdiction ?? null,
         district_name: zd.name,
+        zone_description: zd.description ?? null,
         standards: (zs ?? {}) as Record<string, unknown>,
         permitted_uses: pu ?? [],
         isFallback: false,
@@ -476,6 +478,7 @@ function buildContextString(ctx: ZoningContext): string {
     lines.push('=== ZONING DATA ===')
     lines.push(`Zone Code: ${z.zone_code}`)
     lines.push(`Zone Name: ${z.district_name}`)
+    if (z.zone_description) lines.push(`Zone Description: ${z.zone_description}`)
     if (z.jurisdiction) lines.push(`Jurisdiction: ${z.jurisdiction}`)
     if (z.isFallback) lines.push('[Note: Using estimated controls — verify with local jurisdiction]')
 

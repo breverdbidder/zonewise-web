@@ -1,0 +1,38 @@
+name: Run CP3 Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      migration_file:
+        description: 'Migration file to run (relative to supabase/migrations/)'
+        required: false
+        default: '011_cp3_deep_zoning_intel.sql'
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install psql
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Run migration
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          MIGRATION_FILE: ${{ github.event.inputs.migration_file }}
+        run: |
+          FILE="supabase/migrations/${MIGRATION_FILE}"
+          echo "Running migration: $FILE"
+          
+          if [ -n "$SUPABASE_DB_URL" ]; then
+            # Direct psql connection if DB URL is available
+            psql "$SUPABASE_DB_URL" -f "$FILE"
+          else
+            echo "SUPABASE_DB_URL not set — migration file committed for manual execution"
+            echo "File contents:"
+            cat "$FILE"
+          fi
+          
+          echo "Migration step complete"
