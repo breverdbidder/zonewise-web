@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bboxSchema, SECURITY_HEADERS } from '@/lib/validation'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,14 +44,22 @@ const BCPAO_ZONING_QUERY =
  */
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
-  const west  = parseFloat(sp.get('west')  ?? '')
-  const south = parseFloat(sp.get('south') ?? '')
-  const east  = parseFloat(sp.get('east')  ?? '')
-  const north = parseFloat(sp.get('north') ?? '')
 
-  if ([west, south, east, north].some(isNaN)) {
-    return NextResponse.json({ error: 'west, south, east, north required' }, { status: 400 })
+  const bboxParsed = bboxSchema.safeParse({
+    west:  parseFloat(sp.get('west')  ?? ''),
+    south: parseFloat(sp.get('south') ?? ''),
+    east:  parseFloat(sp.get('east')  ?? ''),
+    north: parseFloat(sp.get('north') ?? ''),
+  })
+
+  if (!bboxParsed.success) {
+    return NextResponse.json(
+      { error: 'west, south, east, north required (finite numbers)' },
+      { status: 400, headers: SECURITY_HEADERS }
+    )
   }
+
+  const { west, south, east, north } = bboxParsed.data
 
   // Clamp to Brevard County bounds to avoid runaway queries
   const clampedWest  = Math.max(west,  -81.5)
@@ -86,7 +95,7 @@ export async function GET(req: NextRequest) {
     })
 
     if (!res.ok) {
-      return NextResponse.json({ error: 'BCPAO fetch failed', status: res.status }, { status: 502 })
+      return NextResponse.json({ error: 'BCPAO fetch failed', status: res.status }, { status: 502, headers: SECURITY_HEADERS })
     }
 
     const geojson = await res.json()
@@ -108,14 +117,17 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(geojson, {
-      headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=600' },
+      headers: {
+        ...SECURITY_HEADERS,
+        'Cache-Control': 's-maxage=300, stale-while-revalidate=600',
+      },
     })
   } catch (err) {
     console.error('[zoning-overlay] bbox query error:', err)
     // Return empty GeoJSON so the map layer renders cleanly without crashing
     return NextResponse.json(
       { type: 'FeatureCollection', features: [] },
-      { status: 200 }
+      { status: 200, headers: SECURITY_HEADERS }
     )
   }
 }

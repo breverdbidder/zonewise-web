@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAnonClient } from '@/lib/supabase/server'
+import { chatQuerySchema, sanitizeChatMessage, SECURITY_HEADERS } from '@/lib/validation'
 
 // ─── CORS headers ─────────────────────────────────────────────────────────────
 const CORS = {
@@ -705,13 +706,18 @@ function extractCitations(ctx: ZoningContext): { source: string; detail: string 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const message: string = (body.message ?? '').trim()
+    const rawMessage: string = (body.message ?? '').trim()
     const sessionId: string | undefined = body.sessionId
     const incomingHistory: { role: string; content: string }[] = body.history ?? []
 
-    if (!message) {
-      return NextResponse.json({ error: 'message is required' }, { status: 400, headers: CORS })
+    const messageParsed = chatQuerySchema.safeParse(rawMessage)
+    if (!messageParsed.success) {
+      return NextResponse.json(
+        { error: 'message is required (1–500 characters)' },
+        { status: 400, headers: { ...CORS, ...SECURITY_HEADERS } }
+      )
     }
+    const message = sanitizeChatMessage(messageParsed.data)
 
     const intent = classifyIntent(message)
     let ctx: ZoningContext = { parcel: null, zoning: null, error: null }
@@ -745,7 +751,7 @@ export async function POST(req: NextRequest) {
         }
         const citations = [...extractCitations({ parcel: null, ...r1 }), ...extractCitations({ parcel: null, ...r2 })]
         await persistMessages(activeSession, message, responseText)
-        return NextResponse.json({ response: responseText, citations, sessionId: activeSession }, { headers: CORS })
+        return NextResponse.json({ response: responseText, citations, sessionId: activeSession }, { headers: { ...CORS, ...SECURITY_HEADERS } })
       }
     }
 
@@ -788,13 +794,13 @@ export async function POST(req: NextRequest) {
           isFallback: ctx.zoning.isFallback,
         } : undefined,
       },
-      { headers: CORS }
+      { headers: { ...CORS, ...SECURITY_HEADERS } }
     )
   } catch (err) {
     console.error('[zoning-chat] POST error:', err)
     return NextResponse.json(
       { error: 'Service unavailable', fallback: true },
-      { status: 503, headers: CORS }
+      { status: 503, headers: { ...CORS, ...SECURITY_HEADERS } }
     )
   }
 }

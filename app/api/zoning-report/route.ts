@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { parcelIdSchema, SECURITY_HEADERS } from '@/lib/validation'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 interface ZoningReportData {
@@ -144,11 +145,18 @@ Assessed Value: $${reportData.total_assessed_value != null ? reportData.total_as
 // ─── GET handler ───────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const parcelId = searchParams.get('parcelId') ? decodeURIComponent(searchParams.get('parcelId')!).trim() : undefined
+  const rawParcelId = searchParams.get('parcelId')
+    ? decodeURIComponent(searchParams.get('parcelId')!).trim()
+    : undefined
 
-  if (!parcelId) {
-    return NextResponse.json({ error: 'parcelId is required' }, { status: 400 })
+  const parsed = parcelIdSchema.safeParse(rawParcelId)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid parcelId' },
+      { status: 400, headers: SECURITY_HEADERS }
+    )
   }
+  const parcelId = parsed.data
 
   try {
     const supabase = createServiceClient()
@@ -343,10 +351,13 @@ export async function GET(req: NextRequest) {
     report.ai_summary = await generateAiSummary(report)
 
     return NextResponse.json(report, {
-      headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' },
+      headers: {
+        ...SECURITY_HEADERS,
+        'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400',
+      },
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500, headers: SECURITY_HEADERS })
   }
 }
