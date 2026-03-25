@@ -7,7 +7,12 @@ import { ZONING_LABELS, ZONING_COLORS } from '@/lib/explorer/constants'
 // Show the 6 most common zone types
 const LEGEND_CODES = ['RU', 'BU', 'PUD', 'AU', 'IU', 'TU'] as const
 
-export default function ZoningLegend() {
+interface Props {
+  visible?: boolean
+}
+
+export default function ZoningLegend({ visible = true }: Props) {
+  if (!visible) return null
   return (
     <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
       <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Zoning</div>

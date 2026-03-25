@@ -2,7 +2,7 @@
   "project": "zonewise-web",
   "framework": "Next.js",
   "deployment": "Vercel → zonewise.ai",
-  "last_updated": "2026-03-06",
+  "last_updated": "2026-03-25",
   "brand": {
     "primary": "#1E3A5F",
     "accent": "#F59E0B",
@@ -23,5 +23,14 @@
       "rationale": "Scored 6/9 on Claude Code structure audit"
     }
   ],
+  "cp4_status": {
+    "branch": "feat/cp4-april",
+    "date": "2026-03-25",
+    "completed": [
+      "TASK1: Zoning overlay — /api/explorer/zoning-overlay, ExplorerMap GeoJSON fill layer, LayerControls toggle, ZoningLegend",
+      "TASK2: PDF download — Download Report button in ParcelDetail.tsx → /report?print=1",
+      "TASK3: PropZoneCompare — components/explorer/PropZoneCompare.tsx, /api/explorer/propzone-intel, tab in ParcelDetail"
+    ]
+  },
   "blockers": []
 }

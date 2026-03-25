@@ -7,8 +7,11 @@ import { getMapboxToken } from '@/lib/feasibility/constants'
 import { ENDPOINTS, type ParcelAttributes, formatAddress, formatCurrency, getZoningColor, ZONING_LABELS } from '@/lib/explorer/constants'
 import Link from 'next/link'
 import { MiniMap } from '@/components/envelope/MiniMap'
+import PropZoneCompare from './PropZoneCompare'
 
 interface Props { parcelId: string }
+
+type SidebarTab = 'overview' | 'competitor'
 
 export default function ParcelDetail({ parcelId }: Props) {
   const [parcel, setParcel] = useState<ParcelAttributes | null>(null)
@@ -16,6 +19,7 @@ export default function ParcelDetail({ parcelId }: Props) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [activeTab, setActiveTab] = useState<SidebarTab>('overview')
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -155,6 +159,40 @@ export default function ParcelDetail({ parcelId }: Props) {
     <div className="flex h-full">
       {/* Sidebar */}
       <div className="w-[420px] bg-slate-950 border-r border-slate-800 overflow-y-auto shrink-0 max-md:hidden">
+        {/* Tab bar */}
+        <div className="flex border-b border-slate-800 px-4 gap-1 pt-3">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
+              activeTab === 'overview'
+                ? 'border-[#F59E0B] text-[#F59E0B]'
+                : 'border-transparent text-slate-400 hover:text-slate-300'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('competitor')}
+            className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
+              activeTab === 'competitor'
+                ? 'border-[#F59E0B] text-[#F59E0B]'
+                : 'border-transparent text-slate-400 hover:text-slate-300'
+            }`}
+          >
+            vs PropZone
+          </button>
+        </div>
+
+        {/* Competitor tab */}
+        {activeTab === 'competitor' && (
+          <div className="p-4">
+            <PropZoneCompare parcelId={parcelId} />
+          </div>
+        )}
+
+        {/* Overview tab */}
+        {activeTab === 'overview' && (
+        <div>
         <div className="p-4 border-b border-slate-800">
           <Link href="/explorer" className="text-xs text-zw-orange hover:underline">← Back to Explorer</Link>
           {coords && (
@@ -207,6 +245,16 @@ export default function ParcelDetail({ parcelId }: Props) {
 
         {/* Links */}
         <div className="p-4 border-b border-slate-800 space-y-2">
+          {/* Download Report — opens printable ZoningReport page (browser print → PDF) */}
+          <a
+            href={`/report?parcel=${encodeURIComponent(parcel.PARCEL_ID)}&print=1`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#1E3A5F]/60 border border-[#1E3A5F] text-white rounded-md text-sm font-semibold hover:bg-[#1E3A5F] transition-colors"
+            title="Opens printable report — use browser Print → Save as PDF"
+          >
+            <span>⬇</span> Download Report
+          </a>
           <a href={`https://www.bcpao.us/PropertySearch/#/account/${parcel.PROPERTY_ID}`} target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-md text-sm font-semibold hover:bg-blue-500/20 transition-colors">
             📋 Full BCPAO Record
@@ -235,6 +283,8 @@ export default function ParcelDetail({ parcelId }: Props) {
               )
             })}
           </div>
+        )}
+        </div>
         )}
       </div>
 
