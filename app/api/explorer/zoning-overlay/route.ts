@@ -111,7 +111,11 @@ export async function GET(req: NextRequest) {
       headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=600' },
     })
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Unknown error'
-    return NextResponse.json({ error: msg }, { status: 500 })
+    console.error('[zoning-overlay] bbox query error:', err)
+    // Return empty GeoJSON so the map layer renders cleanly without crashing
+    return NextResponse.json(
+      { type: 'FeatureCollection', features: [] },
+      { status: 200 }
+    )
   }
 }

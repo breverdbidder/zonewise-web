@@ -22,14 +22,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'parcelId is required' }, { status: 400 })
   }
 
-  // Redirect to the printable report page with ?print=1
-  // The ZoningReport component handles @media print CSS for clean output
-  const baseUrl = req.nextUrl.origin
-  const reportUrl = `${baseUrl}/report?parcel=${encodeURIComponent(parcelId)}&print=1`
+  try {
+    // Redirect to the printable report page with ?print=1
+    // The ZoningReport component handles @media print CSS for clean output
+    const baseUrl = req.nextUrl.origin
+    const reportUrl = `${baseUrl}/report?parcel=${encodeURIComponent(parcelId)}&print=1`
 
-  return NextResponse.redirect(reportUrl, {
-    headers: {
-      'X-ZoneWise-Parcel': parcelId,
-    },
-  })
+    return NextResponse.redirect(reportUrl, {
+      headers: {
+        'X-ZoneWise-Parcel': parcelId,
+      },
+    })
+  } catch (err) {
+    console.error('[zoning-report/pdf] error:', err)
+    return NextResponse.json({ error: 'PDF generation failed' }, { status: 500 })
+  }
 }
