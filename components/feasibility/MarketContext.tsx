@@ -4,6 +4,7 @@ import type { SiteData, MarketDemographics, MarketScore } from '@/types/feasibil
 import { COLORS } from '@/lib/feasibility/constants'
 import { Badge, Card, SectionLabel } from './ui'
 import MapboxMap from './MapboxMap'
+import BetaOverlay from '@/components/ui/BetaOverlay'
 
 interface MarketContextProps {
   site: SiteData
@@ -81,6 +82,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
   const fmtNum = (n: number) => new Intl.NumberFormat('en-US').format(n)
 
   return (
+    <BetaOverlay message="Market demographics use sample data. Real Census integration coming soon.">
     <div className="flex gap-5">
       <div className="flex-1 min-w-0">
         {/* Header */}
@@ -232,5 +234,6 @@ export default function MarketContext({ site, demographics, score }: MarketConte
         </div>
       </div>
     </div>
+    </BetaOverlay>
   )
 }

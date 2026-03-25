@@ -83,10 +83,10 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
     return (
       <div className="p-4 rounded-lg bg-slate-900 border border-slate-800 text-center">
         <div className="text-slate-400 text-xs leading-relaxed">
-          No PropZone competitor data available for this parcel.
+          Competitor data collection in progress for this parcel.
           <br />
           <span className="text-slate-600 text-[10px]">
-            Data sourced via propzone-scrape pipeline.
+            PropZone scrape pipeline runs weekly. Check back soon.
           </span>
         </div>
       </div>

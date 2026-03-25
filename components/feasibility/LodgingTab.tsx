@@ -4,6 +4,7 @@ import type { SiteData, LodgingPermissions, LodgingPermitStatus, NearbyLodgingPa
 import { COLORS } from '@/lib/feasibility/constants'
 import { Badge, Card, SectionLabel } from './ui'
 import MapboxMap from './MapboxMap'
+import DemoDataBadge from '@/components/ui/DemoDataBadge'
 
 interface LodgingTabProps {
   site: SiteData
@@ -74,9 +75,16 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
         {/* Header */}
         <div className="flex items-center mb-4 gap-3">
           <div className="flex-1">
-            <SectionLabel text="Lodging & STR Intelligence" />
+            <div className="flex items-center">
+              <SectionLabel text="Lodging & STR Intelligence" />
+              <DemoDataBadge
+                label="Sample Data"
+                tooltip="Lodging permit data is available for 2 of 16 Brevard municipalities. Coverage expanding weekly."
+              />
+            </div>
             <div className="text-[13px] text-slate-500">
-              {site.zone} · {site.zoneCity} · {site.county} County
+              {site.zone} · {site.zoneCity} · {site.county} County ·{' '}
+              <span style={{ color: COLORS.accent }} className="font-medium">Data available for 2 of 16 municipalities</span>
             </div>
           </div>
           <Badge text="CP5" color={COLORS.accent} />

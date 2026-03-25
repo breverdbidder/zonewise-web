@@ -6,6 +6,7 @@ import type {
   LodgingPermissions, NearbyLodgingParcel, MarketDemographics, MarketScore,
 } from '@/types/feasibility'
 import { COLORS } from '@/lib/feasibility/constants'
+import DemoDataBadge from '@/components/ui/DemoDataBadge'
 import SiteTab from './SiteTab'
 import MarketContext from './MarketContext'
 import LodgingTab from './LodgingTab'
@@ -40,6 +41,7 @@ export default function FeasibilityLayout({
   marketScore,
 }: FeasibilityLayoutProps) {
   const [tab, setTab] = useState<FeasibilityTab>('Site')
+  const [betaBannerDismissed, setBetaBannerDismissed] = useState(false)
 
   return (
     <div className="min-h-screen" style={{ background: COLORS.surface, fontFamily: "'DM Sans', sans-serif" }}>
@@ -101,6 +103,29 @@ export default function FeasibilityLayout({
           </div>
         </div>
       </nav>
+
+      {/* Beta Banner */}
+      {!betaBannerDismissed && (
+        <div
+          className="flex items-center justify-between px-6 py-2.5 text-[12px]"
+          style={{ background: '#F59E0B1A', borderBottom: '1px solid #F59E0B33' }}
+        >
+          <div className="flex items-center gap-2">
+            <DemoDataBadge label="Beta" />
+            <span className="text-slate-700">
+              Feasibility tools are in beta. Some data uses sample values. Coverage expanding weekly.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setBetaBannerDismissed(true)}
+            className="text-slate-400 hover:text-slate-600 text-[13px] cursor-pointer border-none bg-transparent px-1"
+            aria-label="Dismiss banner"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Content */}
       <main className="max-w-[1200px] mx-auto px-5 py-5 pb-16">
