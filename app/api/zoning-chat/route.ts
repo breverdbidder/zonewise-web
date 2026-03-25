@@ -445,7 +445,8 @@ export async function POST(req: NextRequest) {
     let responseText: string
     try {
       responseText = await callGemini(message, contextString, history.slice(-5))
-    } catch (geminiErr) {
+    } catch (geminiErr: any) {
+      console.error("[zoning-chat] Gemini error:", geminiErr?.message ?? geminiErr)
       // Fallback: structured response without LLM formatting
       if (contextString) {
         // Even in fallback, format nicely instead of raw dump
@@ -541,3 +542,4 @@ function formatFallbackResponse(ctx: ZoningContext): string {
 
   return lines.join('\n')
 }
+
