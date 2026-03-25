@@ -1,4 +1,5 @@
 import { FeasibilityLayout } from '@/components/feasibility'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import {
   DEMO_SITE,
   DEMO_ZONING_CONTROLS,
@@ -18,16 +19,18 @@ export const metadata = {
 
 export default function FeasibilityPage() {
   return (
-    <FeasibilityLayout
-      site={DEMO_SITE}
-      zoningControls={DEMO_ZONING_CONTROLS}
-      comps={DEMO_COMPS}
-      unitRents={DEMO_UNIT_RENTS}
-      unitMix={DEMO_UNIT_MIX}
-      lodging={DEMO_LODGING}
-      nearbyLodging={DEMO_NEARBY_LODGING}
-      demographics={DEMO_MARKET_DEMOGRAPHICS}
-      marketScore={DEMO_MARKET_SCORE}
-    />
+    <ErrorBoundary>
+      <FeasibilityLayout
+        site={DEMO_SITE}
+        zoningControls={DEMO_ZONING_CONTROLS}
+        comps={DEMO_COMPS}
+        unitRents={DEMO_UNIT_RENTS}
+        unitMix={DEMO_UNIT_MIX}
+        lodging={DEMO_LODGING}
+        nearbyLodging={DEMO_NEARBY_LODGING}
+        demographics={DEMO_MARKET_DEMOGRAPHICS}
+        marketScore={DEMO_MARKET_SCORE}
+      />
+    </ErrorBoundary>
   )
 }

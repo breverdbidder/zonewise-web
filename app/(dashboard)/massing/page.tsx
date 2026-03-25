@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import MassingEngine from '@/components/massing/MassingEngine'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export const metadata = {
   title: '3D Massing Engine | ZoneWise.AI',
@@ -8,5 +9,9 @@ export const metadata = {
 }
 
 export default function MassingPage() {
-  return <MassingEngine />
+  return (
+    <ErrorBoundary>
+      <MassingEngine />
+    </ErrorBoundary>
+  )
 }

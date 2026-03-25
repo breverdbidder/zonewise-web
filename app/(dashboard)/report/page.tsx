@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, AlertTriangle } from 'lucide-react'
 import ZoningReport, { type ZoningReportData } from '@/components/reports/ZoningReport'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 interface ReportPageProps {
   searchParams: Promise<{ parcel?: string; print?: string }>
@@ -102,7 +103,9 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
       )}
 
       {/* Report content */}
-      <ZoningReport data={data} />
+      <ErrorBoundary>
+        <ZoningReport data={data} />
+      </ErrorBoundary>
     </div>
   )
 }
