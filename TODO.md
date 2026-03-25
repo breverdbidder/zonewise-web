@@ -17,6 +17,11 @@
 - [ ] Add visual regression tests for key pages
 - [ ] Security audit on exposed API routes
 
+## CP4 (April 2026) — feat/cp4-april
+- [x] TASK 1: Zoning Map Overlay Layer — GeoJSON fill layer from BCPAO FeatureService, category-colored (RU/BU/PUD/AU/IU), toggle in LayerControls, ZoningLegend
+- [x] TASK 2: PDF Parcel Report Download — "Download Report" button in ParcelDetail opens printable ZoningReport page (browser Print → PDF)
+- [x] TASK 3: PropZone Competitive Comparison — PropZoneCompare.tsx tab in ParcelDetail, queries propzone_intel table, side-by-side comparison with advantage scoring
+
 ## COMPLETED
 - [x] Next.js site deployed to Vercel
 - [x] .claude/ structure with skills, commands, rules, tasks
