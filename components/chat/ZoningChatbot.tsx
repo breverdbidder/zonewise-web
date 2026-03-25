@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import PropertyCard, { type BcpaoPropertyData } from './PropertyCard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Citation {
@@ -69,7 +70,15 @@ function TypingIndicator() {
 }
 
 // ─── Context card (right panel) ───────────────────────────────────────────────
-function ContextCard({ parcel, zoning }: { parcel?: ParcelData; zoning?: ZoningData }) {
+function ContextCard({
+  parcel,
+  zoning,
+  onViewPropertyDetails,
+}: {
+  parcel?: ParcelData
+  zoning?: ZoningData
+  onViewPropertyDetails?: (parcelId: string) => void
+}) {
   const [showAllUses, setShowAllUses] = useState(false)
 
   if (!parcel && !zoning) {
@@ -192,15 +201,26 @@ function ContextCard({ parcel, zoning }: { parcel?: ParcelData; zoning?: ZoningD
             </div>
           )}
 
-          {/* 3D Massing link */}
+          {/* View Property Details + 3D Massing */}
           {parcel && (
-            <a
-              href={`/massing?address=${encodeURIComponent(parcel.address)}`}
-              className="flex items-center gap-1.5 text-xs text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              View 3D Massing Model
-            </a>
+            <div className="flex flex-col gap-1.5">
+              {onViewPropertyDetails && (
+                <button
+                  onClick={() => onViewPropertyDetails(parcel.parcel_id)}
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  View Property Details
+                </button>
+              )}
+              <a
+                href={`/massing?address=${encodeURIComponent(parcel.address)}`}
+                className="flex items-center gap-1.5 text-xs text-[#F59E0B] hover:text-[#F59E0B]/80 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                View 3D Massing Model
+              </a>
+            </div>
           )}
         </div>
       )}
@@ -218,7 +238,13 @@ function MetricTile({ label, value }: { label: string; value: string }) {
 }
 
 // ─── Message bubble ───────────────────────────────────────────────────────────
-function MessageBubble({ message }: { message: Message }) {
+function MessageBubble({
+  message,
+  onViewPropertyDetails,
+}: {
+  message: Message
+  onViewPropertyDetails?: (parcelId: string) => void
+}) {
   const isUser = message.role === 'user'
 
   if (message.isLoading) {
@@ -259,6 +285,19 @@ function MessageBubble({ message }: { message: Message }) {
             ))}
           </div>
         )}
+
+        {/* View Property Details button */}
+        {!isUser && message.parcel && onViewPropertyDetails && (
+          <div className="px-1">
+            <button
+              onClick={() => onViewPropertyDetails(message.parcel!.parcel_id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              View Property Details
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -285,6 +324,11 @@ export default function ZoningChatbot() {
   const [contextParcel, setContextParcel] = useState<ParcelData | undefined>()
   const [contextZoning, setContextZoning] = useState<ZoningData | undefined>()
   const [contextPanelOpen, setContextPanelOpen] = useState(true)
+
+  // Property card modal
+  const [propertyCardData, setPropertyCardData] = useState<BcpaoPropertyData | null>(null)
+  const [propertyCardParcelId, setPropertyCardParcelId] = useState<string>('')
+  const [propertyCardLoading, setPropertyCardLoading] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -337,6 +381,23 @@ export default function ZoningChatbot() {
     }
   }, [isLoading, sessionId])
 
+  const fetchPropertyCard = useCallback(async (parcelId: string) => {
+    setPropertyCardParcelId(parcelId)
+    setPropertyCardLoading(true)
+    setPropertyCardData(null)
+    try {
+      const res = await fetch(`/api/bcpao-lookup?parcelId=${encodeURIComponent(parcelId)}`)
+      const data = await res.json()
+      if (res.ok) {
+        setPropertyCardData(data)
+      }
+    } catch {
+      // fail silently — modal won't open
+    } finally {
+      setPropertyCardLoading(false)
+    }
+  }, [])
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -375,7 +436,13 @@ export default function ZoningChatbot() {
               </div>
             </div>
           ) : (
-            messages.map(msg => <MessageBubble key={msg.id} message={msg} />)
+            messages.map(msg => (
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                onViewPropertyDetails={fetchPropertyCard}
+              />
+            ))
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -423,7 +490,11 @@ export default function ZoningChatbot() {
         </div>
         {contextPanelOpen && (
           <div className="flex-1 overflow-hidden">
-            <ContextCard parcel={contextParcel} zoning={contextZoning} />
+            <ContextCard
+              parcel={contextParcel}
+              zoning={contextZoning}
+              onViewPropertyDetails={fetchPropertyCard}
+            />
           </div>
         )}
       </div>
@@ -441,10 +512,42 @@ export default function ZoningChatbot() {
           </button>
           {contextPanelOpen && (
             <div className="absolute bottom-10 right-0 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden" style={{ maxHeight: '60vh' }}>
-              <ContextCard parcel={contextParcel} zoning={contextZoning} />
+              <ContextCard
+                parcel={contextParcel}
+                zoning={contextZoning}
+                onViewPropertyDetails={fetchPropertyCard}
+              />
             </div>
           )}
         </div>
+      )}
+
+      {/* ── Property card loading skeleton overlay ── */}
+      {propertyCardLoading && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          style={{ backdropFilter: 'blur(6px)', background: 'rgba(2,6,23,0.75)' }}
+        >
+          <div className="w-full sm:w-[560px] max-h-[85dvh] bg-slate-900 border border-slate-700 rounded-t-2xl sm:rounded-2xl p-6 space-y-4 animate-pulse">
+            <div className="h-44 bg-slate-800 rounded-xl" />
+            <div className="h-4 bg-slate-800 rounded w-2/3" />
+            <div className="h-3 bg-slate-800 rounded w-1/3" />
+            <div className="space-y-2">
+              <div className="h-3 bg-slate-800 rounded" />
+              <div className="h-3 bg-slate-800 rounded w-5/6" />
+              <div className="h-3 bg-slate-800 rounded w-4/6" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Property card modal ── */}
+      {propertyCardData && !propertyCardLoading && (
+        <PropertyCard
+          data={propertyCardData}
+          parcelId={propertyCardParcelId}
+          onClose={() => setPropertyCardData(null)}
+        />
       )}
     </div>
   )
