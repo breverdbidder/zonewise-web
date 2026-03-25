@@ -134,15 +134,19 @@ interface ZoningContext {
 }
 
 // ─── City extractor ───────────────────────────────────────────────────────────
+// FIX 1: Full Brevard County city list (case-insensitive). Multi-word cities listed first
+// so they match before their substrings (e.g. "Satellite Beach" before "Melbourne Beach").
 const BREVARD_CITIES = [
-  'satellite beach', 'cocoa beach', 'melbourne', 'palm bay', 'titusville',
-  'rockledge', 'cocoa', 'merritt island', 'cape canaveral', 'indialantic',
-  'indian harbour beach', 'brevard', 'viera', 'west melbourne', 'mims',
-  'grant', 'micco', 'barefoot bay', 'palm shores',
+  'satellite beach', 'cocoa beach', 'indian harbour beach', 'melbourne beach',
+  'west melbourne', 'cape canaveral', 'merritt island', 'barefoot bay',
+  'palm bay', 'titusville', 'rockledge', 'indialantic', 'sebastian',
+  'melbourne', 'cocoa', 'viera', 'suntree', 'malabar', 'grant', 'micco',
+  'mims', 'brevard',
 ]
 
 function extractCity(message: string): string | null {
   const lower = message.toLowerCase()
+  // Longest / most-specific cities are first in the list — return on first match
   for (const city of BREVARD_CITIES) {
     if (lower.includes(city)) return city
   }
@@ -171,30 +175,80 @@ interface BCPAOFeatureAttributes {
   TaxAcct: number
 }
 
-function parseStreetParts(address: string): { num: string; name: string } | null {
-  // Normalize full street type words to abbreviations before parsing
-  let normalized = address.trim()
-  for (const [full, abbr] of Object.entries(GIS_STREET_TYPE_ABBR)) {
-    const re = new RegExp(`\\b${full}\\b`, 'gi')
-    normalized = normalized.replace(re, abbr)
-  }
-  // Extract street number and street name (everything after the number, before any comma or zip)
-  const m = normalized.match(/^(\d+)\s+(.+?)(?:\s*,.*)?$/)
-  if (!m) return null
-  const num = m[1]
-  // Strip the street type suffix and any trailing city/state for the LIKE search
-  const nameParts = m[2].toUpperCase().trim().split(/\s+/)
-  // Use up to the first 2 words of the street name for a broad LIKE match
-  const name = nameParts.slice(0, 2).join(' ')
-  return { num, name }
+// FIX 2: Improved street-part parser.
+// Input:  "625 Ocean Street Satellite Beach"
+// Output: { num: "625", name: "OCEAN", streetType: "ST", city: "SATELLITE BEACH" }
+// The street type suffix (Street/St/Ave/…) is stripped from the name so we get an
+// exact match against the GIS STREET_NAME field (which never includes the type).
+const STREET_TYPE_SUFFIXES: Record<string, string> = {
+  street: 'ST', st: 'ST',
+  avenue: 'AVE', ave: 'AVE',
+  boulevard: 'BLVD', blvd: 'BLVD',
+  drive: 'DR', dr: 'DR',
+  road: 'RD', rd: 'RD',
+  lane: 'LN', ln: 'LN',
+  court: 'CT', ct: 'CT',
+  way: 'WAY',
+  place: 'PL', pl: 'PL',
+  circle: 'CIR', cir: 'CIR',
+  terrace: 'TER', ter: 'TER', terr: 'TER',
+  trail: 'TRL', trl: 'TRL',
+  parkway: 'PKWY', pkwy: 'PKWY',
+  highway: 'HWY', hwy: 'HWY',
+  causeway: 'CSWY', cswy: 'CSWY',
 }
 
-async function fetchFromBCPAOGIS(address: string): Promise<ZoningContext['parcel']> {
+function parseStreetParts(address: string, detectedCity?: string | null): {
+  num: string; name: string; streetType: string | null
+} | null {
+  // Extract street number and everything after it (before any comma)
+  const m = address.trim().match(/^(\d+)\s+(.+?)(?:\s*,.*)?$/)
+  if (!m) return null
+  const num = m[1]
+  const rest = m[2].trim()
+
+  // Tokenise the remaining portion (uppercased)
+  const tokens = rest.toUpperCase().split(/\s+/)
+
+  // If a city was detected, strip matching city tokens from the tail of the token list
+  let cityTokenCount = 0
+  if (detectedCity) {
+    const cityTokens = detectedCity.toUpperCase().split(/\s+/)
+    const tail = tokens.slice(tokens.length - cityTokens.length)
+    if (tail.join(' ') === cityTokens.join(' ')) {
+      cityTokenCount = cityTokens.length
+    }
+  }
+  const streetTokens = tokens.slice(0, tokens.length - cityTokenCount)
+
+  // The last token of streetTokens may be the street type suffix
+  let streetType: string | null = null
+  if (streetTokens.length >= 2) {
+    const lastTok = streetTokens[streetTokens.length - 1].toLowerCase()
+    if (STREET_TYPE_SUFFIXES[lastTok]) {
+      streetType = STREET_TYPE_SUFFIXES[lastTok]
+      streetTokens.pop()
+    }
+  }
+
+  // Everything remaining is the street name (join with space for multi-word names)
+  const name = streetTokens.join(' ')
+  return { num, name, streetType }
+}
+
+async function fetchFromBCPAOGIS(address: string, detectedCity?: string | null): Promise<ZoningContext['parcel']> {
   try {
-    const parts = parseStreetParts(address)
+    // FIX 2+4: Pass detectedCity so parseStreetParts can strip city tokens from the tail
+    const parts = parseStreetParts(address, detectedCity)
     if (!parts) return null
 
-    const where = `STREET_NUMBER='${parts.num}' AND STREET_NAME LIKE '%${parts.name}%'`
+    // FIX 4: Exact match on STREET_NAME (no LIKE wildcard) — prevents cross-city false matches.
+    // Add AND CITY LIKE '%…%' when a city is known.
+    let where = `STREET_NUMBER='${parts.num}' AND STREET_NAME='${parts.name}'`
+    if (detectedCity) {
+      where += ` AND CITY LIKE '%${detectedCity.toUpperCase()}%'`
+    }
+
     const params = new URLSearchParams({
       where,
       outFields: 'PARCEL_ID,STREET_NUMBER,STREET_NAME,STREET_TYPE,CITY,ZIP_CODE,ACRES,USE_CODE,USE_CODE_DESCRIPTION,OWNER_NAME1,BLDG_VALUE,LAND_VALUE,LIV_AREA,TaxAcct',
@@ -240,49 +294,53 @@ async function fetchFromBCPAOGIS(address: string): Promise<ZoningContext['parcel
 async function fetchZoningByAddress(address: string, originalMessage?: string): Promise<ZoningContext> {
   const supabase = createAnonClient()
   try {
-    // Bug 3: Normalize address — convert full street type words to abbreviations, uppercase
+    // Normalize address — convert full street type words to abbreviations, uppercase
     const normalizedAddr = normalizeStreetType(address)
 
-    // Attempt 1: search with normalized address
-    let { data: parcels } = await supabase
+    // FIX 3: Extract city upfront from the original message so we can filter from the
+    // very first Supabase query rather than only as a last-resort fallback.
+    const detectedCity = originalMessage ? extractCity(originalMessage) : null
+
+    // Attempt 1: search with normalized address (+ city filter when known)
+    let query1 = supabase
       .from('sample_properties')
       .select('parcel_id, address, acres, use_code, use_description, city')
       .ilike('address', `%${normalizedAddr}%`)
-      .limit(5)
+    if (detectedCity) query1 = query1.ilike('city', `%${detectedCity}%`)
+    let { data: parcels } = await query1.limit(5)
 
-    // Attempt 2: fallback — search with street number + first word of street name
+    // Attempt 2: fallback — search with street number + first word of street name (+ city)
     if (!parcels || parcels.length === 0) {
       const parts = normalizedAddr.trim().split(/\s+/)
       if (parts.length >= 2) {
         const shortSearch = `%${parts[0]} ${parts[1]}%`
-        const result = await supabase
+        let query2 = supabase
           .from('sample_properties')
           .select('parcel_id, address, acres, use_code, use_description, city')
           .ilike('address', shortSearch)
-          .limit(5)
+        if (detectedCity) query2 = query2.ilike('city', `%${detectedCity}%`)
+        const result = await query2.limit(5)
         parcels = result.data
       }
     }
 
-    // Bug 5: City filtering — if still no results, try address + city
-    if ((!parcels || parcels.length === 0) && originalMessage) {
-      const city = extractCity(originalMessage)
-      if (city) {
-        const parts = normalizedAddr.trim().split(/\s+/)
-        const shortSearch = parts.length >= 2 ? `%${parts[0]} ${parts[1]}%` : `%${normalizedAddr}%`
-        const result = await supabase
-          .from('sample_properties')
-          .select('parcel_id, address, acres, use_code, use_description, city')
-          .ilike('address', shortSearch)
-          .ilike('city', `%${city}%`)
-          .limit(5)
-        parcels = result.data
-      }
+    // Attempt 2b: if city-filtered attempts yield nothing, retry without city constraint
+    // (guards against city field inconsistencies in the sample_properties table)
+    if ((!parcels || parcels.length === 0) && detectedCity) {
+      const parts = normalizedAddr.trim().split(/\s+/)
+      const shortSearch = parts.length >= 2 ? `%${parts[0]} ${parts[1]}%` : `%${normalizedAddr}%`
+      const result = await supabase
+        .from('sample_properties')
+        .select('parcel_id, address, acres, use_code, use_description, city')
+        .ilike('address', shortSearch)
+        .limit(5)
+      parcels = result.data
     }
 
-    // Attempt 3: BCPAO GIS fallback — covers all 350K+ Brevard parcels
+    // Attempt 3: BCPAO GIS fallback — covers all 350K+ Brevard parcels.
+    // FIX 4: Pass detectedCity so the GIS query uses exact STREET_NAME + CITY filter.
     if (!parcels || parcels.length === 0) {
-      const gisParcel = await fetchFromBCPAOGIS(address)
+      const gisParcel = await fetchFromBCPAOGIS(address, detectedCity)
       if (!gisParcel) {
         return { parcel: null, zoning: null, error: `No parcels found for "${address}"` }
       }
