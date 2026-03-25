@@ -113,7 +113,8 @@ function normalizeStreetType(addr: string): string {
 }
 
 function extractAddress(message: string): string | null {
-  const match = message.match(/(\d+\s+[\w\s]+(dr|drive|ln|lane|ave|avenue|blvd|boulevard|st|street|rd|road|ct|court|way|cir|circle|pl|place|terr|terrace|trail|pkwy|parkway|hwy|highway|cswy|causeway|cr|sr)\b[\w\s,]*)/i)
+  // Comprehensive street type list — full words AND abbreviations — sorted longest-first to prevent prefix clashes
+  const match = message.match(/(\d+\s+[\w\s]+(boulevard|causeway|parkway|highway|terrace|avenue|street|circle|court|drive|place|trail|lane|road|way|blvd|cswy|pkwy|hwy|ter|trl|ave|cir|ct|dr|pl|st|ln|rd|cr|sr)\b[\w\s,]*)/i)
   return match ? match[1].trim() : null
 }
 

@@ -71,9 +71,14 @@ const BCPAO_GIS_URL =
   'https://gis.brevardfl.gov/gissrv/rest/services/Base_Map/Parcel_New_WKID2881/MapServer/5/query'
 
 async function fetchBcpaoGis(parcelId: string) {
-  const isTaxAcct = /^\d+$/.test(parcelId.trim())
-  const sanitized = parcelId.replace(/[^0-9A-Za-z \-*.]/g, '')
-  const where = isTaxAcct ? `TaxAcct=${sanitized}` : `PARCEL_ID='${sanitized}'`
+  // Decode in case the ID arrived URL-encoded (e.g. "27%203701-50-7-4" → "27 3701-50-7-4")
+  const decoded = decodeURIComponent(parcelId).trim()
+  const isTaxAcct = /^\d+$/.test(decoded)
+  // For TaxAcct (pure digits) use bare numeric equality; for DOR format preserve spaces/dashes
+  // Use encodeURIComponent on the value inside the where string so spaces → %20 in the URL
+  const where = isTaxAcct
+    ? `TaxAcct=${decoded}`
+    : `PARCEL_ID='${decoded}'`
 
   const params = new URLSearchParams({
     where,
@@ -139,7 +144,7 @@ Assessed Value: $${reportData.total_assessed_value != null ? reportData.total_as
 // ─── GET handler ───────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
-  const parcelId = searchParams.get('parcelId')?.trim()
+  const parcelId = searchParams.get('parcelId') ? decodeURIComponent(searchParams.get('parcelId')!).trim() : undefined
 
   if (!parcelId) {
     return NextResponse.json({ error: 'parcelId is required' }, { status: 400 })
