@@ -94,6 +94,13 @@ const STREET_TYPE_MAP: Record<string, string> = {
   causeway: 'cswy',
 }
 
+// Abbreviation-only map for GIS street type normalization (matches GIS STREET_TYPE field values)
+const GIS_STREET_TYPE_ABBR: Record<string, string> = {
+  street: 'st', drive: 'dr', lane: 'ln', avenue: 'ave',
+  boulevard: 'blvd', road: 'rd', court: 'ct', circle: 'cir',
+  place: 'pl', way: 'way', trail: 'trl', terrace: 'ter',
+}
+
 function normalizeStreetType(addr: string): string {
   let normalized = addr.toUpperCase()
   for (const [full, abbr] of Object.entries(STREET_TYPE_MAP)) {
@@ -113,6 +120,9 @@ interface ZoningContext {
   parcel: {
     parcel_id: string; address: string; acres: number | null;
     use_code: string | null; use_description: string | null; city: string | null;
+    owner_name?: string | null; bldg_value?: number | null; land_value?: number | null;
+    liv_area?: number | null; tax_acct?: number | null;
+    _source?: 'supabase' | 'bcpao_gis';
   } | null
   zoning: {
     zone_code: string; jurisdiction: string | null;
@@ -137,6 +147,94 @@ function extractCity(message: string): string | null {
     if (lower.includes(city)) return city
   }
   return null
+}
+
+// ─── BCPAO GIS fallback ───────────────────────────────────────────────────────
+// Covers all 350K+ Brevard parcels. Queried when Supabase sample_properties misses.
+const BCPAO_GIS_URL =
+  'https://gis.brevardfl.gov/gissrv/rest/services/Base_Map/Parcel_New_WKID2881/MapServer/5/query'
+
+interface BCPAOFeatureAttributes {
+  PARCEL_ID: string
+  STREET_NUMBER: string
+  STREET_NAME: string
+  STREET_TYPE: string
+  CITY: string
+  ZIP_CODE: string
+  ACRES: number
+  USE_CODE: string
+  USE_CODE_DESCRIPTION: string
+  OWNER_NAME1: string
+  BLDG_VALUE: number
+  LAND_VALUE: number
+  LIV_AREA: number
+  TaxAcct: number
+}
+
+function parseStreetParts(address: string): { num: string; name: string } | null {
+  // Normalize full street type words to abbreviations before parsing
+  let normalized = address.trim()
+  for (const [full, abbr] of Object.entries(GIS_STREET_TYPE_ABBR)) {
+    const re = new RegExp(`\\b${full}\\b`, 'gi')
+    normalized = normalized.replace(re, abbr)
+  }
+  // Extract street number and street name (everything after the number, before any comma or zip)
+  const m = normalized.match(/^(\d+)\s+(.+?)(?:\s*,.*)?$/)
+  if (!m) return null
+  const num = m[1]
+  // Strip the street type suffix and any trailing city/state for the LIKE search
+  const nameParts = m[2].toUpperCase().trim().split(/\s+/)
+  // Use up to the first 2 words of the street name for a broad LIKE match
+  const name = nameParts.slice(0, 2).join(' ')
+  return { num, name }
+}
+
+async function fetchFromBCPAOGIS(address: string): Promise<ZoningContext['parcel']> {
+  try {
+    const parts = parseStreetParts(address)
+    if (!parts) return null
+
+    const where = `STREET_NUMBER='${parts.num}' AND STREET_NAME LIKE '%${parts.name}%'`
+    const params = new URLSearchParams({
+      where,
+      outFields: 'PARCEL_ID,STREET_NUMBER,STREET_NAME,STREET_TYPE,CITY,ZIP_CODE,ACRES,USE_CODE,USE_CODE_DESCRIPTION,OWNER_NAME1,BLDG_VALUE,LAND_VALUE,LIV_AREA,TaxAcct',
+      returnGeometry: 'false',
+      f: 'json',
+      resultRecordCount: '5',
+    })
+
+    const res = await fetch(`${BCPAO_GIS_URL}?${params.toString()}`, {
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return null
+
+    const json = await res.json()
+    const features: { attributes: BCPAOFeatureAttributes }[] = json?.features ?? []
+    if (features.length === 0) return null
+
+    const a = features[0].attributes
+    const streetAddr = `${a.STREET_NUMBER} ${a.STREET_NAME} ${a.STREET_TYPE}`.trim()
+    const city = (a.CITY ?? '').trim()
+    const zip = (a.ZIP_CODE ?? '').trim()
+    const fullAddress = [streetAddr, city, zip].filter(Boolean).join(', ')
+
+    return {
+      parcel_id: a.PARCEL_ID,
+      address: fullAddress,
+      acres: a.ACRES ?? null,
+      use_code: a.USE_CODE ?? null,
+      use_description: (a.USE_CODE_DESCRIPTION ?? '').trim() || null,
+      city: city || null,
+      owner_name: (a.OWNER_NAME1 ?? '').trim() || null,
+      bldg_value: a.BLDG_VALUE ?? null,
+      land_value: a.LAND_VALUE ?? null,
+      liv_area: a.LIV_AREA ?? null,
+      tax_acct: a.TaxAcct ?? null,
+      _source: 'bcpao_gis',
+    }
+  } catch {
+    return null
+  }
 }
 
 async function fetchZoningByAddress(address: string, originalMessage?: string): Promise<ZoningContext> {
@@ -182,8 +280,16 @@ async function fetchZoningByAddress(address: string, originalMessage?: string): 
       }
     }
 
+    // Attempt 3: BCPAO GIS fallback — covers all 350K+ Brevard parcels
     if (!parcels || parcels.length === 0) {
-      return { parcel: null, zoning: null, error: `No parcels found for "${address}"` }
+      const gisParcel = await fetchFromBCPAOGIS(address)
+      if (!gisParcel) {
+        return { parcel: null, zoning: null, error: `No parcels found for "${address}"` }
+      }
+      // Try zoning lookup via zoning_assignments — may not have a match for every parcel
+      const zoningCtx = await fetchZoningByParcel(gisParcel.parcel_id)
+      // Return parcel data even if zoning is missing so PropertyCard can render
+      return { parcel: gisParcel, zoning: zoningCtx.zoning, error: zoningCtx.error }
     }
 
     const parcel = parcels[0]
@@ -499,9 +605,12 @@ function extractCitations(ctx: ZoningContext): { source: string; detail: string 
     })
   }
   if (ctx.parcel) {
+    const isGIS = ctx.parcel._source === 'bcpao_gis'
     citations.push({
-      source: `Parcel ${ctx.parcel.parcel_id}`,
-      detail: `sample_properties · ${ctx.parcel.address}`,
+      source: isGIS ? 'BCPAO GIS' : `Parcel ${ctx.parcel.parcel_id}`,
+      detail: isGIS
+        ? `Brevard County Property Appraiser · ${ctx.parcel.address}`
+        : `sample_properties · ${ctx.parcel.address}`,
     })
   }
   return citations
