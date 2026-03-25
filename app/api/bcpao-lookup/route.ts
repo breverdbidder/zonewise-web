@@ -53,6 +53,10 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ ...attrs, photoUrl, proxyPhotoUrl })
   } catch (err) {
+    const isTimeout = err instanceof Error && (err.name === 'TimeoutError' || err.message.includes('timeout'))
+    if (isTimeout) {
+      return NextResponse.json({ error: 'GIS service timed out' }, { status: 503 })
+    }
     const message = err instanceof Error ? err.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
   }
