@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
+    "test:watch": "vitest",
     "test:security": "vitest run tests/security/",
     "test:coverage": "vitest run --coverage"
   },
