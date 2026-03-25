@@ -17,7 +17,10 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           SECRET_NAME="${{ inputs.secret_name }}"
           ENV_KEY="${{ inputs.key }}"
@@ -25,13 +28,14 @@ jobs:
           
           case "$SECRET_NAME" in
             GEMINI_API_KEY) VALUE="$GEMINI_API_KEY" ;;
+            DEEPSEEK_API_KEY) VALUE="$DEEPSEEK_API_KEY" ;;
             SUPABASE_SERVICE_ROLE_KEY) VALUE="$SUPABASE_SERVICE_ROLE_KEY" ;;
             *) echo "Unknown: $SECRET_NAME"; exit 1 ;;
           esac
           
           [ -z "$VALUE" ] && { echo "Empty secret"; exit 1; }
           
-          echo "Step 1: Find existing env var ID..."
+          echo "Finding existing env var..."
           ENV_ID=$(curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
             -H "Authorization: Bearer $VERCEL_TOKEN" | \
             python3 -c "
@@ -43,15 +47,14 @@ jobs:
           ")
           
           if [ -n "$ENV_ID" ]; then
-            echo "Found ID: $ENV_ID — patching..."
-            RESULT=$(curl -s -X PATCH "https://api.vercel.com/v9/projects/$PROJECT_ID/env/$ENV_ID" \
+            echo "Patching $ENV_KEY (id=$ENV_ID)..."
+            curl -s -X PATCH "https://api.vercel.com/v9/projects/$PROJECT_ID/env/$ENV_ID" \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"value\": \"$VALUE\"}")
-            echo "$RESULT" | head -c 300
+              -d "{\"value\": \"$VALUE\"}" | head -c 200
           else
-            echo "Not found — creating..."
-            RESULT=$(curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env" \
+            echo "Creating $ENV_KEY..."
+            curl -s -X POST "https://api.vercel.com/v10/projects/$PROJECT_ID/env" \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
               -d "{
@@ -59,22 +62,7 @@ jobs:
                 \"value\": \"$VALUE\",
                 \"type\": \"encrypted\",
                 \"target\": [\"production\", \"preview\", \"development\"]
-              }")
-            echo "$RESULT" | head -c 300
+              }" | head -c 200
           fi
-          
           echo ""
-          echo "Step 2: Verify..."
-          VERIFY=$(curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" | \
-            python3 -c "
-          import json,sys
-          for e in json.load(sys.stdin).get('envs',[]):
-              if e['key'] == '$ENV_KEY':
-                  v = e.get('value','')
-                  print(f'FOUND: {e[\"key\"]} = {v[:6]}...{v[-4:]} (id={e[\"id\"]})')
-                  break
-          else:
-              print('NOT FOUND')
-          ")
-          echo "$VERIFY"
+          echo "Done: $ENV_KEY"
