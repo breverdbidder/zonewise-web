@@ -158,15 +158,15 @@ export async function GET(req: NextRequest) {
       fetchBcpaoGis(parcelId),
       supabase
         .from('zoning_assignments')
-        .select('zone_code, jurisdiction, municipal_code_url')
+        .select('zone_code, jurisdiction')
         .eq('parcel_id', parcelId)
-        .limit(1)
-        .single(),
+        .maybeSingle(),
     ])
 
     const zoneCode: string | null = zoningAssignment.data?.zone_code ?? null
     const jurisdiction: string | null = zoningAssignment.data?.jurisdiction ?? null
-    const assignmentMunicipalCodeUrl: string | null = zoningAssignment.data?.municipal_code_url ?? null
+    // municipal_code_url column added by migration 011 — may not exist in all environments
+    const assignmentMunicipalCodeUrl: string | null = null
 
     // 2. Fetch zoning district using the same pattern as the chatbot (direct table query by code)
     const zdRes = zoneCode
