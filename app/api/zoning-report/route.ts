@@ -153,15 +153,19 @@ export async function GET(req: NextRequest) {
   try {
     const supabase = createServiceClient()
 
-    // 1. Fetch BCPAO GIS data in parallel with zoning_assignments lookup
-    const [gisAttrs, zoningAssignment] = await Promise.all([
-      fetchBcpaoGis(parcelId),
-      supabase
-        .from('zoning_assignments')
-        .select('zone_code, jurisdiction')
-        .eq('parcel_id', parcelId)
-        .maybeSingle(),
-    ])
+    // 1. Fetch BCPAO GIS data first so we can resolve the canonical DOR-format PARCEL_ID.
+    //    For TaxAcct inputs (pure digits), GIS returns the DOR format needed by zoning_assignments.
+    const gisAttrs = await fetchBcpaoGis(parcelId)
+
+    // Use the GIS-resolved PARCEL_ID (DOR format like "27 3701-50-7-4") for zoning lookup.
+    // Fall back to the decoded input parcelId if GIS returned nothing.
+    const zoningParcelId = gisAttrs?.PARCEL_ID ?? parcelId
+
+    const zoningAssignment = await supabase
+      .from('zoning_assignments')
+      .select('zone_code, jurisdiction')
+      .eq('parcel_id', zoningParcelId)
+      .maybeSingle()
 
     const zoneCode: string | null = zoningAssignment.data?.zone_code ?? null
     const jurisdiction: string | null = zoningAssignment.data?.jurisdiction ?? null
