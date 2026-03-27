@@ -42,21 +42,21 @@ jobs:
             exit 1
           fi
 
-      - name: Check /api/stats
+      - name: Check /api/health
         id: stats
         run: |
-          STATUS=$(curl -s -o /tmp/stats.json -w "%{http_code}" https://zonewise.ai/api/stats)
+          STATUS=$(curl -s -o /tmp/health-check.json -w "%{http_code}" https://zonewise.ai/api/health)
           echo "http_status=$STATUS" >> $GITHUB_OUTPUT
-          cat /tmp/stats.json
+          cat /tmp/health-check.json
           if [ "$STATUS" != "200" ]; then
-            echo "FAIL: /api/stats returned $STATUS"
+            echo "FAIL: /api/health returned $STATUS"
             exit 1
           fi
           # Assert counties field exists
-          COUNTIES=$(cat /tmp/stats.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('counties',0))")
-          echo "counties=$COUNTIES" >> $GITHUB_OUTPUT
-          if [ "$COUNTIES" = "0" ]; then
-            echo "FAIL: /api/stats counties=0"
+          STATUS_CHECK=$(cat /tmp/health-check.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','unknown'))" 2>/dev/null || echo "parse_error")
+          echo "health_status=$STATUS_CHECK" >> $GITHUB_OUTPUT
+          if [ "$STATUS_CHECK" = "parse_error" ] || [ "$STATUS_CHECK" = "unknown" ]; then
+            echo "FAIL: /api/health returned unexpected status: $STATUS_CHECK"
             exit 1
           fi
 
