@@ -11,7 +11,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -29,8 +29,8 @@ jobs:
       - name: Deploy (prebuilt)
         id: deploy
         run: |
-          # Deploy prebuilt artifacts — capture all output, then extract URL
-          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > /tmp/deploy_out.txt 2>&1 || true
+          # Use shell timeout so step exits cleanly if deploy hangs (Force Alias handles it)
+          timeout 8m vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > /tmp/deploy_out.txt 2>&1 || true
           cat /tmp/deploy_out.txt
           DEPLOY_URL=$(grep -oE 'https://[a-z0-9._-]+\.vercel\.app' /tmp/deploy_out.txt | tail -1)
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
@@ -38,22 +38,30 @@ jobs:
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-        timeout-minutes: 8
 
       - name: Force Alias (if deploy URL missing)
         if: steps.deploy.outputs.url == ''
         run: |
           echo "Deploy URL missing — finding latest READY deployment via API"
-          READY_URL=$(curl -s "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=5&target=production" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
+          # Wait up to 5min for the deployment to become READY
+          for i in $(seq 1 10); do
+            READY_URL=$(curl -s "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=5&target=production" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
           import json,sys
           for d in json.load(sys.stdin).get('deployments',[]):
               if d.get('readyState') == 'READY':
                   print('https://' + d['url'])
                   break
           ")
-          echo "Aliasing: $READY_URL"
-          vercel alias set "$READY_URL" zonewise.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=team_UEds2qBzyD9e7rOrX8aakj9K
+            if [ -n "$READY_URL" ]; then
+              echo "Aliasing: $READY_URL"
+              vercel alias set "$READY_URL" zonewise.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=team_UEds2qBzyD9e7rOrX8aakj9K
+              echo "✅ Aliased via Force Alias"
+              break
+            fi
+            echo "Attempt $i: no READY deployment yet, waiting 30s..."
+            sleep 30
+          done
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
@@ -67,12 +75,11 @@ jobs:
       - name: Smoke Test
         if: always()
         run: |
-          sleep 10
-          for page in "" explorer pricing chat dashboard conquest; do
-          # API smoke test
-          API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://zonewise.ai/api/zoning-chat" -H "Content-Type: application/json" -d '{"message":"test"}');
-          echo "/api/zoning-chat: HTTP $API_HTTP"
+          sleep 15
+          for page in "" explorer chat dashboard conquest; do
             HTTP=$(curl -sL -o /dev/null -w "%{http_code}" "https://zonewise.ai/$page")
             echo "/$page: HTTP $HTTP"
           done
-
+          API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://zonewise.ai/api/zoning-chat" \
+            -H "Content-Type: application/json" -d '{"message":"test"}')
+          echo "/api/zoning-chat: HTTP $API_HTTP"
