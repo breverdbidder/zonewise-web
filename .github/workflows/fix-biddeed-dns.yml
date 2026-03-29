@@ -1,4 +1,4 @@
-name: Fix BidDeed DNS — biddeed.ai + ops.biddeed.ai
+name: Fix BidDeed DNS v2
 
 on:
   workflow_dispatch: {}
@@ -7,82 +7,49 @@ jobs:
   fix-dns:
     runs-on: ubuntu-latest
     env:
-      ZW_ZONE: b32406b78aaaefd55557d77c843a5940
       BD_ZONE: dcb6876f057e0bb88be181d6e8d0dcbc
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       HETZNER_IP: "87.99.129.125"
     steps:
-      - name: Fix biddeed.ai DNS
+      - name: Create all DNS records
         run: |
-          set -e
-          echo "=== Current biddeed.ai records ==="
+          set +e
+          
+          echo "=== List current biddeed.ai records ==="
           curl -s "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \
-            -H "Authorization: Bearer $CF_TOKEN" | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          if d.get('success'):
-              for r in d['result']:
-                  print(f'  {r["type"]} {r["name"]} -> {r["content"]} (id={r["id"]})')
-              if not d['result']: print('  EMPTY')
-          else:
-              print(f'  AUTH ERROR: {d.get("errors",[])}')"
-
+            -H "Authorization: Bearer $CF_TOKEN" | python3 -c "import json,sys; [print(r['type'],r['name'],r['content']) for r in json.load(sys.stdin).get('result',[])]" 2>&1 || echo "List failed"
+          
           echo ""
-          echo "=== Adding biddeed.ai CNAME -> cname.vercel-dns.com ==="
+          echo "=== Add biddeed.ai CNAME ==="
           curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \
             -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"type":"CNAME","name":"biddeed.ai","content":"cname.vercel-dns.com","proxied":false,"ttl":1}' | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          if d.get('success'):
-              print(f'  OK: {d["result"]["name"]} -> {d["result"]["content"]}')
-          else:
-              print(f'  FAIL: {d.get("errors",[])}')"
-
+            -d '{"type":"CNAME","name":"biddeed.ai","content":"cname.vercel-dns.com","proxied":false,"ttl":1}' | python3 -c "import json,sys; d=json.load(sys.stdin); print('OK' if d.get('success') else d.get('errors'))"
+          
           echo ""
-          echo "=== Adding www.biddeed.ai CNAME -> cname.vercel-dns.com ==="
+          echo "=== Add www.biddeed.ai CNAME ==="
           curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \
             -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"type":"CNAME","name":"www","content":"cname.vercel-dns.com","proxied":false,"ttl":1}' | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          if d.get('success'):
-              print(f'  OK: {d["result"]["name"]} -> {d["result"]["content"]}')
-          else:
-              print(f'  FAIL: {d.get("errors",[])}')"
-
-      - name: Fix ops.biddeed.ai DNS
-        run: |
-          echo "=== Adding ops.biddeed.ai A -> Hetzner ==="
+            -d '{"type":"CNAME","name":"www","content":"cname.vercel-dns.com","proxied":false,"ttl":1}' | python3 -c "import json,sys; d=json.load(sys.stdin); print('OK' if d.get('success') else d.get('errors'))"
+          
+          echo ""
+          echo "=== Add ops.biddeed.ai A record ==="
           curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \
             -H "Authorization: Bearer $CF_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"type":"A","name":"ops","content":"'"$HETZNER_IP"'","proxied":true,"ttl":1}' | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          if d.get('success'):
-              print(f'  OK: {d["result"]["name"]} -> {d["result"]["content"]}')
-          else:
-              print(f'  FAIL: {d.get("errors",[])}')"
-
-      - name: Verify DNS propagation
+            -d "{\"type\":\"A\",\"name\":\"ops\",\"content\":\"$HETZNER_IP\",\"proxied\":true,\"ttl\":1}" | python3 -c "import json,sys; d=json.load(sys.stdin); print('OK' if d.get('success') else d.get('errors'))"
+          
+      - name: Verify
         run: |
-          echo "Waiting 15s for propagation..."
           sleep 15
-          
-          echo "=== All biddeed.ai records ==="
+          echo "=== Final DNS state ==="
           curl -s "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \
-            -H "Authorization: Bearer $CF_TOKEN" | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)
-          for r in d.get('result',[]):
-              print(f'  {r["type"]:6s} {r["name"]:30s} -> {r["content"]}')"
+            -H "Authorization: Bearer $CF_TOKEN" | python3 -c "import json,sys; [print(r['type'],r['name'],'->', r['content']) for r in json.load(sys.stdin).get('result',[])]"
           
           echo ""
-          echo "=== Curl tests ==="
-          for url in "https://biddeed.ai" "https://ops.biddeed.ai"; do
-            CODE=\$(curl -sI -o /dev/null -w "%{http_code}" "\$url" --connect-timeout 10 2>/dev/null || echo "000")
-            echo "  \$url -> HTTP \$CODE"
+          echo "=== HTTP checks ==="
+          for url in https://biddeed.ai https://ops.biddeed.ai; do
+            code=$(curl -sI -o /dev/null -w "%{http_code}" "$url" --connect-timeout 10 2>/dev/null || echo "000")
+            echo "  $url -> HTTP $code"
           done
