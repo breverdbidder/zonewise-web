@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Competitive Landscape — ZoneWise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1E3A5F;
+      --orange: #F59E0B;
+      --bg: #020617;
+      --bg2: #0f172a;
+      --bg3: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+      --win: #10b981;
+      --lose: #ef4444;
+      --tie: #64748b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #0d2040 100%);
+      border-bottom: 1px solid rgba(245,158,11,0.3);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: var(--orange);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: var(--bg);
+      letter-spacing: -1px;
+    }
+    .brand-text h1 { font-size: 20px; font-weight: 700; color: var(--text); }
+    .brand-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .header-meta {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .header-meta strong { color: var(--orange); display: block; font-size: 13px; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 56px 40px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px; font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .hero h2 {
+      font-size: 36px; font-weight: 800; line-height: 1.2;
+      color: var(--text);
+      max-width: 720px;
+      margin-bottom: 16px;
+    }
+    .hero h2 span { color: var(--orange); }
+    .hero p {
+      font-size: 16px; color: var(--muted);
+      max-width: 640px;
+      margin-bottom: 32px;
+    }
+    .hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+    }
+    .stat {
+      display: flex; flex-direction: column;
+    }
+    .stat-num { font-size: 28px; font-weight: 800; color: var(--orange); }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── SECTION ── */
+    section { max-width: 1200px; margin: 0 auto; padding: 0 40px 60px; }
+    .section-title {
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── COMPETITOR GRID ── */
+    .competitor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .competitor-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .competitor-card:hover {
+      border-color: rgba(245,158,11,0.3);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-title-row { display: flex; align-items: center; gap: 12px; }
+    .comp-logo {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .comp-name { font-size: 17px; font-weight: 700; color: var(--text); }
+    .comp-domain { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .threat-badge {
+      flex-shrink: 0;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .threat-high { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .threat-medium { background: rgba(245,158,11,0.15); color: var(--orange); border: 1px solid rgba(245,158,11,0.3); }
+    .threat-low { background: rgba(100,116,139,0.15); color: var(--muted); border: 1px solid rgba(100,116,139,0.3); }
+
+    .card-body { padding: 20px; }
+
+    .comp-tagline {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .comp-desc {
+      font-size: 14px; color: #cbd5e1;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    /* feature comparison rows */
+    .feature-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 8px;
+    }
+    .feature-row:last-child { border-bottom: none; }
+    .feature-name { font-size: 12px; color: var(--muted); flex: 1; }
+    .feature-them { font-size: 12px; color: var(--text); text-align: center; width: 80px; }
+    .feature-us { font-size: 12px; font-weight: 600; text-align: center; width: 80px; }
+    .feat-win { color: var(--win); }
+    .feat-lose { color: var(--lose); }
+    .feat-tie { color: var(--muted); }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+    .feature-header .col-them { width: 80px; text-align: center; }
+    .feature-header .col-us { width: 80px; text-align: center; color: var(--orange); }
+
+    .card-footer {
+      padding: 14px 20px;
+      background: rgba(30,58,95,0.2);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .advantage-label { color: var(--muted); }
+    .advantage-text { color: var(--orange); font-weight: 600; }
+
+    /* ── MASTER COMPARISON TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead tr {
+      background: var(--bg3);
+    }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    th.us-col { color: var(--orange); }
+    td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #cbd5e1;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+    .td-us { color: var(--text); font-weight: 500; }
+    .td-win-cell { color: var(--win); font-weight: 600; }
+    .td-check { color: var(--win); font-size: 16px; }
+    .td-x { color: var(--lose); font-size: 16px; }
+    .td-partial { color: var(--orange); font-size: 14px; }
+    td.feature-col { color: var(--text); font-weight: 500; min-width: 180px; }
+
+    /* ── MOAT SECTION ── */
+    .moat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .moat-card {
+      background: var(--bg2);
+      border: 1px solid rgba(30,58,95,0.6);
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .moat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--navy), var(--orange));
+    }
+    .moat-icon { font-size: 28px; margin-bottom: 12px; }
+    .moat-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .moat-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-left { font-size: 12px; color: var(--muted); }
+    .footer-left a { color: var(--orange); text-decoration: none; }
+    .footer-tag {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .tag {
+      padding: 3px 10px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--orange);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      header, section, footer { padding-left: 20px; padding-right: 20px; }
+      .hero { padding: 32px 20px 24px; }
+      .hero h2 { font-size: 24px; }
+      .hero-stats { gap: 20px; }
+      .stat-num { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <div class="logo-mark">ZW</div>
+    <div class="brand-text">
+      <h1>ZoneWise</h1>
+      <p>Zoning Intelligence Platform · zonewise.ai</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <strong>GTM Competitive Analysis</strong>
+    Updated March 2026 · 8 Competitors Analyzed
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ Investor Brief</div>
+  <h2>We know every competitor.<br/>They don't know <span>what's coming.</span></h2>
+  <p>Full competitive analysis of 8 platforms competing in zoning intelligence, foreclosure data, and PropTech. ZoneWise wins on data depth, FL county coverage, and ML deal intelligence — no competitor comes close.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">245K+</span>
+      <span class="stat-label">FL Auction Records</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">351K</span>
+      <span class="stat-label">Brevard Parcels</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">67</span>
+      <span class="stat-label">FL Counties</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">8</span>
+      <span class="stat-label">Competitors Mapped</span>
+    </div>
+  </div>
+</div>
+
+<!-- COMPETITOR CARDS -->
+<section>
+  <div class="section-title">Competitor Profiles — Full Breakdown</div>
+  <div class="competitor-grid">
+
+    <!-- 1. Gridics -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#1a237e; color:#90caf9;">GR</div>
+          <div>
+            <div class="comp-name">Gridics</div>
+            <div class="comp-domain">gridics.com · NYC-based</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-high">High Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"3D zoning visualization for cities and developers"</div>
+        <div class="comp-desc">Gridics offers a 3D zoning envelope visualization tool targeting municipalities and large developers. Strong product, heavy B2G focus, premium pricing ($25K+/yr). Weak on parcel-level investment intelligence.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">Gridics</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">3D zoning envelopes</span>
+          <span class="feature-them feat-win">✅ Best-in-class</span>
+          <span class="feature-us feat-lose">❌ Not yet</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">FL parcel coverage</span>
+          <span class="feature-them feat-lose">❌ Limited</span>
+          <span class="feature-us feat-win">✅ 351K+ Brevard</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">ML deal scoring</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ BID/REVIEW/SKIP</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Auction intelligence</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 245K records</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Investor pricing</span>
+          <span class="feature-them feat-lose">❌ $25K+/yr</span>
+          <span class="feature-us feat-win">✅ SaaS affordable</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">FL investor focus + ML layer they can't replicate</span>
+      </div>
+    </div>
+
+    <!-- 2. Zoneomics -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#0d47a1; color:#bbdefb;">ZO</div>
+          <div>
+            <div class="comp-name">Zoneomics</div>
+            <div class="comp-domain">zoneomics.com · National</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-high">High Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"National zoning data aggregation via API"</div>
+        <div class="comp-desc">Zoneomics is a data aggregation play — selling nationwide zoning data via API to developers, lenders, and PropTech companies. Good breadth, shallow depth. No investment analysis layer whatsoever.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">Zoneomics</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">National coverage</span>
+          <span class="feature-them feat-win">✅ 50 states</span>
+          <span class="feature-us feat-lose">❌ FL-first (expanding)</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">FL data depth</span>
+          <span class="feature-them feat-lose">❌ Surface level</span>
+          <span class="feature-us feat-win">✅ Parcel + zoning + auction</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">API access</span>
+          <span class="feature-them feat-win">✅ REST API</span>
+          <span class="feature-us feat-win">✅ REST API (Supabase)</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Investment intelligence</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ ARV + max bid + lien</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Permit/use analysis</span>
+          <span class="feature-them feat-tie">⚠️ Basic</span>
+          <span class="feature-us feat-win">✅ Full permitted uses</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">Depth beats breadth for FL investors — we go 20x deeper</span>
+      </div>
+    </div>
+
+    <!-- 3. TestFit -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#1b5e20; color:#a5d6a7;">TF</div>
+          <div>
+            <div class="comp-name">TestFit</div>
+            <div class="comp-domain">testfit.io · Developer tool</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-medium">Medium Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"Building program feasibility in seconds"</div>
+        <div class="comp-desc">TestFit targets developers and architects for building feasibility — how many units can you fit on a parcel given zoning constraints. Strong in new construction; zero foreclosure intelligence, minimal FL presence.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">TestFit</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Unit yield modeling</span>
+          <span class="feature-them feat-win">✅ Best-in-class</span>
+          <span class="feature-us feat-tie">⚠️ Planned</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Foreclosure data</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 245K FL records</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">FL county coverage</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 67 counties</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Target user</span>
+          <span class="feature-them feat-tie">Architects/devs</span>
+          <span class="feature-us feat-win">Investors (larger TAM)</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Pricing</span>
+          <span class="feature-them feat-lose">❌ Enterprise only</span>
+          <span class="feature-us feat-win">✅ Self-serve SaaS</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">Different ICP — investors vs architects. We win the bigger market</span>
+      </div>
+    </div>
+
+    <!-- 4. PropertyOnion -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#f97316; color:#fff;">PO</div>
+          <div>
+            <div class="comp-name">PropertyOnion</div>
+            <div class="comp-domain">propertyonion.com · FL auctions</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-high">High Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"Florida foreclosure auction calendar"</div>
+        <div class="comp-desc">PropertyOnion is BidDeed's most direct FL competitor. They have the auction calendar and 67-county FL coverage. But no ML scoring, no max bid calculation, no lien intelligence. UI is passive — shows you what's happening, not what to do.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">PropertyOnion</span>
+          <span class="col-us">BidDeed.AI</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Auction calendar</span>
+          <span class="feature-them feat-win">✅ All 67 counties</span>
+          <span class="feature-us feat-win">✅ All 67 counties</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">ML deal scoring</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ BID/REVIEW/SKIP</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Max bid formula</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ ARV×70%-Repairs-$10K</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Lien stack warnings</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ HOA/senior flags</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Dark professional UI</span>
+          <span class="feature-them feat-lose">❌ Light generic</span>
+          <span class="feature-us feat-win">✅ Dark #020617</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">BidDeed edge:</span>
+        <span class="advantage-text">Shows investors WHAT TO DO — not just what's happening</span>
+      </div>
+    </div>
+
+    <!-- 5. Algoma -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#4a148c; color:#ce93d8;">AL</div>
+          <div>
+            <div class="comp-name">Algoma</div>
+            <div class="comp-domain">algoma · PropTech zoning</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-medium">Medium Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"Zoning and land use intelligence for lenders &amp; developers"</div>
+        <div class="comp-desc">Algoma focuses on zoning compliance and land use intelligence, primarily for commercial lenders and large developers doing due diligence. Strong SWOT position for institutional buyers; blind spot on residential foreclosure investors.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">Algoma</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Zoning compliance</span>
+          <span class="feature-them feat-win">✅ Commercial grade</span>
+          <span class="feature-us feat-tie">⚠️ Residential focus</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">FL residential depth</span>
+          <span class="feature-them feat-lose">❌ Thin</span>
+          <span class="feature-us feat-win">✅ Parcel-level detail</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Investor workflow</span>
+          <span class="feature-them feat-lose">❌ Institutional only</span>
+          <span class="feature-us feat-win">✅ Individual investors</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Auction integration</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ RealForeclose direct</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Pricing model</span>
+          <span class="feature-them feat-lose">❌ Enterprise deals</span>
+          <span class="feature-us feat-win">✅ Self-serve SaaS</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">Serves the underserved: individual FL foreclosure investors</span>
+      </div>
+    </div>
+
+    <!-- 6. ArkDesign -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#bf360c; color:#ffccbc;">AD</div>
+          <div>
+            <div class="comp-name">ArkDesign</div>
+            <div class="comp-domain">arkdesign.ai · Architecture AI</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-low">Low Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"AI-powered architectural design and zoning compliance"</div>
+        <div class="comp-desc">ArkDesign focuses on AI-assisted architectural design with zoning rule embedding. Their use case is rendering/design — they need zoning data as a constraint, not as an investment signal. Overlapping data layer, different application.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">ArkDesign</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Architectural rendering</span>
+          <span class="feature-them feat-win">✅ AI-native</span>
+          <span class="feature-us feat-lose">❌ Not our product</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Zoning rule engine</span>
+          <span class="feature-them feat-tie">⚠️ Design-focused</span>
+          <span class="feature-us feat-win">✅ Investor-focused</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">FL foreclosure data</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 245K records</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Target customer</span>
+          <span class="feature-them feat-tie">Architects</span>
+          <span class="feature-us feat-win">Investors (10x bigger TAM)</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Partnership potential</span>
+          <span class="feature-them feat-win">✅ Potential partner</span>
+          <span class="feature-us feat-win">✅ Data licensor</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">Adjacent market — potential data partnership, not war</span>
+      </div>
+    </div>
+
+    <!-- 7. Reventure -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#006064; color:#80deea;">RV</div>
+          <div>
+            <div class="comp-name">Reventure</div>
+            <div class="comp-domain">reventure.app · Market data</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-medium">Medium Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"Real estate market data and migration trends"</div>
+        <div class="comp-desc">Reventure (Nick Gerli) is a market analytics platform focused on housing trends, migration patterns, and crash risk scores. Strong brand and YouTube presence. Zero transaction intelligence — no auction data, no zoning, no per-parcel analysis.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">Reventure</span>
+          <span class="col-us">ZoneWise</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Market trend analysis</span>
+          <span class="feature-them feat-win">✅ Strong / national</span>
+          <span class="feature-us feat-tie">⚠️ FL-focused</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Parcel-level data</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 351K+ parcels</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Auction intelligence</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ 245K FL records</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Per-property deal score</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ ML-powered</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Social reach</span>
+          <span class="feature-them feat-win">✅ 1M+ YouTube</span>
+          <span class="feature-us feat-lose">⚠️ Building</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">ZoneWise edge:</span>
+        <span class="advantage-text">Macro trends vs actionable property intelligence — we win on ROI</span>
+      </div>
+    </div>
+
+    <!-- 8. Foreclosure.com -->
+    <div class="competitor-card">
+      <div class="card-header">
+        <div class="card-title-row">
+          <div class="comp-logo" style="background:#b71c1c; color:#ffcdd2;">FC</div>
+          <div>
+            <div class="comp-name">Foreclosure.com</div>
+            <div class="comp-domain">foreclosure.com · National listings</div>
+          </div>
+        </div>
+        <div class="threat-badge threat-high">High Threat</div>
+      </div>
+      <div class="card-body">
+        <div class="comp-tagline">"The largest database of foreclosure listings nationwide"</div>
+        <div class="comp-desc">Foreclosure.com is the legacy player — 25+ years old, large listing database, interactive maps, email alerts, save search. They're a directory, not an intelligence platform. No ML, no max bid, no lien analysis.</div>
+        <div class="feature-header">
+          <span style="flex:1">Feature</span>
+          <span class="col-them">Foreclosure.com</span>
+          <span class="col-us">BidDeed.AI</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">National coverage</span>
+          <span class="feature-them feat-win">✅ All 50 states</span>
+          <span class="feature-us feat-lose">❌ FL-first</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Property photos</span>
+          <span class="feature-them feat-win">✅ Full gallery</span>
+          <span class="feature-us feat-lose">❌ Data-first (no photos)</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">ML deal scoring</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ BID/REVIEW/SKIP</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Max bid calculation</span>
+          <span class="feature-them feat-lose">❌ Listing price only</span>
+          <span class="feature-us feat-win">✅ ARV formula inline</span>
+        </div>
+        <div class="feature-row">
+          <span class="feature-name">Lien intelligence</span>
+          <span class="feature-them feat-lose">❌ None</span>
+          <span class="feature-us feat-win">✅ Clean/Risky/Unknown</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="advantage-label">BidDeed edge:</span>
+        <span class="advantage-text">They're a Rolodex. We're a deal engine. Investors need ROI, not photos</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MASTER COMPARISON TABLE -->
+<section>
+  <div class="section-title">Master Feature Matrix</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Gridics</th>
+          <th>Zoneomics</th>
+          <th>TestFit</th>
+          <th>PropertyOnion</th>
+          <th>Algoma</th>
+          <th>ArkDesign</th>
+          <th>Reventure</th>
+          <th>Foreclosure.com</th>
+          <th class="us-col">ZoneWise / BidDeed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="feature-col">ML Deal Scoring</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ BID/REVIEW/SKIP</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Max Bid Calculator</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ ARV×70% formula</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Lien Stack Analysis</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ Clean/Risky/Unknown</td>
+        </tr>
+        <tr>
+          <td class="feature-col">FL Parcel Coverage</td>
+          <td class="td-x">✗</td>
+          <td class="td-partial">⚠️ Thin</td>
+          <td class="td-x">✗</td>
+          <td class="td-check">✓ County-level</td>
+          <td class="td-partial">⚠️ Limited</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-check">✓ Listings only</td>
+          <td class="td-us td-win-cell">✅ 351K+ parcels</td>
+        </tr>
+        <tr>
+          <td class="feature-col">67 FL Counties</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-check">✓</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-partial">⚠️ Some</td>
+          <td class="td-us td-win-cell">✅ All 67 counties</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Auction Calendar</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-check">✓ Best-in-class</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-partial">⚠️ Limited FL</td>
+          <td class="td-us td-win-cell">✅ ML-enhanced</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Zoning Intelligence</td>
+          <td class="td-check">✓ 3D viz</td>
+          <td class="td-check">✓ National API</td>
+          <td class="td-check">✓ Feasibility</td>
+          <td class="td-x">✗</td>
+          <td class="td-check">✓ Commercial</td>
+          <td class="td-check">✓ Design rules</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ Investor-grade FL</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Self-Serve SaaS</td>
+          <td class="td-x">✗ Enterprise</td>
+          <td class="td-partial">⚠️ API keys</td>
+          <td class="td-x">✗ Enterprise</td>
+          <td class="td-check">✓</td>
+          <td class="td-x">✗ Enterprise</td>
+          <td class="td-partial">⚠️ Limited</td>
+          <td class="td-check">✓</td>
+          <td class="td-check">✓</td>
+          <td class="td-us td-win-cell">✅ Full self-serve</td>
+        </tr>
+        <tr>
+          <td class="feature-col">Dark Professional UI</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ Native dark #020617</td>
+        </tr>
+        <tr>
+          <td class="feature-col">10-yr Investor Founder</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-x">✗</td>
+          <td class="td-us td-win-cell">✅ Ariel Shapira · FL broker + GC</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- MOAT -->
+<section>
+  <div class="section-title">Why Nobody Can Copy This in 6 Months</div>
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="moat-icon">🗂️</div>
+      <div class="moat-title">Data Moat</div>
+      <div class="moat-desc">245K+ FL auction records, 351K Brevard parcels, all 67 counties. Scraped, structured, and continuously updated. Takes 2+ years to replicate — and you'd need FL-specific knowledge to clean it right.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-icon">🧠</div>
+      <div class="moat-title">ML Intelligence Layer</div>
+      <div class="moat-desc">BID/REVIEW/SKIP scores trained on 10 years of Brevard outcomes. XGBoost model includes chat intelligence features (frustration signals, domain rank). No competitor has this training data.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-icon">🏗️</div>
+      <div class="moat-title">Founder Domain Edge</div>
+      <div class="moat-desc">10 years foreclosure investing in Brevard. FL broker license. General contractor license. The product solves problems the founder has personally felt — no competitor can fake that ICP alignment.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-icon">⚡</div>
+      <div class="moat-title">ZoneWise + BidDeed Bundle</div>
+      <div class="moat-desc">No competitor offers both zoning intelligence AND auction deal scoring in one platform. Gridics knows zoning. PropertyOnion knows auctions. We know both — and connect them at the parcel level.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-icon">🤖</div>
+      <div class="moat-title">Autonomous AI Infrastructure</div>
+      <div class="moat-desc">Nightly retrain pipeline, XGBoost auto-retrain, GHA automation, DesignWise agent squad. We ship features faster than any 5-person PropTech team. Infrastructure moat compounds daily.</div>
+    </div>
+    <div class="moat-card">
+      <div class="moat-icon">📍</div>
+      <div class="moat-title">FL-First Precision</div>
+      <div class="moat-desc">National players do FL poorly. We do FL deeply. 14 Brevard jurisdictions, parcel-level zoning, RealForeclose integration, courthouse auction links. FL is the #3 foreclosure market nationally. This is not a niche.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <strong>ZoneWise</strong> · <a href="https://zonewise.ai">zonewise.ai</a> ·
+    Competitive analysis updated March 2026 · Internal use + investor distribution · Built with CompetitorLens Agent #14
+  </div>
+  <div class="footer-tag">
+    <span class="tag">GTM</span>
+    <span class="tag">Investor Brief</span>
+    <span class="tag">8 Competitors</span>
+    <span class="tag">March 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
