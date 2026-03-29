@@ -29,25 +29,27 @@ jobs:
       - name: Deploy (prebuilt)
         id: deploy
         run: |
-          # Deploy prebuilt artifacts — capture URL, don't wait for promotion
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | grep -oE 'https://zonewise-[a-z0-9]+-ariel-shapira-s-projects\.vercel\.app' | tail -1)
+          # Deploy prebuilt artifacts — capture all output, then extract URL
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > /tmp/deploy_out.txt 2>&1 || true
+          cat /tmp/deploy_out.txt
+          DEPLOY_URL=$(grep -oE 'https://[a-z0-9._-]+\.vercel\.app' /tmp/deploy_out.txt | tail -1)
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
           echo "Deployed: $DEPLOY_URL"
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-        timeout-minutes: 6
+        timeout-minutes: 8
 
-      - name: Force Alias (if deploy hangs)
-        if: failure() || steps.deploy.outputs.url == ''
+      - name: Force Alias (if deploy URL missing)
+        if: steps.deploy.outputs.url == ''
         run: |
-          echo "Deploy step failed or hung — using force alias"
+          echo "Deploy URL missing — finding latest READY deployment via API"
           READY_URL=$(curl -s "https://api.vercel.com/v6/deployments?projectId=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E&limit=5&target=production" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
           import json,sys
           for d in json.load(sys.stdin).get('deployments',[]):
               if d.get('readyState') == 'READY':
-                  print(d['url'])
+                  print('https://' + d['url'])
                   break
           ")
           echo "Aliasing: $READY_URL"
@@ -66,7 +68,7 @@ jobs:
         if: always()
         run: |
           sleep 10
-          for page in "" explorer pricing chat; do
+          for page in "" explorer pricing chat dashboard conquest; do
           # API smoke test
           API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://zonewise.ai/api/zoning-chat" -H "Content-Type: application/json" -d '{"message":"test"}');
           echo "/api/zoning-chat: HTTP $API_HTTP"
