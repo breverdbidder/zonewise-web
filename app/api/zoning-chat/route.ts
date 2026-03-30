@@ -692,8 +692,19 @@ export async function POST(req: NextRequest) {
     let ctx: ZoningContext = { parcel: null, zoning: null, error: null }
 
     if (intent === 'ADDRESS_LOOKUP') {
-      const addr = extractAddress(message)
-      if (addr) ctx = await fetchZoningByAddress(addr, message)
+      let addr = extractAddress(message)
+      if (addr) {
+        // FIX: Strip detected city from extracted address BEFORE lookup.
+        // extractAddress returns "1600 S Orlando Ave Cocoa Beach" but
+        // sample_properties stores just "1600 ORLANDO AVE". The city
+        // is used separately as a filter, not part of the address search.
+        const city = extractCity(message)
+        if (city) {
+          const cityPattern = new RegExp('\\s+' + city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '.*$', 'i')
+          addr = addr.replace(cityPattern, '').trim()
+        }
+        ctx = await fetchZoningByAddress(addr, message)
+      }
     } else if (intent === 'ZONE_QUESTION' || intent === 'PERMITTED_USE' || intent === 'CAPACITY') {
       const zoneCode = extractZoneCode(message)
       if (zoneCode) {
