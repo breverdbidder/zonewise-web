@@ -28,6 +28,11 @@ function getLookupStore(): LookupStore {
   }
 }
 
+function isProUser(): boolean {
+  if (typeof window === 'undefined') return false
+  return localStorage.getItem('zw_pro') === 'true'
+}
+
 function incrementLookup(): number {
   const store = getLookupStore()
   const next = { count: store.count + 1, date: getTodayStr() }
@@ -84,7 +89,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
             disabled={loading}
             className="w-full py-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white font-semibold text-sm transition-colors disabled:opacity-60"
           >
-            {loading ? 'Redirecting…' : 'Subscribe $99/mo unlimited'}
+            {loading ? 'Redirecting…' : 'Upgrade to Pro — $15/month'}
           </button>
           <button
             onClick={onClose}
@@ -519,6 +524,15 @@ export default function ZoningChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
+  // Post-payment bypass: if redirected back with ?success=true, mark user as pro
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success') === 'true') {
+      localStorage.setItem('zw_pro', 'true')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
@@ -526,9 +540,10 @@ export default function ZoningChatbot() {
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return
 
-    // Paywall check — block if daily address lookup limit reached
+    // Paywall check — block if daily address lookup limit reached (and not a pro user)
+    const pro = isProUser()
     const store = getLookupStore()
-    if (store.count >= FREE_LIMIT) {
+    if (!pro && store.count >= FREE_LIMIT) {
       setShowPaywall(true)
       return
     }
@@ -543,10 +558,18 @@ export default function ZoningChatbot() {
       const res = await fetch('/api/zoning-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, sessionId }),
+        body: JSON.stringify({ message: text, sessionId, isPro: pro }),
       })
 
       const data = await res.json()
+
+      // Handle server-side paywall gate
+      if (data.paywall === true) {
+        setMessages(prev => prev.filter(m => m.id !== loadingMsg.id))
+        setIsLoading(false)
+        setShowPaywall(true)
+        return
+      }
 
       const assistantMsg: Message = {
         id: loadingMsg.id,

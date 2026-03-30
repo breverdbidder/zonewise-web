@@ -682,6 +682,9 @@ function extractCitations(ctx: ZoningContext): { source: string; detail: string 
   return citations
 }
 
+// ─── Paywall constants ────────────────────────────────────────────────────────
+const FREE_LOOKUPS = 3
+
 // ─── POST handler ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   // DEPLOY_MARKER: 2026-03-30T14:05Z — directional prefix fix
@@ -690,6 +693,7 @@ export async function POST(req: NextRequest) {
     const rawMessage: string = (body.message ?? '').trim()
     const sessionId: string | undefined = body.sessionId
     const incomingHistory: { role: string; content: string }[] = body.history ?? []
+    const isPro: boolean = body.isPro === true
 
     const messageParsed = chatQuerySchema.safeParse(rawMessage)
     if (!messageParsed.success) {
@@ -699,6 +703,24 @@ export async function POST(req: NextRequest) {
       )
     }
     const message = sanitizeChatMessage(messageParsed.data)
+
+    // ── Session + paywall gate ────────────────────────────────────────────────
+    const activeSession = await getOrCreateSession(sessionId)
+
+    if (!isPro) {
+      const supabase = createAnonClient()
+      const { count } = await supabase
+        .from('zw_chat_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('session_id', activeSession)
+        .eq('role', 'user')
+      if ((count ?? 0) >= FREE_LOOKUPS) {
+        return NextResponse.json(
+          { paywall: true, checkoutUrl: '/api/stripe/checkout' },
+          { headers: { ...CORS, ...SECURITY_HEADERS } }
+        )
+      }
+    }
 
     const intent = classifyIntent(message)
     let ctx: ZoningContext = { parcel: null, zoning: null, error: null }
@@ -733,7 +755,6 @@ export async function POST(req: NextRequest) {
         const ctxStr1 = buildContextString({ parcel: null, ...r1 })
         const ctxStr2 = buildContextString({ parcel: null, ...r2 })
         const combinedCtx = ctxStr1 + '\n\n' + ctxStr2
-        const activeSession = await getOrCreateSession(sessionId)
         const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
         const comparisonFallback = () =>
           `**${codes[0]}:** ${r1.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r1 })}\n\n**${codes[1]}:** ${r2.zoning?.district_name ?? 'Unknown'}\n${buildContextString({ parcel: null, ...r2 })}`
@@ -753,7 +774,6 @@ export async function POST(req: NextRequest) {
     // GENERAL intent or any intent that didn't extract a zone/address —
     // still goes through Gemini (with or without context)
     const contextString = buildContextString(ctx)
-    const activeSession = await getOrCreateSession(sessionId)
     const history = incomingHistory.length > 0 ? incomingHistory : await getSessionHistory(activeSession)
 
     const noContextFallback = !contextString
