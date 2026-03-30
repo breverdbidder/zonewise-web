@@ -1,25 +1,103 @@
-sprint: 1
-name: FIRST DOLLAR
-status: WAITING_TO_START
-start: 2026-04-01
-end: 2026-04-11
-repo: breverdbidder/zonewise-web
-scope: BREVARD COUNTY PERFECT — verified data only, no AI inference
+# ZONEWISE.AI SHIP SPRINTS — 11 WEEKS TO EVERYTHING
+# Updated: March 30, 2026 — Ariel accepted full timeline
+# SPRINT LOCK ACTIVE. NO NEW REPOS. NO BRAINSTORMS.
 
-tasks:
-  1.1: {name: Fix address parser directional bug, status: IN_PROGRESS, assigned: SUMMIT 83}
-  1.2: {name: Wire Stripe checkout to /chat, status: TODO}
-  1.3: {name: Test 20 addresses across 5 Brevard cities, status: TODO}
-  1.4: {name: Fix top 3 parsing failures, status: TODO}
-  1.5: {name: Stripe webhook confirms payment, status: TODO}
-  1.6: {name: Send to 3 RE investors for feedback, status: TODO, assigned: Ariel}
+active_sprint: 1
+total_sprints: 6
+timeline: 11 weeks (Apr 1 - Jun 18, 2026)
 
-kill_condition: If Stripe cannot be wired by April 5 ESCALATE
-next_action: Wait for SUMMIT 83 to complete Task 1.1
+# MOAT = Competitive intelligence. Ships FIRST.
+# POWER = Dify backend. Ships IN PARALLEL via 24/6 SUMMIT.
+# VAULT = everest-vault. CC reads every session.
 
-data_strategy: |
-  VERIFIED DATA ONLY. No AI-inferred zoning.
-  MVP = Brevard County (17 jurisdictions) PERFECT.
-  Scale to next county ONLY after first paying customer.
-  67 counties funded by revenue, not speculation.
-  Every zoning district must be scraped from actual municipal code.
+sprint_1:
+  name: "MOAT + FOUNDATION"
+  dates: Apr 1-11
+  priority_1: "8-competitor HTML battle cards + Algoma deep analysis"
+  priority_2: "Fix address parser (SUMMIT #83 — code deployed, needs verify)"
+  priority_3: "Deploy Dify fork to Hetzner (SUMMIT #86)"
+  priority_4: "Wire Stripe checkout to /chat"
+  done_criteria:
+    - "zonewise.ai/competitors shows 8 competitors + 28-feature matrix"
+    - "curl 1600 S Orlando Ave returns real parcel"
+    - "http://87.99.129.125:3100 shows Dify admin"
+    - "4th chat lookup shows Stripe paywall"
+  parallel_24_6:
+    - "Dify Hetzner deploy (SUMMIT #86)"
+    - "Address parser verify + fix (SUMMIT #83)"
+    - "Vault sprint board sync"
+
+sprint_2:
+  name: "DATA DEPTH"
+  dates: Apr 12-22
+  tasks:
+    - "Scrape all 17 Brevard jurisdictions zoning ordinances"
+    - "Load verified data to Supabase + Dify Knowledge Base"
+    - "Explorer map shows real zoning polygons for 5 cities"
+    - "Parcel click shows zoning panel"
+  done_criteria:
+    - "17/17 jurisdictions in zoning_districts table"
+    - "Explorer renders colored polygons"
+
+sprint_3:
+  name: "SPLIT-SCREEN + BATTLE CARDS"
+  dates: Apr 23 - May 7
+  tasks:
+    - "Split-screen UI: chat left, artifacts/map right (Claude AI style)"
+    - "Algoma full reverse engineering deployed as comparison page"
+    - "Dify agent wired to zonewise.ai/chat via Service API"
+    - "Knowledge Base loaded with zoning PDFs"
+  done_criteria:
+    - "Split screen renders on mobile + desktop"
+    - "zonewise.ai/competitors/algoma shows deep analysis"
+    - "Chat responses come from Dify RAG, not hardcoded fallbacks"
+
+sprint_4:
+  name: "REVENTURE-STYLE LEAD MAGNET"
+  dates: May 8-21
+  tasks:
+    - "Free interactive zoning tool (no login required)"
+    - "Landing page with 3D scroll or interactive elements"
+    - "Email capture on free tool usage"
+    - "Social sharing (OG images, Twitter cards)"
+  done_criteria:
+    - "Free tool works for any Brevard address"
+    - "Landing page loads in < 2 seconds"
+    - "OG image renders on social share"
+
+sprint_5:
+  name: "AUTH + DASHBOARD + REPORTS"
+  dates: May 22 - Jun 4
+  tasks:
+    - "Supabase Auth (email magic link)"
+    - "User dashboard with lookup history"
+    - "PDF zoning report generator (branded)"
+    - "Subscription management via Stripe portal"
+  done_criteria:
+    - "User can sign up, login, see past queries"
+    - "PDF downloads with ZoneWise branding"
+    - "Stripe portal shows active subscription"
+
+sprint_6:
+  name: "SEO + SCALE + 200K"
+  dates: Jun 5-18
+  tasks:
+    - "SEO: structured data, sitemaps, meta for all pages"
+    - "Blog: 5 zoning guide articles for FL counties"
+    - "Content marketing: BiggerPockets, LinkedIn, RE forums"
+    - "Performance: target < 1.5s load time"
+    - "Scale test: 1000 concurrent lookups"
+  done_criteria:
+    - "Google Search Console shows pages indexed"
+    - "5 blog posts live"
+    - "Lighthouse score > 90"
+    - "First organic traffic from Google"
+
+commitment:
+  sprint_lock: true
+  no_new_repos: true
+  daily_proof: true
+  48hr_escalation: true
+  vault_24_6: true
+  competitors_first: true
+  ariel_all_in: true
