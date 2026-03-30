@@ -68,7 +68,7 @@ type Intent = 'ADDRESS_LOOKUP' | 'ZONE_QUESTION' | 'PERMITTED_USE' | 'CAPACITY' 
 
 function classifyIntent(message: string): Intent {
   const m = message.toLowerCase()
-  if (/\d+\s+\w+\s+(dr|drive|ln|lane|ave|avenue|blvd|boulevard|st|street|rd|road|ct|court|way|cir|circle|pl|place|terr|terrace|trail|pkwy|parkway|hwy|highway|cswy|causeway|cr|sr)\b/i.test(message)) {
+  if (/\d+\s+[\w\s]+(dr|drive|ln|lane|ave|avenue|blvd|boulevard|st|street|rd|road|ct|court|way|cir|circle|pl|place|terr|terrace|trail|pkwy|parkway|hwy|highway|cswy|causeway|cr|sr)\b/i.test(message)) {
     return 'ADDRESS_LOOKUP'
   }
   if (/\b(r-1|r-2|r-3|r-4|r-1a|r-1aa|r-1b|r-3a|rm-|mfr|sfr|bu-|c-|pud|re\b|reu|sre|tr-|office|cp|gml|acreage|townhouse)\b/i.test(message)) {
