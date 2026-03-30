@@ -6,6 +6,7 @@ import {
   type ChatModelAdapter,
   useLocalRuntime,
 } from "@assistant-ui/react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Adapter that calls our existing /api/zoning-chat endpoint
 const zonewiseAdapter: ChatModelAdapter = {
@@ -71,12 +72,14 @@ export default function ChatV2Client() {
   const runtime = useLocalRuntime(zonewiseAdapter);
 
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <div className="h-dvh bg-[#020617]">
-        <div className="mx-auto h-full max-w-3xl">
-          <Thread />
+    <TooltipProvider>
+      <AssistantRuntimeProvider runtime={runtime}>
+        <div className="h-dvh bg-[#020617]">
+          <div className="mx-auto h-full max-w-3xl">
+            <Thread />
+          </div>
         </div>
-      </div>
-    </AssistantRuntimeProvider>
+      </AssistantRuntimeProvider>
+    </TooltipProvider>
   );
 }
