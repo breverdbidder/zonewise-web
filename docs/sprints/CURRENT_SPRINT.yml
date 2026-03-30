@@ -102,3 +102,28 @@ sprint_6:
     - "Dify plugin marketplace for extensions"
     - "Performance: < 1.5s load"
     - "Scale test: 1000 concurrent"
+
+# ═══ FRONTEND STACK ═══
+frontend_enterprise:
+  framework: "assistant-ui (9K stars, MIT, YC-backed)"
+  repo: "breverdbidder/assistant-ui-zonewise"
+  why: "Same stack (shadcn+Radix+Tailwind), zero branding, Dify adapter ready"
+  components:
+    - "Thread (chat interface)"
+    - "ArtifactsView (split-screen panel)"  
+    - "makeAssistantTool (custom tool rendering)"
+    - "useChatRuntime (Dify Service API connection)"
+  sprint_3_tasks:
+    - "Install @assistant-ui/react in zonewise-web"
+    - "Copy ZoneWiseSplitScreen.tsx component"
+    - "Wire dify-adapter.ts to Dify Service API"
+    - "Deploy /chat-v2 with split-screen layout"
+  summit: "#89"
+  evaluated_alternative: "CopilotKit (29.8K stars) — more powerful but commercial gating, different CSS stack, requires runtime server. Saved for REAI marketplace post-revenue."
+
+# ═══ FULL ENTERPRISE STACK ═══
+enterprise_stack:
+  backend: "Dify (129K stars) — agents, RAG, knowledge base, auth, workflows"
+  frontend: "assistant-ui (9K stars) — chat, streaming, tools, split-screen"
+  shell: "zonewise-web (Next.js) — SEO, Stripe, marketing, branding"
+  infra: "Vercel (frontend) + Hetzner (Dify) + Supabase (data) + Cloudflare (DNS)"
