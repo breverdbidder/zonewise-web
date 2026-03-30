@@ -83,3 +83,8 @@ jobs:
           API_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://zonewise.ai/api/zoning-chat" \
             -H "Content-Type: application/json" -d '{"message":"test"}')
           echo "/api/zoning-chat: HTTP $API_HTTP"
+
+      - name: "Auto-Verify: Trigger Playwright on Hetzner"
+        if: success()
+        run: |
+          curl -s -X POST             -H "Authorization: token ${{ secrets.GH_PAT }}"             -H "Accept: application/vnd.github.v3+json"             -H "Content-Type: application/json"             -d '{"ref":"main","inputs":{"url":"https://zonewise.ai/chat-v2","selectors":".aui-root,.aui-composer-input,[class*=grid]","max_attempts":"5"}}'             "https://api.github.com/repos/breverdbidder/cli-anything-biddeed/actions/workflows/playwright-verify.yml/dispatches"             && echo "✅ Playwright verify triggered on Hetzner"             || echo "⚠️ Playwright verify dispatch failed (non-blocking)"
