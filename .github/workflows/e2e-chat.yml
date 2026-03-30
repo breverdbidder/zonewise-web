@@ -1,0 +1,61 @@
+name: "E2E — /chat-v2"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/chat-v2/**'
+      - 'app/api/zoning-chat/**'
+      - 'tests/e2e/chat-v2.spec.ts'
+      - '.github/workflows/e2e-chat.yml'
+  workflow_dispatch: {}
+
+jobs:
+  e2e-chat:
+    name: "Playwright /chat-v2"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "Install Playwright"
+        run: |
+          npm install --save-dev @playwright/test
+          npx playwright install chromium --with-deps
+
+      - name: "Run /chat-v2 E2E tests"
+        env:
+          ZONEWISE_WEB_URL: https://zonewise.ai
+        run: |
+          npx playwright test tests/e2e/chat-v2.spec.ts \
+            --config tests/playwright.config.ts \
+            --reporter=list \
+            2>&1 | tee /tmp/chat-e2e-results.txt
+          echo "EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+
+      - name: "Upload trace on failure"
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-chat-v2
+          path: |
+            test-results/
+            playwright-results.json
+          retention-days: 7
+
+      - name: "Notify Telegram"
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          ICON="✅"
+          if [ "$STATUS" != "success" ]; then ICON="❌"; fi
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BIDDEED_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.BIDDEED_BOT_CHAT_ID }}" \
+            -d "parse_mode=Markdown" \
+            --data-urlencode "text=${ICON} *E2E /chat-v2*: ${STATUS}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" || true
