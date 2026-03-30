@@ -116,8 +116,10 @@ function normalizeStreetType(addr: string): string {
 }
 
 function extractAddress(message: string): string | null {
-  // Comprehensive street type list — full words AND abbreviations — sorted longest-first to prevent prefix clashes
-  const match = message.match(/(\d+\s+[\w\s]+(boulevard|causeway|parkway|highway|terrace|avenue|street|circle|court|drive|place|trail|lane|road|way|blvd|cswy|pkwy|hwy|ter|trl|ave|cir|ct|dr|pl|st|ln|rd|cr|sr)\b[\w\s,]*)/i)
+  // Extract street address ONLY (number + name + type). Stop at street type suffix.
+  // Do NOT capture city — city is extracted separately by extractCity().
+  // "1600 S Orlando Ave Cocoa Beach" → "1600 S Orlando Ave" (not "1600 S Orlando Ave Cocoa Beach")
+  const match = message.match(/(\d+\s+[\w\s]+?(?:boulevard|causeway|parkway|highway|terrace|avenue|street|circle|court|drive|place|trail|lane|road|way|blvd|cswy|pkwy|hwy|ter|trl|ave|cir|ct|dr|pl|st|ln|rd|cr|sr))\b/i)
   return match ? match[1].trim() : null
 }
 
