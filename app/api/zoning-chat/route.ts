@@ -311,7 +311,16 @@ async function fetchZoningByAddress(address: string, originalMessage?: string): 
   const supabase = createAnonClient()
   try {
     // Normalize address — convert full street type words to abbreviations, uppercase
-    const normalizedAddr = normalizeStreetType(address)
+    let normalizedAddr = normalizeStreetType(address)
+
+    // FIX: Strip directional prefixes (N/S/E/W) from normalized address BEFORE any query.
+    // BCPAO and sample_properties store "1600 ORLANDO AVE" not "1600 S ORLANDO AVE".
+    // This fix applies to ALL lookup attempts, not just GIS.
+    const addrParts = normalizedAddr.trim().split(/\s+/)
+    const DIRS = new Set(['N','S','E','W','NE','NW','SE','SW','NORTH','SOUTH','EAST','WEST'])
+    if (addrParts.length >= 3 && /^\d+$/.test(addrParts[0]) && DIRS.has(addrParts[1].toUpperCase())) {
+      normalizedAddr = addrParts[0] + ' ' + addrParts.slice(2).join(' ')
+    }
 
     // FIX 3: Extract city upfront from the original message so we can filter from the
     // very first Supabase query rather than only as a last-resort fallback.
