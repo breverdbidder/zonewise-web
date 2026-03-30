@@ -4,12 +4,22 @@ status: WAITING_TO_START
 start: 2026-04-01
 end: 2026-04-11
 repo: breverdbidder/zonewise-web
+scope: BREVARD COUNTY PERFECT — verified data only, no AI inference
+
 tasks:
   1.1: {name: Fix address parser directional bug, status: IN_PROGRESS, assigned: SUMMIT 83}
   1.2: {name: Wire Stripe checkout to /chat, status: TODO}
-  1.3: {name: Test 20 addresses across 5 cities, status: TODO}
+  1.3: {name: Test 20 addresses across 5 Brevard cities, status: TODO}
   1.4: {name: Fix top 3 parsing failures, status: TODO}
   1.5: {name: Stripe webhook confirms payment, status: TODO}
-  1.6: {name: Send to 3 RE investors, status: TODO, assigned: Ariel}
+  1.6: {name: Send to 3 RE investors for feedback, status: TODO, assigned: Ariel}
+
 kill_condition: If Stripe cannot be wired by April 5 ESCALATE
 next_action: Wait for SUMMIT 83 to complete Task 1.1
+
+data_strategy: |
+  VERIFIED DATA ONLY. No AI-inferred zoning.
+  MVP = Brevard County (17 jurisdictions) PERFECT.
+  Scale to next county ONLY after first paying customer.
+  67 counties funded by revenue, not speculation.
+  Every zoning district must be scraped from actual municipal code.
