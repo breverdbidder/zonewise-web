@@ -663,6 +663,7 @@ function extractCitations(ctx: ZoningContext): { source: string; detail: string 
 
 // ─── POST handler ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // DEPLOY_MARKER: 2026-03-30T14:05Z — directional prefix fix
   try {
     const body = await req.json()
     const rawMessage: string = (body.message ?? '').trim()
