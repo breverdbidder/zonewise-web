@@ -238,6 +238,14 @@ function parseStreetParts(address: string, detectedCity?: string | null): {
     }
   }
 
+  // Strip directional prefix (N/S/E/W/NE/NW/SE/SW/NORTH/SOUTH/EAST/WEST) from the
+  // first token — BCPAO GIS STREET_NAME does NOT include directional prefixes.
+  // e.g. "S ORLANDO" → "ORLANDO", "NE PALM" → "PALM"
+  const DIRECTIONAL_PREFIXES = new Set(['N','S','E','W','NE','NW','SE','SW','NORTH','SOUTH','EAST','WEST'])
+  if (streetTokens.length >= 2 && DIRECTIONAL_PREFIXES.has(streetTokens[0])) {
+    streetTokens.shift()
+  }
+
   // Everything remaining is the street name (join with space for multi-word names)
   const name = streetTokens.join(' ')
   return { num, name, streetType }

@@ -1,8 +1,102 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, Lock } from 'lucide-react'
 import PropertyCard, { type BcpaoPropertyData } from './PropertyCard'
+
+// ─── Paywall helpers (localStorage) ──────────────────────────────────────────
+const PAYWALL_KEY = 'zw_lookups'
+const FREE_LIMIT = 3
+
+interface LookupStore { count: number; date: string }
+
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function getLookupStore(): LookupStore {
+  if (typeof window === 'undefined') return { count: 0, date: getTodayStr() }
+  try {
+    const raw = localStorage.getItem(PAYWALL_KEY)
+    if (!raw) return { count: 0, date: getTodayStr() }
+    const parsed: LookupStore = JSON.parse(raw)
+    // Reset daily
+    if (parsed.date !== getTodayStr()) return { count: 0, date: getTodayStr() }
+    return parsed
+  } catch {
+    return { count: 0, date: getTodayStr() }
+  }
+}
+
+function incrementLookup(): number {
+  const store = getLookupStore()
+  const next = { count: store.count + 1, date: getTodayStr() }
+  try { localStorage.setItem(PAYWALL_KEY, JSON.stringify(next)) } catch { /* ignore */ }
+  return next.count
+}
+
+// ─── Paywall modal ────────────────────────────────────────────────────────────
+function PaywallModal({ onClose }: { onClose: () => void }) {
+  const [loading, setLoading] = useState(false)
+
+  const handleSubscribe = async () => {
+    setLoading(true)
+    try {
+      // Attempt Stripe checkout with Pro price; fall back to /pricing if unconfigured
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? 'price_pro_monthly' }),
+      })
+      if (res.ok) {
+        const { url } = await res.json()
+        if (url) { window.location.href = url; return }
+      }
+    } catch { /* fall through */ }
+    // Fallback: send to pricing page
+    window.location.href = '/pricing'
+    setLoading(false)
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backdropFilter: 'blur(6px)', background: 'rgba(2,6,23,0.80)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-sm mx-4 bg-[#0f1929] border border-slate-700 rounded-2xl p-6 shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-[#F59E0B]/10 border border-[#F59E0B]/30 flex items-center justify-center">
+            <Lock className="w-6 h-6 text-[#F59E0B]" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-white">Daily limit reached</h2>
+            <p className="text-sm text-slate-400 mt-1">
+              You&apos;ve used your {FREE_LIMIT} free address lookups for today.
+              Upgrade for unlimited access.
+            </p>
+          </div>
+          <button
+            onClick={handleSubscribe}
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+          >
+            {loading ? 'Redirecting…' : 'Subscribe $99/mo unlimited'}
+          </button>
+          <button
+            onClick={onClose}
+            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Citation {
@@ -415,6 +509,7 @@ export default function ZoningChatbot() {
   const [contextZoning, setContextZoning] = useState<ZoningData | undefined>()
   const [contextPanelOpen, setContextPanelOpen] = useState(true)
   const [feedbackMap, setFeedbackMap] = useState<Record<string, FeedbackState>>({})
+  const [showPaywall, setShowPaywall] = useState(false)
 
   // Property card modal
   const [propertyCardData, setPropertyCardData] = useState<BcpaoPropertyData | null>(null)
@@ -430,6 +525,13 @@ export default function ZoningChatbot() {
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return
+
+    // Paywall check — block if daily address lookup limit reached
+    const store = getLookupStore()
+    if (store.count >= FREE_LIMIT) {
+      setShowPaywall(true)
+      return
+    }
 
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text }
     const loadingMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: '', isLoading: true }
@@ -458,7 +560,11 @@ export default function ZoningChatbot() {
       setMessages(prev => prev.map(m => m.id === loadingMsg.id ? assistantMsg : m))
 
       if (data.sessionId && !sessionId) setSessionId(data.sessionId as string)
-      if (data.parcel) setContextParcel(data.parcel)
+      if (data.parcel) {
+        setContextParcel(data.parcel)
+        // Count successful address lookups toward daily paywall limit
+        incrementLookup()
+      }
       if (data.zoning) setContextZoning(data.zoning)
     } catch (err) {
       setMessages(prev => prev.map(m =>
@@ -705,6 +811,9 @@ export default function ZoningChatbot() {
           onClose={() => setPropertyCardData(null)}
         />
       )}
+
+      {/* ── Paywall modal ── */}
+      {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
     </div>
   )
 }
