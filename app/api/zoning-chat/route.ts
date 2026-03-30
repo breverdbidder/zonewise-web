@@ -328,6 +328,16 @@ async function fetchZoningByAddress(address: string, originalMessage?: string): 
     // very first Supabase query rather than only as a last-resort fallback.
     const detectedCity = originalMessage ? extractCity(originalMessage) : null
 
+    // FIX 5: Strip detected city name from normalizedAddr so Supabase ilike matches.
+    // sample_properties stores "1600 ORLANDO AVE" not "1600 ORLANDO AVE COCOA BEACH".
+    if (detectedCity) {
+      const cityUpper = detectedCity.toUpperCase()
+      const cityIdx = normalizedAddr.lastIndexOf(cityUpper)
+      if (cityIdx > 0) {
+        normalizedAddr = normalizedAddr.substring(0, cityIdx).trim()
+      }
+    }
+
     // Attempt 1: search with normalized address (+ city filter when known)
     let query1 = supabase
       .from('sample_properties')
