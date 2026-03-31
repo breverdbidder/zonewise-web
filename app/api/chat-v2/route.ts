@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const DIFY_API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || "http://87.99.129.125:3100/api";
+const DIFY_API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || "http://87.99.129.125:3100";
 const DIFY_API_KEY = process.env.DIFY_API_KEY || "";
 
 export async function POST(req: NextRequest) {
