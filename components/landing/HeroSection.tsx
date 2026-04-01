@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight, Sparkles } from 'lucide-react'
-import { MeshGradientBg } from '@/components/cinematic/MeshGradientBg'
+import { HeroProperty3D } from '@/components/cinematic/HeroProperty3D'
 import { ParticleButton } from '@/components/cinematic/ParticleButton'
 import { TextScramble } from '@/components/cinematic/TextScramble'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
@@ -18,17 +18,7 @@ const HERO_MARQUEE_ITEMS = [
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-[#020617]">
-      <MeshGradientBg
-        className="min-h-[85vh] flex items-center justify-center py-24 sm:py-32"
-        colors={[
-          'rgba(30, 58, 95, 0.9)',
-          'rgba(245, 158, 11, 0.18)',
-          'rgba(10, 20, 40, 0.98)',
-          'rgba(245, 158, 11, 0.08)',
-          'rgba(5, 10, 25, 1)',
-        ]}
-        speed={0.0005}
-      >
+      <HeroProperty3D className="min-h-[85vh] flex items-center justify-center py-24 sm:py-32">
         {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.025] pointer-events-none"
@@ -86,7 +76,7 @@ export function HeroSection() {
             </Link>
           </div>
         </div>
-      </MeshGradientBg>
+      </HeroProperty3D>
 
       {/* Kinetic marquee band below hero */}
       <div className="border-y border-[#1E3A5F]/40 bg-[#020617]">
