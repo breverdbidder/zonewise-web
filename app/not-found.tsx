@@ -95,10 +95,7 @@ export default function NotFound() {
             fontSize: '0.95rem',
             borderRadius: '0.5rem',
             textDecoration: 'none',
-            transition: 'opacity 0.15s',
           }}
-          onMouseOver={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '0.85')}
-          onMouseOut={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '1')}
         >
           Go Home
         </Link>
@@ -115,10 +112,7 @@ export default function NotFound() {
             borderRadius: '0.5rem',
             textDecoration: 'none',
             border: '1px solid #2a4f7a',
-            transition: 'opacity 0.15s',
           }}
-          onMouseOver={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '0.85')}
-          onMouseOut={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = '1')}
         >
           Dashboard
         </Link>
