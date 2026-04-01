@@ -10,12 +10,12 @@ import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://zonewise.ai'),
-  title: 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate',
-  description: 'Every zoning rule, every parcel, every county in Florida. AI-powered property intelligence for investors, developers, and architects. Join the beta.',
+  title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
+  description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
   manifest: '/manifest.json',
   openGraph: {
-    title: 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate',
-    description: 'Every zoning rule, every parcel, every county in Florida. AI-powered property intelligence for investors, developers, and architects. Join the beta.',
+    title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
+    description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
     siteName: 'ZoneWise.AI',
     url: 'https://www.zonewise.ai',
     type: 'website',
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate',
-    description: 'Every zoning rule, every parcel, every county in Florida. AI-powered property intelligence for investors, developers, and architects. Join the beta.',
+    title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
+    description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
   },
   appleWebApp: {
     capable: true,
@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "name": "ZoneWise.AI",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
-              "description": "AI-powered zoning and real estate intelligence for all 67 Florida counties. Parcel analysis, foreclosure tracking, and investment scoring.",
+              "description": "AI-powered zoning and auction intelligence nationwide. Live in 67 Florida counties, expanding to all 50 states. Parcel analysis, foreclosure tracking, and investment scoring.",
               "url": "https://zonewise.ai",
               "author": {
                 "@type": "Organization",
