@@ -17,6 +17,9 @@ const nextConfig = {
   // CI should enforce: tsc --noEmit must pass (pre-commit or CI step).
   typescript: { ignoreBuildErrors: true },
   generateBuildId: () => `v4-nextjs-restored-${Date.now()}`,
+  // Ensure three.js / R3F packages are transpiled by Next.js so they share
+  // a single React instance and avoid the ReactCurrentBatchConfig crash.
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
   async headers() {
     return [
       {
