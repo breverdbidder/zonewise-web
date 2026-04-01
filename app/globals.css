@@ -449,3 +449,28 @@ html:not(.hydrated) [style*="opacity:0"] {
   .text-\[\#1E3A5F\] { color: #1E3A5F !important; }
   .text-\[\#F59E0B\] { color: #F59E0B !important; }
 }
+
+@layer base {
+  :root {
+    /* Sidebar brand vars — navy/orange theme required by components/ui/sidebar.tsx */
+    --sidebar-background: 222.2 47.4% 8%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 213 54% 24%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 38 92% 50%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 38 92% 50%;
+  }
+  .dark {
+    /* Sidebar brand vars — dark mode mirrors dark bg we already use */
+    --sidebar-background: 222.2 47.4% 8%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 213 54% 24%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 38 92% 50%;
+    --sidebar-accent-foreground: 222.2 84% 4.9%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 38 92% 50%;
+  }
+}
