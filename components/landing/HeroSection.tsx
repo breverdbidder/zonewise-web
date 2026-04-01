@@ -9,10 +9,10 @@ import { TextScramble } from '@/components/cinematic/TextScramble'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
 
 const HERO_MARQUEE_ITEMS = [
-  'AI-Powered Zoning Intelligence',
-  '67 Florida Counties',
+  'Nationwide Coverage',
+  '67 Counties Live',
+  'All 50 States Planned',
   'Real-Time Auction Data',
-  'Compounding Market Intelligence',
 ]
 
 export function HeroSection() {
@@ -38,8 +38,8 @@ export function HeroSection() {
           </Badge>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.05] tracking-tight">
-            AI Zoning &amp; Foreclosure<br />
-            <span className="text-[#F59E0B]">Intelligence</span> for Florida
+            AI-Powered Auction Intelligence<br />
+            <span className="text-[#F59E0B]">Nationwide</span>
           </h1>
 
           <div className="mb-4 flex justify-center">
@@ -53,8 +53,8 @@ export function HeroSection() {
           </div>
 
           <p className="mx-auto max-w-2xl text-lg sm:text-xl text-slate-400 mb-10">
-            Zoning analysis, development envelopes, and deal scoring — all in one
-            platform built by a Brevard County investor.
+            Live in 67 Florida counties. Expanding to all 50 states. Zoning analysis,
+            development envelopes, and deal scoring — built by a Brevard County investor.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

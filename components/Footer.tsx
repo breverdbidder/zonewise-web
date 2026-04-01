@@ -28,6 +28,9 @@ export default function Footer() {
           <Link href="/privacy" style={{ color: '#64748B', textDecoration: 'none' }}>Privacy</Link>
           <Link href="/disclaimer" style={{ color: '#64748B', textDecoration: 'none' }}>Disclaimer</Link>
         </div>
+        <p style={{ color: '#475569', fontSize: 12, margin: 0, textAlign: 'center' }}>
+          Live in Florida. Expanding nationwide.
+        </p>
         <p style={{ color: '#475569', fontSize: 12, margin: 0 }}>
           © 2026 ZoneWise.AI. All rights reserved.
         </p>

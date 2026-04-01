@@ -33,7 +33,7 @@ const plans = [
     highlighted: true,
     badge: 'Most popular',
     features: [
-      'All 67 FL counties',
+      '67 counties and growing — nationwide expansion in progress',
       'Unlimited auction records',
       'Development feasibility studio',
       'Zoning reports (PDF export)',

@@ -8,7 +8,7 @@ const features = [
   {
     icon: Map,
     title: 'Smart Choropleth Maps',
-    description: 'Interactive choropleth map of 10.8M FL parcels. Zoning overlays, ZHVI heatmaps, and neighborhood comps at a glance.',
+    description: 'Interactive choropleth map of 10.8M+ parcels and growing. Zoning overlays, ZHVI heatmaps, and neighborhood comps at a glance.',
   },
   {
     icon: MessageSquare,
@@ -18,7 +18,7 @@ const features = [
   {
     icon: Activity,
     title: 'Price Monitoring Alerts',
-    description: 'Real-time auction price tracking across 67 FL counties. Custom Telegram alerts when deals match your criteria.',
+    description: 'Real-time auction price tracking across all covered counties. Custom Telegram alerts when deals match your criteria.',
   },
   {
     icon: Gavel,
@@ -38,10 +38,10 @@ const features = [
 ]
 
 const MARQUEE_ITEMS = [
-  'AI-Powered Zoning Intelligence',
-  '67 Florida Counties',
+  'Nationwide Coverage',
+  '67 Counties Live',
+  'All 50 States Planned',
   'Real-Time Auction Data',
-  'Compounding Market Intelligence',
 ]
 
 export function FeaturesSection() {
@@ -62,10 +62,10 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-4 pb-20 sm:pb-28">
         <div className="mb-16 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Everything a Florida investor needs
+            Everything a serious investor needs
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto">
-            Built by a licensed FL broker and GC with 10+ years in Brevard County foreclosures.
+            Built by a licensed FL broker and GC with 10+ years in Brevard County foreclosures. Now expanding nationwide.
           </p>
         </div>
 
