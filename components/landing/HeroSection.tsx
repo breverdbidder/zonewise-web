@@ -6,6 +6,14 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import { MeshGradientBg } from '@/components/cinematic/MeshGradientBg'
 import { ParticleButton } from '@/components/cinematic/ParticleButton'
 import { TextScramble } from '@/components/cinematic/TextScramble'
+import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
+
+const HERO_MARQUEE_ITEMS = [
+  'AI-Powered Zoning Intelligence',
+  '67 Florida Counties',
+  'Real-Time Auction Data',
+  'Compounding Market Intelligence',
+]
 
 export function HeroSection() {
   return (
@@ -79,6 +87,19 @@ export function HeroSection() {
           </div>
         </div>
       </MeshGradientBg>
+
+      {/* Kinetic marquee band below hero */}
+      <div className="border-y border-[#1E3A5F]/40 bg-[#020617]">
+        <KineticMarquee
+          items={HERO_MARQUEE_ITEMS}
+          speed={0.45}
+          direction="left"
+          variant="outline"
+          separator="•"
+          className="bg-transparent"
+          textClassName="text-white/30"
+        />
+      </div>
     </section>
   )
 }

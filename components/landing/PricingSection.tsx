@@ -1,15 +1,19 @@
+"use client"
+
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Check } from 'lucide-react'
+import { ParticleButton } from '@/components/cinematic/ParticleButton'
+import { TextScramble } from '@/components/cinematic/TextScramble'
 
 const plans = [
   {
     name: 'Free',
-    price: '$0',
+    price: '0',
+    prefix: '$',
     description: 'Explore the map. No credit card.',
-    cta: 'Start exploring',
+    cta: 'Start Free',
     href: '/sign-up',
     highlighted: false,
     features: [
@@ -21,7 +25,8 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '$99',
+    price: '99',
+    prefix: '$',
     description: 'Full intelligence for active investors.',
     cta: 'Start Pro',
     href: '/sign-up?plan=pro',
@@ -51,10 +56,10 @@ export function PricingSection() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative border ${
+              className={`relative border transition-shadow duration-500 ${
                 plan.highlighted
-                  ? 'border-[#F59E0B]/50 bg-slate-900'
-                  : 'border-slate-800 bg-slate-900/50'
+                  ? 'border-[#F59E0B]/50 bg-slate-900 shadow-[0_0_40px_rgba(245,158,11,0.12)] hover:shadow-[0_0_64px_rgba(245,158,11,0.22)]'
+                  : 'border-[#1E3A5F]/60 bg-slate-900/50'
               }`}
             >
               {plan.badge && (
@@ -64,24 +69,39 @@ export function PricingSection() {
               )}
               <CardHeader className="pb-4">
                 <CardTitle className="text-white">{plan.name}</CardTitle>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  {plan.name !== 'Free' && <span className="text-slate-400 text-sm">/month</span>}
+                <div className="flex items-baseline gap-0.5">
+                  <span className="text-xl font-light text-slate-400">{plan.prefix}</span>
+                  <TextScramble
+                    text={plan.price}
+                    trigger="scroll"
+                    duration={900}
+                    color="white"
+                    scramblingColor="rgba(245,158,11,0.6)"
+                    className="text-4xl font-bold font-sans"
+                  />
+                  {plan.name !== 'Free' && <span className="text-slate-400 text-sm ml-0.5">/month</span>}
                 </div>
                 <p className="text-sm text-slate-400">{plan.description}</p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button
-                  className={`w-full font-semibold ${
-                    plan.highlighted
-                      ? 'bg-[#F59E0B] text-slate-900 hover:bg-[#D97706]'
-                      : 'border-slate-700 text-slate-300 hover:bg-slate-800'
-                  }`}
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                  asChild
-                >
-                  <Link href={plan.href}>{plan.cta}</Link>
-                </Button>
+                {plan.highlighted ? (
+                  <ParticleButton
+                    particleType="confetti"
+                    particleColor="#F59E0B"
+                    variant="primary"
+                    className="w-full px-4 py-2.5 text-sm font-semibold rounded-lg"
+                    onClick={() => { window.location.href = plan.href }}
+                  >
+                    {plan.cta}
+                  </ParticleButton>
+                ) : (
+                  <Link
+                    href={plan.href}
+                    className="inline-flex w-full items-center justify-center rounded-lg border border-[#1E3A5F]/70 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-[#1E3A5F]/30"
+                  >
+                    {plan.cta}
+                  </Link>
+                )}
                 <ul className="space-y-2">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
