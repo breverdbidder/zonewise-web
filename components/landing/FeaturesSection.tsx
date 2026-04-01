@@ -1,3 +1,5 @@
+"use client"
+
 import { Map, Gavel, Building2, MessageSquare, FileText, Activity } from 'lucide-react'
 import { StickyCards } from '@/components/cinematic/StickyCards'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
