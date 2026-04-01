@@ -65,7 +65,7 @@ export default function TopNav() {
         {/* Right side */}
         <div className="ml-auto flex items-center gap-3">
           {user && (
-            <span className="hidden sm:block text-xs text-gray-400 dark:text-slate-500">
+            <span className="hidden sm:block text-xs text-gray-400 dark:text-slate-400">
               {user.firstName || user.emailAddresses?.[0]?.emailAddress}
             </span>
           )}
