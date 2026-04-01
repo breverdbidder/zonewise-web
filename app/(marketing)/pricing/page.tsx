@@ -39,7 +39,7 @@ const TIERS = [
       'Priority support',
     ],
     cta: 'Start Free Trial',
-    ctaHref: '/auth/signup?plan=starter',
+    ctaHref: '/sign-up?plan=starter',
     ctaStyle: 'orange' as const,
     badge: 'Most Popular',
   },
@@ -59,7 +59,7 @@ const TIERS = [
       'Dedicated support',
     ],
     cta: 'Start Free Trial',
-    ctaHref: '/auth/signup?plan=pro',
+    ctaHref: '/sign-up?plan=pro',
     ctaStyle: 'navy' as const,
     badge: null,
   },
@@ -85,7 +85,7 @@ export default function PricingPage() {
             Explore
           </Link>
           <Link
-            href="/auth/signup"
+            href="/sign-up"
             className="text-sm bg-[#F59E0B] text-slate-950 px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all"
           >
             Get Started
