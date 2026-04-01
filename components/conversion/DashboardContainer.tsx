@@ -2,12 +2,37 @@
 
 import React from 'react'
 import { useClickTracker } from './ClickTracker'
+import { StatsDisplay } from '@/components/tool-ui/stats-display'
+import type { StatItem } from '@/components/tool-ui/stats-display/schema'
 
-const KPI_CARDS = [
-  { label: 'Active Auctions', value: '247', delta: '+12%' },
-  { label: 'Avg Bid Price', value: '$184K', delta: '-3%' },
-  { label: 'Counties Tracked', value: '67', delta: '100%' },
-  { label: 'Zoning Alerts', value: '31', delta: '+8' },
+const KPI_STATS: StatItem[] = [
+  {
+    key: 'active-auctions',
+    label: 'Active Auctions',
+    value: 247,
+    format: { kind: 'number', compact: false },
+    diff: { value: 12, upIsPositive: true, label: 'this week' },
+  },
+  {
+    key: 'avg-bid-price',
+    label: 'Avg Bid Price',
+    value: 184000,
+    format: { kind: 'currency', currency: 'USD', decimals: 0 },
+    diff: { value: -3, upIsPositive: false, label: 'vs last week' },
+  },
+  {
+    key: 'counties-tracked',
+    label: 'Counties Tracked',
+    value: 67,
+    format: { kind: 'number' },
+  },
+  {
+    key: 'zoning-alerts',
+    label: 'Zoning Alerts',
+    value: 31,
+    format: { kind: 'number' },
+    diff: { value: 8, upIsPositive: true, label: 'new' },
+  },
 ]
 
 const RECENT_AUCTIONS = [
@@ -25,40 +50,22 @@ export default function DashboardContainer() {
       style={{ background: '#020617', color: '#FFFFFF' }}
       onClick={trackClick}
     >
-      {/* KPI grid */}
+      {/* KPI grid — tool-ui StatsDisplay */}
       <div>
-        <h2 className="text-sm font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          KEY METRICS
+        <h2 className="text-xs font-semibold mb-3 uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Key Metrics
         </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {KPI_CARDS.map((kpi) => (
-            <div
-              key={kpi.label}
-              className="rounded-lg p-4 cursor-pointer"
-              style={{
-                background: '#1E3A5F',
-                border: '1px solid rgba(245, 158, 11, 0.15)',
-              }}
-              onClick={(e) => { e.stopPropagation(); trackClick() }}
-            >
-              <div className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
-                {kpi.value}
-              </div>
-              <div className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                {kpi.label}
-              </div>
-              <div className="text-xs mt-1 font-medium" style={{ color: '#F59E0B' }}>
-                {kpi.delta}
-              </div>
-            </div>
-          ))}
-        </div>
+        <StatsDisplay
+          id="dashboard-kpis"
+          stats={KPI_STATS}
+          className="max-w-full min-w-0 [&_.card]:!bg-[#1E3A5F] [&_.card]:!border-[rgba(245,158,11,0.15)]"
+        />
       </div>
 
       {/* Recent auctions table */}
       <div className="flex-1">
-        <h2 className="text-sm font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          RECENT AUCTIONS
+        <h2 className="text-xs font-semibold mb-3 uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Recent Auctions
         </h2>
         <div
           className="rounded-lg overflow-hidden"
@@ -67,36 +74,11 @@ export default function DashboardContainer() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ background: 'rgba(30, 58, 95, 0.6)' }}>
-                <th
-                  className="text-left px-4 py-3 font-medium"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
-                  Case #
-                </th>
-                <th
-                  className="text-left px-4 py-3 font-medium"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
-                  County
-                </th>
-                <th
-                  className="text-left px-4 py-3 font-medium hidden sm:table-cell"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
-                  Address
-                </th>
-                <th
-                  className="text-left px-4 py-3 font-medium"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
-                  Opening Bid
-                </th>
-                <th
-                  className="text-left px-4 py-3 font-medium hidden sm:table-cell"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
-                  Date
-                </th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Case #</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>County</th>
+                <th className="text-left px-4 py-3 font-medium hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>Address</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Opening Bid</th>
+                <th className="text-left px-4 py-3 font-medium hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>Date</th>
               </tr>
             </thead>
             <tbody>
@@ -110,27 +92,11 @@ export default function DashboardContainer() {
                   }}
                   onClick={(e) => { e.stopPropagation(); trackClick() }}
                 >
-                  <td className="px-4 py-3" style={{ color: '#F59E0B', fontFamily: 'monospace' }}>
-                    {auction.case}
-                  </td>
-                  <td className="px-4 py-3" style={{ color: 'rgba(255,255,255,0.85)' }}>
-                    {auction.county}
-                  </td>
-                  <td
-                    className="px-4 py-3 hidden sm:table-cell"
-                    style={{ color: 'rgba(255,255,255,0.6)' }}
-                  >
-                    {auction.address}
-                  </td>
-                  <td className="px-4 py-3 font-semibold" style={{ color: '#FFFFFF' }}>
-                    {auction.bid}
-                  </td>
-                  <td
-                    className="px-4 py-3 hidden sm:table-cell"
-                    style={{ color: 'rgba(255,255,255,0.5)' }}
-                  >
-                    {auction.date}
-                  </td>
+                  <td className="px-4 py-3 font-mono" style={{ color: '#F59E0B' }}>{auction.case}</td>
+                  <td className="px-4 py-3" style={{ color: 'rgba(255,255,255,0.85)' }}>{auction.county}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.6)' }}>{auction.address}</td>
+                  <td className="px-4 py-3 font-semibold">{auction.bid}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>{auction.date}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,28 +107,17 @@ export default function DashboardContainer() {
       {/* Upgrade banner */}
       <div
         className="rounded-lg px-5 py-4 flex items-center justify-between gap-4"
-        style={{
-          background: 'rgba(245, 158, 11, 0.08)',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
-        }}
+        style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.3)' }}
       >
         <div>
-          <p className="text-sm font-semibold" style={{ color: '#F59E0B' }}>
-            Upgrade to unlock live data
-          </p>
+          <p className="text-sm font-semibold" style={{ color: '#F59E0B' }}>Upgrade to unlock live data</p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Real-time auctions, AI deal scoring, and personalized alerts across 67 counties
           </p>
         </div>
         <button
           className="rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap"
-          style={{
-            background: '#F59E0B',
-            color: '#020617',
-            border: 'none',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
+          style={{ background: '#F59E0B', color: '#020617', border: 'none', cursor: 'pointer', flexShrink: 0 }}
           onClick={(e) => { e.stopPropagation(); trackClick() }}
         >
           Upgrade — $99/mo
