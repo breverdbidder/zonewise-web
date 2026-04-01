@@ -6,7 +6,7 @@ export const metadata: Metadata = pageMetadata.explorer
 
 export default function ExplorerPage() {
   return (
-    <div className="bg-[#020617] min-h-screen">
+    <div className="bg-[#020617] h-full">
       <ExplorerLoader />
     </div>
   )
