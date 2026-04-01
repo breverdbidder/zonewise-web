@@ -53,109 +53,131 @@ jobs:
         # Manual test
         TEST_MSG: ${{ github.event.inputs.test_message }}
       run: |
+        # HTML-escape dynamic user content to prevent Telegram parse errors
+        html_escape() {
+          echo "$1" | head -1 | python3 -c "
+        import sys, html
+        line = sys.stdin.read().rstrip('\n')
+        print(html.escape(line))
+        "
+        }
+
         build_message() {
           case "$EVENT_NAME" in
             issues)
+              SAFE_TITLE=$(html_escape "$ISSUE_TITLE")
+              SAFE_SENDER=$(html_escape "$SENDER")
+              SAFE_LABELS=$(html_escape "$ISSUE_LABELS")
               case "$EVENT_ACTION" in
                 opened)
-                  echo "🆕 *New Issue #${ISSUE_NUMBER}*"
+                  echo "🆕 <b>New Issue #${ISSUE_NUMBER}</b>"
                   echo ""
-                  echo "📝 ${ISSUE_TITLE}"
-                  echo "👤 By: ${SENDER}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 By: ${SAFE_SENDER}"
                   if [ -n "$ISSUE_LABELS" ]; then
-                    echo "🏷️ Labels: ${ISSUE_LABELS}"
+                    echo "🏷️ Labels: ${SAFE_LABELS}"
                   fi
                   echo ""
-                  echo "🔗 [View Issue](${ISSUE_URL})"
+                  echo "🔗 <a href=\"${ISSUE_URL}\">View Issue</a>"
                   ;;
                 closed)
-                  echo "✅ *Issue #${ISSUE_NUMBER} Closed*"
+                  echo "✅ <b>Issue #${ISSUE_NUMBER} Closed</b>"
                   echo ""
-                  echo "📝 ${ISSUE_TITLE}"
-                  echo "👤 By: ${SENDER}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 By: ${SAFE_SENDER}"
                   echo ""
-                  echo "🔗 [View Issue](${ISSUE_URL})"
+                  echo "🔗 <a href=\"${ISSUE_URL}\">View Issue</a>"
                   ;;
                 labeled)
-                  echo "🏷️ *Issue #${ISSUE_NUMBER} Labeled*"
+                  echo "🏷️ <b>Issue #${ISSUE_NUMBER} Labeled</b>"
                   echo ""
-                  echo "📝 ${ISSUE_TITLE}"
-                  echo "🏷️ Labels: ${ISSUE_LABELS}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "🏷️ Labels: ${SAFE_LABELS}"
                   echo ""
-                  echo "🔗 [View Issue](${ISSUE_URL})"
+                  echo "🔗 <a href=\"${ISSUE_URL}\">View Issue</a>"
                   ;;
               esac
               ;;
             pull_request)
+              SAFE_TITLE=$(html_escape "$PR_TITLE")
+              SAFE_SENDER=$(html_escape "$SENDER")
+              SAFE_REVIEWER=$(html_escape "${PR_REVIEWER:-$SENDER}")
               case "$EVENT_ACTION" in
                 opened)
-                  echo "🔀 *New PR #${PR_NUMBER}*"
+                  echo "🔀 <b>New PR #${PR_NUMBER}</b>"
                   echo ""
-                  echo "📝 ${PR_TITLE}"
-                  echo "👤 By: ${SENDER}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 By: ${SAFE_SENDER}"
                   echo ""
-                  echo "🔗 [Review PR](${PR_URL})"
+                  echo "🔗 <a href=\"${PR_URL}\">Review PR</a>"
                   ;;
                 closed)
                   if [ "$PR_MERGED" = "true" ]; then
-                    echo "🎉 *PR #${PR_NUMBER} Merged!*"
+                    echo "🎉 <b>PR #${PR_NUMBER} Merged!</b>"
                   else
-                    echo "❌ *PR #${PR_NUMBER} Closed*"
+                    echo "❌ <b>PR #${PR_NUMBER} Closed</b>"
                   fi
                   echo ""
-                  echo "📝 ${PR_TITLE}"
-                  echo "👤 By: ${SENDER}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 By: ${SAFE_SENDER}"
                   echo ""
-                  echo "🔗 [View PR](${PR_URL})"
+                  echo "🔗 <a href=\"${PR_URL}\">View PR</a>"
                   ;;
                 review_requested)
-                  echo "👀 *Review Requested on PR #${PR_NUMBER}*"
+                  echo "👀 <b>Review Requested on PR #${PR_NUMBER}</b>"
                   echo ""
-                  echo "📝 ${PR_TITLE}"
-                  echo "👤 Reviewer: ${PR_REVIEWER:-${SENDER}}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 Reviewer: ${SAFE_REVIEWER}"
                   echo ""
-                  echo "🔗 [Review PR](${PR_URL})"
+                  echo "🔗 <a href=\"${PR_URL}\">Review PR</a>"
                   ;;
                 synchronize)
-                  echo "🔄 *PR #${PR_NUMBER} Updated*"
+                  echo "🔄 <b>PR #${PR_NUMBER} Updated</b>"
                   echo ""
-                  echo "📝 ${PR_TITLE}"
-                  echo "👤 By: ${SENDER}"
+                  echo "📝 ${SAFE_TITLE}"
+                  echo "👤 By: ${SAFE_SENDER}"
                   echo ""
-                  echo "🔗 [View Changes](${PR_URL})"
+                  echo "🔗 <a href=\"${PR_URL}\">View Changes</a>"
                   ;;
               esac
               ;;
             workflow_run)
+              SAFE_WF=$(html_escape "$WF_NAME")
+              SAFE_CONCLUSION=$(html_escape "$WF_CONCLUSION")
               if [ "$WF_CONCLUSION" = "success" ]; then
-                echo "✅ *Workflow Completed*"
+                echo "✅ <b>Workflow Completed</b>"
               elif [ "$WF_CONCLUSION" = "failure" ]; then
-                echo "🔴 *Workflow FAILED*"
+                echo "🔴 <b>Workflow FAILED</b>"
               else
-                echo "⚠️ *Workflow: ${WF_CONCLUSION}*"
+                echo "⚠️ <b>Workflow: ${SAFE_CONCLUSION}</b>"
               fi
               echo ""
-              echo "📦 ${WF_NAME}"
-              echo "📊 Result: ${WF_CONCLUSION}"
+              echo "📦 ${SAFE_WF}"
+              echo "📊 Result: ${SAFE_CONCLUSION}"
               echo ""
-              echo "🔗 [View Run](${WF_URL})"
+              echo "🔗 <a href=\"${WF_URL}\">View Run</a>"
               ;;
             push)
-              echo "📦 *Push to ${PUSH_REF}*"
+              # Use first line of commit message only — body often contains
+              # underscores, backticks, and other chars that break Markdown
+              SAFE_COMMIT=$(html_escape "$PUSH_COMMITS")
+              SAFE_AUTHOR=$(html_escape "$PUSH_AUTHOR")
+              echo "📦 <b>Push to ${PUSH_REF}</b>"
               echo ""
-              echo "💬 ${PUSH_COMMITS}"
-              echo "👤 By: ${PUSH_AUTHOR}"
+              echo "💬 ${SAFE_COMMIT}"
+              echo "👤 By: ${SAFE_AUTHOR}"
               echo ""
-              echo "🔗 [View Commit](https://github.com/${REPO}/commits/${PUSH_REF})"
+              echo "🔗 <a href=\"https://github.com/${REPO}/commits/${PUSH_REF}\">View Commit</a>"
               ;;
             workflow_dispatch)
-              echo "🧪 *Manual Test*"
+              SAFE_TEST=$(html_escape "$TEST_MSG")
+              echo "🧪 <b>Manual Test</b>"
               echo ""
-              echo "${TEST_MSG}"
+              echo "${SAFE_TEST}"
               ;;
           esac
           echo ""
-          echo "📂 \`${REPO}\`"
+          echo "📂 <code>${REPO}</code>"
         }
 
         MSG=$(build_message)
@@ -180,7 +202,7 @@ jobs:
           -d "{
             \"chat_id\": \"${TELEGRAM_CHAT_ID}\",
             \"text\": ${MESSAGE},
-            \"parse_mode\": \"Markdown\",
+            \"parse_mode\": \"HTML\",
             \"disable_web_page_preview\": true
           }" | python3 -c "
         import sys, json
