@@ -1,4 +1,6 @@
-import TopNav from '@/components/navigation/TopNav'
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/navigation/AppSidebar'
+import { SiteHeader } from '@/components/navigation/SiteHeader'
 
 export default function DashboardGroupLayout({
   children,
@@ -6,11 +8,19 @@ export default function DashboardGroupLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="h-screen flex flex-col">
-      <TopNav />
-      <div className="flex-1 min-h-0">
-        {children}
-      </div>
-    </div>
+    <SidebarProvider
+      style={{
+        '--sidebar-width': '15rem',
+        '--sidebar-width-icon': '3rem',
+      } as React.CSSProperties}
+    >
+      <AppSidebar />
+      <SidebarInset className="bg-[#020617] min-h-screen">
+        <SiteHeader />
+        <div className="flex-1 min-h-0">
+          {children}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
