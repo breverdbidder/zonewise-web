@@ -6,24 +6,24 @@ import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
 
 const features = [
   {
-    icon: Gavel,
-    title: 'Auction Intelligence',
-    description: '245K+ Florida foreclosure records. County-by-county auction calendars, bid history, and max-bid formula built in.',
-  },
-  {
     icon: Map,
-    title: 'Zoning Explorer',
-    description: 'Interactive choropleth map of 10.8M FL parcels. Zoning overlays, ZHVI heatmaps, and neighborhood comps.',
-  },
-  {
-    icon: Building2,
-    title: 'Development Feasibility',
-    description: 'Buildable envelope math, 3D massing engine, and pro forma scenarios for any Florida parcel.',
+    title: 'Smart Choropleth Maps',
+    description: 'Interactive choropleth map of 10.8M FL parcels. Zoning overlays, ZHVI heatmaps, and neighborhood comps at a glance.',
   },
   {
     icon: MessageSquare,
-    title: 'AI Zoning Chat',
+    title: 'AI Chat Analyst',
     description: 'Cited answers on permitted uses, setbacks, and height limits from our own Supabase-backed RAG pipeline.',
+  },
+  {
+    icon: Activity,
+    title: 'Price Monitoring Alerts',
+    description: 'Real-time auction price tracking across 67 FL counties. Custom Telegram alerts when deals match your criteria.',
+  },
+  {
+    icon: Gavel,
+    title: 'Compounding Intelligence',
+    description: 'Every query, alert, and analysis feeds the model. The platform gets smarter the more you use it.',
   },
   {
     icon: FileText,
@@ -31,19 +31,17 @@ const features = [
     description: 'One-click PDF zoning reports with HBU analysis, comp sales, and legal lot coverage.',
   },
   {
-    icon: Activity,
+    icon: Building2,
     title: 'Deal Scoring',
     description: 'Max-bid formula: (ARV×70%)−Repairs−$10K−MIN($25K,15%×ARV). Scored against live auction data.',
   },
 ]
 
 const MARQUEE_ITEMS = [
-  'Auction Intelligence',
-  'Zoning AI',
-  'Deal Scoring',
-  'FL Parcels',
-  'Max Bid Formula',
-  '67 Counties',
+  'AI-Powered Zoning Intelligence',
+  '67 Florida Counties',
+  'Real-Time Auction Data',
+  'Compounding Market Intelligence',
 ]
 
 export function FeaturesSection() {
@@ -87,10 +85,10 @@ export function FeaturesSection() {
           {features.slice(4).map((f) => (
             <div
               key={f.title}
-              className="rounded-2xl p-8 border"
+              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[#F59E0B]/40 hover:shadow-[0_0_28px_rgba(245,158,11,0.1)]"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.5)' }}
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1E3A5F]">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1E3A5F] transition-colors group-hover:bg-[#F59E0B]/10">
                 <f.icon className="h-5 w-5 text-[#F59E0B]" />
               </div>
               <h3 className="text-white font-semibold text-base mb-2">{f.title}</h3>
