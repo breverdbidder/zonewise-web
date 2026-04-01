@@ -126,7 +126,7 @@ export function OnboardingTour() {
             </span>
             <button
               onClick={() => dismiss(false)}
-              aria-label="Skip onboarding tour"
+              aria-label="Skip tour"
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
