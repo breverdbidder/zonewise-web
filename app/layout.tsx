@@ -5,6 +5,7 @@ import { OnboardingProvider, OnboardingTour } from '@/components/onboarding'
 import SkipToContent from '@/components/SkipToContent'
 import VercelAnalytics from '@/components/VercelAnalytics'
 import PostHogProvider from '@/components/PostHogProvider'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -92,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <main id="main-content">
                   {children}
                 </main>
+                <Toaster position="bottom-right" theme="dark" />
               </OnboardingProvider>
             </ThemeProvider>
           </PostHogProvider>
