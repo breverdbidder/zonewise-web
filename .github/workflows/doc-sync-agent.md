@@ -1,14 +1,7 @@
 ---
 engine: claude
 on:
-  push:
-    branches: [main]
-    paths:
-      - "src/**"
-      - "scripts/**"
-      - "*.py"
-      - "*.js"
-      - "*.ts"
+  workflow_dispatch:
 permissions:
   contents: read
   pull-requests: read
