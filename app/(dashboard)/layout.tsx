@@ -17,9 +17,9 @@ export default function DashboardGroupLayout({
       } as React.CSSProperties}
     >
       <AppSidebar />
-      <SidebarInset className="bg-[#020617] h-screen overflow-hidden">
+      <SidebarInset className="bg-[#020617] h-screen overflow-hidden flex flex-col">
         <SiteHeader />
-        <div className="flex-1 min-h-0 overflow-auto">
+        <div className="flex-1 min-h-0 overflow-hidden">
           {children}
         </div>
       </SidebarInset>

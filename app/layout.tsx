@@ -48,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://mocerqjnksmhcjzxrewo.supabase.co" />
-        <link rel="dns-prefetch" href="https://clerk.zonewise.ai" />
+        <link rel="preconnect" href="https://clerk.zonewise.ai" />
+        <link rel="preconnect" href="https://api.mapbox.com" />
+        <link rel="preconnect" href="https://events.mapbox.com" />
+        <link rel="dns-prefetch" href="https://clerk.accounts.dev" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="google-site-verification" content="TREUQBk_PqAKP2IlfQh7WImMFNbXA68tWNq8fvbZCX0" />
         <script
