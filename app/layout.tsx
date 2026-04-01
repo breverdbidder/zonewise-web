@@ -45,6 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://mocerqjnksmhcjzxrewo.supabase.co" />
+        <link rel="dns-prefetch" href="https://clerk.zonewise.ai" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="google-site-verification" content="TREUQBk_PqAKP2IlfQh7WImMFNbXA68tWNq8fvbZCX0" />
         <script

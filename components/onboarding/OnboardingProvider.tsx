@@ -44,14 +44,18 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
 
   const trackEvent = async (eventName: string, data: Record<string, unknown> = {}) => {
     try {
-      await getSupabase().from('onboarding_events').insert({
+      const { error } = await getSupabase().from('onboarding_events').insert({
         session_id: sessionId,
         event_name: eventName,
         event_data: data,
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
-      console.error('Failed to track onboarding event:', error);
+      // Silently ignore table-not-found (42P01) — table is optional telemetry
+      if (error && error.code !== '42P01') {
+        // Non-critical: suppress to avoid noisy console in production
+      }
+    } catch {
+      // Non-critical telemetry — suppress silently
     }
   };
 

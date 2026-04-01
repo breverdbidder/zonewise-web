@@ -118,7 +118,7 @@ export function OnboardingTour() {
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: '#475569',
+                color: '#94a3b8',
                 letterSpacing: '0.08em',
               }}
             >
@@ -126,18 +126,23 @@ export function OnboardingTour() {
             </span>
             <button
               onClick={() => dismiss(false)}
+              aria-label="Skip onboarding tour"
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: '#64748b',
+                color: '#94a3b8',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '2px 6px',
+                padding: '8px 10px',
                 borderRadius: '4px',
+                minHeight: '44px',
+                minWidth: '44px',
+                display: 'flex',
+                alignItems: 'center',
               }}
-              onMouseEnter={e => ((e.target as HTMLElement).style.color = '#94a3b8')}
-              onMouseLeave={e => ((e.target as HTMLElement).style.color = '#64748b')}
+              onMouseEnter={e => ((e.target as HTMLElement).style.color = '#cbd5e1')}
+              onMouseLeave={e => ((e.target as HTMLElement).style.color = '#94a3b8')}
             >
               Skip tour ✕
             </button>
