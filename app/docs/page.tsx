@@ -61,7 +61,7 @@ export default function DocsPage() {
           <Link href="/explorer" className="hover:text-white transition-colors">Explorer</Link>
           <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
           <Link href="/help" className="hover:text-white transition-colors">Help</Link>
-          <Link href="/auth/signup" className="bg-[#F59E0B] text-slate-950 px-4 py-2 rounded-lg font-bold text-sm hover:brightness-110 transition-all">
+          <Link href="/sign-up" className="bg-[#F59E0B] text-slate-950 px-4 py-2 rounded-lg font-bold text-sm hover:brightness-110 transition-all">
             Get API Key
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function DocsPage() {
           <Section id="authentication" title="Authentication">
             <p className="text-slate-400 text-sm leading-relaxed mb-4">
               All API requests must include your API key in the <code className="text-[#F59E0B] bg-slate-900 px-1.5 py-0.5 rounded text-xs">Authorization</code> header as a Bearer token. Get your API key from the{' '}
-              <Link href="/auth/signup" className="text-[#F59E0B] hover:underline">account dashboard</Link>.
+              <Link href="/sign-up" className="text-[#F59E0B] hover:underline">account dashboard</Link>.
             </p>
             <CodeBlock lang="http" code={`Authorization: Bearer zw_live_xxxxxxxxxxxxxxxxxxxx`} />
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
