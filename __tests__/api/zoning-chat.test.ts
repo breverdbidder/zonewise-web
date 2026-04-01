@@ -23,22 +23,28 @@ vi.mock('@supabase/ssr', () => ({
   createBrowserClient: vi.fn(() => mockSupabaseClient),
 }))
 
-// Default from() mock — chain returns empty arrays/objects
+// Build a chainable query object that supports arbitrary .eq().eq() chains.
+// Also supports count queries (resolves to { count: 0, data: null, error: null }).
+function makeChainable(resolved: any = { data: [], error: null, count: 0 }): any {
+  const obj: any = {
+    eq: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    neq: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    ilike: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    in: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    or: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    order: vi.fn().mockImplementation(() => makeChainable(resolved)),
+    limit: vi.fn().mockResolvedValue(resolved),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+  }
+  // Make it thenable so await works directly (for count queries)
+  obj.then = (resolve: any) => Promise.resolve(resolved).then(resolve)
+  return obj
+}
+
+// Default from() mock — supports chained queries including .eq().eq() (paywall count)
 mockFrom.mockReturnValue({
-  select: vi.fn().mockReturnValue({
-    eq: vi.fn().mockReturnValue({
-      order: vi.fn().mockReturnValue({
-        limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-      }),
-      single: vi.fn().mockResolvedValue({ data: null, error: null }),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-    }),
-    ilike: vi.fn().mockReturnValue({
-      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-    }),
-    limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-  }),
+  select: vi.fn().mockImplementation(() => makeChainable({ data: [], error: null, count: 0 })),
   insert: vi.fn().mockResolvedValue({ data: null, error: null }),
   upsert: vi.fn().mockResolvedValue({ data: null, error: null }),
 })
