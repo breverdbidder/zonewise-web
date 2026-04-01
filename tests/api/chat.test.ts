@@ -29,10 +29,16 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => mockSupabaseClient),
 }))
 
-// Mock @supabase/ssr
+// Mock @supabase/ssr (used by other lib files, not auth)
 vi.mock('@supabase/ssr', () => ({
   createServerClient: vi.fn(() => mockSupabaseClient),
   createBrowserClient: vi.fn(() => mockSupabaseClient),
+}))
+
+// Mock Clerk auth — the chat route uses auth() from @clerk/nextjs/server
+const mockClerkAuth = vi.fn().mockResolvedValue({ userId: null })
+vi.mock('@clerk/nextjs/server', () => ({
+  auth: mockClerkAuth,
 }))
 
 // Mock CORS helper
@@ -68,8 +74,8 @@ describe('POST /api/chat', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Default: unauthenticated
-    mockAuth.getUser.mockResolvedValue({ data: { user: null }, error: { message: 'No user' } })
+    // Default: unauthenticated (Clerk returns no userId)
+    mockClerkAuth.mockResolvedValue({ userId: null })
 
     // Default subscription mock
     mockFrom.mockImplementation((table: string) => {
@@ -157,15 +163,11 @@ describe('POST /api/chat', () => {
   })
 
   it('returns valid response for authenticated request', async () => {
-    // Mock authenticated user
-    mockAuth.getUser.mockResolvedValue({
-      data: { user: { id: 'user-123', email: 'test@example.com' } },
-      error: null,
-    })
+    // Mock authenticated Clerk user
+    mockClerkAuth.mockResolvedValue({ userId: 'user-123' })
 
     const req = makeRequest(
-      { messages: [{ role: 'user', content: 'What is R-1 zoning in Melbourne?' }] },
-      'Bearer valid-token'
+      { messages: [{ role: 'user', content: 'What is R-1 zoning in Melbourne?' }] }
     )
     const res = await POST(req)
     expect(res.status).toBe(200)
@@ -175,10 +177,7 @@ describe('POST /api/chat', () => {
   })
 
   it('returns 429 when query limit exceeded', async () => {
-    mockAuth.getUser.mockResolvedValue({
-      data: { user: { id: 'user-456', email: 'test@example.com' } },
-      error: null,
-    })
+    mockClerkAuth.mockResolvedValue({ userId: 'user-456' })
 
     // Override subscription to show exhausted
     mockFrom.mockImplementation((table: string) => {

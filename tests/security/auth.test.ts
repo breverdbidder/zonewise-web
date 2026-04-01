@@ -28,18 +28,19 @@ describe('SEC-001: Chat API Authentication', () => {
     expect(routeSource).toMatch(/status:\s*429/)
   })
 
-  it('supports Bearer token authentication', () => {
-    expect(routeSource).toMatch(/Bearer/)
-    expect(routeSource).toMatch(/Authorization/)
+  it('uses Clerk for authentication (not Supabase auth)', () => {
+    expect(routeSource).toMatch(/auth.*from.*@clerk\/nextjs\/server|from.*@clerk\/nextjs\/server.*auth/)
+    expect(routeSource).toMatch(/await auth\(\)/)
   })
 
-  it('supports cookie-based SSR authentication', () => {
-    expect(routeSource).toMatch(/createServerClient/)
-    expect(routeSource).toMatch(/cookies/)
+  it('extracts userId from Clerk auth', () => {
+    expect(routeSource).toMatch(/userId/)
+    expect(routeSource).toMatch(/auth\(\)/)
   })
 
-  it('validates user via supabase getUser', () => {
-    expect(routeSource).toMatch(/auth\.getUser/)
+  it('validates user via Clerk userId (not Supabase getUser)', () => {
+    expect(routeSource).toMatch(/userId/)
+    expect(routeSource).not.toMatch(/auth\.getUser/)
   })
 
   it('increments query count after successful request', () => {
@@ -47,33 +48,19 @@ describe('SEC-001: Chat API Authentication', () => {
   })
 })
 
-describe('SEC-002: OAuth CSRF Protection', () => {
+describe('SEC-002: Auth Callback Route', () => {
   const routeSource = fs.readFileSync('app/auth/callback/route.ts', 'utf-8')
 
-  it('validates state parameter against stored cookie', () => {
-    expect(routeSource).toMatch(/oauth_state/)
-    expect(routeSource).toMatch(/stateParam/)
+  it('exports a GET handler', () => {
+    expect(routeSource).toMatch(/export async function GET/)
   })
 
-  it('rejects mismatched state', () => {
-    expect(routeSource).toMatch(/state mismatch|invalid state/)
+  it('redirects to dashboard (Clerk handles OAuth)', () => {
+    expect(routeSource).toMatch(/redirect.*dashboard|NextResponse\.redirect/)
   })
 
-  it('handles OAuth provider errors', () => {
-    expect(routeSource).toMatch(/error_description/)
-    expect(routeSource).toMatch(/errorParam/)
-  })
-
-  it('clears state cookie after successful validation', () => {
-    expect(routeSource).toMatch(/maxAge:\s*0/)
-    expect(routeSource).toMatch(/httpOnly:\s*true/)
-  })
-
-  it('exchanges code for session via Supabase', () => {
-    expect(routeSource).toMatch(/exchangeCodeForSession/)
-  })
-
-  it('redirects to login on failure', () => {
-    expect(routeSource).toMatch(/\/login\?error=/)
+  it('handles auth callback without raw Supabase OAuth', () => {
+    // Clerk manages OAuth — the callback just redirects
+    expect(routeSource).toMatch(/NextResponse/)
   })
 })

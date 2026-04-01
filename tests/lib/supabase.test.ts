@@ -38,60 +38,66 @@ describe('Supabase browser client', () => {
   })
 })
 
-describe('Supabase server client', () => {
+describe('Supabase server client (Clerk auth, no SSR cookies)', () => {
   beforeEach(() => {
     vi.resetModules()
   })
 
-  it('createServerClient is called with anon key (not service role)', async () => {
-    const mockCreateServerClient = vi.fn().mockReturnValue({ auth: { getUser: vi.fn() } })
-    const mockCookieStore = {
-      get: vi.fn(),
-      set: vi.fn(),
-    }
-    vi.doMock('@supabase/ssr', () => ({
-      createServerClient: mockCreateServerClient,
-    }))
-    vi.doMock('next/headers', () => ({
-      cookies: vi.fn().mockResolvedValue(mockCookieStore),
+  it('createServiceClient uses service role key', async () => {
+    const mockCreateClient = vi.fn().mockReturnValue({ from: vi.fn() })
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: mockCreateClient,
     }))
 
-    const { createClient } = await import('@/lib/supabase/server')
-    await createClient()
+    const { createServiceClient } = await import('@/lib/supabase/server')
+    createServiceClient()
 
-    expect(mockCreateServerClient).toHaveBeenCalledWith(
+    expect(mockCreateClient).toHaveBeenCalledWith(
       'https://test.supabase.co',
-      'test-anon-key',
-      expect.objectContaining({
-        cookies: expect.any(Object),
-      })
+      'test-service-key',
+      expect.objectContaining({ auth: expect.objectContaining({ persistSession: false }) })
     )
   })
 
-  it('server client uses cookie-based auth', async () => {
-    const mockCookieStore = {
-      get: vi.fn().mockReturnValue({ value: 'session-token' }),
-      set: vi.fn(),
-    }
-    vi.doMock('next/headers', () => ({
-      cookies: vi.fn().mockResolvedValue(mockCookieStore),
+  it('createServiceClient throws when service role key is missing', async () => {
+    vi.resetModules()
+    const original = process.env.SUPABASE_SERVICE_ROLE_KEY
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue({}),
     }))
 
-    let capturedCookies: any
-    vi.doMock('@supabase/ssr', () => ({
-      createServerClient: vi.fn().mockImplementation((_url: string, _key: string, opts: any) => {
-        capturedCookies = opts.cookies
-        return { auth: { getUser: vi.fn() } }
-      }),
+    const { createServiceClient } = await import('@/lib/supabase/server')
+    expect(() => createServiceClient()).toThrow('SUPABASE_SERVICE_ROLE_KEY is required')
+
+    process.env.SUPABASE_SERVICE_ROLE_KEY = original
+  })
+
+  it('createAnonClient uses anon key', async () => {
+    const mockCreateClient = vi.fn().mockReturnValue({ from: vi.fn() })
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: mockCreateClient,
+    }))
+
+    const { createAnonClient } = await import('@/lib/supabase/server')
+    createAnonClient()
+
+    expect(mockCreateClient).toHaveBeenCalledWith(
+      'https://test.supabase.co',
+      'test-anon-key',
+      expect.any(Object)
+    )
+  })
+
+  it('legacy createClient returns an anon client (backwards compat)', async () => {
+    const mockClient = { from: vi.fn(), auth: {} }
+    vi.doMock('@supabase/supabase-js', () => ({
+      createClient: vi.fn().mockReturnValue(mockClient),
     }))
 
     const { createClient } = await import('@/lib/supabase/server')
-    await createClient()
-
-    // The cookies object should have get/set/remove methods
-    expect(capturedCookies).toBeDefined()
-    expect(typeof capturedCookies.get).toBe('function')
-    expect(typeof capturedCookies.set).toBe('function')
-    expect(typeof capturedCookies.remove).toBe('function')
+    const client = await createClient()
+    expect(client).toBeDefined()
   })
 })
