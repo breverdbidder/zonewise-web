@@ -50,8 +50,38 @@ When I say "Summit" → execute immediately, no questions, no clarification
 These plugins MUST be installed in every Claude Code environment:
 
 1. **Context7** — Live API documentation. Fixes 6-12 month knowledge lag on Supabase, Cloudflare, LangGraph, Firecrawl, Mapbox APIs. Install: `/plugin` → Discover → context7. Zero cost.
-2. **CC Status Line** — Context window monitor. Shows model, context %, session cost, git branch. Install: `npx cc-status-line@latest` before launching claude.
-3. **cctop** — Claude Code sessions dashboard. Monitor all sessions from one TUI: status, context %, tokens, errors, git branch. Install: `curl -fsSL https://raw.githubusercontent.com/DeanLa/cctop/main/install.sh | bash`. Run `cctop` in separate terminal. Fork: breverdbidder/cctop.
+2. **claude-2x-statusline** — Context window monitor (Full tier). Shows model, context %, session cost, git branch. Install: `git clone https://github.com/Nadav-Fux/claude-2x-statusline.git ~/.claude/cc-2x-statusline && bash ~/.claude/cc-2x-statusline/install.sh`. RepoEval: 86.
+4. **Supabase CLI** — Autonomous migrations, zero HITL. Install: `npm i -g supabase && supabase link --project-ref mocerqjnksmhcjzxrewo`. Project: mocerqjnksmhcjzxrewo.
+5. **cctop** — Claude Code sessions dashboard. Monitor all sessions from one TUI: status, context %, tokens, errors, git branch. Install: `curl -fsSL https://raw.githubusercontent.com/DeanLa/cctop/main/install.sh | bash`. Run `cctop` in separate terminal. Fork: breverdbidder/cctop.
+
+
+### Supabase CLI — Autonomous Operations (Apr 4, 2026)
+```yaml
+supabase_cli:
+  auth: SUPABASE_ACCESS_TOKEN (sbp_ token)
+  project: mocerqjnksmhcjzxrewo
+  autonomous_ops:
+    - supabase db push          # Apply migrations — NO HITL
+    - supabase db diff           # Generate migration from schema changes — NO HITL  
+    - supabase migration new     # Create new migration file — NO HITL
+    - supabase db reset          # BLOCKED — requires Ariel approval (production data)
+    - supabase functions deploy  # Edge functions — NO HITL
+  migration_workflow:
+    1: "supabase migration new <name>"
+    2: "Write SQL in supabase/migrations/<timestamp>_<name>.sql"
+    3: "supabase db push"
+    4: "Verify via REST API or psql"
+    5: "Commit migration file to repo"
+  never_ask_ariel:
+    - CREATE TABLE / ALTER TABLE (non-destructive)
+    - CREATE INDEX / CREATE FUNCTION
+    - INSERT/UPDATE to non-critical tables
+    - RLS policies
+  always_ask_ariel:
+    - DROP TABLE / TRUNCATE on production tables
+    - Schema changes to billing/payment tables
+    - supabase db reset
+```
 
 ### Context Window Rules
 - **Context Brackets** (replaces 50% rule):
