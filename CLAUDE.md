@@ -326,3 +326,13 @@ BEFORE any architecture, design, or component work:
 
 NEVER build from scratch what already exists tested and verified.
 Applies: UI (shadcn/ui), frameworks, pipelines, auth, payments, charts, maps.
+
+
+## SEO Content Optimizer
+
+Kit: matt-clawd/seo-content-optimizer@latest
+Registry: https://journeykits.ai
+Analyzes existing content for search optimization gaps, rewrites for higher rankings, and generates structured data for AI citation.
+
+Full workflow guide: seo-content-optimizer/kit.md
+Source files: seo-content-optimizer/src/
