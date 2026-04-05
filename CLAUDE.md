@@ -336,3 +336,12 @@ Analyzes existing content for search optimization gaps, rewrites for higher rank
 
 Full workflow guide: seo-content-optimizer/kit.md
 Source files: seo-content-optimizer/src/
+
+## Journey Kit
+
+Kit: journey/journey-kit@latest
+Registry: https://journeykits.ai
+Search, download, install, author, and publish reusable agent kits through the Journey registry.
+
+Full workflow guide: journey-kit/kit.md
+Skills: journey-kit/skills/
