@@ -1,519 +1,372 @@
-# DESIGN.md — ZoneWise.AI Design System
-# Version: 2.0.0 | Date: 2026-03-21
-# Purpose: Single source of truth for Stitch 2.0, Claude Code, and all UI work
-# Brand: BidDeed.AI + ZoneWise.AI house brand
+# Design System: Everest Capital / BidDeed.AI + ZoneWise.AI
 
----
+## 1. Visual Theme & Atmosphere
 
-## Identity
+Everest Capital's dual-product ecosystem — BidDeed.AI (foreclosure auctions) and ZoneWise.AI (zoning intelligence) — presents as a dark-mode-native fintech platform where data density meets investor-grade confidence. The foundation is a deep navy canvas (`#1E3A5F`) paired with a warm amber accent (`#F59E0B`) that functions as the system's heartbeat — every interactive element, every call-to-action, every data highlight pulses in this orange-gold. The overall impression is of a Bloomberg terminal redesigned for real estate intelligence: serious, data-rich, and unmistakably premium.
 
-- **Product**: ZoneWise.AI — AI Zoning & Real Estate Intelligence
-- **Tagline**: Distressed assets decoded. For everyone. Everywhere.
-- **Tone**: Enterprise-grade, data-dense, trustworthy. Not playful. Not startup-y.
-- **Aesthetic**: Dark professional dashboard. Think Bloomberg Terminal meets Claude AI.
-- **Audience**: Real estate investors, foreclosure buyers, institutional funds, title companies.
+The typography is built entirely on Inter Variable with OpenType features `"cv01"` and `"ss03"` enabled globally. Inter was chosen for its exceptional legibility at small sizes — critical for data-dense parcel tables, auction listings, and zoning overlays. At display sizes (48px-64px), Inter runs at weight 600 with aggressive negative letter-spacing (-1.2px at 64px), creating compressed, authoritative headlines that signal institutional confidence. At body sizes, weight 400 provides clean readability while weight 500 marks navigation and labels. JetBrains Mono serves as the monospace companion for parcel IDs, legal descriptions, and financial data, with tabular numerals (`"tnum"`) for all numerical displays.
 
----
+What distinguishes Everest's visual system is the deliberate tension between the cold authority of navy and the warm urgency of amber. Navy dominates — backgrounds, headings, containers — establishing trust and permanence. Amber appears sparingly but decisively: primary CTAs, active states, data highlights, progress indicators. This restraint is intentional. In a domain where users are making six-figure auction decisions, the UI must feel stable (navy) while clearly signaling actionable elements (amber). The shadow system uses navy-tinted layers (`rgba(30,58,95,0.25)`) that extend the brand into depth, keeping elevation on-palette.
 
-## Color Tokens
+The two products share a unified design language but are distinguished by subtle theming: ZoneWise.AI leans into choropleth map interfaces with muted earth tones for zoning layers, while BidDeed.AI emphasizes tabular auction data with amber highlights on winning bids and deadline urgency. Both products always appear together — the PAIRING RULE is absolute.
 
-### Primary Palette (MANDATORY — no exceptions)
+**Key Characteristics:**
+- Dark-mode-native: Navy `#1E3A5F` as primary background, `#0F2440` for deepest surfaces, `#2A4A6B` for elevated panels
+- Inter Variable with `"cv01", "ss03"` globally — geometric alternates for maximum data legibility
+- Weight 600 for display headlines, 500 for navigation/labels, 400 for body — no light weights
+- Aggressive negative letter-spacing at display sizes (-1.2px at 64px, -0.8px at 48px)
+- Amber `#F59E0B` as the ONLY chromatic accent — every interactive element, every CTA, every highlight
+- Navy-tinted multi-layer shadows using `rgba(30,58,95,0.25)` — elevation that feels brand-colored
+- JetBrains Mono for all monospace: parcel IDs, legal descriptions, financial data
+- Tabular numerals (`"tnum"`) mandatory for all numerical displays
+- Conservative border-radius (6px-8px) — professional, not playful
+- Dual-product theming: ZoneWise = map/choropleth emphasis, BidDeed = table/auction emphasis
 
-```css
-:root {
-  /* Core Brand */
-  --color-navy:           #1E3A5F;   /* Primary — headers, nav, primary buttons */
-  --color-orange:         #F59E0B;   /* Accent/CTA — buttons, highlights, badges, active states */
-  --color-bg:             #020617;   /* Page background — slate-950 */
+## 2. Color Palette & Roles
 
-  /* Navy Scale */
-  --color-navy-light:     #2A4F7A;   /* Hover states, lighter containers */
-  --color-navy-dark:      #162D4A;   /* Gradients, pressed states */
-  --color-navy-900:       #0F2035;   /* Deep sections, footers */
+### Primary Brand
+- **Everest Navy** (`#1E3A5F`): Primary brand color, page backgrounds, header backgrounds, card surfaces. The foundational color of the entire ecosystem.
+- **Everest Amber** (`#F59E0B`): Primary accent, CTAs, links, active states, data highlights, progress bars. The ONLY warm color in the system.
+- **Pure White** (`#FFFFFF`): Text on dark backgrounds, card surfaces in light contexts.
 
-  /* Orange Scale */
-  --color-orange-hover:   #D97706;   /* Button hover — amber-600 */
-  --color-orange-light:   #FBBF24;   /* Subtle highlights — amber-400 */
-  --color-orange-muted:   #F59E0B1A; /* 10% opacity backgrounds for badges */
+### Navy Scale (Dark Surfaces)
+- **Navy Deepest** (`#0F2440`): Darkest background — sidebar, modal overlays, immersive sections.
+- **Navy Primary** (`#1E3A5F`): Standard page background, primary canvas.
+- **Navy Elevated** (`#2A4A6B`): Elevated surfaces — cards, dropdowns, tooltips on dark backgrounds.
+- **Navy Light** (`#3B5E80`): Subtle borders on dark surfaces, divider lines.
+- **Navy Muted** (`#4A7194`): Disabled states, placeholder text on dark backgrounds.
 
-  /* Neutral Scale (for text and borders) */
-  --color-text-primary:   #F1F5F9;   /* Primary text — slate-100 */
-  --color-text-secondary: #94A3B8;   /* Secondary text — slate-400 */
-  --color-text-muted:     #64748B;   /* Muted text — slate-500 */
-  --color-text-disabled:  #475569;   /* Disabled — slate-600 */
-  --color-border:         #1E293B;   /* Default border — slate-800 */
-  --color-border-subtle:  #0F172A;   /* Subtle border — slate-900 */
-  --color-surface:        #0F172A;   /* Card/panel surface — slate-900 */
-  --color-surface-raised: #1E293B;   /* Raised surface — slate-800 */
+### Amber Scale (Accent)
+- **Amber Primary** (`#F59E0B`): Primary CTA backgrounds, link text, active indicators.
+- **Amber Hover** (`#D97706`): Hover state for primary CTAs — darker, more urgent.
+- **Amber Light** (`#FCD34D`): Highlight backgrounds, selected row indicators, badge backgrounds.
+- **Amber Pale** (`rgba(245,158,11,0.15)`): Subtle amber tint for hover states on dark surfaces.
+- **Amber Deep** (`#B45309`): Pressed/active state for CTAs.
 
-  /* Semantic (status indicators only) */
-  --color-bid:            #22C55E;   /* BID decision — green-500 */
-  --color-review:         #F59E0B;   /* REVIEW decision — matches accent */
-  --color-skip:           #EF4444;   /* SKIP decision — red-500 */
-  --color-info:           #3B82F6;   /* Info indicators — blue-500 */
+### Text Colors
+- **Text Primary** (`#F8FAFC`): Near-white primary text on dark backgrounds.
+- **Text Secondary** (`#CBD5E1`): Body text, descriptions on dark backgrounds.
+- **Text Tertiary** (`#94A3B8`): Metadata, timestamps, de-emphasized content.
+- **Text Disabled** (`#64748B`): Disabled labels, placeholder text.
+- **Text Dark** (`#1E293B`): Primary text on light/white surfaces.
+- **Text Dark Secondary** (`#475569`): Secondary text on light surfaces.
 
-  /* Heatmap Gradient (choropleth only) */
-  --heatmap-cold:         #1E3A5F;   /* Low distress — navy */
-  --heatmap-warm:         #F59E0B;   /* Medium distress — orange */
-  --heatmap-hot:          #EF4444;   /* High distress — red */
-}
-```
+### Status Colors
+- **Success** (`#10B981`): Successful bids, verified parcels, active status.
+- **Success Background** (`rgba(16,185,129,0.15)`): Success badge/row backgrounds.
+- **Warning** (`#F59E0B`): Deadline approaching, attention needed (shares amber accent).
+- **Warning Background** (`rgba(245,158,11,0.15)`): Warning badge backgrounds.
+- **Error** (`#EF4444`): Failed bids, validation errors, overdue items.
+- **Error Background** (`rgba(239,68,68,0.15)`): Error badge/row backgrounds.
+- **Info** (`#3B82F6`): Informational badges, neutral status indicators.
 
-### BANNED Colors (found in current site — MUST be removed)
+### Surface & Borders
+- **Border Default** (`rgba(255,255,255,0.08)`): Standard border on dark surfaces.
+- **Border Subtle** (`rgba(255,255,255,0.05)`): Ultra-subtle dividers.
+- **Border Emphasis** (`rgba(255,255,255,0.12)`): Prominent borders, input focus (non-amber).
+- **Border Amber** (`rgba(245,158,11,0.4)`): Active/selected state borders.
+- **Surface Overlay** (`rgba(15,36,64,0.85)`): Modal/dialog backdrop.
 
-| Color | Where Found | Replacement |
-|-------|-------------|-------------|
-| #F5A623 | demo.html | → #F59E0B |
-| #080A0D | demo.html bg | → #020617 |
-| #0F1117 | demo.html surface | → #0F172A |
-| #3D6FFF | demo.html blue | → #3B82F6 (semantic info only) |
-| #00D68F | demo.html green | → #22C55E |
-| #FF4757 | demo.html red | → #EF4444 |
-| #FFBB33 | demo.html yellow | → #F59E0B |
-| #1E2433 | demo.html border | → #1E293B |
-| #161A24 | demo.html card | → #0F172A |
-| #5A6480 | demo.html text | → #64748B |
-| #8492B0 | demo.html text | → #94A3B8 |
-| #C8D0E0 | demo.html text | → #F1F5F9 |
+### Shadow Colors
+- **Shadow Navy** (`rgba(30,58,95,0.25)`): Primary shadow — navy-tinted for brand coherence.
+- **Shadow Deep** (`rgba(15,36,64,0.35)`): Deep shadow for modals, elevated panels.
+- **Shadow Black** (`rgba(0,0,0,0.15)`): Secondary shadow layer for depth reinforcement.
+- **Shadow Amber Glow** (`rgba(245,158,11,0.15)`): Subtle amber glow on hover for CTAs.
 
----
+### ZoneWise Choropleth Layers
+- **Zone Residential** (`#4ADE80`): Residential zoning overlay.
+- **Zone Commercial** (`#60A5FA`): Commercial zoning overlay.
+- **Zone Industrial** (`#A78BFA`): Industrial zoning overlay.
+- **Zone Agricultural** (`#FBBF24`): Agricultural zoning overlay.
+- **Zone Mixed Use** (`#F472B6`): Mixed-use zoning overlay.
+- **Zone PUD** (`#2DD4BF`): Planned Unit Development overlay.
 
-## Typography
+## 3. Typography Rules
 
-### Font Stack (MANDATORY)
+### Font Family
+- **Primary**: `Inter Variable`, with fallbacks: `SF Pro Display, -apple-system, system-ui, Segoe UI, Roboto, Helvetica Neue, sans-serif`
+- **Monospace**: `JetBrains Mono`, with fallbacks: `SF Mono, Menlo, Consolas, monospace`
+- **OpenType Features**: `"cv01", "ss03"` enabled globally on Inter. `"tnum"` for all numerical data.
 
-```css
-:root {
-  --font-primary:   'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono:      'JetBrains Mono', 'Fira Code', monospace;
-  /* NO OTHER FONTS. Period. */
-}
-```
+### Hierarchy
 
-### Loading Method
+| Role | Font | Size | Weight | Line Height | Letter Spacing | Features | Notes |
+|------|------|------|--------|-------------|----------------|----------|-------|
+| Display XL | Inter Variable | 64px (4.00rem) | 600 | 1.00 (tight) | -1.2px | cv01, ss03 | Hero headlines, landing page |
+| Display Large | Inter Variable | 48px (3.00rem) | 600 | 1.05 (tight) | -0.8px | cv01, ss03 | Section headlines |
+| Display | Inter Variable | 36px (2.25rem) | 600 | 1.10 (tight) | -0.6px | cv01, ss03 | Feature section titles |
+| Heading 1 | Inter Variable | 28px (1.75rem) | 600 | 1.15 | -0.4px | cv01, ss03 | Card headers, panel titles |
+| Heading 2 | Inter Variable | 22px (1.38rem) | 600 | 1.20 | -0.2px | cv01, ss03 | Sub-sections, table headers |
+| Heading 3 | Inter Variable | 18px (1.13rem) | 600 | 1.25 | -0.1px | cv01, ss03 | Compact headings, sidebar titles |
+| Body Large | Inter Variable | 16px (1.00rem) | 400 | 1.60 | normal | cv01, ss03 | Descriptions, feature text |
+| Body | Inter Variable | 14px (0.88rem) | 400 | 1.55 | normal | cv01, ss03 | Standard reading text |
+| Body Medium | Inter Variable | 14px (0.88rem) | 500 | 1.55 | normal | cv01, ss03 | Navigation, labels, emphasis |
+| Small | Inter Variable | 13px (0.81rem) | 400 | 1.50 | normal | cv01, ss03 | Metadata, timestamps |
+| Caption | Inter Variable | 12px (0.75rem) | 500 | 1.40 | 0.2px | cv01, ss03 | All-caps labels, overlines |
+| Micro | Inter Variable | 11px (0.69rem) | 500 | 1.35 | 0.3px | cv01, ss03 | Tiny labels, badge text |
+| Data Large | JetBrains Mono | 20px (1.25rem) | 500 | 1.20 | normal | tnum | Large financial figures, bid amounts |
+| Data Body | JetBrains Mono | 14px (0.88rem) | 400 | 1.50 | normal | tnum | Parcel IDs, table data, prices |
+| Data Small | JetBrains Mono | 12px (0.75rem) | 400 | 1.40 | normal | tnum | Compact data, timestamps |
+| Code | JetBrains Mono | 13px (0.81rem) | 400 | 1.60 | normal | -- | Code blocks, API responses |
 
-- **Inter**: Loaded via `next/font/google` in Next.js layout.tsx — NOT via Google Fonts CDN
-- **JetBrains Mono**: Loaded via `next/font/google` — used ONLY for code blocks, terminal output, and KPI values
+### Principles
+- **Weight 600 for all headings** — Everest headlines are bold and commanding, the opposite of light-weight trends. In a domain of financial decisions, authority comes from weight.
+- **cv01 + ss03 everywhere** — The alternate lowercase 'a' (single-story) and adjusted letterforms give Inter a cleaner, more geometric feel that matches the data-density of the product.
+- **tnum for all numbers** — Every price, every parcel ID, every bid amount uses tabular numerals for perfect column alignment. Non-negotiable.
+- **JetBrains Mono for financial data** — Not just code blocks but any structured data: parcel numbers, legal descriptions, bid amounts, coordinates. This signals "this is precise, machine-verified data."
+- **Negative letter-spacing at display only** — Body text breathes normally. Only display sizes (36px+) use compressed tracking.
 
-### BANNED Fonts (found in current site — MUST be removed)
-
-| Font | Where Found | Action |
-|------|-------------|--------|
-| Syne | demo.html | DELETE — replace with Inter weight 700/800 |
-| DM Sans | demo.html | DELETE — replace with Inter weight 300/400/500 |
-| Any Google Fonts CDN `<link>` | demo.html | DELETE — use next/font only |
-
-### Type Scale
-
-| Token | Size | Weight | Line Height | Usage |
-|-------|------|--------|-------------|-------|
-| `display-xl` | 48px | 800 | 1.1 | Hero headline only |
-| `display-lg` | 36px | 700 | 1.15 | Section headers |
-| `heading-lg` | 24px | 700 | 1.3 | Page titles, card headers |
-| `heading-md` | 20px | 600 | 1.3 | Sub-section headers |
-| `heading-sm` | 16px | 600 | 1.4 | Card titles, nav items |
-| `body-lg` | 15px | 400 | 1.6 | Paragraph text |
-| `body-md` | 13px | 400 | 1.5 | Default body, descriptions |
-| `body-sm` | 12px | 400 | 1.5 | Secondary info, metadata |
-| `caption` | 11px | 500 | 1.4 | Labels, timestamps, tags |
-| `mono-md` | 13px | 500 | 1.5 | KPI values, code, data |
-| `mono-sm` | 11px | 400 | 1.4 | Terminal log, small data |
-
-**MINIMUM readable size: 11px.** The current demo page uses 6px, 8px, 9px, 10px — all below threshold. Nothing below 11px anywhere in the product.
-
----
-
-## Spacing System
-
-8px base grid. All spacing uses multiples of 4px.
-
-```css
-:root {
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-}
-```
-
-### Border Radius
-
-```css
-:root {
-  --radius-sm:  4px;   /* Small tags, badges */
-  --radius-md:  6px;   /* Buttons, inputs */
-  --radius-lg:  8px;   /* Cards, panels */
-  --radius-xl:  12px;  /* Modals, large containers */
-  --radius-full: 9999px; /* Avatars, pills */
-}
-```
-
----
-
-## Layout Architecture
-
-### Split-Screen (Primary App Layout)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  NAVBAR (56px fixed top)                                     │
-├───────────────────────┬─────────────────────────────────────┤
-│  LEFT PANEL (380px)   │  RIGHT PANEL (flex: 1)              │
-│  Chat + Controls      │  Map / Reports / Calendar           │
-│                       │                                     │
-│  min: 320px           │  min: 480px                         │
-│  max: 480px           │  no max                             │
-│  resizable border     │                                     │
-├───────────────────────┴─────────────────────────────────────┤
-│  STATUS BAR (32px fixed bottom — optional)                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **Chat LEFT, Map/Reports RIGHT** (Claude AI pattern — approved)
-- Divider is draggable (min 320px left, min 480px right)
-- Left panel collapses to icon rail on mobile
-- Right panel has internal tabs: Map | Report | Calendar | Compare
-
-### Mobile Layout (< 768px)
-
-```
-┌──────────────────────┐
-│  NAVBAR (48px)       │
-├──────────────────────┤
-│                      │
-│  FULL-SCREEN MAP     │
-│  (or active view)    │
-│                      │
-├──────────────────────┤  ← Bottom Sheet
-│  Tab Bar             │
-│  [Map][Chat][Cal][⚙] │
-└──────────────────────┘
-```
-
-- Bottom sheet: collapsed (tab bar + search), half (list view), full (chat/detail)
-- No side panel on mobile — everything in bottom sheet
-- Map stays behind bottom sheet, interactive when collapsed
-
-### Landing Page Layout (Marketing)
-
-```
-HERO → HEATMAP (full-width lead magnet) → 12-Stage System → Pricing → CTA → Footer
-```
-
-- Heatmap section is ALWAYS visible, no login required (Reventure strategy)
-- Max content width: 1200px centered
-- Full-bleed sections for heatmap and hero
-
----
-
-## Component Library
-
-### Navbar
-
-```
-Height: 56px (desktop), 48px (mobile)
-Background: var(--color-surface) with backdrop-blur
-Border bottom: 1px solid var(--color-border)
-Logo: "Z" mark + "ZoneWise.AI" text — Inter 700, var(--color-text-primary)
-Nav items: Inter 500 13px, var(--color-text-secondary), hover: var(--color-orange)
-Active: var(--color-orange) + 2px bottom border
-CTA button: "Get Started" — filled orange
-Auth: "Sign In" — ghost button, border: var(--color-border)
-```
-
-Consistent across ALL pages. No page may have a different nav or no nav.
+## 4. Component Stylings
 
 ### Buttons
 
-```css
-/* Primary (orange CTA) */
-.btn-primary {
-  background: var(--color-orange);
-  color: #000;
-  font: 600 13px/1 var(--font-primary);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  transition: background 0.15s;
-}
-.btn-primary:hover { background: var(--color-orange-hover); }
+**Primary (Amber)**
+- Background: `#F59E0B`
+- Text: `#1E293B` (dark text on amber for contrast)
+- Padding: `10px 20px`
+- Border-radius: `6px`
+- Font: Inter Variable, 14px, weight 500
+- Hover: `#D97706` background, `box-shadow: 0 0 0 3px rgba(245,158,11,0.3)`
+- Active: `#B45309` background
+- Disabled: `#F59E0B` at 40% opacity, no pointer events
+- Transition: `background 0.15s, box-shadow 0.15s`
 
-/* Secondary (navy outline) */
-.btn-secondary {
-  background: transparent;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  font: 500 13px/1 var(--font-primary);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-}
-.btn-secondary:hover { border-color: var(--color-orange); color: var(--color-orange); }
+**Secondary (Ghost/Outline)**
+- Background: `transparent`
+- Text: `#F8FAFC`
+- Border: `1px solid rgba(255,255,255,0.12)`
+- Padding: `10px 20px`
+- Border-radius: `6px`
+- Hover: `rgba(255,255,255,0.05)` background
+- Active: `rgba(255,255,255,0.08)` background
 
-/* Ghost */
-.btn-ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  font: 500 13px/1 var(--font-primary);
-  padding: 8px 16px;
-}
-.btn-ghost:hover { color: var(--color-orange); }
-```
+**Danger**
+- Background: `#EF4444`
+- Text: `#FFFFFF`
+- Hover: `#DC2626`
+- Same sizing as primary
 
-### Cards
+### Cards & Containers
 
-```css
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-}
-.card:hover {
-  border-color: var(--color-orange)33; /* 20% orange */
-}
-```
+**Standard Card (Dark)**
+- Background: `#2A4A6B`
+- Border: `1px solid rgba(255,255,255,0.08)`
+- Border-radius: `8px`
+- Padding: `24px`
+- Shadow: `rgba(30,58,95,0.25) 0px 20px 40px -20px, rgba(0,0,0,0.15) 0px 10px 20px -10px`
 
-### Decision Badges
+**Elevated Card**
+- Same as standard but shadow at Level 3
+- Border: `1px solid rgba(255,255,255,0.12)`
 
-```css
-/* BID */
-.badge-bid {
-  background: #22C55E1A;
-  color: var(--color-bid);
-  border: 1px solid #22C55E33;
-  font: 700 11px var(--font-mono);
-  padding: 3px 10px;
-  border-radius: var(--radius-sm);
-}
+**Auction Card (BidDeed-specific)**
+- Standard card base
+- Left border accent: `3px solid #F59E0B` for active auctions
+- Left border accent: `3px solid #EF4444` for deadline < 24h
+- Left border accent: `3px solid #10B981` for won auctions
+- Timer badge: amber background, dark text, JetBrains Mono
 
-/* REVIEW */
-.badge-review {
-  background: #F59E0B1A;
-  color: var(--color-review);
-  border: 1px solid #F59E0B33;
-}
+**Parcel Card (ZoneWise-specific)**
+- Standard card base
+- Zoning badge in top-right with zone-specific color
+- Map thumbnail with `border-radius: 6px` clip
 
-/* SKIP */
-.badge-skip {
-  background: #EF44441A;
-  color: var(--color-skip);
-  border: 1px solid #EF444433;
-}
-```
+### Badges / Tags / Pills
 
-### KPI Rows
+**Status Badge**
+- Padding: `2px 8px`
+- Border-radius: `4px`
+- Font: Inter Variable, 11px, weight 500
+- Variants use status color at 15% opacity for background, full color for text, 40% for border
 
-```
-Layout: flex row, align center
-Left: Label (body-sm, text-secondary) + Source (caption, text-muted)
-Center: Value (mono-md, text-primary, weight 700)
-Right: Score ring (24px SVG circle, color by threshold: ≥80 green, ≥60 orange, <60 red)
-Minimum row height: 40px
-Minimum font size: 11px (NEVER below this)
-```
+**Zoning Badge**
+- Same sizing as status badge
+- Uses ZoneWise choropleth colors
+- Background at 20% opacity, text at full color
 
-### Chat Panel
+### Inputs & Forms
 
-```
-Width: 380px default (resizable 320–480px)
-Background: var(--color-bg)
-Header: "ZoneWise AI" label, Inter 600 14px
-Messages:
-  User: right-aligned, bg var(--color-navy), radius 12px 12px 0 12px
-  AI: left-aligned, bg var(--color-surface), radius 12px 12px 12px 0
-  Font: body-md (13px)
-Input: fixed bottom of panel, 44px height, bg var(--color-surface-raised), radius-md
-  Placeholder: "Ask about any FL property..." in text-muted
-```
+**Text Input (Dark)**
+- Background: `rgba(255,255,255,0.05)`
+- Border: `1px solid rgba(255,255,255,0.08)`
+- Border-radius: `6px`
+- Padding: `10px 14px`
+- Text: `#F8FAFC`
+- Placeholder: `#64748B`
+- Focus: `border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245,158,11,0.15)`
+- Font: Inter Variable, 14px, weight 400
 
-### Map Component
+**Search Input**
+- Same as text input
+- Left icon (magnifying glass) at `#94A3B8`
+- Keyboard shortcut badge (⌘K) in right side
 
-```
-Provider: Mapbox GL JS
-Style: mapbox://styles/mapbox/dark-v11 (matches dark theme)
-Default center: [28.5, -81.5] (Florida center)
-Default zoom: 6.5 (shows all 67 counties)
-Controls: Zoom (top-right), Fullscreen, Geolocate
-Layer toggle pills: positioned top-left over map
-  Pill style: bg var(--color-surface-raised), border var(--color-border),
-              active: bg var(--color-orange-muted), border var(--color-orange)
-Choropleth: fill-color interpolated from --heatmap-cold → --heatmap-warm → --heatmap-hot
-Popup: bg var(--color-surface), border var(--color-border), radius-lg, shadow-lg
-```
+### Navigation
 
-### Calendar Component
+**Top Navigation**
+- Background: `#0F2440` with `backdrop-filter: blur(12px)`
+- Height: `64px`
+- Logo: Left-aligned, Inter Variable, 18px, weight 600, `#F8FAFC`
+- Nav links: Inter Variable, 14px, weight 500, `#CBD5E1`
+- Active link: `#F59E0B` text with `rgba(245,158,11,0.1)` background pill
+- CTA button: Amber primary, right-aligned
 
-```
-Layout: CSS Grid 7-column (Mon–Sun)
-Header: Month/Year (heading-md) + nav arrows (ghost buttons)
-Day cells:
-  Default: bg transparent, border-bottom 1px var(--color-border-subtle)
-  Today: border 1px var(--color-orange)
-  Has event: colored dot indicator
-Event chips:
-  Foreclosure: bg var(--color-skip)1A, border-left 3px var(--color-skip)
-  Tax Deed: bg var(--color-info)1A, border-left 3px var(--color-info)
-  HOA: bg var(--color-review)1A, border-left 3px var(--color-review)
-County filter: Multi-select dropdown above calendar
-```
+**Sidebar**
+- Background: `#0F2440`
+- Width: `260px`
+- Active item: `rgba(245,158,11,0.1)` background, `#F59E0B` left border (3px)
+- Inactive item: `#CBD5E1` text, no background
+- Section headers: Inter Variable, 11px, weight 500, `#64748B`, uppercase, 0.5px tracking
 
-### Conversion Gate Modal
+### Data Tables
 
-```
-Trigger: After 5 free parcel clicks OR 3 free chat messages
-Style: Centered modal, bg var(--color-surface), radius-xl
-  Backdrop: rgba(0,0,0,0.7) with backdrop-blur-sm
-  Icon: Lock icon in var(--color-orange)
-  Headline: heading-lg, "Unlock Full Intelligence"
-  Benefits: Checkmark list, body-md, text-secondary
-  CTA: btn-primary full-width, "Start Free Trial — $0 for 14 days"
-  Dismiss: "Maybe later" ghost link below CTA
-```
+- Header: `#0F2440` background, Inter Variable 12px weight 500, `#94A3B8`, uppercase, 0.3px tracking
+- Row: `#1E3A5F` background, alternating with `rgba(255,255,255,0.02)`
+- Row hover: `rgba(245,158,11,0.05)` background
+- Selected row: `rgba(245,158,11,0.1)` background, left border `3px solid #F59E0B`
+- Cell text: Inter Variable 14px weight 400, `#F8FAFC`
+- Numeric cells: JetBrains Mono 14px, `"tnum"`, right-aligned
+- Border between rows: `1px solid rgba(255,255,255,0.05)`
 
----
+## 5. Layout Principles
 
-## Pricing Tiers
+### Spacing System
+| Token | Value | Use |
+|-------|-------|-----|
+| xs | 4px | Icon padding, tight gaps |
+| sm | 8px | Compact element spacing |
+| md | 12px | Standard gap, form spacing |
+| lg | 16px | Card padding, section gaps |
+| xl | 24px | Section padding, card internal |
+| 2xl | 32px | Major section spacing |
+| 3xl | 48px | Page-level section breaks |
+| 4xl | 64px | Hero sections, major breaks |
 
-| | Free | Starter $39/mo | Pro $99/mo |
-|---|---|---|---|
-| Choropleth heatmap | ✓ Always | ✓ | ✓ |
-| Parcel clicks/day | 5 | Unlimited | Unlimited |
-| AI chat messages/day | 3 | 50 | Unlimited |
-| Counties | All 67 | All 67 | All 67 |
-| Auction calendar | View only | Full + alerts | Full + alerts + exports |
-| 298-KPI reports | Preview (10 KPIs) | Full report | Full + DOCX/PDF export |
-| BidWise max bid | — | ✓ | ✓ + historical |
-| API access | — | — | ✓ |
+### Grid & Container
+- **Max content width**: `1280px`
+- **Dashboard grid**: 12-column, `16px` gap
+- **Sidebar + content**: `260px fixed` + `1fr fluid`
+- **Card grid**: `repeat(auto-fill, minmax(320px, 1fr))` with `16px` gap
+- **Auction listing**: Single column, full width rows
+- **Map + panel split**: `60% map` + `40% panel` (ZoneWise split-screen)
 
----
+### Whitespace Philosophy
+Data-dense but never cluttered. The navy background provides natural breathing room through color rather than empty space. Tables and lists can be tight (8px row padding) because the dark surface creates implicit separation. Hero sections use generous vertical spacing (64px+) to create contrast with the data-heavy product sections.
 
-## Page Inventory (post-redesign)
+### Border Radius Scale
+| Token | Value | Use |
+|-------|-------|-----|
+| none | 0px | Table cells, inline elements |
+| sm | 4px | Badges, tags, small pills |
+| md | 6px | Buttons, inputs, small cards |
+| lg | 8px | Cards, panels, modals |
+| xl | 12px | Hero cards, featured sections |
+| full | 9999px | Avatar circles, pill buttons (rare) |
 
-| Route | Type | Status | Nav Visible |
-|-------|------|--------|-------------|
-| `/` | Landing (marketing) | REDESIGN | Full |
-| `/app` | Split-screen app (chat + map) | BUILD NEW | App nav |
-| `/app/calendar` | 67-county calendar (right panel) | BUILD NEW | App nav |
-| `/app/report/:id` | 298-KPI report view (right panel) | BUILD NEW | App nav |
-| `/demo` | Animated demo (Next.js route, NOT standalone HTML) | REBUILD | Full |
-| `/kpis` | 298 KPIs showcase | FIX (data not loading) | Full |
-| `/pricing` | Pricing page | BUILD NEW | Full |
-| `/terms` | Legal | Keep | Minimal |
-| `/privacy` | Legal | Keep | Minimal |
-| `/disclaimer` | Legal | Keep | Minimal |
+## 6. Depth & Elevation
 
-**DELETE**: `/demo.html` (standalone file), `/explorer` (broken 404)
+| Level | Treatment | Use |
+|-------|-----------|-----|
+| Flat (Level 0) | No shadow | Inline elements, table cells |
+| Subtle (Level 1) | `rgba(30,58,95,0.15) 0px 4px 8px` | Subtle card lift, hover |
+| Standard (Level 2) | `rgba(30,58,95,0.25) 0px 12px 24px -8px, rgba(0,0,0,0.15) 0px 6px 12px -4px` | Standard cards, panels |
+| Elevated (Level 3) | `rgba(30,58,95,0.25) 0px 20px 40px -20px, rgba(0,0,0,0.15) 0px 10px 20px -10px` | Featured cards, dropdowns |
+| Deep (Level 4) | `rgba(15,36,64,0.35) 0px 30px 50px -20px, rgba(0,0,0,0.2) 0px 15px 30px -10px` | Modals, floating panels |
+| Amber Glow | Standard + `0 0 20px rgba(245,158,11,0.15)` | CTA hover, highlighted cards |
+| Ring (Focus) | `0 0 0 3px rgba(245,158,11,0.3)` | Keyboard focus ring |
 
----
+**Shadow Philosophy**: All shadows use navy-tinted base colors (`rgba(30,58,95,...)`) rather than neutral gray, ensuring elevation reinforces the brand palette. The amber glow is reserved exclusively for interactive hover states on primary CTAs, creating a warm "beacon" effect that draws the eye to actionable elements against the cool navy field. Negative spread values keep shadows tight and controlled — no diffuse, blurry halos.
 
-## Animation Rules
+## 7. Do's and Don'ts
 
-```css
-/* Standard transitions */
---transition-fast:   150ms ease;
---transition-normal: 250ms ease;
---transition-slow:   400ms ease-out;
+### Do
+- Use Inter Variable with `"cv01", "ss03"` on every text element
+- Use weight 600 for all headings — bold authority is the brand voice
+- Apply navy-tinted shadows (`rgba(30,58,95,0.25)`) for all elevated elements
+- Use `#1E3A5F` (Everest Navy) as the primary background — not black, not gray
+- Use `#F59E0B` (amber) as the ONLY chromatic accent
+- Keep border-radius between 4px-8px for most elements
+- Use `"tnum"` and JetBrains Mono for ANY numerical display
+- Always pair BidDeed.AI with ZoneWise.AI — never show one without the other
+- Use left-border accents (3px solid) for active/selected states
+- Use status colors at 15% opacity for backgrounds, full color for text
 
-/* Page transitions: fade + slide up */
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+### Don't
+- Don't use any chromatic color besides amber for interactive elements — no blue links, no green buttons
+- Don't use light font weights (300) for headings — Everest is bold, not whisper-light
+- Don't use neutral gray shadows — always tint with navy
+- Don't use pill-shaped buttons (9999px radius) for standard CTAs — they're too casual
+- Don't use pure black (`#000000`) for backgrounds — always use the navy scale
+- Don't skip `"tnum"` on numerical data — misaligned numbers look amateur
+- Don't show BidDeed without ZoneWise or vice versa — the PAIRING RULE is absolute
+- Don't use warm background colors (cream, beige) — the system is dark-mode-native
+- Don't use more than one accent color — amber is the single source of energy
+- Don't use decorative gradients — the system is flat + shadow, not gradient-based
 
-/* Stagger children: 50ms delay per item, max 500ms total */
-/* Agent status pulse: 2s ease infinite (only on LIVE agents) */
-/* Score rings: 1s ease stroke-dashoffset animation on scroll-into-view */
-/* NO auto-playing timed sequences without user control (pause/replay required) */
-```
+## 8. Responsive Behavior
 
----
+### Breakpoints
+| Name | Width | Key Changes |
+|------|-------|-------------|
+| Mobile | <640px | Single column, sidebar collapses to bottom nav, map goes full-width above panel |
+| Tablet | 640-1024px | 2-column grids, sidebar overlay, split-screen becomes tabbed |
+| Desktop | 1024-1400px | Full layout, sidebar visible, split-screen active |
+| Large Desktop | >1400px | Centered content with generous margins, wider data tables |
 
-## Accessibility Minimums
+### Touch Targets
+- Minimum button size: `44px` height on mobile
+- Table row minimum height: `48px` for tap targets
+- Navigation items: `44px` minimum height with `12px` horizontal padding
+- Map controls: `44px × 44px` minimum
 
-- **Contrast**: All text must pass WCAG AA (4.5:1 for body, 3:1 for large text)
-- **Minimum font**: 11px (current demo has 6px — violation)
-- **Focus indicators**: 2px solid var(--color-orange) outline on all interactive elements
-- **Keyboard nav**: All panels, tabs, modals fully keyboard-navigable
-- **Screen reader**: ARIA labels on map controls, chart elements, and dynamic content
+### Collapsing Strategy
+- Hero: 64px display → 36px on mobile, weight 600 maintained
+- Navigation: horizontal → hamburger with slide-out drawer
+- Split-screen (ZoneWise): side-by-side → stacked (map top, panel bottom)
+- Data tables: horizontal scroll with sticky first column on mobile
+- Card grids: 3-column → 2-column → single column
+- Sidebar: persistent → overlay → bottom tab bar on mobile
+- Section spacing: 64px → 32px on mobile
 
-### Contrast Verification
+### Map Behavior (ZoneWise-specific)
+- Map maintains minimum 300px height on mobile
+- Choropleth overlays use higher opacity on mobile for legibility
+- Controls reposition to bottom-left on mobile
+- Parcel selection opens bottom sheet instead of side panel
 
-| Pair | Ratio | Pass? |
-|------|-------|-------|
-| --text-primary (#F1F5F9) on --bg (#020617) | 16.2:1 | ✓ AA |
-| --text-secondary (#94A3B8) on --bg (#020617) | 7.1:1 | ✓ AA |
-| --text-muted (#64748B) on --bg (#020617) | 4.6:1 | ✓ AA |
-| --text-disabled (#475569) on --bg (#020617) | 3.2:1 | ✓ Large only |
-| --orange (#F59E0B) on --bg (#020617) | 9.8:1 | ✓ AA |
-| #000 on --orange (#F59E0B) | 10.1:1 | ✓ AA (button text) |
+## 9. Agent Prompt Guide
 
-**BANNED pairs** (found in current demo.html — all fail WCAG AA):
-- #5A6480 on #0F1117 → 2.9:1 ✗
-- #3A4255 on #080A0D → 2.1:1 ✗
-- #8492B0 on #1E2433 → 3.0:1 ✗
+### Quick Color Reference
+- Primary CTA: Amber (`#F59E0B`)
+- CTA Hover: Amber Dark (`#D97706`)
+- Background: Everest Navy (`#1E3A5F`)
+- Deep Background: Navy Deep (`#0F2440`)
+- Elevated Surface: Navy Elevated (`#2A4A6B`)
+- Heading text: White (`#F8FAFC`)
+- Body text: Silver (`#CBD5E1`)
+- Muted text: Slate (`#94A3B8`)
+- Border: `rgba(255,255,255,0.08)`
+- Link: Amber (`#F59E0B`)
+- Success: Green (`#10B981`)
+- Error: Red (`#EF4444`)
+- Focus ring: `rgba(245,158,11,0.3)`
 
----
+### Example Component Prompts
+- "Create a hero section on navy background (#1E3A5F). Headline at 64px Inter Variable weight 600, line-height 1.00, letter-spacing -1.2px, color #F8FAFC, font-feature-settings 'cv01' 1, 'ss03' 1. Subtitle at 16px weight 400, line-height 1.60, color #CBD5E1. Amber CTA button (#F59E0B, 6px radius, 10px 20px padding, #1E293B text) and ghost button (transparent, 1px solid rgba(255,255,255,0.12), #F8FAFC text, 6px radius)."
+- "Design an auction card: #2A4A6B background, 1px solid rgba(255,255,255,0.08) border, 8px radius, 3px solid #F59E0B left border. Shadow: rgba(30,58,95,0.25) 0px 20px 40px -20px, rgba(0,0,0,0.15) 0px 10px 20px -10px. Title at 18px Inter weight 600, color #F8FAFC, 'cv01' 'ss03'. Bid amount at 20px JetBrains Mono weight 500, color #F59E0B, 'tnum'. Body at 14px weight 400, #CBD5E1."
+- "Build a status badge: rgba(16,185,129,0.15) background, #10B981 text, 4px radius, 2px 8px padding, 11px Inter weight 500, border 1px solid rgba(16,185,129,0.4)."
+- "Create navigation: #0F2440 sticky header with backdrop-filter blur(12px). Inter 14px weight 500 for links, #CBD5E1 text, 'cv01' 'ss03'. Active link: #F59E0B text with rgba(245,158,11,0.1) background pill. Amber CTA right-aligned (#F59E0B bg, #1E293B text, 6px radius)."
+- "Design a data table: header row #0F2440 with Inter 12px weight 500 uppercase #94A3B8 0.3px tracking. Data rows alternate #1E3A5F and rgba(255,255,255,0.02). Hover: rgba(245,158,11,0.05). Numerical columns: JetBrains Mono 14px 'tnum' right-aligned. Row borders: 1px solid rgba(255,255,255,0.05)."
+- "Build ZoneWise split-screen: left panel 60% width with Mapbox container (dark style), right panel 40% #0F2440 background. Panel has scrollable parcel list with cards: #2A4A6B bg, 8px radius, zoning badge top-right using zone color at 20% opacity."
 
-## Stitch 2.0 Import Instructions
-
-1. Open stitch.withgoogle.com
-2. Create new project: "ZoneWise.AI Redesign"
-3. Import this DESIGN.md as design system
-4. Generate screens in this order:
-   - Screen 1: Landing page hero + heatmap section
-   - Screen 2: Split-screen app (chat left, map right)
-   - Screen 3: 67-county calendar view
-   - Screen 4: 298-KPI report panel
-   - Screen 5: Pricing page (Free / Starter $39 / Pro $99)
-   - Screen 6: Mobile layout with bottom sheet
-   - Screen 7: Conversion gate modal
-   - Screen 8: Demo page (agent pipeline + live report)
-5. Export DESIGN.md back after generation for Claude Code consumption
-
-### Stitch MCP Integration (DEPRECATED — 2026-03-24)
-
-> **ARCHIVED**: `@_davideast/stitch-mcp` and `@google/stitch-sdk` toolchain is deprecated.
-> Replaced by hand-coded animated components (see `components/animations/`).
-> Reference kept for historical context only — do not install or use.
-
-<details>
-<summary>Legacy config (archived)</summary>
-
-```json
-{
-  "mcpServers": {
-    "stitch": {
-      "command": "npx",
-      "args": ["@_davideast/stitch-mcp", "proxy"]
-    }
-  }
-}
-```
-
-Commands (archived):
-```bash
-npx @_davideast/stitch-mcp tool get_screen_code --screenId <id>
-npx @_davideast/stitch-mcp tool build_site --projectId <id> --routes '[...]'
-```
-</details>
-
----
-
-## File: BRAND_COLORS.md (cross-reference)
-
-This DESIGN.md supersedes all prior brand references. The canonical colors are:
-- Navy: `#1E3A5F`
-- Orange: `#F59E0B`
-- Background: `#020617`
-- Font: `Inter`
-
-Applied to: zonewise.ai, biddeed.ai, all DOCX/PDF/PPTX outputs, all dashboards.
-
----
-
-*Generated 2026-03-21 by ZoneWise.AI AI Architect. BRAINSTORM Phase 2 complete.*
+### Iteration Guide
+1. Always enable `font-feature-settings: "cv01" 1, "ss03" 1` on all Inter text
+2. Weight 600 for headings, 500 for nav/labels, 400 for body — no exceptions
+3. Shadow formula: `rgba(30,58,95,0.25) 0px Y1 B1 -S1, rgba(0,0,0,0.15) 0px Y2 B2 -S2`
+4. Heading color is `#F8FAFC`, body is `#CBD5E1`, muted is `#94A3B8`
+5. Border-radius stays 4px-8px — never pill-shaped on standard elements
+6. Use `"tnum"` + JetBrains Mono for ANY number in tables, prices, IDs
+7. Amber (`#F59E0B`) is the single interactive color — if it's clickable, it's amber
+8. Dark backgrounds use the navy scale: `#0F2440` → `#1E3A5F` → `#2A4A6B`
+9. Focus rings always use `0 0 0 3px rgba(245,158,11,0.3)`
+10. BidDeed + ZoneWise always together — the pairing rule is design-system-level
