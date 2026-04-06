@@ -3,14 +3,21 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 const isPublicRoute = createRouteMatcher([
+  // API routes — public data endpoints
   '/api/health(.*)',
-  '/api/zoning-chat(.*)',
-  '/api/chat-v2(.*)',
+  '/api/stats(.*)',
+  '/api/kpis(.*)',
+  '/api/auctions(.*)',
   '/api/bcpao-lookup(.*)',
   '/api/bcpao-photo(.*)',
+  '/api/explorer(.*)',
+  '/api/zoning-chat(.*)',
   '/api/zoning-report(.*)',
-  '/report(.*)',
-  '/api/auctions(.*)',
+  '/api/chat-v2(.*)',
+  '/api/reports(.*)',
+  // Stripe webhooks MUST be public (Stripe sends without auth)
+  '/api/stripe/webhook(.*)',
+  // Pages — public access
   '/',
   '/chat(.*)',
   '/dashboard(.*)',
@@ -26,6 +33,11 @@ const isPublicRoute = createRouteMatcher([
   '/competitors(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/report(.*)',
+  '/auctions(.*)',
+  '/privacy(.*)',
+  '/terms(.*)',
+  '/disclaimer(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
