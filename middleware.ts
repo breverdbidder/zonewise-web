@@ -39,6 +39,11 @@ const isPublicRoute = createRouteMatcher([
   '/privacy(.*)',
   '/terms(.*)',
   '/disclaimer(.*)',
+  // SEO files — belt & suspenders (matcher also excludes txt|xml below)
+  '/robots.txt',
+  '/sitemap.xml',
+  '/robots(.*)',
+  '/sitemap(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
@@ -80,7 +85,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // EG14 P3 FIX: added txt|xml so /robots.txt and /sitemap.xml bypass middleware entirely
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|xml)).*)',
     '/(api|trpc)(.*)',
   ],
 }
