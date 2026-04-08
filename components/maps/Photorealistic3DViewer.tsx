@@ -65,9 +65,9 @@ export default function Photorealistic3DViewer({
 
         if (destroyed || !containerRef.current) return
 
-        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
         if (!apiKey) {
-          setError('GOOGLE_MAPS_API_KEY not configured. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in environment.')
+          setError('GOOGLE_API_KEY not configured. Set NEXT_PUBLIC_GOOGLE_API_KEY in environment.')
           setLoading(false)
           return
         }

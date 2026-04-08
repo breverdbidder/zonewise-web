@@ -8,7 +8,7 @@
  * Outputs: probe-results/g3d-coverage-YYYY-MM-DD.json
  * Inserts: repo_evaluations with eval_type='g3d_coverage'
  *
- * Requires: GOOGLE_MAPS_API_KEY env var
+ * Requires: GOOGLE_API_KEY env var
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -17,10 +17,10 @@ import { join } from 'path'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
 
 if (!GOOGLE_API_KEY) {
-  console.error('ERROR: GOOGLE_MAPS_API_KEY not set. Cannot probe 3D tile coverage.')
+  console.error('ERROR: GOOGLE_API_KEY not set. Cannot probe 3D tile coverage.')
   console.error('Add it to GitHub secrets or .env.local and re-run.')
   process.exit(1)
 }
