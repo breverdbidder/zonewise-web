@@ -34,6 +34,12 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# CesiumJS build assets (copied by webpack)
+public/cesium/
+
+# Probe results (environment-specific)
+probe-results/*.json
+
 # AI session artifacts
 CLAUDE_CODE_MISSION*.md
 PASTE_INTO_CLAUDE_CODE.md
