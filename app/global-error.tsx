@@ -4,12 +4,7 @@ import { useEffect } from 'react'
 
 /**
  * Root-level error boundary (wraps <html>/<body>).
- * Fires when app/layout.tsx itself throws during render.
- *
- * Like app/error.tsx, this avoids the default Next.js error UI
- * which renders with id="__next_error__" — a signal EG14 uses
- * to detect hydration failure. Our custom UI uses a different
- * id so the gate does not false-positive on transient errors.
+ * No auto-reset. User-initiated only. See app/error.tsx for rationale.
  */
 export default function GlobalError({
   error,
@@ -27,13 +22,7 @@ export default function GlobalError({
         at: new Date().toISOString(),
       }
     }
-    const t = setTimeout(() => {
-      try {
-        reset()
-      } catch {}
-    }, 150)
-    return () => clearTimeout(t)
-  }, [error, reset])
+  }, [error])
 
   return (
     <html lang="en">
@@ -56,7 +45,7 @@ export default function GlobalError({
             ZoneWise.AI
           </h1>
           <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-            We&apos;re loading a fresh view.
+            Something didn&apos;t load correctly. Refresh to try again.
           </p>
           <button
             onClick={() => reset()}
