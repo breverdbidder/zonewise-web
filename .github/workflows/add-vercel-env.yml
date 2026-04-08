@@ -17,17 +17,19 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           SECRET_NAME="${{ inputs.secret_name }}"
           ENV_KEY="${{ inputs.key }}"
-          
+
           # Map secret name to value
           VALUE=""
           case "$SECRET_NAME" in
             GEMINI_API_KEY) VALUE="$GEMINI_API_KEY" ;;
+            GOOGLE_API_KEY) VALUE="$GOOGLE_API_KEY" ;;
             SUPABASE_SERVICE_ROLE_KEY) VALUE="$SUPABASE_SERVICE_ROLE_KEY" ;;
             NEXT_PUBLIC_SUPABASE_URL) VALUE="$NEXT_PUBLIC_SUPABASE_URL" ;;
             NEXT_PUBLIC_SUPABASE_ANON_KEY) VALUE="$NEXT_PUBLIC_SUPABASE_ANON_KEY" ;;

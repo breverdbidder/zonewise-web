@@ -25,6 +25,7 @@ jobs:
         env:
           VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
           VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          NEXT_PUBLIC_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       - name: Deploy (prebuilt)
         id: deploy
