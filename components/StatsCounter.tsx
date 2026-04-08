@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 interface Stats {
   counties: number
-  parcels: number
+  fl_parcels: number
 }
 
 function formatLarge(n: number): string {
@@ -39,7 +39,7 @@ function StatItem({ label, value, formatter, suffix, loading }: StatItemProps) {
 
 export default function StatsCounter() {
   // Initialize with real values — no skeleton flash on load
-  const [stats, setStats] = useState<Stats>({ counties: 67, parcels: 10_800_000 })
+  const [stats, setStats] = useState<Stats>({ counties: 67, fl_parcels: 9_410_902 })
   const [loading] = useState(false)
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function StatsCounter() {
       />
       <StatItem
         label="Parcels Analyzed"
-        value={stats?.parcels ?? 10_800_000}
+        value={stats?.fl_parcels ?? 9_410_902}
         formatter={formatLarge}
         suffix="+"
         loading={loading}

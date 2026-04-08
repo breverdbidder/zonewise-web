@@ -1,0 +1,113 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+export const revalidate = 3600
+
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+/**
+ * GET /api/parcels/featured
+ * Returns a featured Palm Bay foreclosure parcel from fl_parcels with
+ * BidDeed auction status + ZoneWise zoning status (pairing rule).
+ */
+export async function GET() {
+  try {
+    const supabase = getSupabase()
+
+    // Fetch a Palm Bay parcel with centroid data from fl_parcels (9.4M rows)
+    const { data: parcel, error: parcelError } = await supabase
+      .from('fl_parcels')
+      .select('parcel_id, phy_addr1, phy_city, phy_zipcd, cent_lat, cent_lon, co_no, dor_uc, jv')
+      .eq('co_no', 5) // Brevard
+      .ilike('phy_city', 'Palm Bay')
+      .not('cent_lat', 'is', null)
+      .not('cent_lon', 'is', null)
+      .gt('jv', 100000)
+      .limit(1)
+      .single()
+
+    if (parcelError || !parcel) {
+      return NextResponse.json(
+        { error: 'No featured parcel found', fallback: true, parcel: getFallbackParcel() },
+        { status: 200 }
+      )
+    }
+
+    // Parallel: fetch BidDeed auction status + ZoneWise zoning
+    const [auctionRes, zoningRes] = await Promise.all([
+      supabase
+        .from('multi_county_auctions')
+        .select('status, auction_type, sale_date, opening_bid')
+        .eq('parcel_id', parcel.parcel_id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('zoning_assignments')
+        .select('zoning_code, jurisdiction')
+        .eq('parcel_id', parcel.parcel_id)
+        .limit(1)
+        .maybeSingle(),
+    ])
+
+    return NextResponse.json(
+      {
+        fallback: false,
+        parcel: {
+          parcel_id: parcel.parcel_id,
+          address: parcel.phy_addr1,
+          city: parcel.phy_city,
+          zip: parcel.phy_zipcd,
+          lat: parcel.cent_lat,
+          lng: parcel.cent_lon,
+          co_no: parcel.co_no,
+          dor_uc: parcel.dor_uc,
+          just_value: parcel.jv,
+        },
+        biddeed: {
+          status: auctionRes.data?.status ?? 'No active auction',
+          auction_type: auctionRes.data?.auction_type ?? null,
+          sale_date: auctionRes.data?.sale_date ?? null,
+          opening_bid: auctionRes.data?.opening_bid ?? null,
+        },
+        zonewise: {
+          zoning_code: zoningRes.data?.zoning_code ?? null,
+          jurisdiction: zoningRes.data?.jurisdiction ?? null,
+          status: zoningRes.data
+            ? `${zoningRes.data.zoning_code} (${zoningRes.data.jurisdiction})`
+            : 'Not assigned',
+        },
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+        },
+      }
+    )
+  } catch {
+    return NextResponse.json({
+      fallback: true,
+      parcel: getFallbackParcel(),
+      biddeed: { status: 'No active auction', auction_type: null, sale_date: null, opening_bid: null },
+      zonewise: { zoning_code: null, jurisdiction: null, status: 'Not assigned' },
+    })
+  }
+}
+
+function getFallbackParcel() {
+  return {
+    parcel_id: '05-25-36-00-00100.0-0001.00',
+    address: '1234 Palm Bay Rd NE',
+    city: 'Palm Bay',
+    zip: '32905',
+    lat: 28.0345,
+    lng: -80.5887,
+    co_no: 5,
+    dor_uc: '0100',
+    just_value: 185000,
+  }
+}

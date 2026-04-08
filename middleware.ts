@@ -11,6 +11,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/bcpao-lookup(.*)',
   '/api/bcpao-photo(.*)',
   '/api/explorer(.*)',
+  '/api/parcels(.*)',
   '/api/zoning-chat(.*)',
   '/api/zoning-report(.*)',
   '/api/chat-v2(.*)',

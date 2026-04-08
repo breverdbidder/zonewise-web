@@ -1,5 +1,5 @@
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
-import { HeroSection } from '@/components/landing/HeroSection'
+import { Hero3DSection } from '@/components/landing/Hero3DSection'
 import { StatsSection } from '@/components/landing/StatsSection'
 import { FeaturesSection } from '@/components/landing/FeaturesSection'
 import { PricingSection } from '@/components/landing/PricingSection'
@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#020617] text-white">
       <LandingNavbar />
-      <HeroSection />
+      <Hero3DSection />
       <StatsSection />
       <FeaturesSection />
       <PricingSection />
