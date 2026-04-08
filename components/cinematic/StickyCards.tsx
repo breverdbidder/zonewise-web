@@ -45,7 +45,7 @@ export function StickyCards({ cards, className }: StickyCardsProps) {
             }}
           >
             <div
-              className="text-xs uppercase tracking-widest mb-4 font-normal opacity-50"
+              className="text-xs uppercase tracking-widest mb-4 font-normal opacity-80"
               style={{ letterSpacing: "0.12em" }}
             >
               {card.num}
