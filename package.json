@@ -44,7 +44,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
-    "@stripe/stripe-js": "4.8.0",
+    "@stripe/stripe-js": "9.1.0",
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.95.3",
     "@types/mapbox-gl": "^3.0.0",
