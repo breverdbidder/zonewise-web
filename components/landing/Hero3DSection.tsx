@@ -73,7 +73,17 @@ export function Hero3DSection() {
     fetch('/api/parcels/featured')
       .then((r) => r.json())
       .then((d: FeaturedParcelResponse) => {
-        if (d?.parcel) setData(d)
+        if (d?.parcel) {
+          // Defensive merge — API may omit biddeed/zonewise on fallback,
+          // but HeroCornerCard reads .status on both. Keep FALLBACK_DATA
+          // shape stable to prevent TypeError: undefined.status.
+          setData({
+            fallback: d.fallback ?? true,
+            parcel: { ...FALLBACK_DATA.parcel, ...d.parcel },
+            biddeed: d.biddeed ?? FALLBACK_DATA.biddeed,
+            zonewise: d.zonewise ?? FALLBACK_DATA.zonewise,
+          })
+        }
       })
       .catch(() => {
         // Keep fallback data
