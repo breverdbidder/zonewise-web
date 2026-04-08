@@ -282,6 +282,24 @@ const BREVARD_FALLBACK: JurisdictionStat[] = [
   { jurisdiction: 'Melbourne Village', count: 500, zone_sources: [{ source: 'parcel_gis', count: 500 }] },
 ]
 
+// ─── Live fl_parcels count ────────────────────────────────────────────────────
+
+/**
+ * Fetch fl_parcels row count via pg_stat estimate (instant, no seq scan).
+ * Uses the fl_parcels_count_estimate() RPC function.
+ * Falls back to sum of PARCEL_ESTIMATES if RPC fails.
+ */
+export async function getFlParcelsCount(): Promise<number> {
+  try {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.rpc('fl_parcels_count_estimate')
+    if (!error && typeof data === 'number' && data > 0) return data
+  } catch {
+    // RPC not available — fall back
+  }
+  return Object.values(PARCEL_ESTIMATES).reduce((sum, n) => sum + n, 0)
+}
+
 // ─── Data builders ─────────────────────────────────────────────────────────────
 
 export function buildCountyStaticData(): CountyConquestStatus[] {

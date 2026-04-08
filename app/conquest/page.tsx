@@ -1,22 +1,24 @@
 import { Metadata } from 'next'
-import { getCountyOverview } from '@/lib/conquest'
+import { getCountyOverview, getFlParcelsCount } from '@/lib/conquest'
 import StatsRow from '@/components/conquest/StatsRow'
 import CountyGrid from '@/components/conquest/CountyGrid'
 
 export const metadata: Metadata = {
   title: 'Conquest Dashboard — ZoneWise',
-  description: 'Florida statewide zoning conquest — 67 counties, 10.8M parcels.',
+  description: 'Florida statewide zoning conquest — 67 counties, live parcel data from fl_parcels.',
 }
 
 // Revalidate every 60 seconds for near-real-time updates
 export const revalidate = 60
 
 export default async function ConquestPage() {
-  const counties = await getCountyOverview()
+  const [counties, totalFlParcels] = await Promise.all([
+    getCountyOverview(),
+    getFlParcelsCount(),
+  ])
 
   const totalZoned = counties.reduce((sum, c) => sum + c.zoned_parcels, 0)
   const conqueredCount = counties.filter(c => c.conquered).length
-  const TOTAL_FL_PARCELS = 10_800_000
 
   return (
     <main className="min-h-screen bg-[#020617] text-white">
@@ -32,7 +34,7 @@ export default async function ConquestPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">Conquest Dashboard</h1>
-              <p className="text-slate-400 text-sm">Florida statewide zoning coverage · 67 counties · 10.8M parcels</p>
+              <p className="text-slate-400 text-sm">Florida statewide zoning coverage · 67 counties · {(totalFlParcels / 1_000_000).toFixed(1)}M parcels</p>
             </div>
           </div>
         </div>
@@ -40,7 +42,7 @@ export default async function ConquestPage() {
         {/* Stats row */}
         <StatsRow
           totalCounties={counties.length}
-          totalParcels={TOTAL_FL_PARCELS}
+          totalParcels={totalFlParcels}
           countiesConquered={conqueredCount}
           totalZoned={totalZoned}
         />

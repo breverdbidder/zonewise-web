@@ -1,39 +1,58 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useClickTracker } from './ClickTracker'
 import { StatsDisplay } from '@/components/tool-ui/stats-display'
 import type { StatItem } from '@/components/tool-ui/stats-display/schema'
 
-const KPI_STATS: StatItem[] = [
-  {
-    key: 'active-auctions',
-    label: 'Active Auctions',
-    value: 247,
-    format: { kind: 'number', compact: false },
-    diff: { value: 12, upIsPositive: true, label: 'this week' },
-  },
-  {
-    key: 'avg-bid-price',
-    label: 'Avg Bid Price',
-    value: 184000,
-    format: { kind: 'currency', currency: 'USD', decimals: 0 },
-    diff: { value: -3, upIsPositive: false, label: 'vs last week' },
-  },
-  {
-    key: 'counties-tracked',
-    label: 'Counties Tracked',
-    value: 67,
-    format: { kind: 'number' },
-  },
-  {
-    key: 'zoning-alerts',
-    label: 'Zoning Alerts',
-    value: 31,
-    format: { kind: 'number' },
-    diff: { value: 8, upIsPositive: true, label: 'new' },
-  },
-]
+interface PlatformStats {
+  counties: number
+  fl_parcels: number
+  fl_parcels_alive: boolean
+  brevard_parcels: number
+  zoning_assignments: number
+  auctions: number
+  zoning_codes: number
+}
+
+const FALLBACK_STATS: PlatformStats = {
+  counties: 67,
+  fl_parcels: 0,
+  fl_parcels_alive: false,
+  brevard_parcels: 0,
+  zoning_assignments: 0,
+  auctions: 0,
+  zoning_codes: 0,
+}
+
+function buildKpiStats(stats: PlatformStats): StatItem[] {
+  return [
+    {
+      key: 'fl-parcels',
+      label: 'FL Parcels',
+      value: stats.fl_parcels,
+      format: { kind: 'number', compact: true },
+    },
+    {
+      key: 'auctions',
+      label: 'Auctions Tracked',
+      value: stats.auctions,
+      format: { kind: 'number', compact: true },
+    },
+    {
+      key: 'counties-tracked',
+      label: 'Counties',
+      value: stats.counties,
+      format: { kind: 'number' },
+    },
+    {
+      key: 'zoning-assignments',
+      label: 'Zoning Assignments',
+      value: stats.zoning_assignments,
+      format: { kind: 'number', compact: true },
+    },
+  ]
+}
 
 const RECENT_AUCTIONS = [
   { case: '2024-CA-001234', county: 'Brevard', address: '123 Ocean Dr, Titusville', bid: '$148,500', date: '2026-04-03' },
@@ -43,6 +62,16 @@ const RECENT_AUCTIONS = [
 
 export default function DashboardContainer() {
   const { trackClick } = useClickTracker()
+  const [stats, setStats] = useState<PlatformStats>(FALLBACK_STATS)
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(data => setStats(data))
+      .catch(() => {})
+  }, [])
+
+  const kpiStats = buildKpiStats(stats)
 
   return (
     <div
@@ -57,7 +86,7 @@ export default function DashboardContainer() {
         </h2>
         <StatsDisplay
           id="dashboard-kpis"
-          stats={KPI_STATS}
+          stats={kpiStats}
           className="max-w-full min-w-0 [&_.card]:!bg-[#1E3A5F] [&_.card]:!border-[rgba(245,158,11,0.15)]"
         />
       </div>
