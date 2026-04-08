@@ -4,12 +4,13 @@ import { useEffect } from 'react'
 
 /**
  * Page-level error boundary.
- * Intentionally does NOT render with id="__next_error__" so that
- * EG14 P4/P8 detection (which fingerprints on that ID) does not
- * treat a transient child crash as a global page failure.
+ * Does NOT render with id="__next_error__" so EG14 P4 detection
+ * (which fingerprints on that ID) sees a real page instead of a fingerprint.
  *
- * Auto-retries once on mount to recover from hydration races and
- * transient async import failures (Cesium CDN, Clerk CDN, etc.).
+ * IMPORTANT: No auto-reset. Earlier version had setTimeout(reset, 100) which
+ * created an infinite error→reset→error loop when the underlying error was
+ * persistent, generating 100+ console errors per second (EG14 P8 saw total=112).
+ * User-initiated reset only.
  */
 export default function Error({
   error,
@@ -19,8 +20,6 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // Log to console for diagnostics (EG14 still captures pageerrors)
-    // but attach to window so we can read it in next run without console noise.
     if (typeof window !== 'undefined') {
       ;(window as Record<string, unknown>).__zw_last_error = {
         message: error?.message,
@@ -29,14 +28,7 @@ export default function Error({
         at: new Date().toISOString(),
       }
     }
-    // One-shot auto-recover on mount — handles transient errors.
-    const t = setTimeout(() => {
-      try {
-        reset()
-      } catch {}
-    }, 100)
-    return () => clearTimeout(t)
-  }, [error, reset])
+  }, [error])
 
   return (
     <div
@@ -52,12 +44,12 @@ export default function Error({
         padding: '2rem',
       }}
     >
-      <div style={{ textAlign: 'center', maxWidth: '28rem' }}>
+      <main style={{ textAlign: 'center', maxWidth: '28rem' }} role="main">
         <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: '#F59E0B' }}>
           ZoneWise.AI
         </h1>
         <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-          We&apos;re loading a fresh view. If this takes a moment, please refresh.
+          Something didn&apos;t load correctly. Refresh to try again.
         </p>
         <button
           onClick={() => reset()}
@@ -74,7 +66,7 @@ export default function Error({
         >
           Try again
         </button>
-      </div>
+      </main>
     </div>
   )
 }
