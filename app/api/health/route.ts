@@ -8,7 +8,6 @@ const REQUIRED_ENV = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
   'NEXT_PUBLIC_MAPBOX_TOKEN',
-  'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
 ];
 
 export const dynamic = 'force-dynamic';
