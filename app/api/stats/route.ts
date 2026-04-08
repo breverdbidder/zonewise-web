@@ -14,15 +14,15 @@ export async function GET() {
   try {
     const supabase = getSupabase()
 
-    // Parallel fetch: auctions, zoning_codes, zoning_assignments, fl_parcels estimate
-    const [auctionsRes, zoningCodesRes, zoningAssignRes, flParcelsEstRes, brevardRes] = await Promise.all([
+    // EG14 P13 FIX: Removed hardcoded Brevard co_no=5 health check (counties are 15–63,
+    // no rows match co_no=5 → fl_parcels_alive always false → totalParcels always 0 → P13 FAIL).
+    // Now the pg_stat estimate is the sole source of truth.
+    const [auctionsRes, zoningCodesRes, zoningAssignRes, flParcelsEstRes] = await Promise.all([
       supabase.from('multi_county_auctions').select('*', { count: 'exact', head: true }),
       supabase.from('zoning_codes').select('county'),
       supabase.from('zoning_assignments').select('*', { count: 'exact', head: true }),
       // fl_parcels: pg_stat estimate via RPC (instant, no seq scan)
       supabase.rpc('fl_parcels_count_estimate'),
-      // Brevard health check — confirms fl_parcels is alive
-      supabase.from('fl_parcels').select('*', { count: 'exact', head: true }).eq('co_no', 5),
     ])
 
     // Count distinct counties from zoning_codes
@@ -30,17 +30,14 @@ export async function GET() {
       (zoningCodesRes.data || []).map((r: { county: string }) => r.county).filter(Boolean)
     ).size
 
-    const brevardParcels = brevardRes.count ?? 0
-    const flParcelsAlive = brevardParcels > 0
-    // Live pg_stat estimate — falls back to 0 if RPC fails
-    const totalParcels = flParcelsAlive ? (flParcelsEstRes.data ?? 0) : 0
+    const totalParcels = (flParcelsEstRes.data as number | null) ?? 0
+    const flParcelsAlive = totalParcels > 1_000_000
 
     return NextResponse.json(
       {
         counties: uniqueCounties || 67,
         fl_parcels: totalParcels,
         fl_parcels_alive: flParcelsAlive,
-        brevard_parcels: brevardParcels,
         zoning_assignments: zoningAssignRes.count ?? 0,
         auctions: auctionsRes.count ?? 0,
         zoning_codes: (zoningCodesRes.data || []).length || 7531,
