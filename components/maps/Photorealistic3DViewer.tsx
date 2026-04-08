@@ -92,6 +92,32 @@ export default function Photorealistic3DViewer({
         // Remove default globe — Google 3D tiles include imagery
         viewer.scene.globe.show = false
 
+        // FIX: ensure canvas is sized to container (cesium init race)
+        // Initial resize after first frame
+        requestAnimationFrame(() => {
+          if (!destroyed && viewerRef.current && containerRef.current) {
+            ;(viewerRef.current as { resize?: () => void }).resize?.()
+            // Force canvas to fill container explicitly
+            const canvas = containerRef.current.querySelector('canvas')
+            if (canvas) {
+              canvas.style.width = '100%'
+              canvas.style.height = '100%'
+              canvas.style.display = 'block'
+            }
+          }
+        })
+
+        // ResizeObserver for any subsequent layout changes
+        if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+          const ro = new ResizeObserver(() => {
+            if (!destroyed && viewerRef.current) {
+              ;(viewerRef.current as { resize?: () => void }).resize?.()
+            }
+          })
+          ro.observe(containerRef.current)
+          ;(viewerRef as { current: unknown }).current = Object.assign(viewer, { __resizeObserver: ro })
+        }
+
         // Load Google Photorealistic 3D Tiles
         try {
           const tileset = await Cesium.Cesium3DTileset.fromUrl(
