@@ -33,9 +33,9 @@ export function HeroCornerCard({ parcel, biddeed, zonewise }: HeroCornerCardProp
     <div className="absolute bottom-6 right-6 z-40 w-72 space-y-3 pointer-events-auto">
       {/* Parcel Details */}
       <div className="bg-[#020617]/90 backdrop-blur-md border border-[#1E3A5F]/60 rounded-lg p-4 shadow-2xl">
-        <h3 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase mb-2">
+        <h2 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase mb-2">
           Featured Parcel
-        </h3>
+        </h2>
         <p className="text-white text-sm font-mono leading-tight mb-1">
           {parcel.parcel_id}
         </p>
