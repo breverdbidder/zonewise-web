@@ -10,20 +10,36 @@ function getSupabase() {
   )
 }
 
+const EMPTY_BIDDEED = {
+  status: 'No active auction',
+  auction_type: null as string | null,
+  sale_date: null as string | null,
+  opening_bid: null as number | null,
+}
+
+const EMPTY_ZONEWISE = {
+  zoning_code: null as string | null,
+  jurisdiction: null as string | null,
+  status: 'Not assigned',
+}
+
 /**
  * GET /api/parcels/featured
  * Returns a featured Palm Bay foreclosure parcel from fl_parcels with
  * BidDeed auction status + ZoneWise zoning status (pairing rule).
+ *
+ * CONTRACT: response ALWAYS includes { parcel, biddeed, zonewise, fallback }.
+ * The home page (Hero3DSection + HeroCornerCard) assumes all four fields are
+ * present. Dropping any of them causes TypeError at HeroCornerCard render.
  */
 export async function GET() {
   try {
     const supabase = getSupabase()
 
-    // Fetch a Palm Bay parcel with centroid data from fl_parcels (9.4M rows)
     const { data: parcel, error: parcelError } = await supabase
       .from('fl_parcels')
       .select('parcel_id, phy_addr1, phy_city, phy_zipcd, cent_lat, cent_lon, co_no, dor_uc, jv')
-      .eq('co_no', 5) // Brevard
+      .eq('co_no', 5)
       .ilike('phy_city', 'Palm Bay')
       .not('cent_lat', 'is', null)
       .not('cent_lon', 'is', null)
@@ -33,12 +49,17 @@ export async function GET() {
 
     if (parcelError || !parcel) {
       return NextResponse.json(
-        { error: 'No featured parcel found', fallback: true, parcel: getFallbackParcel() },
+        {
+          error: 'No featured parcel found',
+          fallback: true,
+          parcel: getFallbackParcel(),
+          biddeed: EMPTY_BIDDEED,
+          zonewise: EMPTY_ZONEWISE,
+        },
         { status: 200 }
       )
     }
 
-    // Parallel: fetch BidDeed auction status + ZoneWise zoning
     const [auctionRes, zoningRes] = await Promise.all([
       supabase
         .from('multi_county_auctions')
@@ -92,8 +113,8 @@ export async function GET() {
     return NextResponse.json({
       fallback: true,
       parcel: getFallbackParcel(),
-      biddeed: { status: 'No active auction', auction_type: null, sale_date: null, opening_bid: null },
-      zonewise: { zoning_code: null, jurisdiction: null, status: 'Not assigned' },
+      biddeed: EMPTY_BIDDEED,
+      zonewise: EMPTY_ZONEWISE,
     })
   }
 }
