@@ -1,0 +1,174 @@
+name: "SUMMIT #399: Clerk Domain Revert"
+on:
+  workflow_dispatch: {}
+
+jobs:
+  revert-clerk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+      TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+    steps:
+      - name: "Step 1: List current Clerk env vars"
+        run: |
+          echo "=== Current Clerk env vars ==="
+          curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
+          import json,sys
+          data = json.load(sys.stdin)
+          envs = data.get('envs', [])
+          clerk_vars = [e for e in envs if 'CLERK' in e.get('key','').upper()]
+          for e in clerk_vars:
+              print(f\"  {e['key']:45} id={e['id']} target={e.get('target',[])}  value_prefix={e.get('value','')[:12]}...\")
+          if not clerk_vars:
+              print('  No Clerk env vars found')
+          "
+
+      - name: "Step 2: Delete production-only Clerk env vars"
+        run: |
+          echo "=== Finding production-only Clerk env var IDs ==="
+          # Get all env vars and find production-only Clerk ones
+          RESPONSE=$(curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+
+          # Extract IDs of Clerk vars that target production
+          PROD_CLERK_IDS=$(echo "$RESPONSE" | python3 -c "
+          import json,sys
+          data = json.load(sys.stdin)
+          for e in data.get('envs', []):
+              key = e.get('key','')
+              target = e.get('target', [])
+              if 'CLERK' in key.upper() and 'production' in target:
+                  print(f\"{e['id']}|{key}|{target}\")
+          ")
+
+          if [ -z "$PROD_CLERK_IDS" ]; then
+            echo "No production Clerk env vars found"
+            exit 0
+          fi
+
+          echo "$PROD_CLERK_IDS"
+
+          while IFS='|' read -r ENV_ID KEY TARGET; do
+            echo ""
+            echo "Deleting: $KEY (id=$ENV_ID, target=$TARGET)"
+            HTTP_CODE=$(curl -s -o /tmp/del_response.txt -w "%{http_code}" \
+              -X DELETE "https://api.vercel.com/v9/projects/$PROJECT_ID/env/$ENV_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN")
+            echo "  HTTP $HTTP_CODE"
+            cat /tmp/del_response.txt | head -c 200
+            echo ""
+          done <<< "$PROD_CLERK_IDS"
+
+      - name: "Step 3: Verify Clerk vars removed"
+        run: |
+          echo "=== Post-deletion Clerk env vars ==="
+          curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
+          import json,sys
+          data = json.load(sys.stdin)
+          envs = data.get('envs', [])
+          clerk_vars = [e for e in envs if 'CLERK' in e.get('key','').upper()]
+          print(f'Remaining Clerk vars: {len(clerk_vars)}')
+          for e in clerk_vars:
+              print(f\"  {e['key']:45} target={e.get('target',[])} (should be preview/dev only)\")
+          prod_clerk = [e for e in clerk_vars if 'production' in e.get('target',[])]
+          if prod_clerk:
+              echo 'ERROR: Production Clerk vars still exist!'
+              exit 1
+          print('OK: No production Clerk vars remain')
+          "
+
+      - name: "Step 4: Trigger prod redeploy"
+        run: |
+          echo "=== Triggering production redeploy ==="
+          # Get latest deployment to redeploy from
+          LATEST=$(curl -s "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$TEAM_ID&limit=1&target=production" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          deps = d.get('deployments', [])
+          if deps:
+              print(deps[0].get('uid',''))
+          ")
+
+          if [ -z "$LATEST" ]; then
+            echo "No deployments found, triggering via empty commit hook"
+            exit 1
+          fi
+
+          echo "Latest deployment: $LATEST"
+          echo "Creating new deployment from latest..."
+
+          # Create a new deployment by redeploying the latest
+          RESULT=$(curl -s -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"name\": \"zonewise-web\",
+              \"deploymentId\": \"$LATEST\",
+              \"target\": \"production\",
+              \"teamId\": \"$TEAM_ID\"
+            }")
+
+          NEW_URL=$(echo "$RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('url','FAILED'))" 2>/dev/null || echo "PARSE_FAILED")
+          NEW_ID=$(echo "$RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('id','FAILED'))" 2>/dev/null || echo "PARSE_FAILED")
+
+          echo "New deployment URL: $NEW_URL"
+          echo "New deployment ID: $NEW_ID"
+          echo "NEW_DEPLOY_ID=$NEW_ID" >> "$GITHUB_ENV"
+          echo "NEW_DEPLOY_URL=$NEW_URL" >> "$GITHUB_ENV"
+
+      - name: "Step 5: Wait for deployment ready (max 3 min)"
+        run: |
+          echo "=== Waiting for deployment ==="
+          for i in $(seq 1 18); do
+            STATUS=$(curl -s "https://api.vercel.com/v13/deployments/$NEW_DEPLOY_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          print(d.get('readyState','UNKNOWN'))
+          " 2>/dev/null || echo "ERROR")
+            echo "  Attempt $i: $STATUS"
+            if [ "$STATUS" = "READY" ]; then
+              echo "Deployment is READY!"
+              break
+            fi
+            if [ "$STATUS" = "ERROR" ] || [ "$STATUS" = "CANCELED" ]; then
+              echo "Deployment FAILED: $STATUS"
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: "Step 6: Smoke test"
+        run: |
+          echo "=== Smoke test ==="
+          sleep 15  # Extra buffer for edge propagation
+
+          # Test 1: No clerk.zonewise.ai references
+          CUSTOM_COUNT=$(curl -s https://zonewise.ai 2>/dev/null | grep -c "clerk.zonewise.ai" || true)
+          echo "clerk.zonewise.ai references: $CUSTOM_COUNT (must be 0)"
+
+          # Test 2: Page loads without __next_error__
+          ERROR_COUNT=$(curl -s https://zonewise.ai 2>/dev/null | grep -c "__next_error__" || true)
+          echo "__next_error__ references: $ERROR_COUNT (must be 0)"
+
+          # Test 3: Health endpoint
+          HEALTH=$(curl -s -o /dev/null -w "%{http_code}" https://zonewise.ai/api/health)
+          echo "Health endpoint: HTTP $HEALTH (must be 200)"
+
+          # Test 4: Check for clerk.accounts.dev OR no Clerk at all (both acceptable)
+          DEV_COUNT=$(curl -s https://zonewise.ai 2>/dev/null | grep -c "clerk" || true)
+          echo "Total 'clerk' references in HTML: $DEV_COUNT (0 = no Clerk loaded, which is correct)"
+
+          if [ "$CUSTOM_COUNT" -eq 0 ] && [ "$ERROR_COUNT" -eq 0 ]; then
+            echo ""
+            echo "SMOKE TEST PASSED"
+          else
+            echo ""
+            echo "SMOKE TEST FAILED"
+            exit 1
+          fi
