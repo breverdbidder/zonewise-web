@@ -2,9 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-// CesiumJS types — imported dynamically to avoid SSR window access
-type CesiumType = typeof import('cesium')
-
 interface Photorealistic3DViewerProps {
   parcelId: string
   lat: number
@@ -13,8 +10,37 @@ interface Photorealistic3DViewerProps {
   parcelGeoJson?: GeoJSON.FeatureCollection | null
 }
 
-// Global Cesium base URL — must be set before any Cesium import
-const CESIUM_BASE_URL = '/cesium'
+/**
+ * Loads CesiumJS from CDN (avoids bundler zip.js resolution issues).
+ * Returns the global Cesium object once loaded.
+ */
+function loadCesiumFromCDN(): Promise<typeof import('cesium')> {
+  return new Promise((resolve, reject) => {
+    // Check if already loaded
+    if ((window as Record<string, unknown>).Cesium) {
+      return resolve((window as Record<string, unknown>).Cesium as typeof import('cesium'))
+    }
+
+    // Load CSS
+    if (!document.querySelector('link[href*="cesium"]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css'
+      document.head.appendChild(link)
+    }
+
+    // Load JS
+    const script = document.createElement('script')
+    script.src = 'https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js'
+    script.onload = () => {
+      const Cesium = (window as Record<string, unknown>).Cesium as typeof import('cesium')
+      if (Cesium) resolve(Cesium)
+      else reject(new Error('CesiumJS loaded but global not found'))
+    }
+    script.onerror = () => reject(new Error('Failed to load CesiumJS from CDN'))
+    document.head.appendChild(script)
+  })
+}
 
 export default function Photorealistic3DViewer({
   parcelId,
@@ -24,7 +50,7 @@ export default function Photorealistic3DViewer({
   parcelGeoJson,
 }: Photorealistic3DViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const viewerRef = useRef<InstanceType<CesiumType['Viewer']> | null>(null)
+  const viewerRef = useRef<unknown>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -35,16 +61,9 @@ export default function Photorealistic3DViewer({
 
     async function initViewer() {
       try {
-        // Dynamic import — CesiumJS accesses window at module level
-        const Cesium = await import('cesium')
-
-        // Set base URL for workers/assets
-        ;(window as Record<string, unknown>).CESIUM_BASE_URL = CESIUM_BASE_URL
+        const Cesium = await loadCesiumFromCDN()
 
         if (destroyed || !containerRef.current) return
-
-        // Import Cesium widgets CSS
-        await import('cesium/Build/Cesium/Widgets/widgets.css')
 
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
         if (!apiKey) {
@@ -54,7 +73,6 @@ export default function Photorealistic3DViewer({
         }
 
         const viewer = new Cesium.Viewer(containerRef.current, {
-          // Disable default UI elements for clean branded chrome
           animation: false,
           baseLayerPicker: false,
           fullscreenButton: false,
@@ -65,14 +83,13 @@ export default function Photorealistic3DViewer({
           selectionIndicator: false,
           timeline: false,
           navigationHelpButton: false,
-          // Performance: only render on change
           requestRenderMode: true,
           maximumRenderTimeChange: Infinity,
         })
 
         viewerRef.current = viewer
 
-        // Remove default imagery — Google 3D tiles include imagery
+        // Remove default globe — Google 3D tiles include imagery
         viewer.scene.globe.show = false
 
         // Load Google Photorealistic 3D Tiles
@@ -99,7 +116,7 @@ export default function Photorealistic3DViewer({
           duration: 3,
         })
 
-        // Overlay parcel polygon as red outline if GeoJSON provided
+        // Overlay parcel polygon as red outline
         if (parcelGeoJson) {
           const dataSource = await Cesium.GeoJsonDataSource.load(parcelGeoJson, {
             stroke: Cesium.Color.RED,
@@ -122,8 +139,9 @@ export default function Photorealistic3DViewer({
 
     return () => {
       destroyed = true
-      if (viewerRef.current && !viewerRef.current.isDestroyed()) {
-        viewerRef.current.destroy()
+      const viewer = viewerRef.current as { isDestroyed?: () => boolean; destroy?: () => void } | null
+      if (viewer && !viewer.isDestroyed?.()) {
+        viewer.destroy?.()
         viewerRef.current = null
       }
     }
@@ -158,7 +176,7 @@ export default function Photorealistic3DViewer({
         </div>
       )}
 
-      {/* Parcel ID badge — branded orange accent */}
+      {/* Parcel ID badge */}
       <div className="absolute top-3 left-3 bg-[#1E3A5F]/90 backdrop-blur-sm px-3 py-1.5 rounded-md z-20">
         <span className="text-[#F59E0B] text-xs font-mono">{parcelId}</span>
       </div>
