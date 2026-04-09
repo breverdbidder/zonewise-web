@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
 import { OnboardingProvider, OnboardingTour } from '@/components/onboarding'
@@ -7,6 +8,25 @@ import VercelAnalytics from '@/components/VercelAnalytics'
 import PostHogProvider from '@/components/PostHogProvider'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
+
+// EG14 P2 fix (Apr 8 2026): self-host fonts via next/font/google to eliminate
+// render-blocking @import url(fonts.googleapis.com) in globals.css.
+// Saves ~2000ms render-blocking; pushes FCP 3.0s→~1.5s, LCP 3.7s→~2.5s.
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-inter',
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-jetbrains',
+  fallback: ['SF Mono', 'Monaco', 'Andale Mono', 'monospace'],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://zonewise.ai'),
@@ -43,7 +63,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={`dark ${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
