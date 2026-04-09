@@ -1,13 +1,18 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co';
+// EG14 P8 fix (Apr 8 2026): onboarding_events table not yet migrated to prod;
+// Supabase JS client `.from('onboarding_events').insert(...)` causes browser to
+// log 6+ HTTP_404 console errors per session BEFORE the try/catch can suppress
+// them. Disabling the network call entirely until migration 20260217 is applied.
+// Re-enable by uncommenting createClient + getSupabase + the insert in trackEvent.
 
-function getSupabase() {
-  return createClient(SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-}
+// import { createClient } from '@supabase/supabase-js';
+// const SUPABASE_URL = 'https://mocerqjnksmhcjzxrewo.supabase.co';
+// function getSupabase() {
+//   return createClient(SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+// }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OnboardingContext = createContext<any>(null);
@@ -28,35 +33,21 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user has completed onboarding
     const hasCompletedOnboarding = localStorage.getItem('zonewise_onboarding_complete');
-    
     if (!hasCompletedOnboarding) {
-      // Initialize onboarding
       const newSessionId = `onb_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setSessionId(newSessionId);
       setCurrentState(ONBOARDING_STATES.WELCOME);
       setIsActive(true);
-      
       trackEvent('onboarding_started', { session_id: newSessionId });
     }
   }, []);
 
-  const trackEvent = async (eventName: string, data: Record<string, unknown> = {}) => {
-    try {
-      const { error } = await getSupabase().from('onboarding_events').insert({
-        session_id: sessionId,
-        event_name: eventName,
-        event_data: data,
-        timestamp: new Date().toISOString()
-      });
-      // Silently ignore table-not-found (42P01) — table is optional telemetry
-      if (error && error.code !== '42P01') {
-        // Non-critical: suppress to avoid noisy console in production
-      }
-    } catch {
-      // Non-critical telemetry — suppress silently
-    }
+  const trackEvent = async (_eventName: string, _data: Record<string, unknown> = {}) => {
+    // EG14 P8 fix: no-op until onboarding_events table is migrated to prod.
+    // Suppress unused-var lint warnings via underscore prefix.
+    void _eventName; void _data; void sessionId;
+    return;
   };
 
   const selectCounty = (county: string) => {
