@@ -4,15 +4,17 @@ import ZoningReport, {
   ZoningReportError,
   type ZoningReportData,
 } from '@/components/report/ZoningReport'
+import OwnerIntelPanel from '@/components/parcel/OwnerIntelPanel'
 import { Suspense } from 'react'
 import ErrorBoundary from '@/components/ErrorBoundary'
 
 interface Props {
-  params: { parcelId: string }
+  params: Promise<{ parcelId: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const parcelId = decodeURIComponent(params.parcelId)
+  const { parcelId: raw } = await params
+  const parcelId = decodeURIComponent(raw)
   return {
     title: `Zoning Report — ${parcelId} | ZoneWise.AI`,
     description: `Full zoning report for parcel ${parcelId}: development capacity, setbacks, permitted uses, AI analysis, and owner intelligence.`,
@@ -55,18 +57,26 @@ async function ReportContent({ parcelId }: { parcelId: string }) {
   return <ZoningReport data={data} parcelId={parcelId} />
 }
 
-export default function ReportPage({ params }: Props) {
-  const parcelId = decodeURIComponent(params.parcelId)
+export default async function ReportPage({ params }: Props) {
+  const { parcelId: raw } = await params
+  const parcelId = decodeURIComponent(raw)
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <ZoningReportSkeleton />
-        </div>
-      }>
-        <ReportContent parcelId={parcelId} />
-      </Suspense>
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        <Suspense fallback={<ZoningReportSkeleton />}>
+          <ReportContent parcelId={parcelId} />
+        </Suspense>
+
+        <Suspense fallback={
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 animate-pulse">
+            <div className="h-4 bg-slate-800 rounded w-40 mb-3" />
+            <div className="h-8 bg-slate-800 rounded w-60" />
+          </div>
+        }>
+          <OwnerIntelPanel identifier={parcelId} />
+        </Suspense>
+      </div>
     </ErrorBoundary>
   )
 }
