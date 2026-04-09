@@ -1,6 +1,6 @@
 // components/competitors/CompetitorKpiMatrix.tsx
 // Battle Cards Sprint S0a — categorized KPI comparison grid.
-// Drives off lib/kpi-data.ts (the 298-KPI source of truth) + competitor profile's
+// Drives off lib/kpi-data.ts (the 308-KPI source of truth) + competitor profile's
 // parity/advantage/gap KPI code arrays.
 
 import { STATIC_KPIS, type KPI } from '@/lib/kpi-data'
@@ -119,6 +119,7 @@ export function CompetitorKpiMatrix({ competitor }: Props) {
     'Property', 'Zoning', 'Auction', 'Financial', 'Liens', 'ML',
     'Physical', 'Investment', 'Demographics', 'Market', 'Comps',
     'HBU', 'CMA', 'Risk', 'Red Flags', 'Development', 'Environmental',
+    'Ownership',
   ]
   const byCategory = new Map<string, KpiMatrixRow[]>()
   for (const row of rows) {
