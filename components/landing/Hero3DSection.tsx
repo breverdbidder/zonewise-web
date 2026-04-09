@@ -108,29 +108,12 @@ export function Hero3DSection() {
   }, [])
 
   useEffect(() => {
-    // Skip mount entirely if WebGL is unsupported (firefox/webkit headless,
-    // older browsers, GPU-disabled environments).
+    // EG14 P2/P8 fix v2 (Apr 8 2026): use plain setTimeout 4500ms instead of
+    // requestIdleCallback (which fires instantly in headless test environments
+    // and didn't actually defer Cesium past Lighthouse first-paint window).
+    // Skip mount entirely if WebGL unsupported (firefox/webkit no-GPU paths).
     if (!hasWebGL()) return
-
-    // Defer mount until the browser is idle so Cesium's 315 tile requests
-    // and ~600KB JS bundle don't poison Lighthouse first-paint metrics.
-    type RIC = (cb: () => void, opts?: { timeout?: number }) => number
-    const ric: RIC | undefined =
-      typeof window !== 'undefined'
-        ? ((window as unknown as { requestIdleCallback?: RIC }).requestIdleCallback)
-        : undefined
-
-    if (ric) {
-      const id = ric(() => setViewerEnabled(true), { timeout: 2500 })
-      return () => {
-        const cic = (window as unknown as { cancelIdleCallback?: (id: number) => void })
-          .cancelIdleCallback
-        if (cic) cic(id)
-      }
-    }
-
-    // Fallback for browsers without requestIdleCallback (older Safari/webkit).
-    const t = window.setTimeout(() => setViewerEnabled(true), 2000)
+    const t = window.setTimeout(() => setViewerEnabled(true), 4500)
     return () => window.clearTimeout(t)
   }, [])
 
