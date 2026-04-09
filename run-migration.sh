@@ -1,10 +1,11 @@
 #!/bin/bash
 # Run Supabase migration directly
-# Service role key from memory: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDUzMjUyNiwiZXhwIjoyMDgwMTA4NTI2fQ.C6mJ5_1lT4FW0UFgzQPMbNY5uP0wDO5mNmP1Tqp9nE
+# SECURITY: Service role key removed — use SUPABASE_SERVICE_ROLE_KEY env var
+# Original key was leaked in commit d479830, rotated 2026-04-09
 
 SQL_FILE="migrations/20260217_add_onboarding_events.sql"
 SUPABASE_URL="https://mocerqjnksmhcjzxrewo.supabase.co"
-SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDUzMjUyNiwiZXhwIjoyMDgwMTA4NTI2fQ.C6mJ5_1lT4FW0UFgzQPMbNY5uP0wDO5mNmP1Tqp9nE"
+SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:?Set SUPABASE_SERVICE_ROLE_KEY env var}"
 
 echo "Creating onboarding_events table..."
 
