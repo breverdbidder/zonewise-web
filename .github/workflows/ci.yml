@@ -20,6 +20,13 @@ jobs:
         run: npm ci
       - name: npm audit (high+critical)
         run: npm audit --omit=dev --audit-level=high
+      - name: Check no service_role in NEXT_PUBLIC_ vars
+        run: |
+          if grep -rn 'NEXT_PUBLIC_.*service_role\|NEXT_PUBLIC_.*SERVICE_ROLE' .env* next.config.* 2>/dev/null; then
+            echo "::error::NEXT_PUBLIC_ env var contains service_role key — this exposes secrets to the browser"
+            exit 1
+          fi
+          echo "✓ No service_role keys in NEXT_PUBLIC_ vars"
 
   socket-security:
     runs-on: ubuntu-latest
