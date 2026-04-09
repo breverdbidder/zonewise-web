@@ -1,19 +1,15 @@
 // components/VercelAnalytics.tsx
-// P0-3: AnalyticsWise — Vercel Analytics + Speed Insights
-// WIRING: After `npm install @vercel/analytics @vercel/speed-insights`:
-//   1. Add to app/layout.tsx: import VercelAnalytics from '@/components/VercelAnalytics'
-//   2. Add <VercelAnalytics /> inside <body> after <SkipToContent />
+// EG14 P8 FIX (Apr 8 2026): Vercel Analytics integration not enabled on this project,
+// resulting in /_vercel/insights/script.js returning 404 HTML and console errors.
+// PostHog (PostHogProvider in layout.tsx) covers analytics. This component is now a
+// no-op until Vercel Analytics is enabled in dashboard. Re-enable by uncommenting below.
 
 'use client';
 
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+// import { Analytics } from '@vercel/analytics/react';
+// import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function VercelAnalytics() {
-  return (
-    <>
-      <Analytics />
-      <SpeedInsights />
-    </>
-  );
+  // return (<><Analytics /><SpeedInsights /></>);
+  return null;
 }
