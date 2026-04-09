@@ -65,6 +65,11 @@ export default function Photorealistic3DViewer({
 
         if (destroyed || !containerRef.current) return
 
+        // EG14 P8 fix (Apr 8 2026): disable Cesium ION default token to prevent
+        // HTTP_401 calls to api.cesium.com/v1/assets/2/endpoint. We use Google
+        // Photorealistic 3D Tiles, never ION imagery.
+        ;(Cesium as { Ion: { defaultAccessToken: string } }).Ion.defaultAccessToken = ''
+
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
         if (!apiKey) {
           setError('GOOGLE_API_KEY not configured. Set NEXT_PUBLIC_GOOGLE_API_KEY in environment.')
@@ -73,6 +78,9 @@ export default function Photorealistic3DViewer({
         }
 
         const viewer = new Cesium.Viewer(containerRef.current, {
+          // EG14 P8 fix: baseLayer:false skips Cesium ION default imagery,
+          // which would otherwise fire api.cesium.com 401 even with empty token.
+          baseLayer: false as unknown as undefined,
           animation: false,
           baseLayerPicker: false,
           fullscreenButton: false,
