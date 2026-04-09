@@ -345,14 +345,27 @@ export const STATIC_KPIS: KPI[] = [
   { kpi_code: 'ENV-016', kpi_name: 'Noise Pollution Level',       category: 'Environmental', subcategory: 'Outdoor',         description: 'Traffic, airport, or industrial noise level estimate',   data_source: 'DOT + ZoneWise',is_exclusive: true,  competitive_source: null,            ui_panel: 'environmental' },
   { kpi_code: 'ENV-017', kpi_name: 'Climate Risk Score',          category: 'Environmental', subcategory: 'Climate',         description: 'Combined 30-year climate risk composite score',          data_source: 'First Street + ZoneWise', is_exclusive: true, competitive_source: null,    ui_panel: 'environmental' },
   { kpi_code: 'ENV-018', kpi_name: 'Solar Potential',             category: 'Environmental', subcategory: 'Energy',          description: 'Estimated solar generation potential for rooftop PV',   data_source: 'NREL PVWatts',  is_exclusive: true,  competitive_source: null,            ui_panel: 'environmental' },
+
+  // ─── OWNERSHIP (10) ─────────────────────────────────────────────────────────
+  { kpi_code: 'OWN-001', kpi_name: 'Owner Classification',         category: 'Ownership', subcategory: 'OSINT',      description: 'DISTRESSED_HOMEOWNER | INVESTOR | CORPORATE | ESTATE | UNKNOWN classification from defendant OSINT match against zw_parcels',                           data_source: 'auction_owner_intel',           is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-002', kpi_name: 'Owner Portfolio Count',        category: 'Ownership', subcategory: 'Portfolio',  description: 'Number of parcels matched to this defendant across zw_parcels (FL statewide)',                                                                        data_source: 'auction_owner_intel.match_count', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-003', kpi_name: 'Owner Portfolio Value',        category: 'Ownership', subcategory: 'Portfolio',  description: 'SUM(val_market) across all matched parcels — total FL portfolio value',                                                                              data_source: 'auction_owner_intel.total_portfolio_value', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-004', kpi_name: 'Owner Homestead Flag',         category: 'Ownership', subcategory: 'OSINT',      description: 'Whether any matched parcel carries homestead exemption (luse_code 001x)',                                                                            data_source: 'auction_owner_intel.is_homestead', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-005', kpi_name: 'Owner Out-of-State Flag',      category: 'Ownership', subcategory: 'OSINT',      description: 'Whether owner mailing address state != FL',                                                                                                            data_source: 'auction_owner_intel.is_out_of_state', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-006', kpi_name: 'Owner Mailing State',          category: 'Ownership', subcategory: 'OSINT',      description: 'Owner mailing state from zw_parcels owner_state column',                                                                                              data_source: 'auction_owner_intel.owner_state', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-007', kpi_name: 'Days Since Last Owner Sale',   category: 'Ownership', subcategory: 'History',    description: 'Days elapsed since the most recent arm-length sale across all owner parcels',                                                                        data_source: 'auction_owner_intel.days_since_last_sale', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-008', kpi_name: 'OSINT Confidence Score',       category: 'Ownership', subcategory: 'OSINT',      description: 'Confidence 0.0-1.0 for classification based on name match strength, page-cap hit, owner_state agreement',                                             data_source: 'auction_owner_intel.confidence_score', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-009', kpi_name: 'Owner Corporate Flag',         category: 'Ownership', subcategory: 'OSINT',      description: 'LLC/INC/CORP/TRUST pattern detected in defendant name',                                                                                               data_source: 'auction_owner_intel.is_corporate', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
+  { kpi_code: 'OWN-010', kpi_name: 'Owner Parcels Owned Detail',   category: 'Ownership', subcategory: 'Portfolio',  description: 'JSONB array of all matched parcels with pin, address, value, use code, sqft, year_built',                                                             data_source: 'auction_owner_intel.parcels_owned', is_exclusive: true, competitive_source: null, ui_panel: 'owner' },
 ]
 
-// Validate we have exactly 298 KPIs
-// 18+18+18+18+18+17+18+17+17+17+18+17+17+18+17+17+17 = 298
+// Validate we have exactly 308 KPIs
+// 18+18+18+18+18+17+18+17+17+17+18+17+17+18+17+17+17+10 = 308
 export const KPI_COUNT = STATIC_KPIS.length
 
 export const CATEGORIES = [
   'Property', 'Zoning', 'Auction', 'Financial', 'Liens', 'ML',
   'Physical', 'Investment', 'Demographics', 'Market', 'Comps',
   'HBU', 'CMA', 'Risk', 'Red Flags', 'Development', 'Environmental',
+  'Ownership',
 ]

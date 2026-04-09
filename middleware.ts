@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/parcels(.*)',
   '/api/zoning-chat(.*)',
   '/api/zoning-report(.*)',
+  '/api/owner-intel(.*)',
   '/api/chat-v2(.*)',
   '/api/reports(.*)',
   // Stripe webhooks MUST be public (Stripe sends without auth)
