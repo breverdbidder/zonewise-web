@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://mocerqjnksmhcjzxrewo.supabase.co" />
         <link rel="preconnect" href="https://api.mapbox.com" />
         <link rel="preconnect" href="https://events.mapbox.com" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        {/* EG14 P8 fix: removed broken /icons/icon-192.png ref. Next.js auto-generates from app/icon.tsx */}
         <meta name="google-site-verification" content="TREUQBk_PqAKP2IlfQh7WImMFNbXA68tWNq8fvbZCX0" />
         <script
           type="application/ld+json"
