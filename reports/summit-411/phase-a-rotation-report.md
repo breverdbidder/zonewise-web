@@ -41,10 +41,10 @@ Repos checked for `SUPABASE_SERVICE_ROLE_KEY` secret:
 
 ### Verification
 ```
-$ git log --all -S 'C6mJ5_1lT4FW0UFgzQPMbNY5uP0wDO5mNmP1Tqp9nE' --oneline
+$ git log --all -S '<service_role_key_fragment>' --oneline
 (empty — VERIFIED CLEAN)
 
-$ git log --all -S 'sbp_cbf04a175a130c466eddbe40a3f49b79aaec6214' --oneline
+$ git log --all -S '<sbp_management_token>' --oneline
 (empty — VERIFIED CLEAN)
 ```
 
