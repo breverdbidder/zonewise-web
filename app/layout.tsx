@@ -2,7 +2,16 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
-import { OnboardingProvider, OnboardingTour } from '@/components/onboarding'
+import { OnboardingProvider } from '@/components/onboarding'
+import dynamic from 'next/dynamic'
+
+// EG14 P2 fix v6 (Apr 9 2026): lazy-load OnboardingTour to defer the 562ms
+// hydration long task that Lighthouse v5 flagged on the / route. Tour is
+// non-critical UI (overlay/tooltip) — safe to hydrate after first paint.
+const OnboardingTour = dynamic(
+  () => import('@/components/onboarding').then(m => ({ default: m.OnboardingTour })),
+  { ssr: false }
+)
 import SkipToContent from '@/components/SkipToContent'
 import VercelAnalytics from '@/components/VercelAnalytics'
 import PostHogProvider from '@/components/PostHogProvider'
