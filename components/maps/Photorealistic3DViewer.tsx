@@ -179,12 +179,7 @@ export default function Photorealistic3DViewer({
     <div className="relative w-full h-full" style={{ minHeight: '400px' }}>
       {/* Navy branded chrome bezel */}
       <div className="absolute inset-0 border-2 border-[#1E3A5F] rounded-lg overflow-hidden z-0">
-        <div
-          ref={containerRef}
-          className="w-full h-full"
-          role="img"
-          aria-label={`Photorealistic 3D map view of parcel ${parcelId}`}
-        />
+        <div ref={containerRef} className="w-full h-full" aria-hidden="true" />
       </div>
 
       {/* Loading state */}
