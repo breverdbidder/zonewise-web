@@ -49,6 +49,7 @@ export const propzone: CompetitorProfile = {
     'Complete lien waterfall analysis identifies liens surviving foreclosure',
     '$99/mo flat price vs $650/report — 85%+ cheaper for frequent users',
     'Decoded zoning ("Single-family 7,500 sqft min lot, 35ft max") not raw "R-1" codes',
+    'OSINT-powered owner classification (DISTRESSED / INVESTOR / CORPORATE / ESTATE) with full FL portfolio analysis — PropZone has zero owner intelligence',
   ],
 
   // ── PRICING COMPARISON ────────────────────────────────────────────────────
@@ -74,11 +75,11 @@ export const propzone: CompetitorProfile = {
   ],
 
   // ── HEAD-TO-HEAD VERDICT ──────────────────────────────────────────────────
-  zonewise_wins: 40,
+  zonewise_wins: 50,
   competitor_wins: 4,
   ties: 26,
   verdict_line:
-    'PropZone sells you a beautiful zoning PDF for $650. ZoneWise gives you the same zoning data plus auctions, liens, ML scoring, and an AI that explains what to do with it — for $99/month unlimited.',
+    'PropZone sells you a beautiful zoning PDF for $650. ZoneWise gives you the same zoning data plus auction intelligence, lien waterfalls, ML scoring, defendant OSINT with full FL-wide portfolio analysis, and an AI that explains what to do with it — for $99/month unlimited.',
 
   // ── KPI PARITY MATRIX (26 rows where both platforms cover the field) ──────
   // Sourced from docs/plans/PROPZONE-COMPARISON-SPEC.md "Feature Parity Matrix" table.
@@ -149,6 +150,9 @@ export const propzone: CompetitorProfile = {
     // Red Flags (2) — investor-critical signals PropZone ignores
     'RED-001', // Judgment Under Market
     'RED-003', // Potential Surplus Claim
+    // Ownership OSINT (10) — PropZone has zero owner intelligence
+    'OWN-001', 'OWN-002', 'OWN-003', 'OWN-004', 'OWN-005',
+    'OWN-006', 'OWN-007', 'OWN-008', 'OWN-009', 'OWN-010',
   ],
 
   // ── GAPS (PropZone has, ZoneWise does not yet — honest acknowledgment) ───
@@ -186,6 +190,10 @@ export const propzone: CompetitorProfile = {
     {
       label: 'ClawdBot session: 298 vs 63 KPI competitive analysis',
       date: '2026-02-16',
+    },
+    {
+      label: 'auction_owner_intel table — 45 rows verified Apr 9 2026',
+      date: '2026-04-09',
     },
   ],
 }
