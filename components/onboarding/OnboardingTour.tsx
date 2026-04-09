@@ -1,12 +1,27 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface TourStep {
   title: string
   description: string
   icon: string
 }
+
+// Routes where the onboarding tour should mount.
+// Public/marketing routes (/, /competitors/*, /pricing, etc.) are excluded
+// to avoid intruding on those pages and adding unnecessary hydration cost.
+const TOUR_ALLOWED_PREFIXES = [
+  '/dashboard',
+  '/chat',
+  '/explorer',
+  '/parcel',
+  '/report',
+  '/auctions',
+  '/massing',
+  '/feasibility',
+]
 
 const TOUR_STEPS: TourStep[] = [
   {
@@ -44,10 +59,15 @@ const TOUR_STEPS: TourStep[] = [
 const STORAGE_KEY = 'zonewise_tour_complete'
 
 export function OnboardingTour() {
+  const pathname = usePathname()
   const [visible, setVisible] = useState(false)
   const [step, setStep] = useState(0)
 
+  // Only mount on dashboard/app routes — never on marketing/public pages
+  const isDashboardRoute = TOUR_ALLOWED_PREFIXES.some(p => pathname?.startsWith(p))
+
   useEffect(() => {
+    if (!isDashboardRoute) return
     try {
       const done = localStorage.getItem(STORAGE_KEY)
       if (!done) {
@@ -58,7 +78,7 @@ export function OnboardingTour() {
     } catch {
       // localStorage blocked — don't show tour
     }
-  }, [])
+  }, [isDashboardRoute])
 
   const dismiss = useCallback((completed: boolean) => {
     setVisible(false)
@@ -81,7 +101,7 @@ export function OnboardingTour() {
     if (step > 0) setStep(s => s - 1)
   }, [step])
 
-  if (!visible) return null
+  if (!isDashboardRoute || !visible) return null
 
   const current = TOUR_STEPS[step]
   const isLast = step === TOUR_STEPS.length - 1

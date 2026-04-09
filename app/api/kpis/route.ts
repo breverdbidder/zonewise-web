@@ -1,26 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { STATIC_KPIS } from '@/lib/kpi-data'
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
+// STATIC_KPIS is the single source of truth for all KPI definitions (308 codes).
+// Previously this route queried Supabase `zonewise_kpis` table, but it drifted
+// behind the TS file (missing OWN-001..010), returning 298 instead of 308.
+// Option A per SUMMIT #406: make the TS file authoritative, remove Supabase dependency.
 
 export async function GET() {
-  const supabase = getSupabase()
-
-  const { data, error } = await supabase
-    .from('zonewise_kpis')
-    .select('kpi_code,kpi_name,category,subcategory,description,data_source,is_exclusive,competitive_source,ui_panel')
-    .order('kpi_code', { ascending: true })
-
-  if (error) {
-    return NextResponse.json({ error: 'Failed to load KPIs' }, { status: 500 })
-  }
-
-  return NextResponse.json(data, {
+  return NextResponse.json(STATIC_KPIS, {
     headers: {
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
     },

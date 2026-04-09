@@ -12,12 +12,27 @@ interface Props {
   params: Promise<{ parcelId: string }>
 }
 
+function safeDecode(raw: string): string {
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { parcelId: raw } = await params
-  const parcelId = decodeURIComponent(raw)
-  return {
-    title: `Zoning Report — ${parcelId} | ZoneWise.AI`,
-    description: `Full zoning report for parcel ${parcelId}: development capacity, setbacks, permitted uses, AI analysis, and owner intelligence.`,
+  try {
+    const { parcelId: raw } = await params
+    const parcelId = safeDecode(raw)
+    return {
+      title: `Zoning Report — ${parcelId} | ZoneWise.AI`,
+      description: `Full zoning report for parcel ${parcelId}: development capacity, setbacks, permitted uses, AI analysis, and owner intelligence.`,
+    }
+  } catch {
+    return {
+      title: 'Zoning Report | ZoneWise.AI',
+      description: 'Full zoning report with development capacity, setbacks, permitted uses, and AI analysis.',
+    }
   }
 }
 
@@ -59,7 +74,7 @@ async function ReportContent({ parcelId }: { parcelId: string }) {
 
 export default async function ReportPage({ params }: Props) {
   const { parcelId: raw } = await params
-  const parcelId = decodeURIComponent(raw)
+  const parcelId = safeDecode(raw)
 
   return (
     <ErrorBoundary>
