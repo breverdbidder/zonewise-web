@@ -1,10 +1,11 @@
 #!/bin/bash
 # Run Supabase migration directly
-# Service role key from memory: REDACTED_SERVICE_ROLE_KEY
+# SECURITY: Service role key removed — use SUPABASE_SERVICE_ROLE_KEY env var
+# Original key was leaked in commit d479830, rotated 2026-04-09
 
 SQL_FILE="migrations/20260217_add_onboarding_events.sql"
 SUPABASE_URL="https://mocerqjnksmhcjzxrewo.supabase.co"
-SERVICE_ROLE_KEY="REDACTED_SERVICE_ROLE_KEY"
+SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:?Set SUPABASE_SERVICE_ROLE_KEY env var}"
 
 echo "Creating onboarding_events table..."
 

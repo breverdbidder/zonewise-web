@@ -121,7 +121,7 @@ vercel-diag.yml                 ← diagnostic, done
 | **Plan** | Pro (paid) |
 | **Anon Key** | ends in ...klKQDw |
 | **Service Role** | ends in ...Tqp9nE |
-| **Management Token** | REDACTED_SBP_MANAGEMENT_TOKEN |
+| **Management Token** | ROTATED — see Supabase dashboard (leaked in commit f30c981, rotated 2026-04-09) |
 
 ### Key Tables
 
