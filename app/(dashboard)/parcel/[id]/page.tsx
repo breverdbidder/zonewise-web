@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
+import OwnerIntelPanel from '@/components/parcel/OwnerIntelPanel'
 
 export const dynamic = 'force-dynamic'
 
@@ -154,6 +156,18 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
           <h2 className="text-sm font-bold text-white mb-2 flex items-center gap-2">📜 Legal Description</h2>
           <p className="text-xs text-slate-400 font-mono leading-relaxed">{parcel.LEGAL_DESC || '—'}</p>
+        </div>
+
+        {/* Owner Intelligence (OSINT) */}
+        <div className="mb-6">
+          <Suspense fallback={
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 animate-pulse">
+              <div className="h-4 bg-slate-800 rounded w-40 mb-3" />
+              <div className="h-8 bg-slate-800 rounded w-60" />
+            </div>
+          }>
+            <OwnerIntelPanel identifier={decodeURIComponent(id)} />
+          </Suspense>
         </div>
 
         {/* Action buttons */}
