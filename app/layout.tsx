@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic'
 // hydration long task that Lighthouse v5 flagged on the / route. Tour is
 // non-critical UI (overlay/tooltip) — safe to hydrate after first paint.
 const OnboardingTour = dynamic(
-  () => import('@/components/onboarding').then(m => ({ default: m.OnboardingTour })),
+  () => import('@/components/onboarding/OnboardingTour').then(m => ({ default: m.OnboardingTour })),
   { ssr: false }
 )
 import SkipToContent from '@/components/SkipToContent'
