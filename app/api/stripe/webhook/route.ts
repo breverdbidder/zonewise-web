@@ -36,6 +36,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 400 })
   }
 
+  // Reject events with >5min clock skew (replay protection)
+  const eventAge = Math.abs(Date.now() / 1000 - event.created)
+  if (eventAge > 300) {
+    return NextResponse.json({ error: 'Event too old' }, { status: 400 })
+  }
+
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object

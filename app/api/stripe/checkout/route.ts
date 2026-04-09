@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs/server'
+import { createClient } from '@supabase/supabase-js'
 
 // Dynamic import to avoid build-time initialization
 async function getStripe() {
@@ -23,18 +24,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Entitlement check: verify subscription status from Supabase, never trust JWT alone
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      )
+      const { data: existing } = await supabase
+        .from('subscriptions')
+        .select('status')
+        .eq('user_id', userId)
+        .single()
+
+      if (existing?.status === 'active') {
+        return NextResponse.json({ error: 'Already subscribed' }, { status: 409 })
+      }
+    }
+
     const user = await currentUser()
     const email = user?.emailAddresses?.[0]?.emailAddress
 
     const stripe = await getStripe()
-    const session = await stripe.checkout.sessions.create({
-      customer_email: email,
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?canceled=true`,
-      metadata: { userId }
-    })
+
+    // Idempotency key: userId + priceId prevents duplicate checkout sessions
+    const idempotencyKey = `checkout_${userId}_${priceId}_${Math.floor(Date.now() / 60000)}`
+
+    const session = await stripe.checkout.sessions.create(
+      {
+        customer_email: email,
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: 'subscription',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?success=true`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?canceled=true`,
+        metadata: { userId },
+      },
+      { idempotencyKey }
+    )
 
     return NextResponse.json({ url: session.url })
   } catch (error: unknown) {
