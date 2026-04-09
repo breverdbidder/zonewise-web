@@ -1,0 +1,4 @@
+# Native npm addon inventory (binding.gyp scan)
+# Generated: 2026-04-09
+# Command: npm ls --all --parseable | xargs test -f {}/binding.gyp
+# Result: 0 native addons found — no tier-5 supply-chain surface

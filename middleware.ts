@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 const CLERK_ENABLED = Boolean(process.env.CLERK_SECRET_KEY)
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 const isPublicRoute = createRouteMatcher([
   // API routes — public data endpoints
@@ -19,6 +20,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/owner-intel(.*)',
   '/api/chat-v2(.*)',
   '/api/reports(.*)',
+  '/api/csp-report(.*)',
   // Stripe webhooks MUST be public (Stripe sends without auth)
   '/api/stripe/webhook(.*)',
   // Pages — public access
@@ -49,11 +51,20 @@ const isPublicRoute = createRouteMatcher([
   '/sitemap(.*)',
 ])
 
-function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
-  const pathname = req.nextUrl.pathname
+// Rate limit presets per endpoint category (D4 requirements)
+const CHECKOUT_LIMIT = { limit: 5, windowSeconds: 60 }
+const CSP_REPORT_LIMIT = { limit: 10, windowSeconds: 60 }
+const API_LIMIT = { limit: 60, windowSeconds: 60 }
+
+function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for')
   const realIp = req.headers.get('x-real-ip')
-  const clientIp = forwarded?.split(',')[0].trim() || realIp || 'unknown'
+  return forwarded?.split(',')[0].trim() || realIp || 'unknown'
+}
+
+function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
+  const pathname = req.nextUrl.pathname
+  const clientIp = getClientIp(req)
 
   if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/api/auth')) {
     const result = checkRateLimit(`auth:${clientIp}`, RATE_LIMITS.auth)
@@ -63,8 +74,22 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
         headers: { 'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)) },
       })
     }
+  } else if (pathname.startsWith('/api/stripe/checkout')) {
+    const result = checkRateLimit(`checkout:${clientIp}`, CHECKOUT_LIMIT)
+    if (!result.allowed) {
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: { 'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)) },
+      })
+    }
+  } else if (pathname.startsWith('/api/csp-report')) {
+    // CSP reports: silently drop over limit (no 429 to avoid noise)
+    const result = checkRateLimit(`csp:${clientIp}`, CSP_REPORT_LIMIT)
+    if (!result.allowed) {
+      return new NextResponse(null, { status: 204 })
+    }
   } else if (pathname.startsWith('/api/')) {
-    const result = checkRateLimit(`api:${clientIp}`, RATE_LIMITS.api)
+    const result = checkRateLimit(`api:${clientIp}`, API_LIMIT)
     if (!result.allowed) {
       return new NextResponse('Too Many Requests', {
         status: 429,
@@ -74,9 +99,78 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
   }
 }
 
-// When Clerk is not configured, use a passthrough middleware with rate limiting only
+/**
+ * Generate per-request nonce and build CSP header.
+ * Dev mode: Content-Security-Policy-Report-Only
+ * Prod mode: Content-Security-Policy (enforcing)
+ */
+function buildCspHeaders(nonce: string): Record<string, string> {
+  const csp = [
+    `default-src 'self'`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    `img-src 'self' data: blob: https://*.supabase.co https://www.bcpao.us https://gis.brevardfl.gov https://api.mapbox.com https://*.mapbox.com`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.stripe.com`,
+    `frame-src 'self' https://js.stripe.com https://hooks.stripe.com`,
+    `object-src 'none'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+    `frame-ancestors 'none'`,
+    `report-uri /api/csp-report`,
+    `report-to csp-endpoint`,
+  ].join('; ')
+
+  const cspHeaderName = IS_PROD
+    ? 'Content-Security-Policy'
+    : 'Content-Security-Policy-Report-Only'
+
+  return {
+    [cspHeaderName]: csp,
+    'Report-To': JSON.stringify({
+      group: 'csp-endpoint',
+      max_age: 10886400,
+      endpoints: [{ url: '/api/csp-report' }],
+    }),
+  }
+}
+
+function applySecurityHeaders(response: NextResponse, nonce: string): NextResponse {
+  const cspHeaders = buildCspHeaders(nonce)
+
+  for (const [key, value] of Object.entries(cspHeaders)) {
+    response.headers.set(key, value)
+  }
+
+  // Additional security headers (complement next.config static headers)
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
+  response.headers.set('Cross-Origin-Resource-Policy', 'same-origin')
+  response.headers.set('Permissions-Policy', 'geolocation=(self), payment=(self "https://js.stripe.com"), camera=(), microphone=(), interest-cohort=()')
+
+  // Pass nonce to pages via header so they can use it in <script nonce={}>
+  response.headers.set('x-nonce', nonce)
+
+  return response
+}
+
+function generateNonce(): string {
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+  return Buffer.from(array).toString('base64')
+}
+
+// When Clerk is not configured, use a passthrough middleware with rate limiting + CSP
 function passthroughMiddleware(req: NextRequest) {
-  return rateLimitMiddleware(req) || NextResponse.next()
+  const rateLimitResponse = rateLimitMiddleware(req)
+  if (rateLimitResponse) return rateLimitResponse
+
+  const nonce = generateNonce()
+  const response = NextResponse.next()
+  return applySecurityHeaders(response, nonce)
 }
 
 export default CLERK_ENABLED
@@ -87,6 +181,10 @@ export default CLERK_ENABLED
       if (!isPublicRoute(req)) {
         await auth.protect()
       }
+
+      const nonce = generateNonce()
+      const response = NextResponse.next()
+      return applySecurityHeaders(response, nonce)
     })
   : passthroughMiddleware
 
