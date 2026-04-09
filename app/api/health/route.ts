@@ -1,6 +1,7 @@
 // app/api/health/route.ts
-// P2B-4: DeployWise — Health check endpoint
-// Uses anon key + REST ping — no table dependency
+// Cleanup Apr 9 2026: switched Supabase ping from anon key to service role key.
+// Anon key returns 401 on /rest/v1/ swagger root; SRK works. Server-side route
+// is safe — SRK never reaches the client.
 
 import { NextResponse } from 'next/server';
 
@@ -16,22 +17,24 @@ export async function GET() {
   const start = Date.now();
   const checks: Record<string, { status: 'ok' | 'fail'; detail?: string }> = {};
 
-  // Check required env vars
+  // Check required client-side env vars
   const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
   checks.env =
     missingEnv.length === 0
       ? { status: 'ok' }
       : { status: 'fail', detail: `Missing: ${missingEnv.join(', ')}` };
 
-  // Supabase connectivity — ping REST endpoint with anon key
+  // Supabase connectivity — ping REST endpoint with SERVICE ROLE KEY (server-side only)
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !anonKey) {
-      checks.supabase = { status: 'fail', detail: 'Missing Supabase env vars' };
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !serviceKey) {
+      checks.supabase = { status: 'fail', detail: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' };
     } else {
+      // Ping the REST root which returns the swagger spec when authorized.
+      // Service role key has full read access to this endpoint.
       const res = await fetch(`${supabaseUrl}/rest/v1/`, {
-        headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+        headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` },
         signal: AbortSignal.timeout(5000),
       });
       checks.supabase = res.ok
