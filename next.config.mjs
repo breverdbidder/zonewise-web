@@ -20,6 +20,25 @@ const nextConfig = {
   // Ensure three.js / R3F packages are transpiled by Next.js so they share
   // a single React instance and avoid the ReactCurrentBatchConfig crash.
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
+  // EG14 P2 fix v6 (Apr 9 2026): tree-shake barrel imports from lucide-react,
+  // radix-ui, recharts, date-fns. Targets the 89% unused JS in chunks/5205
+  // (28.7KB wasted) and chunks/7079 (26.5KB wasted) flagged by Lighthouse v5.
+  // Common 30-50% bundle reduction for these packages on Next.js 14+.
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-accordion',
+      'date-fns',
+      'recharts',
+    ],
+  },
   async headers() {
     return [
       {
