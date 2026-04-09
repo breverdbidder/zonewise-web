@@ -19,7 +19,7 @@
 ### 2. Supabase Management Token (sbp_)
 - **File:** `INFRASTRUCTURE.md:124`
 - **Commit introduced:** `f30c981` (2026-03-20) — "docs: add INFRASTRUCTURE.md"
-- **Token:** `REDACTED_SBP_MANAGEMENT_TOKEN`
+- **Token:** `sbp_****REDACTED****` (rotated 2026-04-09, SUMMIT #411)
 - **Severity:** CRITICAL — management API token allows project-level operations
 - **Action:** CRED-ROTATE-REQUIRED — regenerate in Supabase dashboard > Account > Access Tokens
 
