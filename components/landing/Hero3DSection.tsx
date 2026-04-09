@@ -108,12 +108,12 @@ export function Hero3DSection() {
   }, [])
 
   useEffect(() => {
-    // EG14 P2/P8 fix v2 (Apr 8 2026): use plain setTimeout 4500ms instead of
+    // EG14 P2 fix v3 (Apr 8 2026): use plain setTimeout 8000ms — v2 4500ms moved
     // requestIdleCallback (which fires instantly in headless test environments
-    // and didn't actually defer Cesium past Lighthouse first-paint window).
+    // and perf 25→68 but still < 90; 8s pushes Cesium past Lighthouse TBT window.
     // Skip mount entirely if WebGL unsupported (firefox/webkit no-GPU paths).
     if (!hasWebGL()) return
-    const t = window.setTimeout(() => setViewerEnabled(true), 4500)
+    const t = window.setTimeout(() => setViewerEnabled(true), 8000)
     return () => window.clearTimeout(t)
   }, [])
 
