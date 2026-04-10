@@ -101,23 +101,28 @@ Data Collection → Extraction & Indexing → Underwriting Intelligence → Deli
 
 ## Patent Landscape
 
-**Critical Finding: ZERO patents filed by Dono.ai (as of last check)**
+**Critical Finding: ZERO patents filed by Dono.ai (VERIFIED across blog/website/LinkedIn; UNTESTED on USPTO PAIR)**
 
-- Tali Gross (CEO): 0 patents found
-- Ron Likvornik (CTO): **UNTESTED** — needs verification
-- Eyal Stern (COO): **UNTESTED** — needs verification
-- DONO.AI Inc. corporate: **UNTESTED** — needs verification
+- Tali Gross (CEO): 0 patents found [VERIFIED]
+- Ron Likvornik (CTO): **UNTESTED** — needs manual USPTO PAIR check
+- Eyal Stern (COO): **UNTESTED** — needs manual USPTO PAIR check
+- DONO.AI Inc. corporate: **UNTESTED** — needs manual USPTO PAIR check
+- No patent or IP strategy mentioned in $6.5M seed round announcement [VERIFIED]
+- No patent mentions across any of 7 blog posts [VERIFIED]
 
-**Assessment:** Patent race is WINNABLE. Dono has no IP moat despite $6.5M funding and operational product. Our Claims 7 and 9 can establish priority if filed before they do.
+**Assessment:** Patent race is WINNABLE. Dono has no IP moat despite $10.2M funding and operational product. However, **manual USPTO PAIR/TESS browser check is REQUIRED** before relying on this for V3.1 filing. WebFetch cannot scrape USPTO due to client-side rendering.
+
+**Key differentiation:** Dono has ZERO foreclosure/distressed property features. Their Underwriting Intelligence Engine evaluates title defects for clean conveyance — NOT foreclosure investment viability. Our claims should emphasize: auction date tracking, bid calculation (ARV formulas), lien position analysis, surplus/deficit modeling, competitive bidder intelligence.
 
 ## Prior Art Risk Assessment
 
 ### Claim 7 (Data Collection Pipeline)
 - **Risk: MEDIUM-HIGH**
 - Dono's 4-stage pipeline (Collection → Extraction → Underwriting → Delivery) predates our filing
-- CATIC approval Nov 19, 2025 + ALTA publication Nov 6, 2025 establish prior art dates
+- CATIC approval Nov 19, 2025 + ALTA publication Nov 6, 2025 establish prior art dates under 35 USC 102(a)(1) — 5+ months before our April 26, 2026 priority
 - 700+ county adapters (VCAP, Odyssey, Register of Deeds systems)
-- **Mitigation:** Our pipeline is foreclosure-auction-specific with 12 stages; Dono is title-production-focused
+- **NOTE:** Aug 14, 2025 date from issue brief is UNVERIFIED — could not be found in any public source. Confirmed date is Nov 19, 2025.
+- **Mitigation:** Our pipeline is foreclosure-auction-specific with 12 stages; Dono is title-production-focused. The generic "Collection → Extraction → Underwriting → Delivery" pattern could be argued as obvious — claims must be domain-specific.
 
 ### Claim 9 (AI Intelligence Engine)
 - **Risk: MEDIUM**
