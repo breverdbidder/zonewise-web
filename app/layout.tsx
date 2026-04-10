@@ -101,6 +101,146 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             })
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Everest Capital USA",
+              "url": "https://everestcapitalusa.com",
+              "logo": "https://zonewise.ai/icon.png",
+              "description": "Florida real estate investment firm building ZoneWise.AI and BidDeed.AI — agentic AI platforms for zoning intelligence and foreclosure auction analysis.",
+              "founder": {
+                "@type": "Person",
+                "name": "Ariel Shapira"
+              },
+              "foundingLocation": {
+                "@type": "Place",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Satellite Beach",
+                  "addressRegion": "FL",
+                  "addressCountry": "US"
+                }
+              },
+              "sameAs": [
+                "https://biddeed.ai",
+                "https://zonewise.ai",
+                "https://github.com/breverdbidder"
+              ]
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": "Everest Capital USA",
+              "description": "AI-powered real estate intelligence serving all 67 Florida counties. ZoneWise.AI for zoning analysis, BidDeed.AI for foreclosure auction intelligence.",
+              "url": "https://zonewise.ai",
+              "telephone": "+1-321-831-9757",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Satellite Beach",
+                "addressRegion": "FL",
+                "postalCode": "32937",
+                "addressCountry": "US"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 28.1764,
+                "longitude": -80.5901
+              },
+              "areaServed": {
+                "@type": "State",
+                "name": "Florida",
+                "containedInPlace": {
+                  "@type": "Country",
+                  "name": "US"
+                }
+              },
+              "priceRange": "$0 - $99/mo"
+            })
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "What is ZoneWise.AI?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ZoneWise.AI is an agentic AI ecosystem built by Everest Capital USA for zoning compliance, foreclosure auction intelligence, and parcel analysis across all 67 Florida counties. It pairs with BidDeed.AI for auction-specific intelligence."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How many Florida counties does ZoneWise.AI cover?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ZoneWise.AI covers all 67 Florida counties, including 369 jurisdictions and 5,950 zoning districts encompassing 10.8 million parcels statewide."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How does ZoneWise.AI help with foreclosure auctions?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ZoneWise.AI integrates with BidDeed.AI to provide live foreclosure auction tracking, automated deal scoring, judgment analysis, and max bid calculations using the formula: (ARV × 70%) - Repairs - $10K - MIN($25K, 15% × ARV)."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What zoning information can I look up on ZoneWise.AI?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can look up zoning classifications, permitted uses, setbacks, lot coverage, height restrictions, and development feasibility for any parcel in Florida. Free choropleth maps show zoning districts color-coded by use type for every county."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Is ZoneWise.AI free to use?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ZoneWise.AI offers a free tier with choropleth zoning maps, basic parcel lookups, and county-level auction summaries. The Pro tier at $99/month includes AI chat assistant, detailed zoning reports, auction deal scoring, and feasibility analysis."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What is a choropleth zoning map?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A choropleth zoning map is an interactive, color-coded map that visualizes zoning districts across a county. Each color represents a different zoning classification (residential, commercial, industrial, agricultural, etc.), making it easy to identify land use patterns at a glance."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How does BidDeed.AI relate to ZoneWise.AI?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "BidDeed.AI is the foreclosure auction intelligence engine that powers ZoneWise.AI's auction features. While ZoneWise.AI focuses on zoning and parcel intelligence, BidDeed.AI handles auction data scraping, deal scoring, and investment analysis. Both are built by Everest Capital USA."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What data sources does ZoneWise.AI use?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ZoneWise.AI combines data from the Florida Geographic Information Office (FL GIO) covering 10.8 million parcels, county-level GIS systems, court records for foreclosure data, and property appraiser databases. Data is updated daily through automated pipelines."
+                  }
+                }
+              ]
+            })
+          }}
+        />
         <script dangerouslySetInnerHTML={{ __html: `
           try {
             if (localStorage.getItem('zw-theme') === 'light') {

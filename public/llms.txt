@@ -1,0 +1,55 @@
+# ZoneWise.AI — Agentic AI Ecosystem for Florida Real Estate Intelligence
+
+> ZoneWise.AI, powered by BidDeed.AI and Everest Capital USA, is an agentic AI ecosystem for zoning compliance, foreclosure auction intelligence, and parcel analysis across all 67 Florida counties.
+
+## What ZoneWise.AI Does
+
+ZoneWise.AI provides AI-powered intelligence for real estate investors, developers, and professionals operating in Florida:
+
+- **Zoning Intelligence:** Instant zoning lookups across 369 jurisdictions and 5,950 zoning districts covering 10.8 million parcels statewide.
+- **Foreclosure Auction Data:** Live foreclosure auction tracking powered by BidDeed.AI, with deal scoring, judgment analysis, and automated bid calculations.
+- **Parcel Analysis:** Detailed parcel reports including zoning classification, permitted uses, setbacks, and development feasibility.
+- **Choropleth Maps:** Free interactive zoning maps for every Florida county — color-coded by district, filterable by use type.
+- **AI Chat Assistant:** Conversational interface for zoning questions, auction research, and property due diligence.
+
+## Coverage
+
+- **Counties:** All 67 Florida counties
+- **Jurisdictions:** 369 municipal and unincorporated jurisdictions
+- **Zoning Districts:** 5,950 unique zoning classifications
+- **Parcels:** 10.8 million parcels statewide
+- **Auction Data:** Daily foreclosure auction updates via BidDeed.AI pipeline
+
+## Products
+
+- **Free Tier:** Choropleth zoning maps, basic parcel lookups, county-level auction summaries.
+- **Pro Tier ($99/mo):** AI chat assistant, detailed zoning reports, auction deal scoring, feasibility analysis, property envelope calculations.
+
+## About
+
+ZoneWise.AI is built by Everest Capital USA, a Florida-based real estate investment firm founded by Ariel Shapira. With 10+ years of foreclosure investing experience in Brevard County, FL, Everest Capital developed ZoneWise.AI and BidDeed.AI to bring institutional-grade intelligence to individual investors.
+
+- **Website:** https://zonewise.ai
+- **Auction Intelligence:** https://biddeed.ai
+- **Parent Company:** Everest Capital USA, Satellite Beach, FL
+- **Contact:** ariel@everestcapitalusa.com
+
+## Technical Details
+
+- Built with Next.js, deployed on Vercel
+- Database: Supabase (PostgreSQL)
+- Maps: Mapbox GL JS
+- AI: Multi-model architecture (Gemini, DeepSeek, Claude)
+
+## Structured Data Available
+
+- Organization schema (Everest Capital USA)
+- SoftwareApplication schema (ZoneWise.AI)
+- LocalBusiness schema (Florida service area)
+- FAQPage schema (foreclosure and zoning Q&A)
+
+## Related Projects
+
+- **BidDeed.AI** — Foreclosure auction intelligence platform (https://biddeed.ai)
+- **ZoneWise Scraper** — Open data pipeline for Florida zoning districts
+- **Tax Insurance Optimizer** — Property tax and insurance analysis tools
