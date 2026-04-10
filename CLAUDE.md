@@ -345,3 +345,9 @@ Search, download, install, author, and publish reusable agent kits through the J
 
 Full workflow guide: journey-kit/kit.md
 Skills: journey-kit/skills/
+
+## Design System
+- Read DESIGN.md before any UI work
+- Navy #1E3A5F (surfaces), Amber #F59E0B (accent/CTA), Void #020617 (background)
+- Inter (UI text) + JetBrains Mono (financial data)
+- No pill buttons, no light mode, no gradients on buttons
