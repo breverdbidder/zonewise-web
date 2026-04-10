@@ -104,20 +104,20 @@ Stage 11-12: Reporting → Alerts
 | **3** | Automated Property Valuation (Shapira Formula) | NONE | SAFE | Dono does not compute property values or max bids | VERIFIED — no valuation features |
 | **4** | Real-Time Auction Monitoring | NONE | SAFE | Dono does not monitor auctions | VERIFIED — title search only |
 | **5** | Judicial vs Tax Deed Classification | NONE | SAFE | Dono does not classify deed types for auctions | VERIFIED |
-| **6** | County-Agnostic Scraper Architecture | LOW | SAFE | Both scrape county systems but for different data types and purposes | VERIFIED — overlap is at county-adapter level only |
+| **6** | County-Agnostic Scraper Architecture | **HIGH** | **NARROW** | Dono's 700+ county adapters (VCAP, Odyssey, Register of Deeds) use same architectural pattern. **MITIGATION:** Emphasize auction-docket-specific adapter patterns vs title-record adapters. Different data schemas, different extraction targets. | VERIFIED |
 | **7** | CMA Agent (Comparative Market Analysis) | **HIGH** | **NARROW** | Dono's 4-stage pipeline (Collection→Extraction→Underwriting→Delivery) structurally overlaps. **MITIGATION:** Narrow Claim 7 to auction-event-driven workflow with foreclosure-specific elements. Dono targets title searches, not market analysis for auction bidding. | VERIFIED |
 | **8** | Risk Scoring Engine | LOW | SAFE | Dono does title defect risk, not investment risk scoring. Different risk domain entirely. | VERIFIED |
 | **9** | Cross-Auction Intelligence | **MEDIUM-HIGH** | **NARROW** | Dono's Underwriting Intelligence Engine + Ask Dono NLP have conceptual overlap with cross-property intelligence. **MITIGATION:** Emphasize bidding decision support + Shapira Formula integration. Dono's intelligence is title-focused, ours is auction-investment-focused. | VERIFIED |
 | **10** | Investor Portfolio Optimization | NONE | SAFE | Dono has no portfolio management features | VERIFIED |
-| **11** | Automated Due Diligence Pipeline | LOW | SAFE | Different due diligence domains (title vs investment) | VERIFIED |
-| **12** | Multi-County Expansion Framework | LOW | SAFE | Both expand across counties but Dono targets title plants, we target auction dockets | VERIFIED |
+| **11** | Automated Due Diligence Pipeline | **HIGH** | **NARROW** | Dono's end-to-end title production pipeline (order entry → extraction → verification → commitment) is a parallel due diligence architecture. **MITIGATION:** Emphasize auction-specific due diligence steps (zoning check, Shapira Formula, lien priority analysis) that have no title-industry equivalent. | VERIFIED |
+| **12** | Multi-County Expansion Framework | **HIGH** | **NARROW** | Dono's 700+ county expansion with per-county adapter configs is architecturally similar. **MITIGATION:** Emphasize auction-calendar-driven expansion (not title-plant-driven), FL GIO parcel integration, and county auction schedule discovery — none of which exist in Dono. | VERIFIED |
 
 ### Summary Risk Matrix
 
 | Risk Level | Claims | Action Required |
 |-----------|--------|----------------|
-| SAFE (NONE/LOW) | 1, 2, 3, 4, 5, 6, 8, 10, 11, 12 | File as drafted |
-| **NARROW (MEDIUM-HIGH/HIGH)** | **7, 9** | **Narrow claim language before filing** |
+| SAFE (NONE/LOW) | 1, 2, 3, 4, 5, 8, 10 | File as drafted |
+| **NARROW (HIGH)** | **6, 7, 9, 11, 12** | **Add auction-specific differentiation language before filing** |
 
 ---
 
@@ -204,9 +204,13 @@ All findings are persisted in Supabase project `mocerqjnksmhcjzxrewo`:
 
 ## 8. Recommendation to Patent Attorney
 
-1. **File Claims 1, 2, 3, 4, 5, 6, 8, 10, 11, 12 as drafted** — zero meaningful overlap with Dono.ai
-2. **Narrow Claim 7** to explicitly reference foreclosure auction data, auction docket parsing, and CMA for bidding decisions (not title search)
-3. **Narrow Claim 9** to explicitly reference auction-specific cross-intelligence including Shapira Formula integration
+1. **File Claims 1, 2, 3, 4, 5, 8, 10 as drafted** — zero meaningful overlap with Dono.ai
+2. **Narrow Claims 6, 7, 9, 11, 12** to explicitly reference auction-specific architecture:
+   - **Claim 6:** auction-docket adapter patterns (not title-record adapters)
+   - **Claim 7:** foreclosure auction data + CMA for bidding decisions (not title search)
+   - **Claim 9:** auction-specific cross-intelligence + Shapira Formula integration
+   - **Claim 11:** auction due diligence steps (zoning, Shapira, lien priority)
+   - **Claim 12:** auction-calendar-driven county expansion + FL GIO parcel integration
 4. **Cite Dono as prior art** in the patent application with the key distinction: title insurance vs. foreclosure investment
 5. **Emphasize the Shapira Formula** (Claim 3) as the most defensible novel contribution — no equivalent exists in any competitor
 6. **File before April 26** — Dono has zero patents and could file at any time given their $10.2M funding
