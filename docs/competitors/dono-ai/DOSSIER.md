@@ -21,7 +21,9 @@
 
 | Round | Amount | Date | Source | Confidence |
 |-------|--------|------|--------|------------|
-| Seed | $6.5M | Feb 2026 | LinkedIn | VERIFIED |
+| Pre-seed | ~$3.7M | ~2024 | Inferred from $10.2M total | INFERRED |
+| Seed | $6.5M | Feb 2026 | dono.ai blog | VERIFIED |
+| **Total** | **$10.2M** | - | Lead: Link Ventures; lool VC, Alumni Ventures | VERIFIED |
 
 ## Leadership Team
 
@@ -91,7 +93,10 @@ Data Collection → Extraction & Indexing → Underwriting Intelligence → Deli
 |------|------|-------------|
 | American Eagle Title Insurance approval | Unknown | Establishes title insurance partner credibility |
 | HousingWire TECH100 2026 | 2026 | Industry recognition |
-| CATIC approval | Aug 14, 2025 | **PRIOR ART DATE — 8 months before our priority** |
+| CATIC approval (NC attorneys) | Nov 19, 2025 | **PRIOR ART DATE — corrected from Aug 14** |
+| ALTA publication | Nov 6, 2025 | **PRIOR ART DATE — extraction/indexing announcement** |
+| Qualia Marketplace listing | Nov 19, 2025 | 3 service tiers: Search, Search Plus, Examination |
+| SoftPro Sync launch | Mar 23, 2026 | 700+ counties, FL/NC/AR |
 | Forbes, VentureBeat, Axios, Inman features | Various | Press coverage |
 
 ## Patent Landscape
@@ -110,7 +115,8 @@ Data Collection → Extraction & Indexing → Underwriting Intelligence → Deli
 ### Claim 7 (Data Collection Pipeline)
 - **Risk: MEDIUM-HIGH**
 - Dono's 4-stage pipeline (Collection → Extraction → Underwriting → Delivery) predates our filing
-- CATIC approval Aug 14, 2025 establishes prior art date
+- CATIC approval Nov 19, 2025 + ALTA publication Nov 6, 2025 establish prior art dates
+- 700+ county adapters (VCAP, Odyssey, Register of Deeds systems)
 - **Mitigation:** Our pipeline is foreclosure-auction-specific with 12 stages; Dono is title-production-focused
 
 ### Claim 9 (AI Intelligence Engine)
@@ -140,7 +146,7 @@ Focus on investor decision support:
 | Coverage | Nationwide (50 states) | Florida (67 counties) | Dono |
 | Data Pipeline | 4-stage | 12-stage Everest | BidDeed (depth) |
 | AI Features | Underwriting + NLP | Deal scoring + alerts | Dono (breadth) |
-| Funding | $6.5M seed | Bootstrapped | Dono |
+| Funding | $10.2M total ($6.5M seed) | Bootstrapped | Dono |
 | Patents | 0 | In progress (V3.1) | BidDeed (if filed first) |
 | Team Size | 11-50 | Solo founder | Dono |
 | Processing Speed | 1,700 records/hr | Real-time scraping | Different metrics |

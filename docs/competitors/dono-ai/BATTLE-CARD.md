@@ -9,7 +9,7 @@ Dono.ai is an AI-powered title production platform ($6.5M seed, 11-50 employees,
 ## Threat Level: HIGH (Prior Art Risk)
 
 **Why HIGH:**
-- CATIC approval Aug 14, 2025 = prior art date 8 months before our priority
+- CATIC approval Nov 19, 2025 + ALTA publication Nov 6, 2025 = prior art dates
 - 4-stage pipeline architecture maps to Claims 7 & 9
 - $6.5M funding enables rapid IP filing at any time
 - HousingWire TECH100 = industry visibility
@@ -71,7 +71,7 @@ Dono.ai is an AI-powered title production platform ($6.5M seed, 11-50 employees,
 
 - **Legal Name:** DONO.AI Inc.
 - **Founded:** 2023, West Palm Beach FL
-- **Funding:** $6.5M (Feb 2026)
+- **Funding:** $10.2M total ($6.5M seed Feb 2026, ~$3.7M pre-seed). Lead: Link Ventures
 - **CEO:** Tali Gross (0 patents)
 - **CTO:** Ron Likvornik (patent search NEEDED)
 - **COO:** Eyal Stern (patent search NEEDED)
