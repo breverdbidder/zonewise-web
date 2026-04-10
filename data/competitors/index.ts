@@ -6,10 +6,11 @@
 
 import type { CompetitorProfile, ThreatLevel } from '@/types/competitors'
 import { propzone } from './propzone'
+import { algoma } from './algoma'
 
 // ── COMPETITOR SLUGS (locked) ───────────────────────────────────────────────
 export const COMPETITOR_SLUGS = [
-  'algoma',           // #1 CRITICAL  — S0c (next, pending approval)
+  'algoma',           // #1 LOW       — S0c SHIPPED (patent-correlated, parallel-market)
   'propzone',         // #2 CRITICAL  — S0b SHIPPED (full profile below)
   'zoneomics',        // #3 CRITICAL
   'mapwise',          // #11 HIGH     — S0d (namesake threat, added Apr 3)
@@ -61,13 +62,7 @@ function stub(
 // ── REGISTRY: 11 profiles ────────────────────────────────────────────────
 export const COMPETITORS: Record<CompetitorSlug, CompetitorProfile> = {
   propzone,
-  algoma: stub(
-    'algoma',
-    'Algoma',
-    'Turn any address into a feasibility overview with native 3D massing',
-    'CRITICAL',
-    'algoma.co',
-  ),
+  algoma,
   zoneomics: stub(
     'zoneomics',
     'Zoneomics',

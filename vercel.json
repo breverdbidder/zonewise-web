@@ -2,7 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
-    { "source": "/competitors", "destination": "/competitors.html" }
+    { "source": "/competitors", "destination": "/competitors.html" },
+    { "source": "/competitors/propzone.html", "destination": "/competitors/propzone" },
+    { "source": "/competitors/algoma.html", "destination": "/competitors/algoma" }
   ],
   "headers": [
     {
