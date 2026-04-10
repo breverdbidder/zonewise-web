@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropZone vs BidDeed.AI — Patent-Correlated Battle Card</title>
+<meta name="description" content="Competitive analysis: PropZone zoning data SaaS vs BidDeed.AI's 12-claim patent-protected agentic ecosystem. Threat level: MEDIUM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1E3A5F;
+    --orange: #F59E0B;
+    --bg: #020617;
+    --bg2: #0f172a;
+    --bg3: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.08);
+    --win: #10b981;
+    --lose: #ef4444;
+    --tie: #64748b;
+    --navy-glow: rgba(30,58,95,0.4);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d2040 100%);
+    border-bottom: 1px solid rgba(245,158,11,0.3);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-brand { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: var(--orange);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: var(--bg);
+  }
+  .brand-text h1 { font-size: 20px; font-weight: 700; }
+  .brand-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-meta { text-align: right; font-size: 12px; color: var(--muted); }
+  .header-meta strong { color: var(--orange); display: block; font-size: 13px; }
+  .back-link { color: var(--orange); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── HERO ── */
+  .hero { margin-bottom: 48px; }
+  .threat-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px; font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h2 {
+    font-size: 36px; font-weight: 800; line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  .hero h2 span { color: var(--orange); }
+  .hero p { color: var(--muted); font-size: 16px; max-width: 700px; }
+  .category-tag {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .section-title span { color: var(--orange); }
+
+  /* ── COMPETITOR PROFILE ── */
+  .profile-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 40px;
+  }
+  .profile-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .comp-logo {
+    width: 56px; height: 56px;
+    background: #2563eb;
+    color: #bfdbfe;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px;
+  }
+  .comp-info h3 { font-size: 22px; font-weight: 700; }
+  .comp-info p { font-size: 13px; color: var(--muted); }
+  .profile-body { color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .profile-body strong { color: var(--text); }
+
+  /* ── PAIN BOXES ── */
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .pain-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--lose);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .pain-box h4 {
+    font-size: 14px; font-weight: 700;
+    color: var(--lose);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pain-box p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FEATURE TABLE ── */
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+  .feature-table thead th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--navy);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .feature-table thead th:first-child { border-radius: 6px 0 0 0; }
+  .feature-table thead th:last-child { border-radius: 0 6px 0 0; }
+  .feature-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .feature-table tbody tr:nth-child(even) { background: rgba(15,23,42,0.5); }
+  .feat-win { color: var(--win); font-weight: 600; }
+  .feat-lose { color: var(--lose); }
+  .feat-tie { color: var(--tie); }
+
+  /* ── CLAIMS GRID ── */
+  .claims-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .claim-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+  .claim-card:hover { border-color: rgba(245,158,11,0.3); }
+  .claim-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .claim-title {
+    font-size: 14px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .claim-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .claim-verdict {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .verdict-protected {
+    background: rgba(16,185,129,0.12);
+    color: var(--win);
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+  .verdict-unmatched {
+    background: rgba(239,68,68,0.12);
+    color: var(--lose);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  /* ── KILL SHOT ── */
+  .kill-shot {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d2040 100%);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .kill-shot h3 {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--orange);
+  }
+  .kill-shot p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .kill-shot .metric {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  footer a { color: var(--orange); text-decoration: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .hero h2 { font-size: 26px; }
+    .claims-grid { grid-template-columns: 1fr; }
+    .pain-grid { grid-template-columns: 1fr; }
+    .feature-table { font-size: 12px; }
+    .feature-table thead th, .feature-table tbody td { padding: 8px 10px; }
+  }
+  @media (max-width: 375px) {
+    .hero h2 { font-size: 22px; }
+    .profile-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="logo-mark">E</div>
+    <div class="brand-text">
+      <h1>Competitive Intelligence</h1>
+      <p>Everest Capital — Patent-Correlated Battle Cards</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <a href="/competitors.html" class="back-link">← All Competitors</a>
+    <strong>PropZone Battle Card</strong>
+    Updated April 2026
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="threat-pill">⚠ Threat Level: Medium</div>
+    <h2>PropZone vs <span>BidDeed.AI</span></h2>
+    <p>PropZone sells zoning data as a SaaS product for developers and municipalities. They have solid UI and parcel visualization — but zero foreclosure intelligence, no ML pipeline, and no agentic architecture. Our 12 patent claims cover capabilities they cannot replicate without infringing.</p>
+    <div class="category-tag">Category: Zoning Data SaaS</div>
+  </div>
+
+  <!-- COMPETITOR PROFILE -->
+  <div class="section-title">Competitor <span>Profile</span></div>
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="comp-logo" style="background:#2563eb; color:#bfdbfe;">PZ</div>
+      <div class="comp-info">
+        <h3>PropZone</h3>
+        <p>propzone.com · Zoning Data SaaS · US-based</p>
+      </div>
+    </div>
+    <div class="profile-body">
+      <p>PropZone provides <strong>parcel-level zoning data</strong> through a web interface and API. Their product allows developers to look up zoning designations, permitted uses, and development constraints for individual parcels. They serve <strong>municipalities, commercial developers, and real estate professionals</strong> who need to understand what can be built on a given site.</p>
+      <p style="margin-top:12px;">Their strength is <strong>clean UI and decent data coverage</strong> across multiple states. Their weakness: they are a <strong>pure data lookup tool</strong> with no investment intelligence, no auction pipeline, no ML scoring, and no multi-agent orchestration. They answer "what's the zoning?" — we answer "should you buy this property, at what price, and why?"</p>
+    </div>
+  </div>
+
+  <!-- PAIN BOXES -->
+  <div class="section-title">PropZone's <span>Structural Weaknesses</span></div>
+  <div class="pain-grid">
+    <div class="pain-box">
+      <h4>No Foreclosure Intelligence</h4>
+      <p>PropZone has zero integration with county clerk auction data. They cannot tell you which properties are going to auction, what the opening bid is, or what the judgment amount is. Our pipeline ingests 245K+ auction records across multiple counties.</p>
+    </div>
+    <div class="pain-box">
+      <h4>No ML Deal Scoring</h4>
+      <p>No ARV estimation, no max bid calculation, no BID/REVIEW/SKIP classification. PropZone shows you zoning — it cannot tell you whether a deal is profitable. Our XGBoost pipeline (Claim 8) scores every property automatically.</p>
+    </div>
+    <div class="pain-box">
+      <h4>No Agentic Architecture</h4>
+      <p>PropZone is a traditional web app with a static database. No autonomous agents, no self-healing scrapers, no adaptive monitoring. Our 14-agent orchestration (Claim 1) operates continuously without human intervention.</p>
+    </div>
+    <div class="pain-box">
+      <h4>No Cross-Auction Intelligence</h4>
+      <p>PropZone cannot correlate foreclosure (FC) and tax deed (TD) data for the same parcel. Our Cross-Auction Intelligence system (Claim 9) identifies dual-exposure properties that represent asymmetric opportunities.</p>
+    </div>
+  </div>
+
+  <!-- FEATURE COMPARISON TABLE -->
+  <div class="section-title">Feature <span>Comparison</span></div>
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th style="width:35%">Capability</th>
+        <th style="width:30%">PropZone</th>
+        <th style="width:35%">BidDeed.AI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Zoning data lookup</td>
+        <td class="feat-win">✅ Multi-state coverage</td>
+        <td class="feat-win">✅ FL-deep (351K+ parcels)</td>
+      </tr>
+      <tr>
+        <td>Parcel visualization</td>
+        <td class="feat-win">✅ Clean map UI</td>
+        <td class="feat-win">✅ Mapbox choropleth</td>
+      </tr>
+      <tr>
+        <td>Foreclosure auction data</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ 245K+ records, daily refresh</td>
+      </tr>
+      <tr>
+        <td>Tax deed auction data</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Cross-auction correlation</td>
+      </tr>
+      <tr>
+        <td>ML deal scoring</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ XGBoost BID/REVIEW/SKIP</td>
+      </tr>
+      <tr>
+        <td>ARV + max bid calc</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Shapira Formula engine</td>
+      </tr>
+      <tr>
+        <td>Autonomous agents</td>
+        <td class="feat-lose">❌ Traditional web app</td>
+        <td class="feat-win">✅ 14-agent orchestration</td>
+      </tr>
+      <tr>
+        <td>Self-healing scrapers</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Auto-recovery pipeline</td>
+      </tr>
+      <tr>
+        <td>Behavioral matching</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Investor profile engine</td>
+      </tr>
+      <tr>
+        <td>API access</td>
+        <td class="feat-win">✅ REST API</td>
+        <td class="feat-win">✅ Supabase REST + Realtime</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PATENT CLAIMS GRID -->
+  <div class="section-title">12-Claim Patent <span>Moat Analysis</span></div>
+  <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Each claim from the Shapira Formula V3.1 Invention Disclosure mapped against PropZone's capabilities. Claims they cannot replicate without infringing our patent.</p>
+
+  <div class="claims-grid">
+    <div class="claim-card">
+      <div class="claim-number">Claim 1</div>
+      <div class="claim-title">14-Agent Orchestration</div>
+      <div class="claim-desc">Unified multi-agent system coordinating scraping, analysis, scoring, and monitoring autonomously. PropZone uses traditional request-response architecture with no agent layer.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 2</div>
+      <div class="claim-title">Shapira Formula RL Engine</div>
+      <div class="claim-desc">Reinforcement learning engine that continuously optimizes the (ARV×70%)-Repairs-$10K-MIN($25K,15%×ARV) formula based on auction outcomes. PropZone has no pricing model.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 3</div>
+      <div class="claim-title">Self-Healing Infrastructure</div>
+      <div class="claim-desc">Autonomous infrastructure that detects failures, rotates proxies, retries with exponential backoff, and recovers without human intervention. PropZone has standard uptime monitoring.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 4</div>
+      <div class="claim-title">Self-Improving Agent Skills</div>
+      <div class="claim-desc">Agents that improve their own extraction and analysis capabilities over time through feedback loops. PropZone's data extraction is static and manually maintained.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 5</div>
+      <div class="claim-title">Three-Horizon Prediction</div>
+      <div class="claim-desc">Short/medium/long-term property value prediction combining market trends, zoning changes, and development pipeline. PropZone shows current zoning only — no forward-looking analysis.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 6</div>
+      <div class="claim-title">Asymmetric RL Reward Engine</div>
+      <div class="claim-desc">Reward function that penalizes overpaying 3× more than missing a deal, encoding Ariel's risk-asymmetric investment philosophy. PropZone has no bidding logic.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 7</div>
+      <div class="claim-title">CMA Agent</div>
+      <div class="claim-desc">Automated Comparative Market Analysis agent pulling comps, adjusting for condition/location/time, and generating ARV estimates. PropZone has no valuation capability.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 8</div>
+      <div class="claim-title">XGBoost ML Pipeline</div>
+      <div class="claim-desc">Gradient-boosted decision tree pipeline trained on historical auction outcomes to classify deals as BID/REVIEW/SKIP. PropZone has no ML layer.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 9</div>
+      <div class="claim-title">Cross-Auction Intelligence (FC+TD)</div>
+      <div class="claim-desc">System that correlates foreclosure and tax deed auction data for the same parcel, identifying dual-exposure opportunities. PropZone has zero auction data integration.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 10</div>
+      <div class="claim-title">Behavioral Matching Engine</div>
+      <div class="claim-desc">Engine that learns investor preferences and surfaces deals matching their risk profile, property type preferences, and geographic focus. PropZone has no personalization.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 11</div>
+      <div class="claim-title">Compounding Personalization Protocol (EDP)</div>
+      <div class="claim-desc">Everest Data Protocol that compounds personalization over time — each interaction improves future recommendations. PropZone serves the same static data to every user.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 12</div>
+      <div class="claim-title">Adaptive Price Monitoring</div>
+      <div class="claim-desc">Continuous monitoring system that tracks price changes, new listings, auction postponements, and market shifts in real-time. PropZone updates zoning data on a static refresh cycle.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+  </div>
+
+  <!-- KILL SHOT -->
+  <div class="kill-shot">
+    <h3>The Kill Shot</h3>
+    <p>PropZone answers one question: <span class="metric">"What's the zoning?"</span><br>
+    BidDeed.AI answers the question that matters: <span class="metric">"Should I buy this property, at what price, and will I profit?"</span><br><br>
+    Our <span class="metric">12 patent claims</span> protect a unified agentic ecosystem that PropZone cannot replicate without building an entirely new product — and even then, they'd be operating in our patent space. Their zoning data is a <strong>feature</strong> in our platform, not a competitor to it.</p>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="section-title">Strategic <span>Verdict</span></div>
+  <div class="profile-card">
+    <div class="profile-body">
+      <p><strong>Threat Level: MEDIUM</strong> — PropZone has a competent product in the zoning data space with decent UI. They could evolve toward investment intelligence, but doing so would require building ML pipelines, auction data ingestion, and agent orchestration from scratch — capabilities protected by our patent claims.</p>
+      <p style="margin-top:12px;"><strong>Recommended Posture:</strong> Monitor quarterly. Their zoning data coverage is broader than ours (multi-state vs FL-first), but our depth and intelligence layer make us categorically different. If they raise a Series A targeting auction intelligence, escalate to HIGH.</p>
+      <p style="margin-top:12px;"><strong>Patent Claims Engaged:</strong> <span style="color:var(--orange); font-family:'JetBrains Mono',monospace; font-weight:600;">12 of 12</span> — PropZone has no equivalent capability for any of our patent claims.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Everest Capital USA · Competitive Intelligence · Confidential</p>
+  <p style="margin-top:6px;"><a href="/competitors.html">← Back to All Competitors</a> · <a href="/competitors/algoma.html">Algoma Battle Card →</a></p>
+</footer>
+
+</body>
+</html>

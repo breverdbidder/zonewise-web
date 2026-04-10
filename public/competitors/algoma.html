@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoma vs BidDeed.AI — Patent-Correlated Battle Card</title>
+<meta name="description" content="Competitive analysis: Algoma feasibility and construction platform vs BidDeed.AI's 12-claim patent-protected agentic ecosystem. Threat level: LOW.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1E3A5F;
+    --orange: #F59E0B;
+    --bg: #020617;
+    --bg2: #0f172a;
+    --bg3: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.08);
+    --win: #10b981;
+    --lose: #ef4444;
+    --tie: #64748b;
+    --navy-glow: rgba(30,58,95,0.4);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d2040 100%);
+    border-bottom: 1px solid rgba(245,158,11,0.3);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .header-brand { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: var(--orange);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: var(--bg);
+  }
+  .brand-text h1 { font-size: 20px; font-weight: 700; }
+  .brand-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-meta { text-align: right; font-size: 12px; color: var(--muted); }
+  .header-meta strong { color: var(--orange); display: block; font-size: 13px; }
+  .back-link { color: var(--orange); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .hero { margin-bottom: 48px; }
+  .threat-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(100,116,139,0.15);
+    border: 1px solid rgba(100,116,139,0.3);
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px; font-weight: 700;
+    color: var(--tie);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h2 {
+    font-size: 36px; font-weight: 800; line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+  .hero h2 span { color: var(--orange); }
+  .hero p { color: var(--muted); font-size: 16px; max-width: 700px; }
+  .category-tag {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .section-title {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .section-title span { color: var(--orange); }
+
+  .profile-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 40px;
+  }
+  .profile-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .comp-logo {
+    width: 56px; height: 56px;
+    background: #065f46;
+    color: #6ee7b7;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px;
+  }
+  .comp-info h3 { font-size: 22px; font-weight: 700; }
+  .comp-info p { font-size: 13px; color: var(--muted); }
+  .profile-body { color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .profile-body strong { color: var(--text); }
+
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .pain-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--lose);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .pain-box h4 {
+    font-size: 14px; font-weight: 700;
+    color: var(--lose);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pain-box p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+  .feature-table thead th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--navy);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .feature-table thead th:first-child { border-radius: 6px 0 0 0; }
+  .feature-table thead th:last-child { border-radius: 0 6px 0 0; }
+  .feature-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .feature-table tbody tr:nth-child(even) { background: rgba(15,23,42,0.5); }
+  .feat-win { color: var(--win); font-weight: 600; }
+  .feat-lose { color: var(--lose); }
+  .feat-tie { color: var(--tie); }
+
+  .claims-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .claim-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+  .claim-card:hover { border-color: rgba(245,158,11,0.3); }
+  .claim-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .claim-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .claim-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .claim-verdict {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .verdict-protected {
+    background: rgba(16,185,129,0.12);
+    color: var(--win);
+    border: 1px solid rgba(16,185,129,0.2);
+  }
+  .verdict-unmatched {
+    background: rgba(239,68,68,0.12);
+    color: var(--lose);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .verdict-parallel {
+    background: rgba(100,116,139,0.12);
+    color: var(--tie);
+    border: 1px solid rgba(100,116,139,0.2);
+  }
+
+  .kill-shot {
+    background: linear-gradient(135deg, var(--navy) 0%, #0d2040 100%);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .kill-shot h3 {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--orange);
+  }
+  .kill-shot p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .kill-shot .metric {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .parallel-callout {
+    background: var(--bg2);
+    border: 1px solid rgba(100,116,139,0.3);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  .parallel-callout h4 {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .parallel-callout p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  footer a { color: var(--orange); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .hero h2 { font-size: 26px; }
+    .claims-grid { grid-template-columns: 1fr; }
+    .pain-grid { grid-template-columns: 1fr; }
+    .feature-table { font-size: 12px; }
+    .feature-table thead th, .feature-table tbody td { padding: 8px 10px; }
+  }
+  @media (max-width: 375px) {
+    .hero h2 { font-size: 22px; }
+    .profile-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <div class="logo-mark">E</div>
+    <div class="brand-text">
+      <h1>Competitive Intelligence</h1>
+      <p>Everest Capital — Patent-Correlated Battle Cards</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <a href="/competitors.html" class="back-link">&larr; All Competitors</a>
+    <strong>Algoma Battle Card</strong>
+    Updated April 2026
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="threat-pill">Threat Level: Low</div>
+    <h2>Algoma vs <span>BidDeed.AI</span></h2>
+    <p>Algoma operates in the feasibility and construction intelligence space — helping developers assess whether a project is buildable and cost-effective. They are a parallel-market player, not a direct competitor. Different customer, different use case, minimal overlap with our foreclosure auction intelligence platform.</p>
+    <div class="category-tag">Category: Feasibility + Construction</div>
+  </div>
+
+  <!-- PARALLEL MARKET FRAMING -->
+  <div class="parallel-callout">
+    <h4>Parallel Market — Not Direct Competition</h4>
+    <p>Algoma and BidDeed.AI serve fundamentally different stages of the real estate lifecycle. Algoma helps developers answer "Can I build this project profitably?" after they've already acquired land. BidDeed.AI helps investors answer "Should I acquire this distressed property?" before the auction. These are complementary workflows, not competing ones. A developer could use BidDeed.AI to acquire a foreclosure property and then use Algoma to assess construction feasibility — both products win.</p>
+  </div>
+
+  <!-- COMPETITOR PROFILE -->
+  <div class="section-title">Competitor <span>Profile</span></div>
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="comp-logo" style="background:#065f46; color:#6ee7b7;">AL</div>
+      <div class="comp-info">
+        <h3>Algoma</h3>
+        <p>Feasibility + Construction Intelligence · Development-stage focus</p>
+      </div>
+    </div>
+    <div class="profile-body">
+      <p>Algoma provides <strong>construction feasibility analysis</strong> for real estate developers. Their platform estimates construction costs, assesses site constraints, evaluates building code compliance, and generates pro forma financial models for new development projects. They target <strong>commercial and residential developers</strong> who need to determine whether a site can support their intended project.</p>
+      <p style="margin-top:12px;">Their strength is <strong>construction cost intelligence and feasibility modeling</strong>. Their weakness relative to our space: they have <strong>zero foreclosure or auction intelligence</strong>, no distressed property pipeline, and no ML-driven deal scoring. They operate entirely in the post-acquisition, pre-construction phase — a different market entirely.</p>
+    </div>
+  </div>
+
+  <!-- PAIN BOXES -->
+  <div class="section-title">Why Algoma Is <span>Not a Threat</span></div>
+  <div class="pain-grid">
+    <div class="pain-box">
+      <h4>Different Customer Segment</h4>
+      <p>Algoma serves developers who already own land and need construction feasibility. BidDeed.AI serves investors seeking distressed acquisition opportunities. Almost zero customer overlap — our users are buying properties, theirs are building on them.</p>
+    </div>
+    <div class="pain-box">
+      <h4>Different Data Domain</h4>
+      <p>Algoma's core data is construction costs, building codes, and site engineering constraints. Our core data is auction records, lien positions, property valuations, and foreclosure proceedings. No data overlap means no competitive pressure on data moats.</p>
+    </div>
+    <div class="pain-box">
+      <h4>No Auction Pipeline</h4>
+      <p>Algoma has zero integration with county clerk systems, no foreclosure data ingestion, and no concept of auction bidding. Building this capability would require a fundamentally different product — essentially building BidDeed.AI from scratch.</p>
+    </div>
+    <div class="pain-box">
+      <h4>Potential Integration Partner</h4>
+      <p>Rather than a competitor, Algoma could be a downstream integration partner. Investors who acquire properties through BidDeed.AI and plan to develop them could use Algoma for feasibility — creating a natural handoff workflow.</p>
+    </div>
+  </div>
+
+  <!-- FEATURE COMPARISON TABLE -->
+  <div class="section-title">Feature <span>Comparison</span></div>
+  <table class="feature-table">
+    <thead>
+      <tr>
+        <th style="width:35%">Capability</th>
+        <th style="width:30%">Algoma</th>
+        <th style="width:35%">BidDeed.AI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Construction cost estimation</td>
+        <td class="feat-win">✅ Core strength</td>
+        <td class="feat-lose">❌ Not in scope</td>
+      </tr>
+      <tr>
+        <td>Site feasibility analysis</td>
+        <td class="feat-win">✅ Core strength</td>
+        <td class="feat-lose">❌ Not in scope</td>
+      </tr>
+      <tr>
+        <td>Building code compliance</td>
+        <td class="feat-win">✅ Automated checks</td>
+        <td class="feat-tie">⚠️ Zoning only</td>
+      </tr>
+      <tr>
+        <td>Foreclosure auction data</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ 245K+ records</td>
+      </tr>
+      <tr>
+        <td>Tax deed auction data</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Cross-auction correlation</td>
+      </tr>
+      <tr>
+        <td>ML deal scoring</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ XGBoost BID/REVIEW/SKIP</td>
+      </tr>
+      <tr>
+        <td>ARV + max bid calculation</td>
+        <td class="feat-lose">❌ None</td>
+        <td class="feat-win">✅ Shapira Formula engine</td>
+      </tr>
+      <tr>
+        <td>Autonomous agent system</td>
+        <td class="feat-lose">❌ Traditional app</td>
+        <td class="feat-win">✅ 14-agent orchestration</td>
+      </tr>
+      <tr>
+        <td>Pro forma modeling</td>
+        <td class="feat-win">✅ Development pro formas</td>
+        <td class="feat-tie">⚠️ Investment pro formas</td>
+      </tr>
+      <tr>
+        <td>Zoning intelligence</td>
+        <td class="feat-tie">⚠️ Building-code focus</td>
+        <td class="feat-win">✅ 351K+ parcels, FL-deep</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PATENT CLAIMS GRID -->
+  <div class="section-title">12-Claim Patent <span>Moat Analysis</span></div>
+  <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Each claim from the Shapira Formula V3.1 Invention Disclosure mapped against Algoma's capabilities. As a parallel-market player, Algoma doesn't compete on any of our patent-protected capabilities.</p>
+
+  <div class="claims-grid">
+    <div class="claim-card">
+      <div class="claim-number">Claim 1</div>
+      <div class="claim-title">14-Agent Orchestration</div>
+      <div class="claim-desc">Unified multi-agent system for auction intelligence. Algoma uses traditional architecture focused on construction estimation — no agent layer, no need for one in their domain.</div>
+      <div class="claim-verdict verdict-parallel">Parallel Market — N/A</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 2</div>
+      <div class="claim-title">Shapira Formula RL Engine</div>
+      <div class="claim-desc">RL-optimized max bid formula for auction investments. Algoma's pricing models focus on construction costs and development returns — entirely different financial domain.</div>
+      <div class="claim-verdict verdict-parallel">Parallel Market — N/A</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 3</div>
+      <div class="claim-title">Self-Healing Infrastructure</div>
+      <div class="claim-desc">Autonomous recovery for scraper and data pipeline failures. Algoma's data sources (construction cost databases, building codes) are stable APIs, not adversarial scraping targets.</div>
+      <div class="claim-verdict verdict-parallel">Parallel Market — N/A</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 4</div>
+      <div class="claim-title">Self-Improving Agent Skills</div>
+      <div class="claim-desc">Agents that improve extraction accuracy over time. Algoma's data processing is deterministic (building codes, cost tables) — no need for adaptive learning in their domain.</div>
+      <div class="claim-verdict verdict-parallel">Parallel Market — N/A</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 5</div>
+      <div class="claim-title">Three-Horizon Prediction</div>
+      <div class="claim-desc">Multi-horizon property value prediction. Algoma may forecast construction costs over time, but does not predict property acquisition values or auction outcomes.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 6</div>
+      <div class="claim-title">Asymmetric RL Reward Engine</div>
+      <div class="claim-desc">Risk-asymmetric bidding logic penalizing overpayment. Algoma operates in a development context where the risk calculus is fundamentally different — cost overruns, not auction overpayment.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 7</div>
+      <div class="claim-title">CMA Agent</div>
+      <div class="claim-desc">Automated Comparative Market Analysis for property valuation. Algoma estimates construction costs, not market values of existing properties — different valuation domain entirely.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 8</div>
+      <div class="claim-title">XGBoost ML Pipeline</div>
+      <div class="claim-desc">ML pipeline trained on auction outcomes for deal classification. Algoma may use ML for cost estimation, but not for auction deal scoring — different training data, different objective.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 9</div>
+      <div class="claim-title">Cross-Auction Intelligence (FC+TD)</div>
+      <div class="claim-desc">Correlating foreclosure and tax deed data for dual-exposure identification. Algoma has zero auction data — this capability is entirely outside their product scope.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 10</div>
+      <div class="claim-title">Behavioral Matching Engine</div>
+      <div class="claim-desc">Personalized deal surfacing based on investor behavior patterns. Algoma serves developers with project-specific queries, not recurring deal discovery workflows.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 11</div>
+      <div class="claim-title">Compounding Personalization Protocol (EDP)</div>
+      <div class="claim-desc">Everest Data Protocol compounding personalization over time. Algoma's feasibility analysis is project-scoped — each query is independent, no compounding intelligence.</div>
+      <div class="claim-verdict verdict-protected">Protected — No equivalent</div>
+    </div>
+
+    <div class="claim-card">
+      <div class="claim-number">Claim 12</div>
+      <div class="claim-title">Adaptive Price Monitoring</div>
+      <div class="claim-desc">Real-time monitoring of auction prices, postponements, and market shifts. Algoma monitors construction material prices — a different market signal entirely.</div>
+      <div class="claim-verdict verdict-parallel">Parallel Market — N/A</div>
+    </div>
+  </div>
+
+  <!-- KILL SHOT -->
+  <div class="kill-shot">
+    <h3>The Kill Shot</h3>
+    <p>Algoma and BidDeed.AI don't compete — they <span class="metric">complement</span>.<br>
+    Algoma answers: <span class="metric">"Can I build on this site profitably?"</span><br>
+    BidDeed.AI answers: <span class="metric">"Should I acquire this distressed property?"</span><br><br>
+    These are sequential stages in the real estate lifecycle. Our <span class="metric">12 patent claims</span> protect auction intelligence capabilities that Algoma has no reason to build — and if they ever pivoted into our space, they'd face both our data moat (245K+ auction records) and our IP moat (12 claims covering the full agentic pipeline).</p>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="section-title">Strategic <span>Verdict</span></div>
+  <div class="profile-card">
+    <div class="profile-body">
+      <p><strong>Threat Level: LOW</strong> — Algoma operates in a parallel market (feasibility + construction) with minimal overlap to our foreclosure auction intelligence platform. Different customers, different data, different use case.</p>
+      <p style="margin-top:12px;"><strong>Recommended Posture:</strong> Monitor annually. Explore potential integration partnership — BidDeed.AI acquisition intelligence feeding into Algoma feasibility analysis could create a compelling end-to-end workflow for investor-developers.</p>
+      <p style="margin-top:12px;"><strong>Patent Claims Engaged:</strong> <span style="color:var(--orange); font-family:'JetBrains Mono',monospace; font-weight:600;">8 of 12 protected, 4 parallel-market N/A</span> — Algoma operates in a domain where most of our claims are simply irrelevant, not contested.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Everest Capital USA · Competitive Intelligence · Confidential</p>
+  <p style="margin-top:6px;"><a href="/competitors.html">&larr; Back to All Competitors</a> · <a href="/competitors/propzone.html">&larr; PropZone Battle Card</a></p>
+</footer>
+
+</body>
+</html>
