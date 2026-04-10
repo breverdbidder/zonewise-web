@@ -21,22 +21,24 @@
 
 | Round | Amount | Date | Source | Confidence |
 |-------|--------|------|--------|------------|
-| Pre-seed | ~$3.7M | ~2024 | Inferred from $10.2M total | INFERRED |
-| Seed | $6.5M | Feb 2026 | dono.ai blog | VERIFIED |
-| **Total** | **$10.2M** | - | Lead: Link Ventures; lool VC, Alumni Ventures | VERIFIED |
+| Pre-seed | $3.7M | Jul 2024 | lool Ventures (lead), Lemonade, Melio (angels) | VERIFIED |
+| Seed | $6.5M | Feb 2026 | Link Ventures Fund LV3 (lead), lool VC, Alumni Ventures | VERIFIED |
+| **Total** | **$10.2M** | - | Refresh Miami, dono.ai blog | VERIFIED |
 
 ## Leadership Team
 
-| Name | Role | Patent Search | Patents Found | Confidence |
-|------|------|--------------|---------------|------------|
-| Tali Gross | CEO & Co-Founder | DONE | 0 | VERIFIED |
-| Ron Likvornik | CTO | NOT DONE | Unknown | UNTESTED |
-| Eyal Stern | COO | NOT DONE | Unknown | UNTESTED |
-| David Bokor | Title Ops Manager | NOT DONE | N/A | VERIFIED |
-| Avichay Nissenbaum | Team Member | NOT DONE | N/A | INFERRED |
-| Tony Saigh | Team Member | NOT DONE | N/A | INFERRED |
-| Anthony Nalbone | Team Member | NOT DONE | N/A | INFERRED |
-| Paul Carroll | Team Member | NOT DONE | N/A | INFERRED |
+| Name | Role | Patent Search | Patents Found | Background | Confidence |
+|------|------|--------------|---------------|------------|------------|
+| Tali Gross | CEO & Co-Founder | DONE (web) | 0 | LLB Tel Aviv Univ. Co-founded SixtyFive (2021). Prior: Harris Computer, Cukierman. Miami Beach FL. | VERIFIED |
+| Ron Likvornik | CTO & Co-Founder | DONE (web) | 0 | Hebrew Univ Jerusalem. NLP/AI. Co-founded SixtyFive w/ Gross. Prior CTO: Eleph, Roboox. GitHub: ronliksf. | VERIFIED |
+| Eyal Stern | COO & Co-Founder | DONE (web) | 0 | Tel Aviv Univ. 5+ prior roles. Based in Tel Aviv. Common name — no patents attributable. | VERIFIED |
+| David Bokor | Title Ops Manager | NOT DONE | N/A | Domain expert in title production workflows | VERIFIED |
+| Avichay Nissenbaum | Team Member | NOT DONE | N/A | | INFERRED |
+| Tony Saigh | Team Member | NOT DONE | N/A | | INFERRED |
+| Anthony Nalbone | Team Member | NOT DONE | N/A | | INFERRED |
+| Paul Carroll | Team Member | NOT DONE | N/A | | INFERRED |
+
+**Note:** All patent searches done via Bing/DuckDuckGo web search. USPTO PAIR returned 503, Google Patents requires JS rendering. Manual USPTO PAIR check still recommended for definitive confirmation.
 
 ## Architecture: 4-Stage Pipeline (Prior Art Critical)
 
@@ -160,16 +162,16 @@ Focus on investor decision support:
 
 ## Gaps in Recon (v1.2 compliance)
 
-1. Ron Likvornik patent search not completed
-2. Eyal Stern patent search not completed
-3. Israeli Hebrew sources (Calcalistech) not mined
-4. YouTube founder interview content not transcribed
-5. CATIC approval exact documentation not located
+1. ~~Ron Likvornik patent search~~ DONE (web level) — 0 patents. USPTO PAIR manual check still needed.
+2. ~~Eyal Stern patent search~~ DONE (web level) — 0 patents. USPTO PAIR manual check still needed.
+3. Israeli Hebrew sources (Calcalistech) not deeply mined — partial coverage via DuckDuckGo
+4. YouTube founder interview content not transcribed via Supadata
+5. ~~CATIC approval~~ FOUND — Nov 19, 2025 (corrected from Aug 14)
 6. Pricing tier details not discovered (behind demo wall)
 7. JS bundle deep mining for hidden API endpoints not done
 8. Wayback Machine historical analysis not done
 9. Job postings analysis for tech stack clues not done
-10. GitHub/open-source contributions not checked
+10. ~~GitHub check~~ DONE — Ron Likvornik: github.com/ronliksf (0 public repos, 1 star)
 
 ## Action Items for Patent V3.1
 
