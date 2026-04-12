@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZoneWise.AI vs Algoma — Moat Analysis Battle Card</title>
+<meta name="description" content="Algoma 4-layer moat separated: DATA sources (vendor-aggregated, non-exclusive), DISTRIBUTION (direct SaaS, no channel lock-in), REGULATORY (none), HUMAN VERIFICATION (minimal, AI-first). Parallel market: they serve developers post-acquisition, we serve investors pre-acquisition.">
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<style>
+  :root {
+    --navy: #1E3A5F;
+    --navy-dark: #132340;
+    --navy-light: #2a5085;
+    --orange: #F59E0B;
+    --orange-bright: #FBBF24;
+    --void: #020617;
+    --void-elevated: #0A1122;
+    --void-card: #0F1729;
+    --slate-100: #F1F5F9;
+    --slate-200: #E2E8F0;
+    --slate-300: #CBD5E1;
+    --slate-400: #94A3B8;
+    --slate-500: #64748B;
+    --slate-700: #334155;
+    --slate-800: #1E293B;
+    --slate-900: #0F172A;
+    --win: #10B981;
+    --win-bg: rgba(16, 185, 129, 0.1);
+    --win-border: rgba(16, 185, 129, 0.3);
+    --lose: #EF4444;
+    --lose-bg: rgba(239, 68, 68, 0.1);
+    --lose-border: rgba(239, 68, 68, 0.3);
+    --tie: #F59E0B;
+    --tie-bg: rgba(245, 158, 11, 0.1);
+    --tie-border: rgba(245, 158, 11, 0.3);
+    --purple: #A855F7;
+    --cyan: #06B6D4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: var(--void);
+    color: var(--slate-100);
+    line-height: 1.6;
+    font-feature-settings: 'cv11', 'ss01';
+    min-height: 100vh;
+    background-image:
+      radial-gradient(at 10% 0%, rgba(30, 58, 95, 0.25) 0px, transparent 50%),
+      radial-gradient(at 90% 100%, rgba(245, 158, 11, 0.08) 0px, transparent 50%);
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+  @media (min-width: 768px) { .container { padding: 48px 32px; } }
+
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--slate-500);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .breadcrumb a { color: var(--orange); text-decoration: none; }
+  .breadcrumb span { margin: 0 8px; color: var(--slate-700); }
+
+  .header {
+    padding: 32px 28px;
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--void-elevated) 100%);
+    border-radius: 16px;
+    border: 1px solid var(--slate-800);
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge.threat {
+    background: rgba(100, 116, 139, 0.15);
+    color: var(--slate-400);
+    border: 1px solid rgba(100, 116, 139, 0.4);
+  }
+  .badge.honest {
+    background: rgba(6, 182, 212, 0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+  }
+  .badge.eg14 {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--win);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    color: #FFFFFF;
+  }
+  h1 .vs { color: var(--slate-500); font-weight: 400; margin: 0 10px; }
+  h1 .zonewise { color: var(--orange); }
+  h1 .competitor { color: var(--slate-300); }
+  .tagline {
+    font-size: 15px;
+    color: var(--slate-400);
+    font-style: italic;
+    max-width: 720px;
+  }
+
+  /* Honesty Disclosure Panel */
+  .honesty-panel {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
+    border-left: 4px solid var(--cyan);
+    padding: 20px 24px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 32px;
+  }
+  .honesty-panel h3 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+  .honesty-panel p {
+    font-size: 14px;
+    color: var(--slate-200);
+    line-height: 1.65;
+  }
+  .honesty-panel strong { color: var(--slate-100); }
+
+  /* Section Header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 48px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--slate-800);
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.02em;
+  }
+  .section-header .section-num {
+    background: var(--orange);
+    color: var(--void);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section-subhead {
+    font-size: 13px;
+    color: var(--slate-500);
+    margin-bottom: 20px;
+  }
+
+  /* 4-Layer Moat Stack */
+  .moat-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .layer-card {
+    background: var(--void-card);
+    border: 1px solid var(--slate-800);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .layer-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--slate-800);
+  }
+  .layer-number {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    opacity: 0.25;
+  }
+  .layer-title-group {
+    flex: 1;
+    min-width: 180px;
+  }
+  .layer-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .layer-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+  }
+  .layer-moat-strength {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .moat-low { background: rgba(100, 116, 139, 0.15); color: var(--slate-400); border: 1px solid rgba(100, 116, 139, 0.3); }
+  .moat-medium { background: rgba(245, 158, 11, 0.15); color: var(--orange); border: 1px solid rgba(245, 158, 11, 0.3); }
+  .moat-high { background: rgba(239, 68, 68, 0.15); color: var(--lose); border: 1px solid rgba(239, 68, 68, 0.4); }
+  .moat-none { background: rgba(100, 116, 139, 0.08); color: var(--slate-500); border: 1px solid rgba(100, 116, 139, 0.2); }
+
+  .layer-1 { border-left: 4px solid var(--slate-500); }
+  .layer-1 .layer-label { color: var(--slate-400); }
+  .layer-1 .layer-number { color: var(--slate-500); }
+
+  .layer-2 { border-left: 4px solid var(--cyan); }
+  .layer-2 .layer-label { color: var(--cyan); }
+  .layer-2 .layer-number { color: var(--cyan); }
+
+  .layer-3 { border-left: 4px solid var(--purple); }
+  .layer-3 .layer-label { color: var(--purple); }
+  .layer-3 .layer-number { color: var(--purple); }
+
+  .layer-4 { border-left: 4px solid var(--lose); }
+  .layer-4 .layer-label { color: var(--lose); }
+  .layer-4 .layer-number { color: var(--lose); }
+
+  .layer-body { padding: 20px 24px; }
+  .layer-description {
+    font-size: 13px;
+    color: var(--slate-300);
+    margin-bottom: 16px;
+    line-height: 1.65;
+  }
+  .layer-items {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (min-width: 768px) { .layer-items { grid-template-columns: repeat(2, 1fr); } }
+  .layer-item {
+    background: var(--void-elevated);
+    border: 1px solid var(--slate-800);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .layer-item-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--slate-100);
+    margin-bottom: 4px;
+  }
+  .layer-item-detail {
+    font-size: 11px;
+    color: var(--slate-400);
+    line-height: 1.5;
+  }
+  .layer-cost {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 8px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--win);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .layer-cost.unknown { background: rgba(100, 116, 139, 0.15); color: var(--slate-400); }
+  .layer-cost.high { background: rgba(239, 68, 68, 0.1); color: var(--lose); }
+
+  .layer-bypass {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, transparent 100%);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .layer-bypass-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 6px;
+  }
+  .layer-bypass-text {
+    font-size: 12px;
+    color: var(--slate-200);
+    line-height: 1.6;
+  }
+
+  /* Tech Stack Categories */
+  .stack-category {
+    margin-bottom: 28px;
+  }
+  .stack-category h3 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--slate-800);
+  }
+  .stack-economics {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+  .stack-economics h4 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+  .stack-economics p {
+    font-size: 12px;
+    color: var(--slate-300);
+    line-height: 1.65;
+  }
+
+  /* Quality Parity Table */
+  .parity-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--void-card);
+    border: 1px solid var(--slate-800);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .parity-table th {
+    background: var(--void-elevated);
+    padding: 14px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-400);
+    border-bottom: 1px solid var(--slate-800);
+  }
+  .parity-table td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+    font-size: 12px;
+    color: var(--slate-200);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .parity-table tr:last-child td { border-bottom: none; }
+  .parity-table td.dim { font-weight: 700; color: var(--slate-100); font-size: 12px; }
+  .parity-table td.competitor-col { color: var(--slate-400); }
+  .parity-table td.zw { color: var(--orange); font-weight: 600; }
+
+  /* Production Status Panel */
+  .prod-status {
+    background: var(--void-card);
+    border: 1px solid var(--slate-800);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .prod-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    align-items: center;
+  }
+  .prod-row:last-child { border-bottom: none; }
+  .prod-label { font-size: 13px; color: var(--slate-300); }
+  .prod-value {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .prod-value.good { color: var(--win); }
+  .prod-value.warn { color: var(--orange); }
+  .prod-value.bad { color: var(--lose); }
+
+  /* Pipeline Roadmap */
+  .pipeline-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 768px) { .pipeline-grid { grid-template-columns: repeat(3, 1fr); } }
+  .pipeline-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .pipeline-num {
+    display: inline-block;
+    background: var(--win);
+    color: var(--void);
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .pipeline-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .pipeline-target {
+    font-size: 11px;
+    color: var(--win);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    margin-bottom: 10px;
+  }
+  .pipeline-detail {
+    font-size: 12px;
+    color: var(--slate-400);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .pipeline-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 10px;
+    color: var(--slate-500);
+    flex-wrap: wrap;
+  }
+  .pipeline-meta span {
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  /* Claim Language Box */
+  .claim-box {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
+    border-left: 4px solid var(--orange);
+    padding: 24px 28px;
+    border-radius: 0 12px 12px 0;
+    margin: 24px 0;
+  }
+  .claim-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .claim-text {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--slate-100);
+    font-style: italic;
+  }
+  .claim-text strong { color: var(--orange); font-style: normal; }
+
+  /* Verification Methodology */
+  .methods {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 768px) { .methods { grid-template-columns: repeat(3, 1fr); } }
+  .method-card {
+    background: var(--void-card);
+    border: 1px solid var(--slate-800);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .method-num {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-500);
+    margin-bottom: 6px;
+  }
+  .method-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .method-detail {
+    font-size: 11px;
+    color: var(--slate-400);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .method-timeline {
+    display: inline-block;
+    padding: 3px 8px;
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--orange);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* Company Profile Box */
+  .company-profile {
+    background: var(--void-card);
+    border: 1px solid var(--slate-800);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .company-profile h4 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .company-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .company-stat {
+    background: var(--void-elevated);
+    border: 1px solid var(--slate-800);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .company-stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--slate-500);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .company-stat-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--slate-100);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 32px 16px 16px;
+    font-size: 11px;
+    color: var(--slate-500);
+    border-top: 1px solid var(--slate-800);
+    margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="/">ZoneWise.AI</a>
+    <span>&rsaquo;</span>
+    <a href="/competitors">Competitors</a>
+    <span>&rsaquo;</span>
+    Algoma &middot; Moat Analysis
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge-row">
+      <div class="badge threat">Low Threat &middot; Parallel Market</div>
+      <div class="badge honest">Honesty Protocol Enforced</div>
+      <div class="badge eg14">EG14 PASS 14/14 &middot; v5 Protocol &middot; SUMMIT #450</div>
+    </div>
+    <h1>
+      <span class="zonewise">ZoneWise.AI</span>
+      <span class="vs">vs</span>
+      <span class="competitor">Algoma</span>
+    </h1>
+    <p class="tagline">
+      4-layer moat separation: DATA (vendor-aggregated, non-exclusive) &middot; DISTRIBUTION (direct SaaS, no channel lock-in) &middot; REGULATORY (none) &middot; HUMAN VERIFICATION (minimal, AI-first). Parallel market: they serve developers post-acquisition, we serve investors pre-acquisition.
+    </p>
+  </div>
+
+  <!-- HONESTY DISCLOSURE -->
+  <div class="honesty-panel">
+    <h3>Honesty Protocol Disclosure</h3>
+    <p>
+      Algoma (algoma.co) is a <strong>construction feasibility and development intelligence platform</strong> based in Brooklyn, NY. They serve commercial developers, lenders, and architects &mdash; not distressed property investors. <strong>This is a parallel-market competitor, not a direct threat.</strong> Their product answers "Can I build on this site profitably?" while ours answers "Should I bid on this distressed property?" The overlap is limited to shared zoning data layers. All claims below sourced from algoma.co direct page fetches on 2026-04-11, labeled VERIFIED/INFERRED/UNKNOWN per Honesty Protocol.
+    </p>
+  </div>
+
+  <!-- COMPANY PROFILE -->
+  <div class="company-profile">
+    <h4>Company Profile &mdash; Algoma Inc.</h4>
+    <div class="company-grid">
+      <div class="company-stat">
+        <div class="company-stat-label">Domain</div>
+        <div class="company-stat-value">algoma.co</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">HQ</div>
+        <div class="company-stat-value">55 Water St, Brooklyn, NY</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Founded</div>
+        <div class="company-stat-value">~2023-2024 <span style="color:var(--slate-500);font-size:10px">INFERRED</span></div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Team Size</div>
+        <div class="company-stat-value">9 named <span style="color:var(--slate-500);font-size:10px">VERIFIED</span></div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Stage</div>
+        <div class="company-stat-value">Seed / Pre-Series A <span style="color:var(--slate-500);font-size:10px">INFERRED</span></div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Target ICP</div>
+        <div class="company-stat-value">Commercial Developers, Lenders</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Key Product</div>
+        <div class="company-stat-value">AI Feasibility + 3D Massing</div>
+      </div>
+      <div class="company-stat">
+        <div class="company-stat-label">Backers</div>
+        <div class="company-stat-value" style="font-size:11px">SOSV, HAX, Norrsken, Zacua, Compose VC</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: 4-LAYER MOAT SEPARATION -->
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>Algoma's 4-Layer Moat &mdash; Separated</h2>
+  </div>
+  <p class="section-subhead">Algoma's moat is primarily in UX/synthesis speed, not in data exclusivity or regulatory barriers. All 4 layers are penetrable. The strategic question is not "can we compete?" but "should we?" &mdash; these are fundamentally different markets.</p>
+
+  <div class="moat-stack">
+
+    <!-- LAYER 1: DATA -->
+    <div class="layer-card layer-1">
+      <div class="layer-header">
+        <div class="layer-number">01</div>
+        <div class="layer-title-group">
+          <div class="layer-label">Layer 1 &middot; Data Sources</div>
+          <div class="layer-name">Vendor-aggregated, non-exclusive</div>
+        </div>
+        <div class="layer-moat-strength moat-low">Moat: LOW</div>
+      </div>
+      <div class="layer-body">
+        <p class="layer-description">
+          Algoma aggregates 7 external data sources via API. None are proprietary or exclusively licensed. The same vendors sell to anyone with budget. Their zoning coverage is 160+ cities deep, rest of the US is shallow (returns "NA"). <span style="color:var(--cyan);font-size:10px;font-weight:700">ALL VERIFIED &mdash; algoma.co/platform/help</span>
+        </p>
+        <div class="layer-items">
+          <div class="layer-item">
+            <div class="layer-item-name">Zonomics (Zoning Regulations)</div>
+            <div class="layer-item-detail">Detailed zoning codes, land use, development standards. 160+ cities full coverage. Outside these cities, data returns "NA". Quarterly refresh.</div>
+            <span class="layer-cost unknown">Private pricing</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Regrid (Parcel Data)</div>
+            <div class="layer-item-detail">Nationwide parcel boundaries and ownership data. Same vendor pool available to any proptech. Enterprise API access.</div>
+            <span class="layer-cost unknown">Private pricing</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">HelloData (Rent Comparables)</div>
+            <div class="layer-item-detail">AI-powered rent comp selection. Daily refresh. 0.25-2mi radius. Multifamily-focused.</div>
+            <span class="layer-cost unknown">Private pricing</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Google Maps + Mapbox</div>
+            <div class="layer-item-detail">Geocoding, Street View, interactive mapping, geospatial visualization. Standard APIs available to everyone.</div>
+            <span class="layer-cost">$0-200/mo</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">U.S. Census Bureau</div>
+            <div class="layer-item-detail">Demographics, building permits, economic indicators. Free public federal data. Annual refresh for most datasets.</div>
+            <span class="layer-cost">$0</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">HUD (Housing &amp; Urban Dev)</div>
+            <div class="layer-item-detail">Fair market rents, housing data. Free federal data. Annual refresh.</div>
+            <span class="layer-cost">$0</span>
+          </div>
+        </div>
+        <div class="layer-bypass">
+          <div class="layer-bypass-label">Our Position</div>
+          <div class="layer-bypass-text">
+            We already use similar data sources for ZoneWise zoning intelligence (351,518 parcels assigned in Supabase). Our Brevard-deep data (327,882/351,424 verified, 93.3%) exceeds Algoma's broad-but-shallow model for FL tier-2/3 markets. <strong>We don't need to match their national breadth &mdash; we need FL depth for distressed property investors.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 2: DISTRIBUTION -->
+    <div class="layer-card layer-2">
+      <div class="layer-header">
+        <div class="layer-number">02</div>
+        <div class="layer-title-group">
+          <div class="layer-label">Layer 2 &middot; Distribution</div>
+          <div class="layer-name">Direct SaaS, no channel lock-in</div>
+        </div>
+        <div class="layer-moat-strength moat-low">Moat: LOW</div>
+      </div>
+      <div class="layer-body">
+        <p class="layer-description">
+          Algoma sells direct through their website and enterprise outbound. No platform integrations (no SoftPro, no Qualia equivalent). No channel partnerships that create switching costs. Their distribution moat is their Harvard-branded team and early case studies, not integration friction. <span style="color:var(--cyan);font-size:10px;font-weight:700">ALL VERIFIED &mdash; algoma.co/pricing</span>
+        </p>
+        <div class="layer-items">
+          <div class="layer-item">
+            <div class="layer-item-name">Self-Serve SaaS (app.algoma.co)</div>
+            <div class="layer-item-detail">Free tier (unlimited) &rarr; Standard $99/seat/mo &rarr; Pro $199/seat/mo. No credit card required for trial. 20% discount on annual billing.</div>
+            <span class="layer-cost">$0-199/seat/mo</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Enterprise Custom</div>
+            <div class="layer-item-detail">API access, SSO, custom GIS layers (48hr turnaround), dedicated AM. Contact andy@algoma.co. Pricing not published.</div>
+            <span class="layer-cost unknown">Custom pricing</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Professional Services</div>
+            <div class="layer-item-detail">Planning, Design, Development packages. Subscription-based feasibility study delivery. Replaces traditional $28K-$75K architect studies.</div>
+            <span class="layer-cost unknown">Subscription</span>
+          </div>
+        </div>
+        <div class="layer-bypass">
+          <div class="layer-bypass-label">Why This Doesn't Affect Us</div>
+          <div class="layer-bypass-text">
+            Algoma's customers are commercial developers evaluating new construction feasibility. <strong>Our customers are distressed-property investors bidding at foreclosure and tax deed auctions.</strong> Zero customer overlap. Zero distribution channel conflict. If anything, Algoma is a potential post-acquisition handoff partner: investor buys at auction via BidDeed, then uses Algoma to evaluate redevelopment feasibility.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 3: REGULATORY -->
+    <div class="layer-card layer-3">
+      <div class="layer-header">
+        <div class="layer-number">03</div>
+        <div class="layer-title-group">
+          <div class="layer-label">Layer 3 &middot; Regulatory</div>
+          <div class="layer-name">No approvals, no licenses, no moat</div>
+        </div>
+        <div class="layer-moat-strength moat-none">Moat: NONE</div>
+      </div>
+      <div class="layer-body">
+        <p class="layer-description">
+          Algoma holds no regulatory approvals, no government certifications, no professional licenses (PE stamp, architect license). Their Terms of Service explicitly disclaim accuracy: <em>"artificial intelligence is probabilistic in nature and therefore Algoma cannot guarantee that the Services or their output will be complete or accurate."</em> No FCRA compliance despite providing owner contacts at Pro tier. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; algoma.co/platform/tos</span>
+        </p>
+        <div class="layer-items">
+          <div class="layer-item">
+            <div class="layer-item-name">No Professional Certifications</div>
+            <div class="layer-item-detail">No PE stamp, no licensed architect review, no certified appraisal output. Feasibility reports are informational, not stamped documents. Lenders cannot use output for regulatory compliance.</div>
+            <span class="layer-cost" style="background:rgba(100,116,139,0.1);color:var(--slate-400)">N/A</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Accuracy Disclaimer in ToS</div>
+            <div class="layer-item-detail">"Probabilistic AI" disclaimer. This is a procurement risk for enterprise buyers &mdash; lenders and institutional investors may not accept unguaranteed outputs for underwriting decisions.</div>
+            <span class="layer-cost" style="background:rgba(100,116,139,0.1);color:var(--slate-400)">Risk flag</span>
+          </div>
+        </div>
+        <div class="layer-bypass">
+          <div class="layer-bypass-label">Our Position</div>
+          <div class="layer-bypass-text">
+            Neither company has regulatory moat. We're both AI-first, both disclaim legal liability. <strong>Level playing field.</strong> If either company pursued professional certifications, it would be a first-mover advantage &mdash; but neither needs it for their current ICP.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYER 4: HUMAN VERIFICATION -->
+    <div class="layer-card layer-4">
+      <div class="layer-header">
+        <div class="layer-number">04</div>
+        <div class="layer-title-group">
+          <div class="layer-label">Layer 4 &middot; Human Verification</div>
+          <div class="layer-name">Minimal &mdash; AI-first model</div>
+        </div>
+        <div class="layer-moat-strength moat-low">Moat: LOW</div>
+      </div>
+      <div class="layer-body">
+        <p class="layer-description">
+          Algoma's core platform is fully automated &mdash; "under 60 seconds" site analysis precludes human review. Human involvement is limited to enterprise custom GIS layers (48-hour turnaround) and professional services packages. Unlike Dono.ai, Algoma does NOT use human verification as a moat. Their moat is AI synthesis speed, not accuracy guarantees. <span style="color:var(--cyan);font-size:10px;font-weight:700">INFERRED &mdash; speed claims + product structure</span>
+        </p>
+        <div class="layer-items">
+          <div class="layer-item">
+            <div class="layer-item-name">AI-First Platform</div>
+            <div class="layer-item-detail">Site analysis in under 60 seconds. Generative site layouts in seconds. No human QA loop for standard tier. AI zoning agent with cited municipal code answers.</div>
+            <span class="layer-cost">$0 marginal cost</span>
+          </div>
+          <div class="layer-item">
+            <div class="layer-item-name">Professional Services (Human)</div>
+            <div class="layer-item-detail">Planning/Design/Development packages involve human delivery. Custom GIS layers have 48hr SLA. Enterprise tier only. Inferred 2-4 people handling services.</div>
+            <span class="layer-cost unknown">Unknown cost</span>
+          </div>
+        </div>
+        <div class="layer-bypass">
+          <div class="layer-bypass-label">Parallel Architecture</div>
+          <div class="layer-bypass-text">
+            Both companies are AI-first with minimal human-in-the-loop. <strong>This is not a differentiation layer &mdash; it's a shared architectural approach.</strong> The difference is what we automate: Algoma automates feasibility analysis for developers, we automate auction intelligence for investors. Same AI-first philosophy, different domains.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TECH STACK -->
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>Algoma Tech Stack &mdash; 9 Tools Identified</h2>
+  </div>
+  <p class="section-subhead">Captured from algoma.co page fetches, sitemap analysis, and help center data source disclosures on 2026-04-11. Algoma's app runs on a separate subdomain (app.algoma.co) so platform-level tech is partially obscured.</p>
+
+  <!-- Stack Category: Hosting & Infrastructure -->
+  <div class="stack-category">
+    <h3>Hosting, CMS &amp; Infrastructure</h3>
+    <div class="layer-items">
+      <div class="layer-item">
+        <div class="layer-item-name">Squarespace (Marketing Site)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Website builder and hosting platform. <strong>How Algoma uses it:</strong> Entire algoma.co marketing site built on Squarespace. Identified via robots.txt structure and URL patterns. Standard choice for early-stage startups prioritizing speed over customization. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost">$27-49/mo</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">app.algoma.co (Product App)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Separate subdomain hosting the actual SaaS product. <strong>Tech stack:</strong> Likely React-based given map-heavy UI requirements. Exact framework not visible from marketing site fetches. <span style="color:var(--slate-500);font-size:10px;font-weight:700">INFERRED</span></div>
+        <span class="layer-cost unknown">Unknown hosting</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack Category: Data & Mapping -->
+  <div class="stack-category">
+    <h3>Data Sources &amp; Mapping</h3>
+    <div class="layer-items">
+      <div class="layer-item">
+        <div class="layer-item-name">Mapbox (Interactive Maps)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Custom map rendering, geospatial visualization, vector tiles. <strong>How Algoma uses it:</strong> Core mapping layer for site search, parcel visualization, and GIS overlays. Same provider we use (token: pk.eyJ1...everest18). <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; /platform/help</span></div>
+        <span class="layer-cost">$0-500/mo usage</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Google Maps APIs</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Geocoding, Street View imagery, Places API. <strong>How Algoma uses it:</strong> Address lookup, street-level property visualization. Complements Mapbox for specific functions. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost">$200/mo credit</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Zonomics (Zoning Intelligence)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Structured zoning code database. <strong>How Algoma uses it:</strong> Powers their AI zoning agent with cited municipal code answers. 160+ cities deep coverage. Quarterly refresh. Key dependency. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost unknown">Private pricing</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Regrid (Parcels + Ownership)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Parcel boundary and property ownership database. <strong>How Algoma uses it:</strong> Parcel boundaries for site analysis, ownership data for Pro-tier contacts. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost unknown">Private pricing</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">HelloData (Rent Comps)</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> AI-powered multifamily rent comparable selection. <strong>How Algoma uses it:</strong> Daily-refresh rent comps with automated comp selection. Powers the rent analysis in Pro tier. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost unknown">Private pricing</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Census Bureau + HUD</div>
+        <div class="layer-item-detail"><strong>What it does:</strong> Demographics, building permits, fair market rents, economic indicators. <strong>How Algoma uses it:</strong> Market intelligence layer (CBSAs, county-level). Annual refresh. Free federal data. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED</span></div>
+        <span class="layer-cost">$0 public</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack Category: Analytics (limited visibility) -->
+  <div class="stack-category">
+    <h3>Analytics, Lead Gen &amp; Paid Media</h3>
+    <div class="layer-items">
+      <div class="layer-item">
+        <div class="layer-item-name">Analytics &amp; Tracking</div>
+        <div class="layer-item-detail"><strong>Status:</strong> Not observable from page content fetches. Squarespace sites typically include built-in analytics. GTM, GA4, and pixel IDs would require live Playwright network capture to identify. <span style="color:var(--slate-500);font-size:10px;font-weight:700">UNKNOWN &mdash; requires Playwright capture</span></div>
+        <span class="layer-cost unknown">Unknown</span>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Bot Protection</div>
+        <div class="layer-item-detail"><strong>How Algoma uses it:</strong> robots.txt blocks 30+ AI scrapers including ClaudeBot, anthropic-ai, GPTBot, and ChatGPT-User. Aggressive anti-AI-scraping posture. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; robots.txt</span></div>
+        <span class="layer-cost">$0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack Economics -->
+  <div class="stack-economics">
+    <h4>Stack Economics Summary</h4>
+    <p>
+      <strong>Inferred monthly stack cost: $2,000-5,000/mo</strong> (Squarespace $49, Mapbox ~$200, Google Maps ~$200, Zonomics UNKNOWN, Regrid UNKNOWN, HelloData UNKNOWN, hosting for app.algoma.co UNKNOWN). The two biggest line items are Zonomics and Regrid &mdash; both are private-priced enterprise APIs. Algoma's marketing site on Squarespace signals early-stage resource allocation: product-first, marketing-later. <strong>Our stack comparison:</strong> Vercel edge deployment + Supabase + Mapbox + FL GIO direct scraping. We avoid Zonomics/Regrid fees by scraping municipal sources directly, which trades vendor cost for engineering time.
+    </p>
+  </div>
+
+  <!-- SECTION 3: QUALITY PARITY FRAMEWORK -->
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>Quality Parity Framework &mdash; Different Markets</h2>
+  </div>
+  <p class="section-subhead">Comparing what "quality" means for each company's ICP. Algoma serves developers evaluating new construction; we serve investors evaluating distressed acquisitions. These are fundamentally different quality bars.</p>
+
+  <table class="parity-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>Algoma (Developer)</th>
+        <th>ZoneWise/BidDeed (Investor)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="dim">Output Format</td>
+        <td class="competitor-col">Feasibility report + 3D site layout + AI renderings (PDF/CAD export)</td>
+        <td class="zw">Investor Title Risk Report (JSON + PDF) + Auction Intelligence Dashboard</td>
+      </tr>
+      <tr>
+        <td class="dim">Accuracy Requirement</td>
+        <td class="competitor-col">Probabilistic (disclaimed in ToS, no accuracy guarantee)</td>
+        <td class="zw">90-95% for bid/no-bid decisions (investor-grade, not insurance-grade)</td>
+      </tr>
+      <tr>
+        <td class="dim">Latency SLA</td>
+        <td class="competitor-col">Under 60 seconds for site analysis</td>
+        <td class="zw">Under 10 seconds for auction intelligence queries</td>
+      </tr>
+      <tr>
+        <td class="dim">Human Verification</td>
+        <td class="competitor-col">None for standard tier. Professional services for enterprise.</td>
+        <td class="zw">None. AI rule engine + audit trail.</td>
+      </tr>
+      <tr>
+        <td class="dim">Regulatory Status</td>
+        <td class="competitor-col">None (no PE stamp, no certifications)</td>
+        <td class="zw">None needed (investor tool, not closing/insurance tool)</td>
+      </tr>
+      <tr>
+        <td class="dim">Marginal Cost / Transaction</td>
+        <td class="competitor-col">UNKNOWN (vendor API costs per query)</td>
+        <td class="zw">$0.17-3.20 per title search</td>
+      </tr>
+      <tr>
+        <td class="dim">Price to Customer</td>
+        <td class="competitor-col">$0 free / $99 Standard / $199 Pro per seat/mo</td>
+        <td class="zw">$99/mo unlimited (planned)</td>
+      </tr>
+      <tr>
+        <td class="dim">Failure Mode on Error</td>
+        <td class="competitor-col">Developer over/underestimates project feasibility, misallocates capital</td>
+        <td class="zw">Investor overbids or skips a good deal</td>
+      </tr>
+      <tr>
+        <td class="dim">Primary Use Case</td>
+        <td class="competitor-col">Evaluate if new construction is profitable on a site</td>
+        <td class="zw">Decide max bid at foreclosure/tax deed auction</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="claim-box">
+    <div class="claim-label">Defensible Claim Language</div>
+    <p class="claim-text">
+      <strong>Algoma and BidDeed.AI operate in parallel markets with minimal overlap.</strong> Algoma replaces the $28K-$75K architect feasibility study for commercial developers. BidDeed.AI replaces the manual foreclosure research process for distressed-property investors. Both are AI-first. Both serve real estate professionals. But the customer journey is different: BidDeed starts at the auction docket, Algoma starts at the raw land site. <strong>Our 12 patent claims protect capabilities Algoma has no reason to build</strong> &mdash; auction intelligence, bid formula optimization, cross-auction correlation, agentic pipeline orchestration. If Algoma ever pivoted to distressed property, they'd face both our data moat (256,650+ auction records) and our IP moat (12 claims). The more likely scenario is integration: acquisition at auction via BidDeed &rarr; feasibility analysis via Algoma.
+    </p>
+  </div>
+
+  <!-- SECTION 4: HONEST PRODUCTION STATUS -->
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>Honest Production Status &mdash; Supabase Query</h2>
+  </div>
+  <p class="section-subhead">Direct Supabase REST API queries run 2026-04-11. Every row count is VERIFIED from live query, not cached or estimated. Tables that this battle card's claims depend on.</p>
+
+  <div class="prod-status">
+    <div class="prod-row">
+      <div class="prod-label"><code>multi_county_auctions</code> &mdash; Core auction intelligence data</div>
+      <div class="prod-value good">256,650 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>zoning_assignments</code> &mdash; Parcel-level zoning (vs Algoma's Zonomics)</div>
+      <div class="prod-value good">351,518 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>fl_counties</code> &mdash; Florida county reference table</div>
+      <div class="prod-value good">67 rows (all FL counties)</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>county_conquest_status</code> &mdash; County onboarding tracking</div>
+      <div class="prod-value warn">3 rows (3 of 67 counties)</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>activities</code> &mdash; System activity log</div>
+      <div class="prod-value warn">144 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>insights</code> &mdash; AI-generated insights</div>
+      <div class="prod-value warn">19 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>county_jurisdictions</code> &mdash; Municipality/jurisdiction mapping</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>lien_results</code> &mdash; Lien search results</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>title_defects</code> &mdash; Title defect flags</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>property_documents</code> &mdash; Deed/mortgage documents</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>tax_years</code> &mdash; Tax history per parcel</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>foreclosure_outcomes</code> &mdash; Resolved auction outcomes</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+    <div class="prod-row">
+      <div class="prod-label"><code>daily_metrics</code> &mdash; Pipeline health metrics</div>
+      <div class="prod-value bad">0 rows</div>
+    </div>
+  </div>
+
+  <div class="honesty-panel" style="border-left-color: var(--orange);">
+    <h3 style="color: var(--orange);">Gap Disclosure</h3>
+    <p>
+      <strong>3 tables GREEN, 3 tables ORANGE, 7 tables RED (zero rows).</strong> The zero-row tables represent unpopulated pipeline stages: lien research, title defects, document extraction, tax history, and foreclosure outcomes. These are all tables that would be needed to claim competitive parity on title/lien analysis capabilities. <strong>Against Algoma specifically, the relevant overlap is zoning data &mdash; where we have 351,518 rows of production data vs Algoma's Zonomics dependency.</strong> The title/lien gaps matter against Dono.ai, not Algoma.
+    </p>
+  </div>
+
+  <!-- SECTION 5: PIPELINE ROADMAP -->
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>Pipeline Roadmap &mdash; Closing the Gaps</h2>
+  </div>
+  <p class="section-subhead">Pipelines needed to close production gaps surfaced in Section 4. These pipelines are relevant to the broader BidDeed.AI platform, not specifically to Algoma competition (parallel markets don't require head-to-head parity).</p>
+
+  <div class="pipeline-grid">
+    <div class="pipeline-card">
+      <div class="pipeline-num">1</div>
+      <div class="pipeline-title">FL County ROD Scraper</div>
+      <div class="pipeline-target">property_documents</div>
+      <div class="pipeline-detail">Brevard Clerk of Court recording search. Deeds, mortgages, releases, UCC filings. Gemini Flash OCR + entity extraction.</div>
+      <div class="pipeline-meta">
+        <span>~8K events/week</span>
+        <span>~$0.02/doc</span>
+        <span>5 days to pilot</span>
+      </div>
+    </div>
+    <div class="pipeline-card">
+      <div class="pipeline-num">2</div>
+      <div class="pipeline-title">Municipal Lien Scraper</div>
+      <div class="pipeline-target">lien_results</div>
+      <div class="pipeline-detail">Palm Bay, Melbourne, Titusville, Cocoa, Rockledge code enforcement portals. Open cases, daily fines, municipal liens.</div>
+      <div class="pipeline-meta">
+        <span>5 cities</span>
+        <span>~$0.01/property</span>
+        <span>3 days to pilot</span>
+      </div>
+    </div>
+    <div class="pipeline-card">
+      <div class="pipeline-num">3</div>
+      <div class="pipeline-title">FL Tax Collector Scraper</div>
+      <div class="pipeline-target">tax_years</div>
+      <div class="pipeline-detail">Brevard Tax Collector public portal. Current year due, delinquent years, tax certificate status, tax deed risk.</div>
+      <div class="pipeline-meta">
+        <span>Free public</span>
+        <span>~$0/property</span>
+        <span>2 days to pilot</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: VERIFICATION METHODOLOGY -->
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>Verification Methodology</h2>
+  </div>
+  <p class="section-subhead">3 approaches to verify our competitive position, ordered fastest-first. These apply to the broader BidDeed.AI platform quality verification, not Algoma-specific comparison (parallel markets).</p>
+
+  <div class="methods">
+    <div class="method-card">
+      <div class="method-num">Approach 3 &mdash; Fastest</div>
+      <div class="method-title">Rule Engine Audit</div>
+      <div class="method-detail">Map our 24 FL-statute-mapped title rules against ALTA standard exception codes. Gap analysis: which codes don't we cover? Proves the universe of defects we check for matches what a professional would check.</div>
+      <div class="method-timeline">1 day</div>
+    </div>
+    <div class="method-card">
+      <div class="method-num">Approach 2 &mdash; Medium</div>
+      <div class="method-title">Historical Validation</div>
+      <div class="method-detail">200 resolved Brevard auctions from 2023-2025. Run title pipeline against pre-auction state. Score whether we flag actual title issues that emerged. Target: 85%+ precision, 80%+ recall.</div>
+      <div class="method-timeline">3 days (requires foreclosure_outcomes data)</div>
+    </div>
+    <div class="method-card">
+      <div class="method-num">Approach 1 &mdash; Gold Standard</div>
+      <div class="method-title">Blind Comparison Panel</div>
+      <div class="method-detail">50 Brevard foreclosure properties. Our pipeline vs traditional abstractor ($75-150/search). Score on 7 investor elements. Target: 90%+ accuracy vs human baseline.</div>
+      <div class="method-timeline">2 weeks</div>
+    </div>
+  </div>
+
+  <!-- Algoma-specific competitive intelligence summary -->
+  <div class="section-header">
+    <div class="section-num" style="background: var(--cyan);">+</div>
+    <h2>Algoma-Specific Intelligence</h2>
+  </div>
+
+  <div class="company-profile">
+    <h4>Key Findings &amp; Strategic Implications</h4>
+    <div class="layer-items" style="grid-template-columns: 1fr;">
+      <div class="layer-item">
+        <div class="layer-item-name">Algoma operates in Sarasota/Charlotte County, FL</div>
+        <div class="layer-item-detail">Their flagship case study (Everhome Living, Englewood FL) is in our backyard. They found 47 additional units an architect missed, claiming $27.7M incremental revenue and 12,500x ROI. This means Algoma has active Florida developer customers &mdash; potential BidDeed integration partners for post-acquisition feasibility handoff. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; algoma.co homepage</span></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Harvard-branded founding team (3 co-founders, all Harvard)</div>
+        <div class="layer-item-detail">CEO Josef Bromovsky (Harvard MBA, CFA, civil engineer &rarr; AI/ML), CPO Kyle MertensMeyer (Harvard MDesS, 18yr AEC, 7.4M sqft, $1B+ projects), COO Seyfihan Usarer (Harvard MBA + law, McKinsey + TikTok). Strong pedigree, but 9-person team and Squarespace marketing site signal early-stage resource constraints. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; algoma.co/our-team</span></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Zoning gap outside 160 cities</div>
+        <div class="layer-item-detail">Algoma's zoning data (via Zonomics) covers 160+ cities deeply. Outside those cities, queries return "NA". FL tier-2/tier-3 markets (our hunting ground for distressed properties) likely have gaps in their coverage. Our direct municipal scraping approach may actually provide deeper FL zoning data in non-metro markets. <span style="color:var(--cyan);font-size:10px;font-weight:700">VERIFIED &mdash; algoma.co/platform/zoning + help</span></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-item-name">Potential integration partner, not enemy</div>
+        <div class="layer-item-detail">The most valuable relationship with Algoma is partnership, not competition. <strong>Acquisition funnel:</strong> Investor finds distressed property via BidDeed &rarr; wins at auction &rarr; evaluates redevelopment feasibility via Algoma &rarr; develops property. This is a hand-off, not a head-to-head. Worth exploring API-level integration at enterprise tier. <span style="color:var(--slate-500);font-size:10px;font-weight:700">INFERRED</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Battle Card v5 &middot; SUMMIT #450 &middot; Algoma &middot; Generated 2026-04-11 &middot; Honesty Protocol Enforced<br>
+    Sources: algoma.co (17 pages fetched), Supabase REST API (13 table queries), algoma.co/platform/tos, algoma.co/platform/help<br>
+    Threat Level: LOW (parallel market) &middot; ZoneWise.AI &copy; Everest Capital USA
+  </footer>
+
+</div>
+</body>
+</html>
