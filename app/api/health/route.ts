@@ -45,7 +45,7 @@ export async function GET() {
     checks.supabase = { status: 'fail', detail: String(e) };
   }
 
-  const allOk = Object.values(checks).every((c) => c.status === 'ok');
+  // Mapbox token validity\n  try {\n    const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;\n    if (!mapboxToken) {\n      checks.mapbox = { status: 'fail', detail: 'Missing NEXT_PUBLIC_MAPBOX_TOKEN' };\n    } else {\n      const res = await fetch(`https://api.mapbox.com/tokens/v2?access_token=${mapboxToken}`, {\n        signal: AbortSignal.timeout(5000),\n      });\n\n      if (res.ok) {\n        const data = await res.json();\n        checks.mapbox =\n          data.code === 'TokenValid'\n            ? { status: 'ok' }\n            : { status: 'fail', detail: `Invalid token: ${JSON.stringify(data)}` };\n      } else {\n        checks.mapbox = { status: 'fail', detail: `HTTP ${res.status}` };\n      }\n    }\n  } catch (e) {\n    checks.mapbox = { status: 'fail', detail: String(e) };\n  }\n\n  const allOk = Object.values(checks).every((c) => c.status === 'ok');
   const duration = Date.now() - start;
 
   return NextResponse.json(
