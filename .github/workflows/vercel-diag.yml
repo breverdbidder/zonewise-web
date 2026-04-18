@@ -1,35 +1,37 @@
-name: Vercel Build Diagnostic
+name: Vercel Build Logs
 on: workflow_dispatch
 jobs:
-  diag:
+  logs:
     runs-on: ubuntu-latest
     steps:
-      - name: Get failing deploy logs
+      - name: Fetch build error log
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-          # Get last 5 deployments
-          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5" \
+          DEPLOY_ID=$(curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
             | python3 -c "
           import json,sys
           d = json.load(sys.stdin)
-          for dep in d.get('deployments',[])[:5]:
-              print(f\"  {dep['uid']}  state={dep.get('state')}  created={dep.get('created','?')}\")"
+          # Pick first ERROR state
+          for dep in d.get('deployments',[]):
+              if dep.get('state') == 'ERROR':
+                  print(dep['uid']); break")
+          echo "::notice::deploy_id=$DEPLOY_ID"
           
-          echo ""
-          echo "=== Events for latest deploy ==="
-          DEPLOY_ID=$(curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=1" \
+          echo "=== BUILD LOG ==="
+          curl -sS "https://api.vercel.com/v3/deployments/$DEPLOY_ID/events?direction=backward&limit=500" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
-            | python3 -c "import json,sys; print(json.load(sys.stdin)['deployments'][0]['uid'])")
-          echo "DEPLOY_ID: $DEPLOY_ID"
+            > /tmp/events.json
           
-          curl -sS "https://api.vercel.com/v3/deployments/$DEPLOY_ID/events?direction=backward&limit=200&statusCode=4xx,5xx" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            | python3 -c "
-          import json,sys
-          for e in json.load(sys.stdin)[-80:]:
-              txt = e.get('text') or e.get('payload',{}).get('text','') or ''
-              if txt.strip():
-                  print(txt[:300])" | head -200
+          python3 <<PY
+          import json
+          events = json.load(open('/tmp/events.json'))
+          # Print most recent first (errors appear last)
+          for e in events:
+              t = e.get('text') or e.get('payload',{}).get('text','') or ''
+              if t.strip():
+                  tp = e.get('type','?')
+                  print(f"[{tp}] {t}")
+          PY
