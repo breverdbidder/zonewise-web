@@ -10,7 +10,7 @@ import {
   Activity,
   Settings,
   CreditCard,
-  HelpCircle,
+  CircleHelp,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -52,7 +52,7 @@ const navGroups: NavGroup[] = [
     items: [
       { title: 'Billing', url: '/settings/billing', icon: CreditCard },
       { title: 'Settings', url: '/settings/account', icon: Settings },
-      { title: 'Help', url: '/help', icon: HelpCircle },
+      { title: 'Help', url: '/help', icon: CircleHelp },
     ],
   },
 ]
