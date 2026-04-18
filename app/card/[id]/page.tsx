@@ -71,7 +71,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
   if (!card) notFound();
 
   // Read per-request nonce set by middleware.ts for CSP strict-dynamic compliance
-  const nonce = headers().get('x-nonce') ?? undefined;
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
 
   const signupHref = card.referral_code
     ? `https://chat.zonewise.ai/signup?ref=${card.referral_code}&from=${card.id}`
