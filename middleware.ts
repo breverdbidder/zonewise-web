@@ -47,6 +47,7 @@ const isPublicRoute = createRouteMatcher([
   // SUMMIT 77c39794 — public parcel/property share cards (viral-loop phase 1)
   '/parcel(.*)',
   '/property(.*)',
+    '/card(.*)',
   // SEO files — belt & suspenders (matcher also excludes txt|xml below)
   '/robots.txt',
   '/sitemap.xml',
