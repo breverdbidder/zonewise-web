@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: "Install Vercel CLI"
         run: npm install -g vercel@latest
       - name: "Find latest READY deployment and alias"
