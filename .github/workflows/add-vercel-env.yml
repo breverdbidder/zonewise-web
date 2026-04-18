@@ -21,6 +21,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          INTERNAL_AUTH_TOKEN: ${{ secrets.INTERNAL_AUTH_TOKEN }}
         run: |
           SECRET_NAME="${{ inputs.secret_name }}"
           ENV_KEY="${{ inputs.key }}"
@@ -33,6 +34,7 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY) VALUE="$SUPABASE_SERVICE_ROLE_KEY" ;;
             NEXT_PUBLIC_SUPABASE_URL) VALUE="$NEXT_PUBLIC_SUPABASE_URL" ;;
             NEXT_PUBLIC_SUPABASE_ANON_KEY) VALUE="$NEXT_PUBLIC_SUPABASE_ANON_KEY" ;;
+            INTERNAL_AUTH_TOKEN) VALUE="$INTERNAL_AUTH_TOKEN" ;;
             *) echo "Unknown secret: $SECRET_NAME"; exit 1 ;;
           esac
           
