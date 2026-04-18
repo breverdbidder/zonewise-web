@@ -46,8 +46,9 @@ async function getCard(id: string): Promise<Card | null> {
   return data as Card;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const card = await getCard(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const card = await getCard(id);
   if (!card) return { title: 'Parcel Card · ZoneWise.AI' };
   const addr = card.site_addr ? `${card.site_addr}, ${card.site_city ?? ''}`.trim() : card.pin;
   const title = `${addr} · ${card.app === 'zonewise' ? 'Zoning' : 'Auction'} Analysis · ZoneWise.AI`;
@@ -64,8 +65,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function ParcelCardPage({ params }: { params: { id: string } }) {
-  const card = await getCard(params.id);
+export default async function ParcelCardPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const card = await getCard(id);
   if (!card) notFound();
 
   // Read per-request nonce set by middleware.ts for CSP strict-dynamic compliance
