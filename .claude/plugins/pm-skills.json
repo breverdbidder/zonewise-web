@@ -1,0 +1,22 @@
+{
+  "slug": "pm-skills",
+  "upstream": "https://github.com/phuryn/pm-skills",
+  "marketplace": "phuryn/pm-skills",
+  "install_cmds": [
+    "/plugin marketplace add phuryn/pm-skills",
+    "/plugin install pm-go-to-market@pm-skills",
+    "/plugin install pm-marketing-growth@pm-skills",
+    "/plugin install pm-execution@pm-skills",
+    "/plugin install pm-product-discovery@pm-skills"
+  ],
+  "priority_skills": [
+    "growth-loops",
+    "marketing-ideas",
+    "beachhead-segment"
+  ],
+  "risk_flags": [],
+  "sentinel_deployed_at": "2026-04-18T09:18:55.207060+00:00",
+  "repoeval_score": 82,
+  "verdict": "ADOPT",
+  "integration_kind": "plugin-manifest"
+}
