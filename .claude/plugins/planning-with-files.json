@@ -1,0 +1,17 @@
+{
+  "slug": "planning-with-files",
+  "upstream": "https://github.com/OthmanAdi/planning-with-files",
+  "marketplace": "OthmanAdi/planning-with-files",
+  "install_cmds": [
+    "/plugin marketplace add OthmanAdi/planning-with-files",
+    "/plugin install planning-with-files@planning-with-files"
+  ],
+  "priority_skills": [
+    "planning-with-files"
+  ],
+  "risk_flags": [],
+  "sentinel_deployed_at": "2026-04-18T09:18:56.598722+00:00",
+  "repoeval_score": 94,
+  "verdict": "ADOPT",
+  "integration_kind": "plugin-manifest"
+}
