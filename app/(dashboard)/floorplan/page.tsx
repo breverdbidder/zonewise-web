@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import FloorPlanStudio from '@/components/floorplan/FloorPlanStudio'
+import VoiceDraftsman from '@/components/floorplan/VoiceDraftsman'
 import ErrorBoundary from '@/components/ErrorBoundary'
 
 export const metadata = {
@@ -12,6 +13,9 @@ export default function FloorPlanPage() {
   return (
     <ErrorBoundary>
       <FloorPlanStudio />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+        <VoiceDraftsman />
+      </div>
     </ErrorBoundary>
   )
 }
