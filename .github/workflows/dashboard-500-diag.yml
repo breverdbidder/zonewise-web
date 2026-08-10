@@ -4,33 +4,15 @@ jobs:
   logs:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Clerk publishable key presence (names only, no values)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-          curl -sS "https://api.vercel.com/v9/projects/$PROJECT/env?decrypt=false" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            > /tmp/env.json
-          python3 -c "
-          import json
-          d = json.load(open('/tmp/env.json'))
-          for e in d.get('envs', []):
-              if 'CLERK' in e.get('key',''):
-                  print(e.get('key'), '| targets:', e.get('target'), '| type:', e.get('type'))
-          " | tee -a "$GITHUB_STEP_SUMMARY"
-
-      - name: Trigger error then fetch vercel runtime logs
+      - name: Trigger error then fetch vercel runtime logs (status 500)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           npm install -g vercel@latest --no-fund --no-audit 2>&1 | tail -3
-          ( timeout 25 vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --yes > /tmp/vlogs.txt 2>&1 & )
-          sleep 3
           for p in /dashboard /massing /explorer /floorplan; do
             curl -s -o /dev/null -w "%{http_code} $p\n" "https://zonewise.ai$p"
           done
-          sleep 22
-          echo "=== vercel logs output ==="
-          cat /tmp/vlogs.txt || true
-          { echo '### vercel logs output'; echo '```'; cat /tmp/vlogs.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
+          sleep 5
+          echo "=== vercel logs, status 500, last 10m, expanded ==="
+          vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --status-code 500 --since 10m --expand --non-interactive 2>&1 | tee /tmp/vlogs.txt
+          { echo '### vercel 500 logs'; echo '```'; cat /tmp/vlogs.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
