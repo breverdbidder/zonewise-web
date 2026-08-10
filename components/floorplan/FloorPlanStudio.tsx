@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Save, History, AlertTriangle, CheckCircle2, XCircle, MinusCircle, Loader2, FileDown } from 'lucide-react'
+import { Save, History, AlertTriangle, CheckCircle2, XCircle, MinusCircle, Loader2, FileDown, FolderOpen } from 'lucide-react'
 
 /**
  * ZoneWise Floor Plan Studio
@@ -140,6 +140,7 @@ export default function FloorPlanStudio() {
   const [compiling, setCompiling] = useState(false)
   const [saving, setSaving] = useState(false)
   const [exportingPdf, setExportingPdf] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState(false)
   const [netError, setNetError] = useState<string | null>(null)
 
   const handleCompile = useCallback(async () => {
@@ -205,6 +206,38 @@ export default function FloorPlanStudio() {
     }
   }, [parcelId, planName, source, parcel, useZoning])
 
+  const handleLoad = useCallback(async () => {
+    if (!parcelId) {
+      setNetError('Enter a parcel ID to load a saved plan.')
+      return
+    }
+    setLoadingPlan(true)
+    setNetError(null)
+    try {
+      const params = new URLSearchParams({ parcel_id: parcelId, plan_name: planName || 'default' })
+      const res = await fetch(`${API_BASE}/get?${params.toString()}`)
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        setNetError(data.error || 'Load failed.')
+        return
+      }
+      if (!data.plan) {
+        setNetError(`No saved plan found for parcel "${parcelId}" / plan "${planName || 'default'}".`)
+        return
+      }
+      setSource(data.plan.source ?? DEFAULT_SOURCE)
+      setSvg(data.plan.svg ?? null)
+      setSummary(data.plan.summary ?? null)
+      setZoning(data.plan.zoning_result ?? null)
+      setErrors([])
+      setWarnings(data.plan.compiler_warnings ?? [])
+    } catch (err: any) {
+      setNetError(`Load failed: ${err.message}`)
+    } finally {
+      setLoadingPlan(false)
+    }
+  }, [parcelId, planName])
+
   const handleDownloadPdf = useCallback(async () => {
     if (!svg) return
     setExportingPdf(true)
@@ -261,6 +294,15 @@ export default function FloorPlanStudio() {
               placeholder="Plan name"
               className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[6rem] sm:flex-none sm:w-32"
             />
+            <button
+              onClick={handleLoad}
+              disabled={loadingPlan}
+              title="Load a previously saved plan for this parcel ID / plan name"
+              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+            >
+              {loadingPlan ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderOpen className="h-4 w-4" />}
+              Load
+            </button>
             <button
               onClick={handleSave}
               disabled={saving}
