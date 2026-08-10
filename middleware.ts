@@ -127,7 +127,7 @@ function buildCspHeaders(nonce: string): Record<string, string> {
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com https://unpkg.com 'sha256-8NewDJLrkO9xuXDuA6AuxCObEWIScdlc4xcrnEh9PDE=' 'sha256-ccJoC7kL8dnEThxASq+OeDHGVS5RzOYnKl+sPbIjlgg='`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-    `img-src 'self' data: blob: https://*.supabase.co https://www.bcpao.us https://gis.brevardfl.gov https://api.mapbox.com https://*.mapbox.com https://*.elevenlabs.io`,
+    `img-src 'self' data: blob: https://*.supabase.co https://www.bcpao.us https://gis.brevardfl.gov https://api.mapbox.com https://*.mapbox.com https://*.elevenlabs.io https://storage.googleapis.com`,
     `font-src 'self' https://fonts.gstatic.com`,
     `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.stripe.com https://api.us.elevenlabs.io wss://api.us.elevenlabs.io https://api.elevenlabs.io wss://api.elevenlabs.io`,
     `frame-src 'self' https://js.stripe.com https://hooks.stripe.com`,
