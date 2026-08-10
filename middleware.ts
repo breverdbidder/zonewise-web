@@ -21,6 +21,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/chat-v2(.*)',
   '/api/reports(.*)',
   '/api/csp-report(.*)',
+  '/api/floorplan(.*)',
   // Stripe webhooks MUST be public (Stripe sends without auth)
   '/api/stripe/webhook(.*)',
   // Pages — public access
@@ -33,6 +34,7 @@ const isPublicRoute = createRouteMatcher([
   '/explore(.*)',
   '/explorer(.*)',
   '/massing(.*)',
+  '/floorplan(.*)',
   '/auth(.*)',
   '/foreclosures(.*)',
   '/conquest(.*)',

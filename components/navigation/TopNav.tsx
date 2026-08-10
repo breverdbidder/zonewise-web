@@ -16,6 +16,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: 'Auctions', href: '/auctions' },
   { name: 'Feasibility', href: '/feasibility' },
   { name: 'Massing', href: '/massing' },
+  { name: 'Floor Plan', href: '/floorplan' },
   { name: 'AI Chat', href: '/chat', highlight: true },
 ]
 
