@@ -4,7 +4,7 @@ jobs:
   logs:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger error then fetch vercel runtime logs (status 500)
+      - name: Trigger error then fetch vercel runtime logs
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
@@ -12,7 +12,10 @@ jobs:
           for p in /dashboard /massing /explorer /floorplan; do
             curl -s -o /dev/null -w "%{http_code} $p\n" "https://zonewise.ai$p"
           done
-          sleep 5
-          echo "=== vercel logs, status 500, last 10m, expanded ==="
-          vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --status-code 500 --since 10m --expand --non-interactive 2>&1 | tee /tmp/vlogs.txt
-          { echo '### vercel 500 logs'; echo '```'; cat /tmp/vlogs.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
+          echo "waiting for log ingestion..."
+          sleep 30
+          echo "=== vercel logs, error level, last 15m, expanded, json ==="
+          vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --level error --since 15m --expand --non-interactive --json 2>&1 | tee /tmp/vlogs.txt
+          echo "=== retry without any filter ==="
+          vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --since 15m --expand --non-interactive --limit 50 2>&1 | tee -a /tmp/vlogs.txt
+          { echo '### vercel logs'; echo '```'; cat /tmp/vlogs.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
