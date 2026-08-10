@@ -252,10 +252,7 @@ export function StatsDisplay({
         )}
         <CardContent className="@container overflow-hidden p-0">
           <div
-            className="grid @[440px]:-ml-px @[440px]:-mt-px"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            }}
+            className="grid grid-cols-2 @[440px]:-ml-px @[440px]:-mt-px @[440px]:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]"
           >
             {stats.map((stat, index) => (
               <div

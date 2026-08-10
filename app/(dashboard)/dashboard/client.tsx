@@ -101,7 +101,7 @@ export default function DashboardClient() {
           {/* Left: Dashboard KPIs / artifact panel */}
           <div
             className="
-              min-h-0 overflow-auto
+              relative min-h-0 overflow-auto
               border-b border-[#1E3A5F]/30
               [height:40vh]
               md:h-full md:w-[60%] md:flex-none
@@ -111,6 +111,8 @@ export default function DashboardClient() {
             <ClickTrackerProvider>
               <DashboardContainer />
             </ClickTrackerProvider>
+            {/* Scroll affordance: content routinely exceeds the 40vh mobile height */}
+            <div className="pointer-events-none sticky bottom-0 left-0 h-8 w-full bg-gradient-to-t from-[#020617] to-transparent md:hidden" />
           </div>
 
           {/* Right: Chat panel (Thread via Dify) */}
