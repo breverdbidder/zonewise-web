@@ -1,0 +1,34 @@
+name: Diag - Vercel Deploy History
+on: workflow_dispatch
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List last 40 production deployments (metadata only, no token echo)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=40&target=production" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            > /tmp/deploys.json
+
+          {
+            echo "## Last 40 production deployments"
+            echo ""
+            echo "| createdAt (UTC) | state | source | githubCommitSha | githubCommitMessage |"
+            echo "|---|---|---|---|---|"
+            python3 -c "
+          import json, datetime
+          d = json.load(open('/tmp/deploys.json'))
+          for dep in d.get('deployments', []):
+              ts = dep.get('created') or dep.get('createdAt')
+              iso = datetime.datetime.utcfromtimestamp(ts/1000).isoformat() if ts else '?'
+              state = dep.get('state', '?')
+              source = dep.get('source', '?')
+              meta = dep.get('meta', {}) or {}
+              sha = (meta.get('githubCommitSha') or '')[:7]
+              msg = (meta.get('githubCommitMessage') or '').replace('|','-').replace(chr(10),' ')[:80]
+              print(f'| {iso} | {state} | {source} | {sha} | {msg} |')
+          "
+          } >> "$GITHUB_STEP_SUMMARY"
