@@ -30,7 +30,7 @@ interface HeroCornerCardProps {
 
 export function HeroCornerCard({ parcel, biddeed, zonewise }: HeroCornerCardProps) {
   return (
-    <div className="absolute bottom-6 right-6 z-40 w-72 space-y-3 pointer-events-auto">
+    <div className="hidden sm:block absolute bottom-6 right-6 z-40 w-72 space-y-3 pointer-events-auto">
       {/* Parcel Details */}
       <div className="bg-[#020617]/90 backdrop-blur-md border border-[#1E3A5F]/60 rounded-lg p-4 shadow-2xl">
         <h2 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase mb-2">
