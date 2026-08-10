@@ -468,7 +468,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div>
               <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">Residential</p>
               <div className="space-y-0.5">

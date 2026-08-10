@@ -479,7 +479,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
         {/* 9. 3D MASSING PREVIEW */}
         <Section icon={<Box className="w-4 h-4" />} title="3D Massing Preview" id="massing">
           <div className="flex items-center justify-between gap-4">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-slate-300 text-sm mb-1">
                 Visualize the maximum buildable envelope for this parcel in 3D.
               </p>
