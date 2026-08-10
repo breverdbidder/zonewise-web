@@ -367,7 +367,7 @@ function MessageBubble({
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-[80%] space-y-1`}>
         <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
             isUser
               ? 'bg-[#F59E0B] text-white rounded-tr-sm'
               : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-tl-sm'
