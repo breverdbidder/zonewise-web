@@ -6,7 +6,10 @@ const securityHeaders = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
-  { key: 'Permissions-Policy', value: 'geolocation=(self), payment=(self "https://js.stripe.com"), camera=(), microphone=(), interest-cohort=()' },
+  // microphone=(self): required for the ElevenLabs Voice Draftsman widget on
+  // /floorplan (see middleware.ts for the matching CSP fix). This is the
+  // static next.config fallback; middleware.ts sets the enforced value.
+  { key: 'Permissions-Policy', value: 'geolocation=(self), payment=(self \"https://js.stripe.com\"), camera=(), microphone=(self), interest-cohort=()' },
   { key: 'X-DNS-Prefetch-Control', value: 'on' },
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
 ]
