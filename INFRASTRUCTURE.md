@@ -61,29 +61,66 @@
 
 ## 3. DEPLOYMENT PIPELINE
 
-### How code reaches zonewise.ai
+**Corrected 2026-08-10 (issue #18573) — the diagram below was wrong for 4+ months
+and nobody noticed because the actual mechanism kept working anyway.**
+
+### How code reaches zonewise.ai (CANONICAL — verified 2026-08-10)
 
 ```
 Developer pushes to breverdbidder/zonewise-web (main branch)
     ↓
-Vercel GitHub Integration auto-builds → PREVIEW deployment
+Vercel GitHub App Integration auto-builds ("source": "git" in Vercel API)
     ↓
-deploy-prod.yml (auto on push to main)
+Push is to the Production Branch (main) → deployment target = production
     ↓
-vercel pull → vercel build --prod → vercel deploy --prebuilt --prod
-    ↓
-zonewise.ai LIVE
+zonewise.ai LIVE  (typically READY within 1-10 min of the push)
 ```
+
+This is **Vercel's native git integration**, configured at the Vercel project
+level (Project → Git), not a GitHub Actions workflow. It requires no CI step
+at all — it is triggered directly by the GitHub webhook Vercel's GitHub App
+receives on every push, independent of what's enabled/disabled in
+`.github/workflows/`.
+
+**`deploy-prod.yml` was disabled (`disabled_manually`) on 2026-04-09 and
+stayed disabled for 4+ months (rediscovered via issue #18573).** Verified via
+the Vercel deployments API cross-referenced against `git log` on main
+(2026-04-09 → 2026-08-10): every commit landing on main in that window has a
+matching Vercel deployment with `"source":"git"` and, for the final commit of
+each push burst, `"target":"production"` + `"state":"READY"`. There is no gap
+where a commit reached main and never deployed. Confirmed live for the
+issue-#18568 floor-plan commit `4ffeb6a`: Vercel's native integration deployed
+it to production at `2026-08-10T16:45:06Z`, seven minutes *before* that
+issue's manual `verify-and-deploy.yml` dispatch (`16:52:51Z`) — the manual
+dispatch was a no-op re-deploy of an already-live commit, not the thing that
+made it live.
+
+**Conclusion: `deploy-prod.yml` was redundant, not broken.** When it was
+active, every push produced *two* production deployments of the same commit —
+Vercel's own `git`-source build (fast, always wins the race) followed minutes
+later by `deploy-prod.yml`'s `cli`-source `vercel deploy --prebuilt --prod`
+re-deploying the identical commit. Disabling it on 2026-04-09 removed a
+duplicate build, not the deploy path. It has been left disabled. Do not
+re-enable it — it would resume racing the native integration for no benefit.
+If you need a manual/emergency re-deploy path, use `promote-now.yml` or
+`verify-and-deploy.yml` (both `workflow_dispatch`-only, unaffected by this).
 
 ### Authorized Workflows (keep these)
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **deploy-prod.yml** | push to main + manual | Build & deploy to Vercel production |
+| **(Vercel native git integration)** | push to main | **CANONICAL** — builds + deploys to production automatically. Configured in Vercel project settings, not a `.github/workflows/*.yml` file. |
 | **promote-now.yml** | manual only | Emergency: promote latest READY to production |
+| **verify-and-deploy.yml** | manual only | Verify domain + force a redeploy + smoke test /explorer, /pricing |
 | **ci.yml** | push | Lint + type check |
 | **security-checks.yml** | push | Security scan |
 | **webhook_notify.yml** | push + manual | Telegram notifications |
+
+### Workflows intentionally disabled (do not re-enable)
+
+| Workflow | Disabled | Reason |
+|----------|----------|--------|
+| **deploy-prod.yml** | 2026-04-09 | Redundant with Vercel's native git integration — see above |
 
 ### Workflows to DELETE (stale/one-off)
 
@@ -158,7 +195,7 @@ vercel-diag.yml                 ← diagnostic, done
 ## 6. RULES
 
 1. **ONE Vercel project:** `prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E` (zonewise-web). Never touch zonewise-ai project.
-2. **ONE deploy workflow:** `deploy-prod.yml`. Runs on every push to main. No manual deploys needed.
+2. **ONE deploy mechanism:** Vercel's native git integration. Runs on every push to main. No manual deploys needed. `deploy-prod.yml` is intentionally disabled (redundant) — see Section 3.
 3. **ONE Supabase project:** mocerqjnksmhcjzxrewo. All tables here. No second project.
 4. **ONE source repo for the website:** breverdbidder/zonewise-web. Period.
 5. **Deprecated repos stay read-only.** Never push to them. Never deploy from them.
@@ -169,8 +206,9 @@ vercel-diag.yml                 ← diagnostic, done
 ## 7. QUICK REFERENCE
 
 ```bash
-# Deploy to production (automatic on push, or manual):
-# GitHub Actions → deploy-prod.yml → vercel pull + build + deploy --prod
+# Deploy to production (automatic on every push to main):
+# Vercel native git integration — no GitHub Actions step required or involved.
+# deploy-prod.yml is disabled on purpose (redundant); do not re-enable.
 
 # Emergency promote (if deploy-prod fails):
 # GitHub Actions → promote-now.yml → promotes latest READY to production
