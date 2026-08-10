@@ -31,4 +31,4 @@ jobs:
               msg = (meta.get('githubCommitMessage') or '').replace('|','-').replace(chr(10),' ')[:80]
               print(f'| {iso} | {state} | {source} | {sha} | {msg} |')
           "
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
