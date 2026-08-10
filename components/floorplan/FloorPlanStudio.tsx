@@ -177,24 +177,24 @@ export default function FloorPlanStudio() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div>
+      <header className="border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto">
+          <div className="min-w-0">
             <h1 className="text-lg font-semibold text-white tracking-tight">Floor Plan Studio</h1>
             <p className="text-xs text-slate-500 mt-0.5">ZoneWise.AI — parcel-aware floor plan compiler</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               value={parcelId}
               onChange={(e) => setParcelId(e.target.value)}
               placeholder="Parcel ID"
-              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 w-40"
+              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[7rem] sm:flex-none sm:w-40"
             />
             <input
               value={planName}
               onChange={(e) => setPlanName(e.target.value)}
               placeholder="Plan name"
-              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 w-32"
+              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[6rem] sm:flex-none sm:w-32"
             />
             <button
               onClick={handleSave}
@@ -221,7 +221,7 @@ export default function FloorPlanStudio() {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -255,7 +255,7 @@ export default function FloorPlanStudio() {
             </label>
 
             {useZoning && (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Field label="Lot width (ft)" value={parcel.lot_width_ft} onChange={(v) => setParcel((p) => ({ ...p, lot_width_ft: v }))} />
                 <Field label="Lot depth (ft)" value={parcel.lot_depth_ft} onChange={(v) => setParcel((p) => ({ ...p, lot_depth_ft: v }))} />
                 <Field label="Front setback (ft)" value={parcel.setbacks_front_ft} onChange={(v) => setParcel((p) => ({ ...p, setbacks_front_ft: v }))} />
