@@ -1,0 +1,22 @@
+name: Session Teardown Cost Telemetry (temp)
+on: workflow_dispatch
+jobs:
+  teardown:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log session cost + cache metrics via Management API
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          PROJECT_REF=mocerqjnksmhcjzxrewo
+          cat > /tmp/payload.json << 'JSON'
+          {
+            "query": "SELECT public.log_cc_session_cost(p_issue := NULL, p_run_id := 'dashboard-500-2026-08-10', p_shard_label := 'zonewise-web dashboard 500 diagnosis+fix', p_model := 'claude-sonnet-5', p_effort_level := 'medium', p_input_tokens := 0, p_output_tokens := 0, p_cache_read := 0, p_cache_write := 0, p_started_at := '2026-08-10T16:59:00Z', p_ended_at := now(), p_conclusion := 'success', p_dod_met := true, p_raw_usage := NULL);"
+          }
+          JSON
+          curl -sS -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: cc-dashboard-500-diag/1.0" \
+            --data @/tmp/payload.json
+          echo
