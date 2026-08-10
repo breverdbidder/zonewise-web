@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ZoningChatbot from '@/components/chat/ZoningChatbot'
+import VoiceZoningAssistant from '@/components/chat/VoiceZoningAssistant'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ZoningDisclaimer from '@/components/ZoningDisclaimer'
 import { Badge } from '@/components/ui/badge'
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 
 export default function ZoningChatPage() {
   return (
-    <div className="flex h-full flex-col bg-[#020617]">
+    <div className="flex h-full flex-col bg-[#020617] overflow-y-auto">
+      {/* Bold voice assistant banner -- the primary entry point */}
+      <VoiceZoningAssistant />
+
       {/* Dify migration notice */}
       <Card className="mx-4 mt-3 border-[#F59E0B]/20 bg-[#F59E0B]/5 p-3">
         <div className="flex items-center gap-2 text-xs text-[#F59E0B]">
