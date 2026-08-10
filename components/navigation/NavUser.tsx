@@ -8,7 +8,7 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react'
-import { useUser, useClerk } from '@clerk/nextjs'
+import { useSafeUser, useSafeClerk } from '@/lib/safe-clerk'
 import {
   Avatar,
   AvatarFallback,
@@ -32,8 +32,8 @@ import {
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { user } = useUser()
-  const { signOut } = useClerk()
+  const { user } = useSafeUser()
+  const { signOut } = useSafeClerk()
 
   const name = user?.fullName ?? user?.primaryEmailAddress?.emailAddress ?? 'User'
   const email = user?.primaryEmailAddress?.emailAddress ?? ''
