@@ -17,7 +17,7 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
   const subtabs: SiteSubTab[] = ['Summary', 'Zoning', 'Map View']
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1 min-w-0">
         <div className="flex gap-1.5 mb-4">
           {subtabs.map((t) => (
@@ -43,7 +43,7 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
       </div>
 
       {/* Sidebar */}
-      <div className="w-[300px] flex-shrink-0">
+      <div className="w-full lg:w-[300px] lg:flex-shrink-0">
         <SectionLabel text="Subject Property" />
         <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={15} pitch={0} style={{ height: 180, marginBottom: 16 }} />
@@ -228,7 +228,7 @@ function WaterSetbackSection({ site }: { site: SiteData }) {
             </span>
           </div>
           <div className="p-4 bg-white">
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               {[
                 ['Water Body', site.waterBody || '—'],
                 ['Body Type', site.waterBodyType ? site.waterBodyType.charAt(0).toUpperCase() + site.waterBodyType.slice(1) : '—'],

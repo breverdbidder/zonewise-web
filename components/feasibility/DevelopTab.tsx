@@ -114,7 +114,7 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-6 gap-2.5 mb-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-5">
         {[
           ['NOI', fmtD(pf.noi), true],
           ['Value', fmtD(pf.stabilizedValue), true],
@@ -145,9 +145,9 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
         ))}
       </div>
 
-      <div className="flex gap-5">
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* LEFT: Sliders + Unit Mix */}
-        <div className="w-[360px] flex-shrink-0">
+        <div className="w-full lg:w-[360px] lg:flex-shrink-0">
           <div className="text-[13px] font-bold mb-2.5 flex items-center">
             Assumptions<Badge text="ADJUST" color={COLORS.accent} />
           </div>
@@ -177,6 +177,7 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
             Unit Mix<Badge text="Comp-Derived" color={COLORS.success} />
           </div>
           <Card>
+            <div className="overflow-x-auto">
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50">
@@ -206,6 +207,7 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
                 </tr>
               </tbody>
             </table>
+            </div>
           </Card>
         </div>
 

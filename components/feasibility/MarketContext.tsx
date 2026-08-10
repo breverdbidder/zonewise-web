@@ -83,7 +83,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
 
   return (
     <BetaOverlay message="Market demographics use sample data. Real Census integration coming soon.">
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1 min-w-0">
         {/* Header */}
         <div className="flex items-center mb-4 gap-3">
@@ -103,7 +103,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
         <div className="text-[13px] font-bold mb-2.5 flex items-center">
           Demographics<Badge text={`ZIP ${demographics.zip}`} color={COLORS.brand} />
         </div>
-        <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
           {[
             {
               label: 'Median HH Income',
@@ -208,7 +208,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
       </div>
 
       {/* Sidebar */}
-      <div className="w-[300px] flex-shrink-0">
+      <div className="w-full lg:w-[300px] lg:flex-shrink-0">
         <SectionLabel text="Location" />
         <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={12} pitch={0} style={{ height: 220, marginBottom: 16 }} />
