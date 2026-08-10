@@ -4,18 +4,17 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm production deployment sha
+      - name: List recent production deployments with state
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&target=production&limit=1" \
+          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&target=production&limit=5" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
             | python3 -c "
           import json,sys
           d = json.load(sys.stdin)
-          dep = d['deployments'][0]
-          print('state:', dep.get('state'))
-          print('sha:', dep.get('meta',{}).get('githubCommitSha'))
-          print('msg:', dep.get('meta',{}).get('githubCommitMessage'))
+          for dep in d['deployments']:
+              meta = dep.get('meta',{})
+              print(dep.get('state'), '|', meta.get('githubCommitSha','')[:12], '|', (meta.get('githubCommitMessage') or '')[:60])
           "
