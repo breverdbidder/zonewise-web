@@ -1,13 +1,19 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Save, History, AlertTriangle, CheckCircle2, XCircle, MinusCircle, Loader2 } from 'lucide-react'
+import { Save, History, AlertTriangle, CheckCircle2, XCircle, MinusCircle, Loader2, FileDown } from 'lucide-react'
 
 /**
  * ZoneWise Floor Plan Studio
  * ---------------------------------------------------------------------------
  * Frontend for the /api/floorplan/* route (proxied server-side to the
  * zonewise-floorplan Worker — see app/api/floorplan/[...path]/route.ts).
+ *
+ * PDF export is client-side (jsPDF + svg2pdf.js converting the already-
+ * rendered SVG) — the Worker itself cannot generate PDFs (pdfkit does not
+ * run in the Cloudflare Workers runtime; confirmed via live test, see
+ * worker.js handleCompilePdf for the full writeup). This is the correct,
+ * durable path, not a workaround.
  */
 
 const API_BASE = '/api/floorplan'
@@ -95,6 +101,29 @@ function RuleLabel({ rule }: { rule: string }) {
   return <>{labels[rule] || rule}</>
 }
 
+/**
+ * Parse an SVG string's width/height (from explicit attributes or a
+ * fallback viewBox), so the PDF page can be sized to match the drawing
+ * instead of guessing.
+ */
+function getSvgDimensions(svgEl: SVGSVGElement): { width: number; height: number } {
+  const widthAttr = svgEl.getAttribute('width')
+  const heightAttr = svgEl.getAttribute('height')
+  const parsedWidth = widthAttr ? parseFloat(widthAttr) : NaN
+  const parsedHeight = heightAttr ? parseFloat(heightAttr) : NaN
+  if (!isNaN(parsedWidth) && !isNaN(parsedHeight) && parsedWidth > 0 && parsedHeight > 0) {
+    return { width: parsedWidth, height: parsedHeight }
+  }
+  const viewBox = svgEl.getAttribute('viewBox')
+  if (viewBox) {
+    const parts = viewBox.trim().split(/\s+/).map(Number)
+    if (parts.length === 4 && !isNaN(parts[2]) && !isNaN(parts[3]) && parts[2] > 0 && parts[3] > 0) {
+      return { width: parts[2], height: parts[3] }
+    }
+  }
+  return { width: 800, height: 600 }
+}
+
 export default function FloorPlanStudio() {
   const [parcelId, setParcelId] = useState('')
   const [planName, setPlanName] = useState('default')
@@ -110,6 +139,7 @@ export default function FloorPlanStudio() {
 
   const [compiling, setCompiling] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [exportingPdf, setExportingPdf] = useState(false)
   const [netError, setNetError] = useState<string | null>(null)
 
   const handleCompile = useCallback(async () => {
@@ -175,6 +205,41 @@ export default function FloorPlanStudio() {
     }
   }, [parcelId, planName, source, parcel, useZoning])
 
+  const handleDownloadPdf = useCallback(async () => {
+    if (!svg) return
+    setExportingPdf(true)
+    setNetError(null)
+    try {
+      // Dynamically imported — both libraries touch the DOM/Canvas and must
+      // never load during SSR. This handler only ever runs client-side.
+      const [{ jsPDF }, svg2pdfModule] = await Promise.all([
+        import('jspdf'),
+        import('svg2pdf.js'),
+      ])
+      const svg2pdf = (svg2pdfModule as any).svg2pdf ?? (svg2pdfModule as any).default
+
+      const parser = new DOMParser()
+      const parsed = parser.parseFromString(svg, 'image/svg+xml')
+      const svgEl = parsed.documentElement as unknown as SVGSVGElement
+      if (parsed.querySelector('parsererror') || svgEl.tagName.toLowerCase() !== 'svg') {
+        throw new Error('Could not parse the compiled SVG for export.')
+      }
+
+      const { width, height } = getSvgDimensions(svgEl)
+      const orientation = width >= height ? 'landscape' : 'portrait'
+      const pdf = new jsPDF({ orientation, unit: 'pt', format: [width, height] })
+
+      await svg2pdf(svgEl, pdf, { x: 0, y: 0, width, height })
+
+      const safeName = (parcelId || planName || 'floor-plan').replace(/[^a-z0-9_-]+/gi, '-')
+      pdf.save(`${safeName}.pdf`)
+    } catch (err: any) {
+      setNetError(`PDF export failed: ${err.message}`)
+    } finally {
+      setExportingPdf(false)
+    }
+  }, [svg, parcelId, planName])
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <header className="border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
@@ -203,6 +268,15 @@ export default function FloorPlanStudio() {
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
+            </button>
+            <button
+              onClick={handleDownloadPdf}
+              disabled={!svg || exportingPdf}
+              title={!svg ? 'Compile a plan first' : 'Download this plan as a PDF'}
+              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+            >
+              {exportingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+              Download PDF
             </button>
             <button className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200">
               <History className="h-4 w-4" />
