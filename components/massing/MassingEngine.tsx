@@ -874,7 +874,7 @@ export default function MassingEngine() {
         const setbacks = [
           { text: `Front: ${front} ft`,  bottom: '16px', left: '50%', transform: 'translateX(-50%)' },
           { text: `Side: ${side} ft`,     top: '50%',   left: '12px', transform: 'translateY(-50%)' },
-          { text: `Rear: ${rear} ft`,     top: '16px',  left: '50%',  transform: 'translateX(-50%)' },
+          { text: `Rear: ${rear} ft`,     top: '40px',  left: '50%',  transform: 'translateX(-50%)' },
         ]
         setbacks.forEach(s => {
           const el = document.createElement('div')
@@ -1116,7 +1116,7 @@ export default function MassingEngine() {
                     <span className="text-xs text-slate-500">{zoning.jurisdiction}</span>
                   )}
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
                     { label: 'Max Height',    val: metrics.maxH   ? `${metrics.maxH} ft`  : '—' },
                     { label: 'Max Stories',   val: metrics.stories ? String(metrics.stories) : '—' },
@@ -1193,10 +1193,10 @@ export default function MassingEngine() {
 
               {/* 3D canvas */}
               <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
                   <span className="text-sm font-semibold text-slate-200">3D Building Envelope</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500">Drag to rotate · Scroll to zoom</span>
+                    <span className="text-xs text-slate-500 hidden sm:inline">Drag to rotate · Scroll to zoom</span>
                     <button
                       onClick={handleSnapshot}
                       className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
@@ -1252,6 +1252,7 @@ export default function MassingEngine() {
                   <h3 className="text-sm font-semibold text-slate-200 mb-3">
                     Unit Mix <span className="text-slate-500 font-normal">({metrics.units} total)</span>
                   </h3>
+                  <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-slate-400 text-xs">
@@ -1284,6 +1285,7 @@ export default function MassingEngine() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
 
