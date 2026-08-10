@@ -545,7 +545,7 @@ export default function DemoPage() {
             <div>
               {/* Stats */}
               {stats && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 1, background: '#1E293B', borderRadius: 9, overflow: 'hidden', marginBottom: 14 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(70px,1fr))', gap: 1, background: '#1E293B', borderRadius: 9, overflow: 'hidden', marginBottom: 14 }}>
                   {[{ l: 'Total', v: 19, c: '#F1F5F9' }, { l: 'BID', v: 4, c: '#22C55E' }, { l: 'REVIEW', v: 3, c: '#F59E0B' }, { l: 'SKIP', v: 12, c: '#EF4444' }, { l: 'Judgment', v: '$4.4M', c: '#94A3B8' }].map(x => (
                     <div key={x.l} style={{ background: '#0F172A', padding: '11px 8px', textAlign: 'center' }}>
                       <div style={{ fontSize: 19, fontWeight: 800, color: x.c, opacity: stv ? 1 : 0, transform: stv ? 'scale(1)' : 'scale(.7)', transition: 'all .5s cubic-bezier(.34,1.56,.64,1)' }}>{x.v}</div>

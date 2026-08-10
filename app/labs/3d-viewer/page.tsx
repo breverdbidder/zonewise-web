@@ -121,7 +121,7 @@ export default async function Labs3DViewerPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-140px)]">
           {/* 3D Viewer — full viewport */}
           <div className="lg:col-span-3 rounded-lg overflow-hidden">
             <Viewer3DClient

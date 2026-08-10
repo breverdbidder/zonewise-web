@@ -70,7 +70,7 @@ export default function KPIsPage() {
 
       {/* Header */}
       <header style={{ borderBottom: '1px solid #1E293B', position: 'sticky', top: 0, background: 'rgba(2,6,23,.97)', backdropFilter: 'blur(8px)', zIndex: 50 }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px 24px', minHeight: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <div style={{ width: 32, height: 32, background: '#1E3A5F', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16 }}>Z</span>
@@ -78,7 +78,7 @@ export default function KPIsPage() {
             </div>
             <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 18 }}>ZoneWise.AI</span>
           </Link>
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
             <Link href="/#how" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>How It Works</Link>
             <span style={{ color: '#F59E0B', fontWeight: 600, fontSize: 14 }}>298 KPIs</span>
             <Link href="/#pricing" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
