@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { headers } from 'next/headers'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import ConditionalClerkProvider from '@/components/ConditionalClerkProvider'
 import { ThemeProvider } from '@/lib/theme-context'
@@ -65,7 +66,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get('x-nonce') ?? undefined
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
@@ -241,14 +243,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             })
           }}
         />
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: `
           try {
             if (localStorage.getItem('zw-theme') === 'light') {
               document.documentElement.classList.remove('dark');
             }
           } catch(e) {}
         `}} />
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('hydrated');" }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('hydrated');" }} />
         <noscript><style>{"[style*='opacity: 0'],[style*='opacity:0']{opacity:1!important;transform:none!important;}"}</style></noscript>
       </head>
       <body>
