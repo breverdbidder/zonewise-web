@@ -1,0 +1,66 @@
+name: Dashboard 500 Runtime Log Diag
+on: workflow_dispatch
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger error then fetch runtime logs
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+
+          echo "=== find current production deployment ==="
+          DEPLOY_ID=$(curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&target=production&limit=1" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['deployments'][0]['uid'])")
+          echo "::notice::deploy_id=$DEPLOY_ID"
+
+          echo "=== trigger the 500 to make sure a fresh invocation exists ==="
+          for p in /dashboard /massing /explorer /floorplan; do
+            curl -s -o /dev/null -w "%{http_code} $p\n" "https://zonewise.ai$p"
+          done
+
+          sleep 5
+
+          echo "=== runtime logs (v2 events, source=lambda) ==="
+          curl -sS "https://api.vercel.com/v2/deployments/$DEPLOY_ID/events?direction=backward&limit=1000&source=lambda" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            > /tmp/runtime_events.json
+          python3 -c "
+          import json
+          try:
+              events = json.load(open('/tmp/runtime_events.json'))
+          except Exception as e:
+              print('PARSE_ERROR', e)
+              events = []
+          if isinstance(events, dict):
+              print('DICT_RESPONSE_KEYS', list(events.keys()))
+              events = events.get('events', [])
+          for e in events:
+              t = e.get('text') or e.get('payload',{}).get('text','') or ''
+              if t.strip():
+                  tp = e.get('type','?')
+                  print(f'[{tp}] {t}')
+          "
+
+          echo "=== fallback: v3 deployments events (build+runtime mixed) ==="
+          curl -sS "https://api.vercel.com/v3/deployments/$DEPLOY_ID/events?direction=backward&limit=1000" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            > /tmp/v3_events.json
+          python3 -c "
+          import json
+          try:
+              events = json.load(open('/tmp/v3_events.json'))
+          except Exception as e:
+              print('PARSE_ERROR', e)
+              events = []
+          if isinstance(events, dict):
+              print('DICT_RESPONSE_KEYS', list(events.keys()))
+              events = events.get('events', [])
+          for e in events:
+              t = e.get('text') or e.get('payload',{}).get('text','') or ''
+              if t.strip():
+                  tp = e.get('type','?')
+                  print(f'[{tp}] {t}')
+          "
