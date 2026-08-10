@@ -109,15 +109,27 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
  * Generate per-request nonce and build CSP header.
  * Dev mode: Content-Security-Policy-Report-Only
  * Prod mode: Content-Security-Policy (enforcing)
+ *
+ * script-src additions for ElevenLabs Voice Draftsman widget (Aug 2026):
+ * - https://unpkg.com: hosts the @elevenlabs/convai-widget-embed bundle
+ * - two sha256 hashes: the widget bootstraps by inserting two small inline
+ *   <script> tags itself; strict-dynamic propagation does not cover these on
+ *   all browsers, so pin the exact hashes reported by the browser's own CSP
+ *   violation errors. NOTE: these hashes are tied to a specific widget
+ *   bundle version — if a future ElevenLabs widget update changes its
+ *   bootstrap script content, these hashes will need to be regenerated from
+ *   fresh CSP violation reports (check /api/csp-report or browser console).
+ * connect-src additions: the widget calls ElevenLabs' regional API (US) for
+ * agent config and the realtime conversation websocket.
  */
 function buildCspHeaders(nonce: string): Record<string, string> {
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com https://unpkg.com 'sha256-8NewDJLrkO9xuXDuA6AuxCObEWIScdlc4xcrnEh9PDE=' 'sha256-ccJoC7kL8dnEThxASq+OeDHGVS5RzOYnKl+sPbIjlgg='`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-    `img-src 'self' data: blob: https://*.supabase.co https://www.bcpao.us https://gis.brevardfl.gov https://api.mapbox.com https://*.mapbox.com`,
+    `img-src 'self' data: blob: https://*.supabase.co https://www.bcpao.us https://gis.brevardfl.gov https://api.mapbox.com https://*.mapbox.com https://*.elevenlabs.io`,
     `font-src 'self' https://fonts.gstatic.com`,
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.stripe.com`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://events.mapbox.com https://api.stripe.com https://api.us.elevenlabs.io wss://api.us.elevenlabs.io https://api.elevenlabs.io wss://api.elevenlabs.io`,
     `frame-src 'self' https://js.stripe.com https://hooks.stripe.com`,
     `object-src 'none'`,
     `base-uri 'self'`,
@@ -155,7 +167,10 @@ function applySecurityHeaders(response: NextResponse, nonce: string): NextRespon
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   response.headers.set('Cross-Origin-Opener-Policy', 'same-origin')
   response.headers.set('Cross-Origin-Resource-Policy', 'same-origin')
-  response.headers.set('Permissions-Policy', 'geolocation=(self), payment=(self "https://js.stripe.com"), camera=(), microphone=(), interest-cohort=()')
+  // microphone=(self): required for the ElevenLabs Voice Draftsman widget on
+  // /floorplan to request mic access. Was microphone=() (blocked site-wide),
+  // which silently broke voice before the browser even reached agent config.
+  response.headers.set('Permissions-Policy', 'geolocation=(self), payment=(self \"https://js.stripe.com\"), camera=(), microphone=(self), interest-cohort=()')
 
   // Pass nonce to pages via header so they can use it in <script nonce={}>
   response.headers.set('x-nonce', nonce)
@@ -197,7 +212,7 @@ export default CLERK_ENABLED
 export const config = {
   matcher: [
     // EG14 P3 FIX: added txt|xml so /robots.txt and /sitemap.xml bypass middleware entirely
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|xml)).*)',
+    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|txt|xml)).*)',
     '/(api|trpc)(.*)',
   ],
 }
