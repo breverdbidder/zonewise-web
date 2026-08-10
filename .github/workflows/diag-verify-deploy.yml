@@ -1,0 +1,21 @@
+name: Diag - Verify Latest Prod Deploy
+on: workflow_dispatch
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show latest production deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5&target=production" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
+          import json, datetime, sys
+          d = json.load(sys.stdin)
+          for dep in d.get('deployments', []):
+              ts = dep.get('created') or dep.get('createdAt')
+              iso = datetime.datetime.utcfromtimestamp(ts/1000).isoformat() if ts else '?'
+              meta = dep.get('meta', {}) or {}
+              print(f\"{iso} | {dep.get('state')} | {dep.get('source')} | {(meta.get('githubCommitSha') or '')[:7]}\")
+          "
