@@ -4,31 +4,59 @@ jobs:
   diag:
     runs-on: ubuntu-latest
     steps:
-      - name: List last 40 production deployments (metadata only, no token echo)
+      - name: List last 100 deployments (all targets) + alias check
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
-          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=40&target=production" \
+
+          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=100" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
-            > /tmp/deploys.json
+            > /tmp/deploys_all.json
 
           {
-            echo "## Last 40 production deployments"
+            echo "## Last 100 deployments (all targets), oldest first"
             echo ""
-            echo "| createdAt (UTC) | state | source | githubCommitSha | githubCommitMessage |"
-            echo "|---|---|---|---|---|"
+            echo "| createdAt (UTC) | state | target | source | sha | msg |"
+            echo "|---|---|---|---|---|---|"
             python3 -c "
           import json, datetime
-          d = json.load(open('/tmp/deploys.json'))
-          for dep in d.get('deployments', []):
+          d = json.load(open('/tmp/deploys_all.json'))
+          deps = d.get('deployments', [])
+          deps.sort(key=lambda x: x.get('created') or x.get('createdAt') or 0)
+          for dep in deps:
               ts = dep.get('created') or dep.get('createdAt')
               iso = datetime.datetime.utcfromtimestamp(ts/1000).isoformat() if ts else '?'
               state = dep.get('state', '?')
+              target = dep.get('target') or 'preview'
               source = dep.get('source', '?')
               meta = dep.get('meta', {}) or {}
               sha = (meta.get('githubCommitSha') or '')[:7]
-              msg = (meta.get('githubCommitMessage') or '').replace('|','-').replace(chr(10),' ')[:80]
-              print(f'| {iso} | {state} | {source} | {sha} | {msg} |')
+              msg = (meta.get('githubCommitMessage') or '').replace('|','-').replace(chr(10),' ')[:60]
+              print(f'| {iso} | {state} | {target} | {source} | {sha} | {msg} |')
           "
           } | tee -a "$GITHUB_STEP_SUMMARY"
+
+          echo "" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "## zonewise.ai current alias target" | tee -a "$GITHUB_STEP_SUMMARY"
+          curl -sS "https://api.vercel.com/v9/projects/$PROJECT/domains/zonewise.ai" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            | python3 -c "
+          import json,sys
+          d = json.load(sys.stdin)
+          print(f\"domain={d.get('name')} verified={d.get('verified')}\")
+          " | tee -a "$GITHUB_STEP_SUMMARY"
+
+          echo "" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "## Latest READY production deployment full detail" | tee -a "$GITHUB_STEP_SUMMARY"
+          python3 -c "
+          import json
+          d = json.load(open('/tmp/deploys_all.json'))
+          deps = [x for x in d.get('deployments', []) if x.get('target')=='production' and x.get('state')=='READY']
+          deps.sort(key=lambda x: x.get('created') or 0, reverse=True)
+          top = deps[0] if deps else None
+          if top:
+              print('uid:', top.get('uid'))
+              print('url:', top.get('url'))
+              print('alias:', top.get('alias'))
+          " | tee -a "$GITHUB_STEP_SUMMARY"
