@@ -3,12 +3,21 @@
   "rules": [
     "Enforce TypeScript strict mode - no 'any' types without justification",
     "All API calls must have error handling with try/catch",
-    "No hardcoded API keys, URLs, or credentials - use environment variables",
+    "No hardcoded API keys, URLs, or credentials - use environment variables or Supabase Vault, never a literal secret in source",
     "All new functions must have JSDoc comments",
     "React components must have PropTypes or TypeScript interfaces",
     "No console.log in production code - use structured logging",
     "Database queries must use parameterized inputs - no string interpolation",
-    "All async functions must handle rejection/errors"
+    "All async functions must handle rejection/errors",
+    "Every new or modified app/api/**/route.ts must validate and sanitize all request body/query inputs (see lib/validation.ts patterns) before use, and must return the shared SECURITY_HEADERS on every response including error paths",
+    "Any route handling user-supplied data that reaches a Supabase query must use the anon/RLS-scoped client (createAnonClient) unless a documented, reviewed reason requires the service role key",
+    "New or modified CORS headers must not use a wildcard Access-Control-Allow-Origin on any route that accepts POST/PUT/DELETE or touches non-public data - use an explicit origin allowlist",
+    "Any inline <script> added to app/layout.tsx or any layout.tsx must carry the nonce prop sourced from the x-nonce header (see app/layout.tsx) - CSP will silently block it otherwise, and this class of bug has shipped before",
+    "New Permissions-Policy or Content-Security-Policy changes in middleware.ts or next.config.mjs must be additive and justified in the PR description - do not widen an existing restrictive directive (e.g. microphone, camera, script-src) without an explicit stated reason, and never re-introduce 'unsafe-inline' or a blanket host wildcard",
+    "New API routes that accept a monetary amount, tier, or paywall-bypass flag (e.g. isPro) must document who is allowed to set that flag and how it is authenticated - flag this for human review if the caller is not server-side or an internal service",
+    "Any new Supabase Edge Function must read secrets via the vault RPC pattern (get_vault_secret_mcp), never via a hardcoded key, and must set an explicit CORS origin allowlist rather than '*'",
+    "New pages or API routes that are customer-facing must be reflected in app/sitemap or the relevant sitemap generator if they are meant to be publicly indexed, and must NOT be listed there if they require auth or expose per-customer data",
+    "New markdown docs under docs/ that describe an architecture decision, security posture, or PRD/PRS content should not silently contradict an existing doc of the same kind - flag the conflict rather than duplicating"
   ],
   "ignore": [
     "node_modules/**",
