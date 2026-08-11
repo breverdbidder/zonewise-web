@@ -29,44 +29,20 @@ jobs:
               -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.greptile.com/v2/repositories/github%3Amain%3Abreverdbidder%2Fzonewise-web")
             echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
-            cat /tmp/status.json
             STATUS=$(jq -r '.status // "UNKNOWN"' /tmp/status.json 2>/dev/null || echo "UNKNOWN")
             echo "index_status=$STATUS" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Post status comment via curl
+      - name: Post status comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ steps.status.outputs.missing_key }}" = "true" ]; then
-            BODY="GREPTILE_API_KEY secret is not readable by this workflow (empty/unset). Add it under this repo's Settings > Secrets and variables > Actions, then re-run this workflow."
+            BODY="GREPTILE_API_KEY secret is not readable by this workflow (empty/unset)."
           else
-            BODY="Repository index status: \`${{ steps.status.outputs.index_status }}\` (HTTP ${{ steps.status.outputs.http_code }} from Greptile). Proceeding based on that status."
+            BODY="Repository index status: \`${{ steps.status.outputs.index_status }}\` (HTTP ${{ steps.status.outputs.http_code }})."
           fi
-          HTTP_CODE=$(curl -s -o /tmp/comment_resp.json -w "%{http_code}" \
-            -X POST "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.inputs.issue_number }}/comments" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n --arg body "$BODY" '{body: $body}')")
-          echo "comment_http_code=$HTTP_CODE"
-          cat /tmp/comment_resp.json
-
-      - name: Queue indexing if not ready
-        if: steps.status.outputs.missing_key == 'false' && steps.status.outputs.index_status != 'COMPLETED'
-        env:
-          GREPTILE_API_KEY: ${{ secrets.GREPTILE_API_KEY }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -s -X POST "https://api.greptile.com/v2/repositories" \
-            -H "Authorization: Bearer $GREPTILE_API_KEY" \
-            -H "X-Github-Token: ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"remote":"github","repository":"breverdbidder/zonewise-web","branch":"main"}' \
-            -o /tmp/queue.json
-          cat /tmp/queue.json
-          BODY="Indexing has been queued (repo was not yet indexed). Re-run this workflow (same issue_number input) in 10-30 minutes."
-          curl -s -o /tmp/c2.json -w "%{http_code}" \
+          curl -s -o /dev/null -w "%{http_code}" \
             -X POST "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.inputs.issue_number }}/comments" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
@@ -86,68 +62,34 @@ jobs:
             repositories: [{remote: "github", repository: "breverdbidder/zonewise-web", branch: "main"}],
             sessionId: "zonewise-full-audit"
           }' > /tmp/query.json
-          JQ_BUILD_STATUS=$?
-          echo "--- probe: GET api root ---" > /tmp/diag.txt
-          curl -s -o /tmp/probe1.json -w "\nHTTP:%{http_code}\n" "https://api.greptile.com/" >> /tmp/diag.txt 2>&1
-          cat /tmp/probe1.json >> /tmp/diag.txt 2>/dev/null
-          echo "--- probe: GET api/v2 root ---" >> /tmp/diag.txt
-          curl -s -o /tmp/probe2.json -w "\nHTTP:%{http_code}\n" "https://api.greptile.com/v2" >> /tmp/diag.txt 2>&1
-          cat /tmp/probe2.json >> /tmp/diag.txt 2>/dev/null
-          echo "--- attempt 1: POST /v2/query ---" >> /tmp/diag.txt
-          curl -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
+          QUERY_HTTP_CODE=$(curl -s -o /tmp/result.json -w "%{http_code}" --max-time 240 \
             -X POST "https://api.greptile.com/v2/query" \
             -H "Authorization: Bearer $GREPTILE_API_KEY" \
             -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d @/tmp/query.json >> /tmp/diag.txt 2>&1
-          QUERY_HTTP_CODE=$(tail -c 200 /tmp/diag.txt | grep -oE 'HTTP:[0-9]+' | tail -1 | cut -d: -f2)
-          cat /tmp/result.json 2>/dev/null >> /tmp/diag.txt
-          sed -i -E 's/(Authorization|X-GitHub-Token|authorization|x-github-token)[^\\]*\\?\\?\\?\\?/\1: [REDACTED]/g; s/Bearer [A-Za-z0-9._-]+/Bearer [REDACTED]/g; s/gh[a-z]_[A-Za-z0-9._-]+/[REDACTED]/g' /tmp/diag.txt 2>/dev/null || true
-          if [ "$QUERY_HTTP_CODE" = "404" ]; then
-            echo "--- attempt 2: POST /query (no v2 prefix) ---" >> /tmp/diag.txt
-            curl -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
-              -X POST "https://api.greptile.com/query" \
-              -H "Authorization: Bearer $GREPTILE_API_KEY" \
-              -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              -d @/tmp/query.json >> /tmp/diag.txt 2>&1
-            QUERY_HTTP_CODE=$(tail -c 200 /tmp/diag.txt | grep -oE 'HTTP:[0-9]+' | tail -1 | cut -d: -f2)
-            cat /tmp/result.json 2>/dev/null >> /tmp/diag.txt
-          fi
-          CURL_STATUS=$?
-          echo "jq_build_status=$JQ_BUILD_STATUS curl_status=$CURL_STATUS query_http_code=$QUERY_HTTP_CODE"
-          cat /tmp/result.json 2>/dev/null || echo "(no /tmp/result.json written)"
-          ANSWER=$(jq -r '.message // empty' /tmp/result.json 2>/tmp/jq_err.txt)
+            -d @/tmp/query.json)
+          ANSWER=$(jq -r '.message // empty' /tmp/result.json 2>/dev/null)
           if [ -z "$ANSWER" ]; then
-            ANSWER="_(No .message field in the Greptile response. jq_build_status=$JQ_BUILD_STATUS curl_status=$CURL_STATUS query_http_code=$QUERY_HTTP_CODE. jq parse error: $(cat /tmp/jq_err.txt 2>/dev/null | tr '\n' ' ')_"
+            ANSWER="_(No .message field. HTTP $QUERY_HTTP_CODE. See raw response below.)_"
           fi
           {
             echo "## Greptile Full Codebase Audit — Result"
             echo ""
             echo "$ANSWER"
             echo ""
-            echo "<details><summary>Raw response / diagnostics</summary>"
+            echo "<details><summary>Raw response</summary>"
             echo ""
             echo '```'
             echo "HTTP: $QUERY_HTTP_CODE"
             cat /tmp/result.json 2>/dev/null
             echo '```'
             echo "</details>"
-            echo ""
-            echo "<details><summary>Full diagnostic log (probes + verbose curl)</summary>"
-            echo ""
-            echo '```'
-            cat /tmp/diag.txt 2>/dev/null | tail -c 60000
-            echo '```'
-            echo "</details>"
           } > /tmp/comment_body.md
           BODY_JSON=$(jq -Rs '{body: .}' /tmp/comment_body.md)
-          curl -s -o /tmp/c3.json -w "%{http_code}" \
+          curl -s -o /dev/null -w "%{http_code}" \
             -X POST "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.inputs.issue_number }}/comments" \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             -H "Content-Type: application/json" \
             -d "$BODY_JSON"
-          echo "comment post response:"
-          cat /tmp/c3.json 2>/dev/null
           exit 0
