@@ -87,12 +87,32 @@ jobs:
             sessionId: "zonewise-full-audit"
           }' > /tmp/query.json
           JQ_BUILD_STATUS=$?
-          QUERY_HTTP_CODE=$(curl -s -o /tmp/result.json -w "%{http_code}" --max-time 240 \
+          echo "--- probe: GET api root ---" > /tmp/diag.txt
+          curl -s -o /tmp/probe1.json -w "\nHTTP:%{http_code}\n" "https://api.greptile.com/" >> /tmp/diag.txt 2>&1
+          cat /tmp/probe1.json >> /tmp/diag.txt 2>/dev/null
+          echo "--- probe: GET api/v2 root ---" >> /tmp/diag.txt
+          curl -s -o /tmp/probe2.json -w "\nHTTP:%{http_code}\n" "https://api.greptile.com/v2" >> /tmp/diag.txt 2>&1
+          cat /tmp/probe2.json >> /tmp/diag.txt 2>/dev/null
+          echo "--- attempt 1: POST /v2/query (verbose) ---" >> /tmp/diag.txt
+          curl -v -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
             -X POST "https://api.greptile.com/v2/query" \
             -H "Authorization: Bearer $GREPTILE_API_KEY" \
-            -H "X-Github-Token: ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d @/tmp/query.json)
+            -d @/tmp/query.json >> /tmp/diag.txt 2>&1
+          QUERY_HTTP_CODE=$(tail -c 200 /tmp/diag.txt | grep -oE 'HTTP:[0-9]+' | tail -1 | cut -d: -f2)
+          cat /tmp/result.json 2>/dev/null >> /tmp/diag.txt
+          if [ "$QUERY_HTTP_CODE" = "404" ]; then
+            echo "--- attempt 2: POST /query (no v2 prefix) ---" >> /tmp/diag.txt
+            curl -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
+              -X POST "https://api.greptile.com/query" \
+              -H "Authorization: Bearer $GREPTILE_API_KEY" \
+              -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d @/tmp/query.json >> /tmp/diag.txt 2>&1
+            QUERY_HTTP_CODE=$(tail -c 200 /tmp/diag.txt | grep -oE 'HTTP:[0-9]+' | tail -1 | cut -d: -f2)
+            cat /tmp/result.json 2>/dev/null >> /tmp/diag.txt
+          fi
           CURL_STATUS=$?
           echo "jq_build_status=$JQ_BUILD_STATUS curl_status=$CURL_STATUS query_http_code=$QUERY_HTTP_CODE"
           cat /tmp/result.json 2>/dev/null || echo "(no /tmp/result.json written)"
@@ -110,6 +130,13 @@ jobs:
             echo '```'
             echo "HTTP: $QUERY_HTTP_CODE"
             cat /tmp/result.json 2>/dev/null
+            echo '```'
+            echo "</details>"
+            echo ""
+            echo "<details><summary>Full diagnostic log (probes + verbose curl)</summary>"
+            echo ""
+            echo '```'
+            cat /tmp/diag.txt 2>/dev/null | tail -c 60000
             echo '```'
             echo "</details>"
           } > /tmp/comment_body.md
