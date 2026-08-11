@@ -93,8 +93,8 @@ jobs:
           echo "--- probe: GET api/v2 root ---" >> /tmp/diag.txt
           curl -s -o /tmp/probe2.json -w "\nHTTP:%{http_code}\n" "https://api.greptile.com/v2" >> /tmp/diag.txt 2>&1
           cat /tmp/probe2.json >> /tmp/diag.txt 2>/dev/null
-          echo "--- attempt 1: POST /v2/query (verbose) ---" >> /tmp/diag.txt
-          curl -v -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
+          echo "--- attempt 1: POST /v2/query ---" >> /tmp/diag.txt
+          curl -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
             -X POST "https://api.greptile.com/v2/query" \
             -H "Authorization: Bearer $GREPTILE_API_KEY" \
             -H "X-GitHub-Token: ${{ secrets.GITHUB_TOKEN }}" \
@@ -102,6 +102,7 @@ jobs:
             -d @/tmp/query.json >> /tmp/diag.txt 2>&1
           QUERY_HTTP_CODE=$(tail -c 200 /tmp/diag.txt | grep -oE 'HTTP:[0-9]+' | tail -1 | cut -d: -f2)
           cat /tmp/result.json 2>/dev/null >> /tmp/diag.txt
+          sed -i -E 's/(Authorization|X-GitHub-Token|authorization|x-github-token)[^\\]*\\?\\?\\?\\?/\1: [REDACTED]/g; s/Bearer [A-Za-z0-9._-]+/Bearer [REDACTED]/g; s/gh[a-z]_[A-Za-z0-9._-]+/[REDACTED]/g' /tmp/diag.txt 2>/dev/null || true
           if [ "$QUERY_HTTP_CODE" = "404" ]; then
             echo "--- attempt 2: POST /query (no v2 prefix) ---" >> /tmp/diag.txt
             curl -s -o /tmp/result.json -w "\nHTTP:%{http_code}\n" --max-time 240 \
