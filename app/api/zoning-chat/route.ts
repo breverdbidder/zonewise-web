@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { createClient } from '@supabase/supabase-js'
 import { createAnonClient } from '@/lib/supabase/server'
 import { chatQuerySchema, sanitizeChatMessage, SECURITY_HEADERS } from '@/lib/validation'
 import { resilientLLM } from '@/lib/llm-resilience'
 import { logLLMCall } from '@/lib/llm-metrics'
 
-// ─── CORS headers ─────────────────────────────────────────────────────────────
+// ─── CORS headers ─────────────────────────────────────────────────────
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -15,7 +17,7 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS })
 }
 
-// ─── Fallback zoning controls (mirrored from MassingEngine.tsx) ───────────────
+// ─── Fallback zoning controls (mirrored from MassingEngine.tsx) ──────────────
 const FALLBACK_CONTROLS: Record<string, {
   zone_name: string; max_height_ft: number; max_stories: number;
   front_setback_ft: number; side_setback_ft: number; rear_setback_ft: number;
@@ -91,7 +93,7 @@ function extractZoneCode(message: string): string | null {
   return match ? match[1].toUpperCase() : null
 }
 
-// ─── Street type normalization map ───────────────────────────────────────────
+// ─── Street type normalization map ────────────────────────────────────────────
 const STREET_TYPE_MAP: Record<string, string> = {
   street: 'st', drive: 'dr', lane: 'ln', avenue: 'ave',
   boulevard: 'blvd', road: 'rd', court: 'ct', circle: 'cir',
@@ -682,6 +684,36 @@ function extractCitations(ctx: ZoningContext): { source: string; detail: string 
   return citations
 }
 
+// ─── Server-side Pro entitlement check ─────────────────────────────────────────
+// SECURITY (CRIT-3, zonewise-audit 2026-08-11): this route used to trust a
+// client-supplied `isPro` boolean straight from the request body — a single
+// spoofed JSON field bypassed the paywall entirely. Entitlement is now derived
+// server-side from the authenticated Clerk session + the `subscriptions` table,
+// the same source of truth app/api/stripe/checkout and app/api/stripe/webhook
+// already use. An unauthenticated caller (no Clerk session) is never Pro.
+async function checkProEntitlement(): Promise<boolean> {
+  try {
+    const { userId } = await auth()
+    if (!userId) return false
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return false
+
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+    const { data } = await supabaseAdmin
+      .from('subscriptions')
+      .select('status')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .single()
+
+    return !!data
+  } catch {
+    return false
+  }
+}
+
 // ─── Paywall constants ────────────────────────────────────────────────────────
 const FREE_LOOKUPS = 3
 
@@ -693,7 +725,7 @@ export async function POST(req: NextRequest) {
     const rawMessage: string = (body.message ?? '').trim()
     const sessionId: string | undefined = body.sessionId
     const incomingHistory: { role: string; content: string }[] = body.history ?? []
-    const isPro: boolean = body.isPro === true
+    const isPro = await checkProEntitlement()
 
     const messageParsed = chatQuerySchema.safeParse(rawMessage)
     if (!messageParsed.success) {
@@ -869,10 +901,5 @@ function formatFallbackResponse(ctx: ZoningContext): string {
     }
   }
 
-  if (lines.length === 0) {
-    return "I couldn't find data for that query. Try searching for a specific address or zone code."
-  }
-
   return lines.join('\n')
 }
-
