@@ -52,7 +52,8 @@ export default function MapboxMap({
         zoom,
         pitch,
         bearing,
-        antialias: true,
+        antialias: false,
+        scrollZoom: false,
       })
 
       map.addControl(new mapboxgl.NavigationControl(), 'top-right')
@@ -62,8 +63,9 @@ export default function MapboxMap({
         .addTo(map)
 
       map.on('load', () => {
-        // 3D buildings
-        if (showBuildings3D) {
+        // 3D buildings — only when the map is actually pitched; skip the
+        // expensive fill-extrusion layer on flat (pitch 0) preview maps.
+        if (showBuildings3D && pitch > 0) {
           const layers = map.getStyle().layers
           const labelLayer = layers?.find(
             (l) => l.type === 'symbol' && l.layout?.['text-field']
