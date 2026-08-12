@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import DOMPurify from 'isomorphic-dompurify'
 import { useSafeAuth } from '@/lib/safe-clerk'
 
 // ── Types ────────────────────────────────────────────────────
@@ -212,17 +213,17 @@ function MessageContent({ content }: { content: string }) {
         if (line.startsWith('- ') || line.startsWith('• ')) return (
           <div key={i} className="flex gap-2">
             <span className="text-amber-400 shrink-0 mt-0.5">·</span>
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line.slice(2)) }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeFormattedHtml(formatInline(line.slice(2))) }} />
           </div>
         )
         if (line.match(/^\d+\.\s/)) return (
           <div key={i} className="flex gap-2">
             <span className="font-mono text-xs text-slate-400 shrink-0 mt-0.5">{line.match(/^(\d+)/)?.[1]}.</span>
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line.replace(/^\d+\.\s/, '')) }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeFormattedHtml(formatInline(line.replace(/^\d+\.\s/, ''))) }} />
           </div>
         )
         if (line.trim() === '') return <div key={i} className="h-1" />
-        return <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
+        return <p key={i} dangerouslySetInnerHTML={{ __html: sanitizeFormattedHtml(formatInline(line)) }} />
       })}
     </div>
   )
@@ -235,6 +236,16 @@ function formatInline(text: string): string {
     .replace(/⚠️/g, '<span class="text-amber-400">⚠️</span>')
     .replace(/✅/g, '<span class="text-emerald-400">✅</span>')
     .replace(/❌/g, '<span class="text-red-400">❌</span>')
+}
+
+// formatInline only ever emits these tags/attrs — scope DOMPurify to exactly
+// that allow-list so any raw HTML in message content can't smuggle in a
+// <script>/<img onerror> etc.
+function sanitizeFormattedHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['strong', 'code', 'span'],
+    ALLOWED_ATTR: ['class'],
+  })
 }
 
 // ── Main ChatWidget ──────────────────────────────────────────

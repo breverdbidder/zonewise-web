@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, Lock } from 'lucide-react'
+import DOMPurify from 'isomorphic-dompurify'
 import PropertyCard, { type BcpaoPropertyData } from './PropertyCard'
 
 // ─── Paywall helpers (localStorage) ──────────────────────────────────────────
@@ -372,7 +373,7 @@ function MessageBubble({
               ? 'bg-[#F59E0B] text-white rounded-tr-sm'
               : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-tl-sm'
           }`}
-          dangerouslySetInnerHTML={isUser ? undefined : { __html: formatMarkdown(message.content) }}
+          dangerouslySetInnerHTML={isUser ? undefined : { __html: sanitizeFormattedHtml(formatMarkdown(message.content)) }}
         >
           {isUser ? message.content : undefined}
         </div>
@@ -428,6 +429,16 @@ function formatMarkdown(text: string): string {
     .replace(/\[Source: ([^\]]+)\]/g, '<span class="text-xs text-gray-400 dark:text-slate-500 italic">[Source: $1]</span>')
     .replace(/\n\n/g, '</p><p class="mt-2">')
     .replace(/^(.+)$/, '<p>$1</p>')
+}
+
+// formatMarkdown only ever emits these tags/attrs — scope DOMPurify to exactly
+// that allow-list so any raw HTML in message.content (LLM output, user input
+// echoed back) can't smuggle in a <script>/<img onerror> etc.
+function sanitizeFormattedHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'strong', 'em', 'ul', 'li', 'span'],
+    ALLOWED_ATTR: ['class'],
+  })
 }
 
 // ─── Feedback state per message ───────────────────────────────────────────────
