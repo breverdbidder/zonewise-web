@@ -100,7 +100,7 @@ def run_verification(url, selectors, test_input="1600 Orlando Ave Cocoa Beach FL
                     "-H", "Content-Type: image/png",
                     "--data-binary", f"@{path}"
                 ]
-                r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                r = subprocess.run(cmd, capture_output=True, text=True, timeout=30)  # nosemgrep: python.lang.security.audit.dangerous-subprocess-use-tainted-env-args.dangerous-subprocess-use-tainted-env-args -- list-form argv, no shell=True; supa_url defaults to a hardcoded trusted URL, not shell-interpreted (verified noise, recon #18878)
                 if r.stdout.strip() == "200":
                     public_url = f"{supa_url}/storage/v1/object/public/{obj_path}"
                     uploaded.append({"name": name, "url": public_url})

@@ -62,18 +62,22 @@ jobs:
 
       - name: Run Forensics Scan
         id: forensics
+        env:
+          INPUT_MODE: ${{ inputs.mode || 'full' }}
+          INPUT_UPDATE_IOCS: ${{ inputs.update-iocs }}
+          GH_WORKSPACE: ${{ github.workspace }}
         run: |
-          MODE="${{ inputs.mode || 'full' }}"
+          MODE="$INPUT_MODE"
           ARGS=""
           if [ "$MODE" = "skill-scan" ]; then
             ARGS="--skill-scan"
           fi
-          if [ "${{ inputs.update-iocs }}" = "true" ]; then
+          if [ "$INPUT_UPDATE_IOCS" = "true" ]; then
             ARGS="$ARGS --update-iocs"
           fi
 
           set +e
-          bash /tmp/repo-forensics/skill/scripts/run_forensics.sh "${{ github.workspace }}" --format text $ARGS 2>&1 | tee /tmp/forensics-text.txt
+          bash /tmp/repo-forensics/skill/scripts/run_forensics.sh "$GH_WORKSPACE" --format text $ARGS 2>&1 | tee /tmp/forensics-text.txt
           TEXT_EXIT=${PIPESTATUS[0]}
           set -e
 
@@ -81,7 +85,7 @@ jobs:
 
           # JSON report for artifact
           set +e
-          bash /tmp/repo-forensics/skill/scripts/run_forensics.sh "${{ github.workspace }}" --format json $ARGS > /tmp/forensics-report.json 2>&1
+          bash /tmp/repo-forensics/skill/scripts/run_forensics.sh "$GH_WORKSPACE" --format json $ARGS > /tmp/forensics-report.json 2>&1
           set -e
 
           if [ "$TEXT_EXIT" -eq 2 ]; then
@@ -119,10 +123,14 @@ jobs:
 
       - name: Gate Decision
         if: always()
+        env:
+          FORENSICS_EXIT_CODE: ${{ steps.forensics.outputs.exit-code }}
+          GH_EVENT_NAME: ${{ github.event_name }}
+          INPUT_BLOCK_ON_CRITICAL: ${{ inputs.block-on-critical }}
         run: |
-          EC="${{ steps.forensics.outputs.exit-code }}"
-          EVENT="${{ github.event_name }}"
-          BLOCK="${{ inputs.block-on-critical }}"
+          EC="$FORENSICS_EXIT_CODE"
+          EVENT="$GH_EVENT_NAME"
+          BLOCK="$INPUT_BLOCK_ON_CRITICAL"
 
           if [ "$EC" = "2" ]; then
             if [ "$EVENT" = "workflow_dispatch" ] && [ "$BLOCK" = "true" ]; then

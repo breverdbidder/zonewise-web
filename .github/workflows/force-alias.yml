@@ -10,7 +10,7 @@ jobs:
       - name: "Install Vercel CLI"
         run: npm install -g vercel@latest
       - name: "Find latest READY deployment and alias"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           TOKEN="${{ secrets.VERCEL_TOKEN }}"
           
           echo "=== Find READY production deployment ==="

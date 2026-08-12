@@ -22,7 +22,7 @@ jobs:
           echo "=== Done removing from deprecated ==="
 
       - name: "Add domain to correct project"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Adding zonewise.ai to zonewise-web ==="
           curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
@@ -35,7 +35,7 @@ jobs:
             -d '{"name":"www.zonewise.ai","redirect":"zonewise.ai"}' | python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ www redirect added' if 'name' in d else f'⚠️ {d}')"
 
       - name: "Verify domains"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Current domains on zonewise-web ==="
           curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \

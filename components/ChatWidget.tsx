@@ -1,7 +1,18 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSafeAuth } from '@/lib/safe-clerk'
+import {
+  AssistantRuntimeProvider,
+  ComposerPrimitive,
+  MessagePrimitive,
+  ThreadPrimitive,
+  useExternalStoreRuntime,
+  useMessagePartText,
+  type AppendMessage,
+  type TextMessagePart,
+} from '@assistant-ui/react'
+import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown'
 
 // ── Types ────────────────────────────────────────────────────
 interface Message {
@@ -202,45 +213,53 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
   )
 }
 
-function MessageContent({ content }: { content: string }) {
-  const lines = content.split('\n')
+// ── assistant-ui message rendering (safe markdown, no dangerouslySetInnerHTML) ──
+const MARKDOWN_COMPONENTS = {
+  h1: (props: any) => <h3 className="font-semibold text-slate-100 mt-2" {...props} />,
+  h2: (props: any) => <h4 className="font-medium text-slate-200 mt-1.5" {...props} />,
+  h3: (props: any) => <h4 className="font-medium text-slate-200 mt-1.5" {...props} />,
+  p: (props: any) => <p className="text-sm leading-relaxed" {...props} />,
+  strong: (props: any) => <strong className="text-slate-100 font-semibold" {...props} />,
+  code: (props: any) => <code className="font-mono text-xs bg-slate-800 rounded px-1 py-0.5 text-amber-300" {...props} />,
+  ul: (props: any) => <ul className="space-y-1 pl-4 list-disc marker:text-amber-400" {...props} />,
+  ol: (props: any) => <ol className="space-y-1 pl-4 list-decimal marker:text-slate-400 marker:font-mono marker:text-xs" {...props} />,
+  li: (props: any) => <li className="text-sm leading-relaxed" {...props} />,
+  a: (props: any) => <a className="text-amber-400 underline hover:text-amber-300" target="_blank" rel="noopener noreferrer" {...props} />,
+}
+
+function AssistantMarkdownText() {
+  return <MarkdownTextPrimitive className="space-y-1.5" components={MARKDOWN_COMPONENTS} />
+}
+
+function UserPlainText() {
+  const { text } = useMessagePartText()
+  return <p className="text-sm leading-relaxed">{text}</p>
+}
+
+function AssistantMessage() {
   return (
-    <div className="space-y-1.5 text-sm leading-relaxed">
-      {lines.map((line, i) => {
-        if (line.startsWith('# ')) return <h3 key={i} className="font-semibold text-slate-100 mt-2">{line.slice(2)}</h3>
-        if (line.startsWith('## ')) return <h4 key={i} className="font-medium text-slate-200 mt-1.5">{line.slice(3)}</h4>
-        if (line.startsWith('- ') || line.startsWith('• ')) return (
-          <div key={i} className="flex gap-2">
-            <span className="text-amber-400 shrink-0 mt-0.5">·</span>
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line.slice(2)) }} />
-          </div>
-        )
-        if (line.match(/^\d+\.\s/)) return (
-          <div key={i} className="flex gap-2">
-            <span className="font-mono text-xs text-slate-400 shrink-0 mt-0.5">{line.match(/^(\d+)/)?.[1]}.</span>
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line.replace(/^\d+\.\s/, '')) }} />
-          </div>
-        )
-        if (line.trim() === '') return <div key={i} className="h-1" />
-        return <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
-      })}
+    <div className="flex justify-start">
+      <div className="mr-2 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-slate-900">Z</div>
+      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-bl-sm border border-slate-700/60 bg-slate-800/50 px-3 py-2.5 text-slate-300">
+        <MessagePrimitive.Parts components={{ Text: AssistantMarkdownText }} />
+      </MessagePrimitive.Root>
     </div>
   )
 }
 
-function formatInline(text: string): string {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-100 font-semibold">$1</strong>')
-    .replace(/`([^`]+)`/g, '<code class="font-mono text-xs bg-slate-800 rounded px-1 py-0.5 text-amber-300">$1</code>')
-    .replace(/⚠️/g, '<span class="text-amber-400">⚠️</span>')
-    .replace(/✅/g, '<span class="text-emerald-400">✅</span>')
-    .replace(/❌/g, '<span class="text-red-400">❌</span>')
+function UserMessage() {
+  return (
+    <div className="flex justify-end">
+      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-br-sm bg-[#1E3A5F]/70 border border-[#1E3A5F] px-3 py-2.5 text-slate-100">
+        <MessagePrimitive.Parts components={{ Text: UserPlainText }} />
+      </MessagePrimitive.Root>
+    </div>
+  )
 }
 
 // ── Main ChatWidget ──────────────────────────────────────────
 export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propToken, onAssistantMessage }: ChatWidgetProps) {
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [activeArtifact, setActiveArtifact] = useState<Artifact | null>(null)
   const [pipeline, setPipeline] = useState<number>(-1)
@@ -248,8 +267,6 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
   const [sessionId] = useState(() => crypto.randomUUID())
   const [sessionToken, setSessionToken] = useState<string | null>(propToken || null)
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const pipelineRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // ── Clerk auth — token managed automatically via cookies ──
@@ -262,10 +279,6 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
       getToken().then(token => { if (token) setSessionToken(token) })
     }
   }, [propToken, isSignedIn])
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
 
   const animatePipeline = useCallback(() => {
     setPipeline(0)
@@ -281,12 +294,8 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
     }, 380)
   }, [])
 
-  const send = useCallback(async (text?: string) => {
-    const userText = text ?? input.trim()
+  const runCompletion = useCallback(async (userText: string) => {
     if (!userText || loading) return
-
-    setInput('')
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
 
     const newMessages: Message[] = [...messages, { role: 'user', content: userText }]
     setMessages(newMessages)
@@ -357,21 +366,23 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
       if (pipelineRef.current) clearInterval(pipelineRef.current)
       setPipeline(-1)
     }
-  }, [input, loading, messages, apiEndpoint, sessionId, sessionToken, animatePipeline])
+  }, [loading, messages, apiEndpoint, sessionId, sessionToken, isSignedIn, getToken, onAssistantMessage, animatePipeline])
 
-  const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
-  }
-
-  const autoResize = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value)
-    e.target.style.height = 'auto'
-    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
-  }
+  const runtime = useExternalStoreRuntime<Message>({
+    messages,
+    isRunning: loading,
+    isDisabled: loading,
+    convertMessage: (m) => ({ role: m.role, content: m.content }),
+    onNew: async (message: AppendMessage) => {
+      const textPart = message.content.find((p): p is TextMessagePart => p.type === 'text')
+      if (textPart?.text) await runCompletion(textPart.text)
+    },
+  })
 
   const authReady = !!sessionToken
 
   return (
+    <AssistantRuntimeProvider runtime={runtime}>
     <div className="flex h-full w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 font-sans">
 
       {/* ── LEFT: Chat ── */}
@@ -389,7 +400,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 scroll-smooth">
+        <ThreadPrimitive.Viewport className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 scroll-smooth" autoScroll>
           {messages.length === 0 && (
             <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
               <div className="mb-1 font-semibold text-slate-200">ZoneWise AI 🏛</div>
@@ -398,7 +409,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
               </p>
               <div className="flex flex-col gap-2">
                 {CHIPS.map((c, i) => (
-                  <button key={i} onClick={() => send(c.text)}
+                  <button key={i} onClick={() => runCompletion(c.text)}
                     className="flex items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2.5 text-left text-xs text-slate-400 transition-all hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-slate-200">
                     <span className="text-base">{c.icon}</span>
                     {c.text}
@@ -408,20 +419,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
             </div>
           )}
 
-          {messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {m.role === 'assistant' && (
-                <div className="mr-2 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-slate-900">Z</div>
-              )}
-              <div className={`max-w-[86%] rounded-xl px-3 py-2.5 ${m.role === 'user'
-                ? 'rounded-br-sm bg-[#1E3A5F]/70 border border-[#1E3A5F] text-slate-100'
-                : 'rounded-bl-sm border border-slate-700/60 bg-slate-800/50 text-slate-300'}`}>
-                {m.role === 'assistant' ? <MessageContent content={m.content} /> : (
-                  <p className="text-sm leading-relaxed">{m.content}</p>
-                )}
-              </div>
-            </div>
-          ))}
+          <ThreadPrimitive.Messages components={{ UserMessage, AssistantMessage }} />
 
           {loading && (
             <div className="flex items-start gap-2">
@@ -435,20 +433,19 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
               </div>
             </div>
           )}
-          <div ref={messagesEndRef} />
-        </div>
+        </ThreadPrimitive.Viewport>
 
         <div className="shrink-0 border-t border-slate-800 bg-slate-900/70 p-3">
-          <div className="flex items-end gap-2">
-            <textarea ref={textareaRef} rows={1} value={input} onChange={autoResize} onKeyDown={handleKey}
-              disabled={loading}
+          <ComposerPrimitive.Root className="flex items-end gap-2">
+            <ComposerPrimitive.Input
+              rows={1}
               placeholder="Ask about any FL property, zoning, or auction…"
               className="flex-1 resize-none rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 outline-none transition focus:border-amber-500/40 focus:bg-slate-800 disabled:opacity-50 max-h-[120px]" />
-            <button onClick={() => send()} disabled={loading || !input.trim()}
+            <ComposerPrimitive.Send
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-slate-900 transition hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-sm">
               →
-            </button>
-          </div>
+            </ComposerPrimitive.Send>
+          </ComposerPrimitive.Root>
           <p className="mt-2 text-center font-mono text-xs text-slate-700">
             67 FL Counties · 10.5M Parcels · 128 KPIs · Powered by Claude AI
           </p>
@@ -536,5 +533,6 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
         </div>
       </div>
     </div>
+    </AssistantRuntimeProvider>
   )
 }

@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Add Vercel verification TXT record"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           # Zone ID for zonewise.ai
           ZONE="b32406b78aaaefd55557d77c843a5940"
           
@@ -50,7 +50,7 @@ jobs:
             python3 -c "import json,sys; [print(f'  ✅ {r[\"name\"]} = {r[\"content\"]}') for r in json.load(sys.stdin).get('result',[])]"
 
       - name: "Trigger Vercel domain verification"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Verify domain with Vercel ==="
           curl -s -X POST "https://api.vercel.com/v10/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/domains/zonewise.ai/verify" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
