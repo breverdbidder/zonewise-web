@@ -12,7 +12,7 @@ jobs:
       TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
     steps:
       - name: "Step 1: List current Clerk env vars"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Current Clerk env vars ==="
           curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
             -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
@@ -63,7 +63,7 @@ jobs:
           done <<< "$PROD_CLERK_IDS"
 
       - name: "Step 3: Verify Clerk vars removed"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Post-deletion Clerk env vars ==="
           curl -s "https://api.vercel.com/v9/projects/$PROJECT_ID/env" \
             -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "
@@ -82,7 +82,7 @@ jobs:
           "
 
       - name: "Step 4: Trigger prod redeploy"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Triggering production redeploy ==="
           # Get latest deployment to redeploy from
           LATEST=$(curl -s "https://api.vercel.com/v6/deployments?projectId=$PROJECT_ID&teamId=$TEAM_ID&limit=1&target=production" \
@@ -122,7 +122,7 @@ jobs:
           echo "NEW_DEPLOY_URL=$NEW_URL" >> "$GITHUB_ENV"
 
       - name: "Step 5: Wait for deployment ready (max 3 min)"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Waiting for deployment ==="
           for i in $(seq 1 18); do
             STATUS=$(curl -s "https://api.vercel.com/v13/deployments/$NEW_DEPLOY_ID" \

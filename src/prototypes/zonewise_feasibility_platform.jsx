@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 // Proprietary IP of Everest Capital USA / BidDeed.AI
 // ═══════════════════════════════════════════════════════════
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw";
+const MAPBOX_TOKEN = "pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw"; // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token -- public Mapbox pk. token, safe for client exposure by design (verified noise, recon #18878)
 
 const COLORS = {
   brand: "#0D9488",       // teal-600 — primary

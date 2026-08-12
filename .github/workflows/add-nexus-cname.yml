@@ -9,7 +9,7 @@ jobs:
       - name: Add all DNS records
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           set -e
           ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai" \
             -H "Authorization: Bearer $CF_TOKEN" | \

@@ -190,7 +190,7 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         MESSAGE: ${{ steps.message.outputs.message }}
-      run: |
+      run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
         if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
           echo "⚠️ TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set. Skipping."
           exit 0

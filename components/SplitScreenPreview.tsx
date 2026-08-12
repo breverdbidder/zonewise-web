@@ -131,7 +131,7 @@ export default function SplitScreenPreview() {
 }
 
 function MapTab() {
-  const mapboxToken = 'pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw'
+  const mapboxToken = 'pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw' // nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token -- public Mapbox pk. token, safe for client exposure by design (verified noise, recon #18878)
   const markers = 'pin-s+FF0000(-81.60,30.35),pin-s+F59E0B(-81.55,30.30),pin-s+1E3A5F(-81.70,30.28),pin-s+FF0000(-81.50,30.40),pin-s+1E3A5F(-81.65,30.25)'
   const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${markers}/-81.60,30.32,10.5,0/800x500@2x?access_token=${mapboxToken}`
 

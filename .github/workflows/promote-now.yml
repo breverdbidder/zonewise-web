@@ -10,7 +10,7 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "=== Finding domain owner ==="
           for PROJ in prj_B478bSAAf0yLnY3owbhN7a1W7mQs prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E; do
             echo "Checking project $PROJ for domains..."

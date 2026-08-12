@@ -47,8 +47,8 @@ https://vercel.com/new/clone?repository-url=https://github.com/breverdbidder/zon
 ### Ready to Paste
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://mocerqjnksmhcjzxrewo.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MzI1MjYsImV4cCI6MjA4MDEwODUyNn0.ySFJIOngWWB0aqYra4PoGFuqcbdHOx1ZV6T9-klKQDw
-NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MzI1MjYsImV4cCI6MjA4MDEwODUyNn0.ySFJIOngWWB0aqYra4PoGFuqcbdHOx1ZV6T9-klKQDw <!-- nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token -- public Mapbox pk. token / Supabase anon key, safe for client exposure by design (verified noise, recon #18878) -->
+NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiZXZlcmVzdDE4IiwiYSI6ImNtanB5cDQ5ZzF1eWgzaHB2cGVhZXdqbjMifQ.4RPrkTf84GL1-clmhmCnTw <!-- nosemgrep: generic.secrets.security.detected-jwt-token.detected-jwt-token -- public Mapbox pk. token / Supabase anon key, safe for client exposure by design (verified noise, recon #18878) -->
 NEXT_PUBLIC_APP_URL=https://zonewise.ai
 ```
 
