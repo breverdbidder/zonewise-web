@@ -12,7 +12,7 @@ jobs:
       HETZNER_IP: "87.99.129.125"
     steps:
       - name: Create all DNS records
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           set +e
           
           echo "=== List current biddeed.ai records ==="
@@ -41,7 +41,7 @@ jobs:
             -d "{\"type\":\"A\",\"name\":\"ops\",\"content\":\"$HETZNER_IP\",\"proxied\":true,\"ttl\":1}" | python3 -c "import json,sys; d=json.load(sys.stdin); print('OK' if d.get('success') else d.get('errors'))"
           
       - name: Verify
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           sleep 15
           echo "=== Final DNS state ==="
           curl -s "https://api.cloudflare.com/client/v4/zones/$BD_ZONE/dns_records" \

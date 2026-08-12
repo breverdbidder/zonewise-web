@@ -1,0 +1,40 @@
+# Semgrep uses this file INSTEAD OF its built-in default ignore list once
+# any .semgrepignore is present, so the standard defaults are reproduced
+# below to avoid widening the scan to vendor/build trees. See
+# https://semgrep.dev/docs/ignoring-files-folders-code/ for the upstream
+# defaults this mirrors.
+.git/
+node_modules/
+vendor/
+dist/
+build/
+out/
+.next/
+.nuxt/
+.venv/
+venv/
+.tox/
+coverage/
+*.min.js
+*.min.css
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lock
+Pipfile.lock
+poetry.lock
+
+# Recon #18878 classified these files' sole semgrep finding
+# (generic.secrets.security.detected-jwt-token) as LIKELY-NOISE: every
+# match is a Mapbox `pk.eyJ...` public token or a Supabase anon key, both
+# designed for client-side exposure (Mapbox scopes by URL/referrer;
+# Supabase anon keys are gated by RLS, not secrecy). Excluded by path
+# rather than inline nosemgrep so the lines containing the long-lived
+# public tokens are not touched -- editing them would make gitleaks'
+# diff-based scan treat pre-existing, unchanged tokens as newly added.
+# See issue #18883 for the PR this unblocks.
+.claude/tasks/sprint7-completion.md
+docs/CHECKPOINT_2026-01-27.md
+docs/ZONEWISE_ONBOARDING_IMPLEMENTATION.md
+components/SplitScreenPreview.tsx
+src/prototypes/zonewise_feasibility_platform.jsx

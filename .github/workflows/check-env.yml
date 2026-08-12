@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: "List Vercel env vars"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           curl -s "https://api.vercel.com/v9/projects/prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -c "
           import json,sys

@@ -22,9 +22,11 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           INTERNAL_AUTH_TOKEN: ${{ secrets.INTERNAL_AUTH_TOKEN }}
+          INPUT_SECRET_NAME: ${{ inputs.secret_name }}
+          INPUT_ENV_KEY: ${{ inputs.key }}
         run: |
-          SECRET_NAME="${{ inputs.secret_name }}"
-          ENV_KEY="${{ inputs.key }}"
+          SECRET_NAME="$INPUT_SECRET_NAME"
+          ENV_KEY="$INPUT_ENV_KEY"
 
           # Map secret name to value
           VALUE=""

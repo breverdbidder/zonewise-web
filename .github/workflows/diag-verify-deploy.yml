@@ -7,7 +7,7 @@ jobs:
       - name: Show latest production deployment
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
           curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&limit=5&target=production" \
             -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -c "

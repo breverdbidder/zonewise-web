@@ -15,9 +15,9 @@ Generated: 2026-04-09 (Phase B1 — full re-audit)
 | Pattern | Found In | Severity | Location |
 |---------|----------|----------|----------|
 | `Tqp9nE` (full service_role JWT) | **HEAD** | **CRITICAL** | `.github/workflows/apply-summit-verifications-migration.yml:37` — full `eyJhbGciOi...Tqp9nE` hardcoded in workflow file |
-| `sbp_cbf04a175a...` (full mgmt token) | **HEAD** | **CRITICAL** | `docs/ZONEWISE_INFRASTRUCTURE.md:124` — full Supabase management token in docs |
+| `sbp_<REDACTED>...` (full mgmt token) | **HEAD** | **CRITICAL** | `docs/ZONEWISE_INFRASTRUCTURE.md:124` — full Supabase management token in docs |
 | `Tqp9nE` (fragment refs) | HEAD | MEDIUM | `envelope/CLAUDE.md`, `envelope/dev-intel-dispatch/CLAUDE.md`, `docs/ZONEWISE_INFRASTRUCTURE.md`, multiple plan docs — "ends ...Tqp9nE" |
-| `ghp_GspU...` (partial PAT) | HEAD | MEDIUM | `youtube/transcripts/...10-cli-tools-claude-code.md:30`, `docs/CODER-ADOPTION.md:140` — partial PAT4 reference |
+| `ghp_<REDACTED>` (partial PAT) | HEAD | MEDIUM | `youtube/transcripts/...10-cli-tools-claude-code.md:30`, `docs/CODER-ADOPTION.md:140` — partial PAT4 reference |
 | `Everest18` | history | LOW | 3 commits (n8n setup workflows, now disabled) |
 | `service_role` | HEAD | INFO | Multiple workflow files — RLS policy references (expected) |
 
@@ -25,7 +25,7 @@ Generated: 2026-04-09 (Phase B1 — full re-audit)
 
 | Pattern | Found In | Severity | Location |
 |---------|----------|----------|----------|
-| `sbp_cbf04a175a130c466eddbe40a3f49b79aaec6214` (full token) | **HEAD** | **CRITICAL** | `reports/summit-411/phase-a-rotation-report.md:47` — full management token in git search command example |
+| `sbp_<REDACTED>` (full token) | **HEAD** | **CRITICAL** | `reports/summit-411/phase-a-rotation-report.md:47` — full management token in git search command example |
 | `Tqp9nE` (full JWT) | history | **CRITICAL** | Commits d479830, a00b746, af5bebd etc. — full service_role JWT in `run-migration.sh` (removed from HEAD) |
 | `Tqp9nE` (fragment refs) | HEAD | MEDIUM | `.dev-intel-dispatch/CLAUDE.md`, `.claude/tasks/sprint7-completion.md`, `INFRASTRUCTURE.md` — fragment references |
 | `sbp_` | history | HIGH | Multiple commits had full management token pre-redaction |
@@ -64,20 +64,20 @@ Generated: 2026-04-09 (Phase B1 — full re-audit)
 
 | Pattern | Found In | Severity | Location |
 |---------|----------|----------|----------|
-| `ghp_` | history | INFO | 3 commits — all placeholder values (`ghp_xxxxxxxxxxxxxxxxxxxx`) in MCP config templates |
+| `ghp_` | history | INFO | 3 commits — all placeholder values (`ghp_<REDACTED>`) in MCP config templates |
 | All others | — | **CLEAN** | No secrets in history or HEAD |
 
 ## Critical Findings Detail
 
 ### CRITICAL-1: Full Service Role JWT on HEAD (cli-anything-biddeed)
 - **File:** `.github/workflows/apply-summit-verifications-migration.yml:37`
-- **What:** Complete `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vY2VycWpua3NtaGNqenhyZXdvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDUzMjUyNiwiZXhwIjoyMDgwMTA4NTI2fQ.fL255mO0V8-rrU0Il3L41cIdQXUau-HRQXiamTqp9nE` hardcoded
+- **What:** Complete `eyJ<REDACTED_JWT>` hardcoded
 - **Risk:** Anyone with repo read access has full service_role access to Supabase project `mocerqjnksmhcjzxrewo`
 - **Fix:** Replace with `${{ secrets.SUPABASE_SERVICE_KEY }}`, rotate key
 
 ### CRITICAL-2: Full Supabase Management Token on HEAD (cli-anything-biddeed)
 - **File:** `docs/ZONEWISE_INFRASTRUCTURE.md:124`
-- **What:** `sbp_cbf04a175a130c466eddbe40a3f49b79aaec6214` — full management API token
+- **What:** `sbp_<REDACTED>` — full management API token
 - **Risk:** Full management API access (create/delete projects, manage billing)
 - **Fix:** Redact from file, revoke at https://supabase.com/dashboard/account/tokens
 
@@ -97,7 +97,7 @@ Generated: 2026-04-09 (Phase B1 — full re-audit)
 
 ### Immediate (within 24h)
 1. **ROTATE the Supabase service_role key** — exposed in plaintext across 3 repos. This single action neutralizes CRITICAL-1, CRITICAL-4, and all history-based exposures.
-2. **REVOKE `sbp_cbf04a175a...` management token** at Supabase dashboard — exposed on HEAD in 2 repos.
+2. **REVOKE `sbp_<REDACTED>` management token** at Supabase dashboard — exposed on HEAD in 2 repos.
 3. **Replace hardcoded JWT** in `cli-anything-biddeed/.github/workflows/apply-summit-verifications-migration.yml` with `${{ secrets.SUPABASE_SERVICE_KEY }}`.
 4. **Redact full sbp_ token** from `zonewise-web/reports/summit-411/phase-a-rotation-report.md` line 47.
 5. **Redact full sbp_ token** from `cli-anything-biddeed/docs/ZONEWISE_INFRASTRUCTURE.md` line 124.
@@ -105,7 +105,7 @@ Generated: 2026-04-09 (Phase B1 — full re-audit)
 ### Short-term (within 1 week)
 6. **Audit all GHA workflows** in cli-anything-biddeed for hardcoded credentials — use GitHub Secrets exclusively.
 7. **Run BFG Repo-Cleaner** on all 3 affected repos if desired (optional if keys are rotated).
-8. **Redact partial PAT reference** (`ghp_GspU...`) from cli-anything-biddeed docs.
+8. **Redact partial PAT reference** (`ghp_<REDACTED>`) from cli-anything-biddeed docs.
 
 ### Ongoing
 9. **Deploy pre-commit secret scanning** to all 6 repos — cli-anything-biddeed has `pre-bash-commit-quality.js` but it clearly didn't catch the workflow file.

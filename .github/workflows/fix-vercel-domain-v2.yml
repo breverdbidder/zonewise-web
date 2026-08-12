@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "Fix domain configuration"
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           TOKEN="${{ secrets.VERCEL_TOKEN }}"
           PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
           API="https://api.vercel.com"

@@ -42,7 +42,7 @@ jobs:
 
       - name: Force Alias (if deploy URL missing)
         if: steps.deploy.outputs.url == ''
-        run: |
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3/jq for JSON parsing only, never executed as shell (verified noise, recon #18878)
           echo "Deploy URL missing — finding latest READY deployment via API"
           # Wait up to 5min for the deployment to become READY
           for i in $(seq 1 10); do
@@ -87,5 +87,7 @@ jobs:
 
       - name: "Auto-Verify: Trigger Playwright on Hetzner"
         if: success()
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          curl -s -X POST             -H "Authorization: token ${{ secrets.GH_PAT }}"             -H "Accept: application/vnd.github.v3+json"             -H "Content-Type: application/json"             -d '{"ref":"main","inputs":{"url":"https://zonewise.ai/chat-v2","selectors":".aui-root,.aui-composer-input,[class*=grid]","max_attempts":"5"}}'             "https://api.github.com/repos/breverdbidder/cli-anything-biddeed/actions/workflows/playwright-verify.yml/dispatches"             && echo "✅ Playwright verify triggered on Hetzner"             || echo "⚠️ Playwright verify dispatch failed (non-blocking)"
+          curl -s -X POST             -H "Authorization: token $GH_PAT"             -H "Accept: application/vnd.github.v3+json"             -H "Content-Type: application/json"             -d '{"ref":"main","inputs":{"url":"https://zonewise.ai/chat-v2","selectors":".aui-root,.aui-composer-input,[class*=grid]","max_attempts":"5"}}'             "https://api.github.com/repos/breverdbidder/cli-anything-biddeed/actions/workflows/playwright-verify.yml/dispatches"             && echo "✅ Playwright verify triggered on Hetzner"             || echo "⚠️ Playwright verify dispatch failed (non-blocking)"
