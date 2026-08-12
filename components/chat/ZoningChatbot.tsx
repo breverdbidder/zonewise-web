@@ -1,7 +1,19 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect, createContext, useContext } from 'react'
 import { Send, MapPin, Building2, Ruler, ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, Lock } from 'lucide-react'
+import {
+  AssistantRuntimeProvider,
+  ComposerPrimitive,
+  MessagePrimitive,
+  ThreadPrimitive,
+  useExternalStoreRuntime,
+  useMessage,
+  useMessagePartText,
+  type AppendMessage,
+  type TextMessagePart,
+} from '@assistant-ui/react'
+import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown'
 import PropertyCard, { type BcpaoPropertyData } from './PropertyCard'
 
 // ─── Paywall helpers (localStorage) ──────────────────────────────────────────
@@ -134,7 +146,6 @@ interface Message {
   citations?: Citation[]
   parcel?: ParcelData
   zoning?: ZoningData
-  isLoading?: boolean
 }
 
 // ─── Example prompts ──────────────────────────────────────────────────────────
@@ -343,99 +354,53 @@ function MetricTile({ label, value }: { label: string; value: string }) {
   )
 }
 
-// ─── Message bubble ───────────────────────────────────────────────────────────
-function MessageBubble({
-  message,
-  onViewPropertyDetails,
-}: {
-  message: Message
-  onViewPropertyDetails?: (parcelId: string) => void
-}) {
-  const isUser = message.role === 'user'
-
-  if (message.isLoading) {
-    return (
-      <div className="flex justify-start">
-        <div className="max-w-[80%] bg-gray-100 dark:bg-slate-800 rounded-2xl rounded-tl-sm">
-          <TypingIndicator />
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-[80%] space-y-1`}>
-        <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
-            isUser
-              ? 'bg-[#F59E0B] text-white rounded-tr-sm'
-              : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-tl-sm'
-          }`}
-          dangerouslySetInnerHTML={isUser ? undefined : { __html: formatMarkdown(message.content) }}
-        >
-          {isUser ? message.content : undefined}
-        </div>
-
-        {/* Citations */}
-        {!isUser && message.citations && message.citations.length > 0 && (
-          <div className="flex flex-wrap gap-1 px-1">
-            {message.citations.map((c, i) => (
-              <span
-                key={i}
-                title={c.detail}
-                className="text-xs px-2 py-0.5 rounded-full bg-[#1E3A5F]/60 text-gray-600 dark:text-slate-300 border border-[#1E3A5F]/40 cursor-default"
-              >
-                📋 {c.source}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* View Property Details + Zoning Report buttons */}
-        {!isUser && message.parcel && (
-          <div className="px-1 flex flex-wrap gap-1.5">
-            {onViewPropertyDetails && (
-              <button
-                onClick={() => onViewPropertyDetails(message.parcel!.parcel_id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
-              >
-                <Building2 className="w-3.5 h-3.5" />
-                View Property Details
-              </button>
-            )}
-            <a
-              href={`/report?parcel=${encodeURIComponent(message.parcel.parcel_id)}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B]/10 text-xs font-semibold transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Full Zoning Report
-            </a>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+// ─── assistant-ui message rendering (safe markdown, no dangerouslySetInnerHTML) ──
+const MARKDOWN_COMPONENTS = {
+  p: (props: any) => <p className="mt-2 first:mt-0" {...props} />,
+  strong: (props: any) => <strong className="font-semibold" {...props} />,
+  code: (props: any) => <code className="font-mono text-xs bg-black/10 dark:bg-white/10 rounded px-1 py-0.5" {...props} />,
+  ul: (props: any) => <ul className="space-y-0.5 my-1 list-disc list-inside ml-3" {...props} />,
+  ol: (props: any) => <ol className="space-y-0.5 my-1 list-decimal list-inside ml-3" {...props} />,
+  li: (props: any) => <li {...props} />,
+  a: (props: any) => <a className="text-[#F59E0B] underline hover:text-[#F59E0B]/80" target="_blank" rel="noopener noreferrer" {...props} />,
 }
 
-// ─── Simple markdown formatter ────────────────────────────────────────────────
-function formatMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^- (.+)$/gm, '<li class="ml-3 list-disc list-inside">$1</li>')
-    .replace(/(<li[^>]*>.*<\/li>\n?)+/g, '<ul class="space-y-0.5 my-1">$&</ul>')
-    .replace(/\[Source: ([^\]]+)\]/g, '<span class="text-xs text-gray-400 dark:text-slate-500 italic">[Source: $1]</span>')
-    .replace(/\n\n/g, '</p><p class="mt-2">')
-    .replace(/^(.+)$/, '<p>$1</p>')
+function AssistantMarkdownText() {
+  return <MarkdownTextPrimitive components={MARKDOWN_COMPONENTS} />
 }
 
-// ─── Feedback state per message ───────────────────────────────────────────────
+function UserPlainText() {
+  const { text } = useMessagePartText()
+  return <>{text}</>
+}
+
+// ─── Per-message actions (feedback + property details), threaded via context ──
+// assistant-ui's ThreadPrimitive.Messages renders AssistantMessage/UserMessage as
+// stable module-level components (identity must stay constant across renders, or
+// the thread remounts every keystroke) — so per-message handlers that close over
+// component state are passed down via context instead of props.
 type FeedbackStatus = 'idle' | 'negative-expand' | 'submitted'
 
 interface FeedbackState {
   status: FeedbackStatus
   text: string
+}
+
+interface ChatActions {
+  feedbackMap: Record<string, FeedbackState>
+  onThumbsUp: (id: string) => void
+  onThumbsDown: (id: string) => void
+  onTextChange: (id: string, text: string) => void
+  onSubmitNegative: (id: string) => void
+  onViewPropertyDetails: (parcelId: string) => void
+}
+
+const ChatActionsContext = createContext<ChatActions | null>(null)
+
+function useChatActions(): ChatActions {
+  const ctx = useContext(ChatActionsContext)
+  if (!ctx) throw new Error('ChatActionsContext missing — must render inside ZoningChatbot')
+  return ctx
 }
 
 // ─── Feedback buttons component ───────────────────────────────────────────────
@@ -504,10 +469,86 @@ function FeedbackButtons({
   )
 }
 
+// ─── assistant-ui message components ───────────────────────────────────────────
+function AssistantMessage() {
+  const id = useMessage((s) => s.id)
+  const custom = useMessage((s) => s.metadata.custom) as {
+    citations?: Citation[]
+    parcel?: ParcelData
+    zoning?: ZoningData
+  }
+  const { feedbackMap, onThumbsUp, onThumbsDown, onTextChange, onSubmitNegative, onViewPropertyDetails } = useChatActions()
+
+  return (
+    <div className="flex justify-start">
+      <div className="max-w-[80%] space-y-1">
+        <MessagePrimitive.Root className="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 rounded-tl-sm">
+          <MessagePrimitive.Parts components={{ Text: AssistantMarkdownText }} />
+        </MessagePrimitive.Root>
+
+        {/* Citations */}
+        {custom.citations && custom.citations.length > 0 && (
+          <div className="flex flex-wrap gap-1 px-1">
+            {custom.citations.map((c, i) => (
+              <span
+                key={i}
+                title={c.detail}
+                className="text-xs px-2 py-0.5 rounded-full bg-[#1E3A5F]/60 text-gray-600 dark:text-slate-300 border border-[#1E3A5F]/40 cursor-default"
+              >
+                📋 {c.source}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* View Property Details + Zoning Report buttons */}
+        {custom.parcel && (
+          <div className="px-1 flex flex-wrap gap-1.5">
+            <button
+              onClick={() => onViewPropertyDetails(custom.parcel!.parcel_id)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-[#F59E0B]/80 text-white text-xs font-semibold transition-colors"
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              View Property Details
+            </button>
+            <a
+              href={`/report?parcel=${encodeURIComponent(custom.parcel.parcel_id)}`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F59E0B] text-[#F59E0B] hover:bg-[#F59E0B]/10 text-xs font-semibold transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Full Zoning Report
+            </a>
+          </div>
+        )}
+
+        <FeedbackButtons
+          messageId={id}
+          state={feedbackMap[id] ?? { status: 'idle', text: '' }}
+          onThumbsUp={onThumbsUp}
+          onThumbsDown={onThumbsDown}
+          onTextChange={onTextChange}
+          onSubmitNegative={onSubmitNegative}
+        />
+      </div>
+    </div>
+  )
+}
+
+function UserMessage() {
+  return (
+    <div className="flex justify-end">
+      <div className="max-w-[80%] space-y-1">
+        <MessagePrimitive.Root className="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words bg-[#F59E0B] text-white rounded-tr-sm">
+          <MessagePrimitive.Parts components={{ Text: UserPlainText }} />
+        </MessagePrimitive.Root>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ZoningChatbot() {
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID())
   const [contextParcel, setContextParcel] = useState<ParcelData | undefined>()
@@ -521,9 +562,6 @@ export default function ZoningChatbot() {
   const [propertyCardParcelId, setPropertyCardParcelId] = useState<string>('')
   const [propertyCardLoading, setPropertyCardLoading] = useState(false)
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
-
   // Post-payment bypass: if redirected back with ?success=true, mark user as pro
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -532,10 +570,6 @@ export default function ZoningChatbot() {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return
@@ -549,9 +583,7 @@ export default function ZoningChatbot() {
     }
 
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text }
-    const loadingMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: '', isLoading: true }
-    setMessages(prev => [...prev, userMsg, loadingMsg])
-    setInput('')
+    setMessages(prev => [...prev, userMsg])
     setIsLoading(true)
 
     try {
@@ -565,14 +597,13 @@ export default function ZoningChatbot() {
 
       // Handle server-side paywall gate
       if (data.paywall === true) {
-        setMessages(prev => prev.filter(m => m.id !== loadingMsg.id))
         setIsLoading(false)
         setShowPaywall(true)
         return
       }
 
       const assistantMsg: Message = {
-        id: loadingMsg.id,
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: data.response ?? data.error ?? 'No response.',
         citations: data.citations,
@@ -580,7 +611,7 @@ export default function ZoningChatbot() {
         zoning: data.zoning,
       }
 
-      setMessages(prev => prev.map(m => m.id === loadingMsg.id ? assistantMsg : m))
+      setMessages(prev => [...prev, assistantMsg])
 
       if (data.sessionId && !sessionId) setSessionId(data.sessionId as string)
       if (data.parcel) {
@@ -589,15 +620,14 @@ export default function ZoningChatbot() {
         incrementLookup()
       }
       if (data.zoning) setContextZoning(data.zoning)
-    } catch (err) {
-      setMessages(prev => prev.map(m =>
-        m.id === loadingMsg.id
-          ? { ...m, content: "I'm having trouble connecting. Please try again in a moment.", isLoading: false }
-          : m
-      ))
+    } catch {
+      setMessages(prev => [...prev, {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: "I'm having trouble connecting. Please try again in a moment.",
+      }])
     } finally {
       setIsLoading(false)
-      inputRef.current?.focus()
     }
   }, [isLoading, sessionId])
 
@@ -672,22 +702,40 @@ export default function ZoningChatbot() {
     submitFeedback(id, 'negative', text)
   }, [feedbackMap, submitFeedback])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage(input)
-    }
+  const runtime = useExternalStoreRuntime<Message>({
+    messages,
+    isRunning: isLoading,
+    isDisabled: isLoading,
+    convertMessage: (m) => ({
+      role: m.role,
+      id: m.id,
+      content: m.content,
+      metadata: { custom: { citations: m.citations, parcel: m.parcel, zoning: m.zoning } },
+    }),
+    onNew: async (message: AppendMessage) => {
+      const textPart = message.content.find((p): p is TextMessagePart => p.type === 'text')
+      if (textPart?.text) await sendMessage(textPart.text)
+    },
+  })
+
+  const chatActions: ChatActions = {
+    feedbackMap,
+    onThumbsUp: handleThumbsUp,
+    onThumbsDown: handleThumbsDown,
+    onTextChange: handleFeedbackTextChange,
+    onSubmitNegative: handleSubmitNegative,
+    onViewPropertyDetails: fetchPropertyCard,
   }
 
-  const isEmpty = messages.length === 0
-
   return (
+    <ChatActionsContext.Provider value={chatActions}>
+    <AssistantRuntimeProvider runtime={runtime}>
     <div className="flex h-full gap-0 overflow-hidden">
       {/* ── Left panel: Chat ── */}
       <div className="flex flex-col flex-1 min-w-0 border-r border-gray-200 dark:border-slate-800">
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {isEmpty ? (
+        <ThreadPrimitive.Viewport className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth" autoScroll>
+          {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
               <div>
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1E3A5F] to-[#1E3A5F]/60 flex items-center justify-center mx-auto mb-4">
@@ -709,53 +757,34 @@ export default function ZoningChatbot() {
                 ))}
               </div>
             </div>
-          ) : (
-            messages.map(msg => (
-              <div key={msg.id}>
-                <MessageBubble
-                  message={msg}
-                  onViewPropertyDetails={fetchPropertyCard}
-                />
-                {msg.role === 'assistant' && !msg.isLoading && (
-                  <FeedbackButtons
-                    messageId={msg.id}
-                    state={feedbackMap[msg.id] ?? { status: 'idle', text: '' }}
-                    onThumbsUp={handleThumbsUp}
-                    onThumbsDown={handleThumbsDown}
-                    onTextChange={handleFeedbackTextChange}
-                    onSubmitNegative={handleSubmitNegative}
-                  />
-                )}
-              </div>
-            ))
           )}
-          <div ref={messagesEndRef} />
-        </div>
+
+          <ThreadPrimitive.Messages components={{ UserMessage, AssistantMessage }} />
+
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] bg-gray-100 dark:bg-slate-800 rounded-2xl rounded-tl-sm">
+                <TypingIndicator />
+              </div>
+            </div>
+          )}
+        </ThreadPrimitive.Viewport>
 
         {/* Input bar */}
         <div className="shrink-0 border-t border-gray-200 dark:border-slate-800 p-3">
-          <div className="flex items-end gap-2 bg-gray-100 dark:bg-slate-800 rounded-xl px-3 py-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about zoning in Brevard County..."
+          <ComposerPrimitive.Root className="flex items-end gap-2 bg-gray-100 dark:bg-slate-800 rounded-xl px-3 py-2">
+            <ComposerPrimitive.Input
               rows={1}
+              placeholder="Ask about zoning in Brevard County..."
               className="flex-1 bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 resize-none outline-none min-h-[24px] max-h-32 leading-6"
-              style={{ overflowY: input.split('\n').length > 4 ? 'auto' : 'hidden' }}
-              disabled={isLoading}
-              autoFocus
             />
-            <button
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim() || isLoading}
-              className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#F59E0B] hover:bg-[#F59E0B]/80"
+            <ComposerPrimitive.Send
               aria-label="Send message"
+              className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#F59E0B] hover:bg-[#F59E0B]/80"
             >
               <Send className="w-4 h-4 text-white" />
-            </button>
-          </div>
+            </ComposerPrimitive.Send>
+          </ComposerPrimitive.Root>
           <p className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 text-center">
             Answers sourced from Supabase · Brevard County zoning data
           </p>
@@ -838,5 +867,7 @@ export default function ZoningChatbot() {
       {/* ── Paywall modal ── */}
       {showPaywall && <PaywallModal onClose={() => setShowPaywall(false)} />}
     </div>
+    </AssistantRuntimeProvider>
+    </ChatActionsContext.Provider>
   )
 }
