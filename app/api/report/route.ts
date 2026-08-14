@@ -19,7 +19,7 @@ export interface S5TemplateRow {
 }
 
 // ─── Server-side Pro entitlement check ─────────────────────
-\n// Same source of truth as app/api/zoning-chat/route.ts checkProEntitlement —
+// Same source of truth as app/api/zoning-chat/route.ts checkProEntitlement —
 // derived from the authenticated Clerk session + subscriptions table, never
 // from a client-supplied flag.
 async function checkProEntitlement(): Promise<boolean> {

@@ -1,0 +1,56 @@
+name: "Diag: sign-in 500 root cause"
+on: workflow_dispatch
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List Vercel project env var keys (names/targets only, never values)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          curl -sS "https://api.vercel.com/v9/projects/$PROJECT/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            > /tmp/env.json
+          echo "=== ENV VAR KEYS + TARGETS (values redacted) ==="
+          python3 <<'PY'
+          import json
+          d = json.load(open('/tmp/env.json'))
+          for e in d.get('envs', []):
+              print(e.get('key'), '|', e.get('target'), '|', e.get('type'))
+          PY
+
+      - name: Get latest production deployment + runtime function error logs
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          PROJECT=prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+          curl -sS "https://api.vercel.com/v6/deployments?projectId=$PROJECT&target=production&limit=3" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            > /tmp/deploys.json
+          echo "=== RECENT PRODUCTION DEPLOYS ==="
+          python3 <<'PY'
+          import json
+          d = json.load(open('/tmp/deploys.json'))
+          for dep in d.get('deployments', []):
+              print(dep.get('uid'), dep.get('state'), dep.get('readyState'), dep.get('created'), dep.get('url'))
+          PY
+          DEPLOY_ID=$(python3 -c "
+          import json
+          d = json.load(open('/tmp/deploys.json'))
+          print(d['deployments'][0]['uid'])")
+          echo "::notice::latest_deploy_id=$DEPLOY_ID"
+
+      - name: Trigger a fresh 500 and capture runtime logs via vercel CLI
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm install -g vercel@latest >/tmp/vercel_install.log 2>&1
+          ( timeout 25 vercel logs https://zonewise.ai --token="$VERCEL_TOKEN" --yes > /tmp/runtime_logs.txt 2>&1 & )
+          sleep 5
+          echo "=== TRIGGER REQUEST ==="
+          curl -sS -o /dev/null -w "HTTP_CODE=%{http_code}\n" https://zonewise.ai/sign-in
+          sleep 15
+          echo "=== RUNTIME LOGS (last 200 lines) ==="
+          tail -200 /tmp/runtime_logs.txt || echo "no runtime log file / command unsupported"
