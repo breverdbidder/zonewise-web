@@ -43,6 +43,13 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/report(.*)',
   '/auctions(.*)',
+  // MCP OAuth server — auth is handled inside app/mcp/route.ts via withMcpAuth
+  // (Bearer oauth_token, not the Clerk session cookie), and .well-known
+  // metadata MUST stay publicly fetchable per the MCP OAuth discovery spec.
+  // Letting auth.protect() run first would redirect anonymous/bearer-token
+  // requests to an HTML sign-in page instead of the expected 401 + WWW-Authenticate.
+  '/mcp(.*)',
+  '/.well-known(.*)',
   '/privacy(.*)',
   '/terms(.*)',
   '/disclaimer(.*)',
