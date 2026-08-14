@@ -695,6 +695,17 @@ async function checkProEntitlement(): Promise<boolean> {
   try {
     const { userId } = await auth()
     if (!userId) return false
+
+    // ADMIN OVERRIDE (added Aug 14 2026) — mirrors app/api/report/route.ts.
+    // See that file for the full rationale: the subscriptions table has zero
+    // active rows for anyone right now, so without this override no account,
+    // including the founder's, can ever pass this gate.
+    const adminIds = (process.env.ADMIN_USER_IDS ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+    if (adminIds.includes(userId)) return true
+
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return false
 
     const supabaseAdmin = createClient(
