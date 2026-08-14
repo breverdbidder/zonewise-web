@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, AlertTriangle, FileSearch, Lock } from 'lucide-react'
@@ -51,7 +52,19 @@ async function fetchS5Report(params: { mca_id?: string; address?: string }): Pro
     const qs = new URLSearchParams(
       params.mca_id ? { mca_id: params.mca_id } : { address: params.address ?? '' }
     )
-    const res = await fetch(`${resolveBaseUrl()}/api/report?${qs.toString()}`, { cache: 'no-store' })
+    // BUGFIX (Aug 14 2026): this Server Component previously fetched its own
+    // /api/report route with a bare absolute URL. That is a brand-new outbound
+    // HTTP request — Next.js does NOT attach the visitor's Clerk session cookie
+    // to it automatically. /api/report's auth() therefore always saw a logged-out
+    // caller, checkProEntitlement() always returned false, and the S5 report
+    // rendered as locked/unavailable for every user, including fully-entitled
+    // Pro accounts. Forwarding the incoming request's cookie header fixes this.
+    const incomingHeaders = await headers()
+    const cookie = incomingHeaders.get('cookie')
+    const res = await fetch(`${resolveBaseUrl()}/api/report?${qs.toString()}`, {
+      cache: 'no-store',
+      headers: cookie ? { cookie } : undefined,
+    })
     // 404 (address not found) still carries a body worth showing — read it either way.
     const body = await res.json().catch(() => null)
     return body
@@ -119,8 +132,12 @@ function S5Pending({ mcaId, message }: { mcaId?: string; message?: string }) {
 
 async function fetchReportData(parcelId: string, origin: string): Promise<ZoningReportData | null> {
   try {
+    // Same cookie-forwarding fix as fetchS5Report above — this is also a
+    // Server Component calling its own API route.
+    const incomingHeaders = await headers()
+    const cookie = incomingHeaders.get('cookie')
     const url = `${origin}/api/zoning-report?parcelId=${encodeURIComponent(parcelId)}`
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url, { cache: 'no-store', headers: cookie ? { cookie } : undefined })
     if (!res.ok) return null
     return await res.json()
   } catch {
