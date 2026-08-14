@@ -7,7 +7,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { SECURITY_HEADERS } from '@/lib/validation'
 import { fetchS5Report, type ServerKeySource } from '@/lib/biddeed-mcp'
 
-const MCA_ID_RE = /^[A-Za-z0-9._-]{1,64}$/
+const MCA_ID_RE = /^[A-Za-z0-9.-]{1,64}$/
 
 export interface S5TemplateRow {
   section_key: string
@@ -18,14 +18,29 @@ export interface S5TemplateRow {
   sort_order: number
 }
 
-// ─── Server-side Pro entitlement check ─────────────────────────────────────
-// Same source of truth as app/api/zoning-chat/route.ts checkProEntitlement —
+// ─── Server-side Pro entitlement check ─────────────────────
+\n// Same source of truth as app/api/zoning-chat/route.ts checkProEntitlement —
 // derived from the authenticated Clerk session + subscriptions table, never
 // from a client-supplied flag.
 async function checkProEntitlement(): Promise<boolean> {
   try {
     const { userId } = await auth()
     if (!userId) return false
+
+    // ADMIN OVERRIDE (added Aug 14 2026): comma-separated Clerk user IDs in
+    // ADMIN_USER_IDS always pass entitlement, independent of the subscriptions
+    // table. Safe/no-op until the env var is set — the `subscriptions` table
+    // currently has zero active rows for anyone, including the founder, so
+    // without this override nobody (not even an admin account) can ever see
+    // a live report. Set ADMIN_USER_IDS in Vercel project env vars to your
+    // Clerk user ID (Clerk Dashboard → Users → your account → User ID,
+    // format user_xxxxxxxxxxxx) to unlock founder/demo access immediately.
+    const adminIds = (process.env.ADMIN_USER_IDS ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+    if (adminIds.includes(userId)) return true
+
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return false
 
     const supabaseAdmin = createClient(
