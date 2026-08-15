@@ -2,6 +2,9 @@ import { LandingNavbar } from '@/components/landing/LandingNavbar'
 import { HeroCinematicSection } from '@/components/landing/HeroCinematicSection'
 import { StatsSection } from '@/components/landing/StatsSection'
 import { FeaturesSection } from '@/components/landing/FeaturesSection'
+import { CaseStudySection } from '@/components/landing/CaseStudySection'
+import { AudienceSection } from '@/components/landing/AudienceSection'
+import { OperatorSection } from '@/components/landing/OperatorSection'
 import { PricingSection } from '@/components/landing/PricingSection'
 import { CTASection } from '@/components/landing/CTASection'
 import { LandingFooter } from '@/components/landing/LandingFooter'
@@ -15,6 +18,9 @@ export default function Home() {
       <HeroCinematicSection />
       <StatsSection />
       <FeaturesSection />
+      <CaseStudySection />
+      <AudienceSection />
+      <OperatorSection />
       <PricingSection />
       <CTASection />
       <LandingFooter />
