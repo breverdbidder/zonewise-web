@@ -33,7 +33,7 @@ const features = [
   {
     icon: Building2,
     title: 'Deal Scoring',
-    description: 'Max-bid formula: (ARV×70%)−Repairs−$10K−MIN($25K,15%×ARV). Scored against live auction data.',
+    description: 'Every lot scored against live auction priors and comparable sales, weighed against repair cost and clearance data — know your ceiling before the gavel.',
   },
 ]
 
