@@ -80,7 +80,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
   const notPermittedCount = LODGING_TYPES.filter((t) => lodging[t.key] === 'not_permitted').length
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1 min-w-0">
         {/* Header */}
         <div className="flex items-center mb-4 gap-3">
@@ -230,7 +230,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
       </div>
 
       {/* Sidebar */}
-      <div className="w-[300px] flex-shrink-0">
+      <div className="w-full lg:w-[300px] flex-shrink-0">
         <SectionLabel text="Subject Property" />
         <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={14} pitch={0} style={{ height: 200, marginBottom: 16 }} />
