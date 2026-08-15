@@ -52,7 +52,7 @@ const TOUR_STEPS: TourStep[] = [
     icon: '🚀',
     title: 'Get Full Access',
     description:
-      'Unlock unlimited queries, advanced analytics, 128-KPI property scoring, and foreclosure auction tracking. Upgrade to Pro and move faster than every other investor.',
+      'Unlock unlimited parcel reports, capacity and massing analysis, full GIS layers, and exportable feasibility studies across all 67 Florida counties.',
   },
 ]
 
@@ -70,7 +70,12 @@ export function OnboardingTour() {
     if (!isDashboardRoute) return
     try {
       const done = localStorage.getItem(STORAGE_KEY)
-      if (!done) {
+      // Opt-in only. The tour used to auto-open 800ms after load for every
+      // first-time visitor, landing a full-screen modal on top of the first
+      // thing they came to see (and over live demos). It now opens only when
+      // explicitly requested via ?tour=1.
+      const requested = new URLSearchParams(window.location.search).has('tour')
+      if (!done && requested) {
         // Small delay so layout renders first
         const t = setTimeout(() => setVisible(true), 800)
         return () => clearTimeout(t)
