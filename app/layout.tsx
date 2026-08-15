@@ -256,7 +256,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <SkipToContent />
         <VercelAnalytics />
-        <ConditionalClerkProvider>
+        <ConditionalClerkProvider nonce={nonce}>
           <PostHogProvider>
             <ThemeProvider>
               <OnboardingProvider>
