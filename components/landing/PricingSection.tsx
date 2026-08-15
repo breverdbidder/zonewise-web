@@ -20,7 +20,7 @@ const plans = [
       'Statewide Florida choropleth map',
       'Public zoning lookup',
       'AI zoning chatbot (limited)',
-      '5 auction records/month',
+      '5 parcel reports per month',
     ],
   },
   {
@@ -34,7 +34,7 @@ const plans = [
     badge: 'Most popular',
     features: [
       '67 counties and growing — nationwide expansion in progress',
-      'Unlimited auction records',
+      'Unlimited parcel reports',
       'Development feasibility studio',
       'Zoning reports (PDF export)',
       'Deal scoring + max-bid formula',
