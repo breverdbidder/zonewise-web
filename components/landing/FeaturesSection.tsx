@@ -65,7 +65,7 @@ export function FeaturesSection() {
             Everything a serious investor needs
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto">
-            Built by a licensed FL broker and GC with 10+ years in Brevard County foreclosures. Now expanding nationwide.
+            Built by a licensed FL broker and GC with 20 years buying distressed assets — online and in person at the courthouse. All 67 Florida counties live; built to scale nationwide.
           </p>
         </div>
 
