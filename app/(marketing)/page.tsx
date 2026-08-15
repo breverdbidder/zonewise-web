@@ -1,6 +1,7 @@
 import { LandingNavbar } from '@/components/landing/LandingNavbar'
 import { HeroCinematicSection } from '@/components/landing/HeroCinematicSection'
 import { StatsSection } from '@/components/landing/StatsSection'
+import { ParcelIntelligenceSection } from '@/components/cinematic'
 import { FeaturesSection } from '@/components/landing/FeaturesSection'
 import { PricingSection } from '@/components/landing/PricingSection'
 import { CTASection } from '@/components/landing/CTASection'
@@ -14,6 +15,7 @@ export default function Home() {
       <LandingNavbar />
       <HeroCinematicSection />
       <StatsSection />
+      <ParcelIntelligenceSection />
       <FeaturesSection />
       <PricingSection />
       <CTASection />
