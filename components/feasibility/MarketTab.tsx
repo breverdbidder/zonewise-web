@@ -21,7 +21,7 @@ interface MarketTabProps {
 
 export default function MarketTab({ site }: MarketTabProps) {
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1">
         <Card className="p-5">
           <div className="flex items-center mb-4">
@@ -74,7 +74,7 @@ export default function MarketTab({ site }: MarketTabProps) {
           </div>
         </Card>
       </div>
-      <div className="w-[300px] flex-shrink-0">
+      <div className="w-full lg:w-[300px] flex-shrink-0">
         <SectionLabel text="Location Context" />
         <div className="text-sm font-bold text-slate-900 mb-3">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={12} pitch={0} style={{ height: 280 }} />
