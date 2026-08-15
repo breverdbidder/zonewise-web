@@ -294,6 +294,16 @@ export async function GET(req: NextRequest) {
     //    VALUES_IN_FL_PARCELS below. Either way Brevard GIS also naturally supplies the
     //    clean 404 for parcels that don't exist anywhere.
     //
+    //    RESOLVED 2026-08-15 - THE CLAIM BELOW IS WRONG; THE DATA IS CORRECT.
+    //    fl_parcels.co_no uses FLORIDA DOR numbering: Brevard = 15, Dixie = 25.
+    //    fl_counties also carries a legacy co_no_old_alphabetical column where
+    //    Brevard = 5 and Dixie = 15. Reading a DOR co_no against that ALPHABETICAL
+    //    column is what produced the "mislabeled" conclusion. The 348,015
+    //    Titusville/Palm Bay/Melbourne rows under co_no=15 are correctly Brevard.
+    //    Validated: all 67 co_no in fl_county_codes match distinct co_no in
+    //    fl_parcels exactly, zero orphans either direction.
+    //    Canonical: public.v_county_ssot, county_from_co_no(), co_no_from_county().
+    //    Original (incorrect) note retained below for history only:
     //    KNOWN DATA BUG (out of scope to fix here, flagged for a follow-up issue):
     //    fl_parcels.co_no is unreliable for at least Brevard/Broward/Dixie — e.g.
     //    co_no=15 ("Dixie" per fl_counties) holds ~348K rows whose municipality is
