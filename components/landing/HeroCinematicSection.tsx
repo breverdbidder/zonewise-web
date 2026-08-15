@@ -279,7 +279,7 @@ export function HeroCinematicSection() {
                 className="mb-6 border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
               >
                 <Sparkles className="mr-1.5 h-3 w-3" />
-                Powering Everest Capital USA — 20 years buying distressed assets, online and at the courthouse
+                Built by a developer with 20 years and hundreds of closings — not by a software company
               </Badge>
             </motion.div>
 
@@ -289,11 +289,11 @@ export function HeroCinematicSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Score every Florida foreclosure
+              Every parcel.
               <br />
-              + tax deed auction.
+              Every zoning rule.
               <br />
-              <span className="text-[#F59E0B]">Before anyone else bids.</span>
+              <span className="text-[#F59E0B]">Feasibility in one search.</span>
             </motion.h1>
 
             <motion.div
@@ -303,7 +303,7 @@ export function HeroCinematicSection() {
               transition={{ duration: 0.6, delay: 0.8 }}
             >
               <TextScramble
-                text="245K AUCTIONS · 10.8M PARCELS · 67 COUNTIES"
+                text="10.8M PARCELS · 67 COUNTIES · 50-STATE ARCHITECTURE"
                 trigger="scroll"
                 className="text-xs sm:text-sm tracking-widest"
                 color="rgba(245,158,11,0.7)"
@@ -317,7 +317,7 @@ export function HeroCinematicSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Nationwide zoning intelligence and feasibility analysis. ZoneWise.AI maps the opportunity — BidDeed.AI wins the auction.
+              Zoning intelligence and feasibility studies for developers and investors. All 67 Florida counties live — built to run in all 50 states.
             </motion.p>
 
             <motion.div
