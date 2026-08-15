@@ -87,7 +87,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               "name": "ZoneWise.AI",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
-              "description": "AI-powered zoning and auction intelligence nationwide. Live in 67 Florida counties, expanding to all 50 states. Parcel analysis, foreclosure tracking, and investment scoring.",
+              "description": "AI-powered zoning intelligence and feasibility studies for developers and investors. Live in all 67 Florida counties, built for all 50 states. Parcel analysis, foreclosure tracking, and investment scoring.",
               "url": "https://zonewise.ai",
               "author": {
                 "@type": "Organization",
@@ -112,7 +112,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               "name": "Everest Capital USA",
               "url": "https://everestcapitalusa.com",
               "logo": "https://zonewise.ai/icon.png",
-              "description": "Florida real estate investment firm building ZoneWise.AI and BidDeed.AI — agentic AI platforms for zoning intelligence and foreclosure auction analysis.",
+              "description": "Florida real estate investment firm building ZoneWise.AI — an agentic AI platform for zoning intelligence and development feasibility.",
               "founder": {
                 "@type": "Person",
                 "name": "Ariel Shapira"
@@ -141,7 +141,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Everest Capital USA",
-              "description": "AI-powered real estate intelligence serving all 67 Florida counties. ZoneWise.AI for zoning analysis, BidDeed.AI for foreclosure auction intelligence.",
+              "description": "AI-powered real estate intelligence serving all 67 Florida counties. Zoning analysis, capacity and massing, and development feasibility.",
               "url": "https://zonewise.ai",
               "telephone": "+1-321-831-9757",
               "address": {
@@ -180,7 +180,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   "name": "What is ZoneWise.AI?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "ZoneWise.AI is an agentic AI ecosystem built by Everest Capital USA for zoning compliance, foreclosure auction intelligence, and parcel analysis across all 67 Florida counties. It pairs with BidDeed.AI for auction-specific intelligence."
+                    "text": "ZoneWise.AI is an agentic AI ecosystem built by Everest Capital USA for zoning compliance, development feasibility, and parcel analysis across all 67 Florida counties. It pairs with BidDeed.AI for auction-specific intelligence."
                   }
                 },
                 {
@@ -193,7 +193,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 },
                 {
                   "@type": "Question",
-                  "name": "How does ZoneWise.AI help with foreclosure auctions?",
+                  "name": "How does ZoneWise.AI help with development feasibility?",
                   "acceptedAnswer": {
                     "@type": "Answer",
                     "text": "ZoneWise.AI integrates with BidDeed.AI to provide live foreclosure auction tracking, automated deal scoring, judgment analysis, and max bid calculations using the formula: (ARV × 70%) - Repairs - $10K - MIN($25K, 15% × ARV)."
