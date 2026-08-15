@@ -1,0 +1,40 @@
+name: "ZoneWise MCP Phase 1 — Check Deploy Status"
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: "Vercel deployment ID (dpl_...)"
+        required: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: "Check deployment status"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          set -euo pipefail
+          curl -s "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | \
+            python3 -c "import json,sys; d=json.load(sys.stdin); print('readyState:', d.get('readyState'), 'error:', d.get('errorMessage'), 'url:', d.get('url'), 'alias:', d.get('alias'))"
+
+      - name: "Recent build events (last 40 lines)"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: |
+          curl -s "https://api.vercel.com/v3/deployments/$DEPLOYMENT_ID/events?builds=1" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | \
+            python3 -c "
+          import json, sys
+          try:
+              events = json.load(sys.stdin)
+          except Exception as e:
+              print('parse error', e); sys.exit(0)
+          for e in events[-40:]:
+              t = e.get('text') or e.get('payload', {}).get('text', '')
+              if t: print(t.rstrip())
+          " || echo "no events / non-JSON response"
