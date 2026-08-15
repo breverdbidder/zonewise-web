@@ -29,7 +29,12 @@ const navGroups: NavGroup[] = [
     label: 'Intelligence',
     items: [
       { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-      { title: 'Auctions', url: '/auctions', icon: Gavel },
+      // Auctions hidden from ZoneWise nav (Ariel, Aug 15 2026, Option B).
+      // The /auctions route and components/auctions/ REMAIN INTACT and reachable
+      // by direct URL — this only removes it from the demo/nav path, because
+      // auction content belongs to BidDeed.AI's surface, not ZoneWise's.
+      // Restore this line to re-expose it.
+      // { title: 'Auctions', url: '/auctions', icon: Gavel },
       { title: 'Explorer', url: '/explorer', icon: Map },
     ],
   },
