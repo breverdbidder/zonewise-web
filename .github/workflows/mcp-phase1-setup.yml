@@ -1,0 +1,105 @@
+name: "ZoneWise MCP Phase 1 — Domain + Env Setup"
+# One-off setup for issue #19091 (mcp.zonewise.ai Phase 1). Adds the
+# mcp.zonewise.ai domain to the existing zonewise-web Vercel project and
+# pushes ZONEWISE_MCP_SECRET (v1 shared-secret auth) as a Vercel env var.
+# Idempotent: re-running is safe — POST /domains 400s harmlessly if the
+# domain is already attached, POST /env just adds another env revision.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: "Add Cloudflare CNAME mcp.zonewise.ai -> cname.vercel-dns.com"
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          set -euo pipefail
+          ZONE=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai" \
+            -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json")
+          ZONE_ID=$(echo "$ZONE" | python3 -c 'import json,sys; d=json.load(sys.stdin); r=d.get("result") or []; print(r[0]["id"] if r else "NOT_FOUND")')
+          echo "zone_id=$ZONE_ID"
+          if [ "$ZONE_ID" = "NOT_FOUND" ]; then
+            echo "ERROR: zonewise.ai zone not found in this Cloudflare account/token"
+            exit 1
+          fi
+
+          EXISTING=$(curl -s "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&name=mcp.zonewise.ai" \
+            -H "Authorization: Bearer $CF_API_TOKEN" | \
+            python3 -c "import json,sys; d=json.load(sys.stdin); r=d.get('result',[]); print(r[0]['id'] if r else 'NONE')")
+
+          if [ "$EXISTING" != "NONE" ]; then
+            echo "CNAME already exists (id=$EXISTING), updating to cname.vercel-dns.com..."
+            RESULT=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$EXISTING" \
+              -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
+              -d '{"type":"CNAME","name":"mcp.zonewise.ai","content":"cname.vercel-dns.com","ttl":1,"proxied":false}')
+          else
+            echo "Creating CNAME mcp.zonewise.ai -> cname.vercel-dns.com (DNS-only, required for Vercel domain verification)..."
+            RESULT=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+              -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
+              -d '{"type":"CNAME","name":"mcp.zonewise.ai","content":"cname.vercel-dns.com","ttl":1,"proxied":false}')
+          fi
+          echo "$RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print('success=', d.get('success'), 'errors=', d.get('errors'))"
+
+      - name: "Add mcp.zonewise.ai domain to Vercel project"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          set -euo pipefail
+          PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          API="https://api.vercel.com"
+
+          echo "=== Adding domain mcp.zonewise.ai ==="
+          RESP=$(curl -s -X POST "$API/v10/projects/$PROJECT/domains" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"mcp.zonewise.ai"}')
+          echo "$RESP" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          if d.get('name'):
+              print(f'ADDED name={d[\"name\"]} verified={d.get(\"verified\")}')
+          elif d.get('error', {}).get('code') == 'domain_already_in_use':
+              print(f'ALREADY_ATTACHED: {d[\"error\"].get(\"message\")}')
+          else:
+              print(f'RESPONSE: {d}')
+          "
+
+          echo ""
+          echo "=== Current domain list for project ==="
+          curl -s "$API/v9/projects/$PROJECT/domains" -H "Authorization: Bearer $VERCEL_TOKEN" | \
+            python3 -c "import json,sys; [print(f'  {d[\"name\"]:25} verified={d.get(\"verified\")}') for d in json.load(sys.stdin).get('domains',[])]"
+
+      - name: "Push ZONEWISE_MCP_SECRET to Vercel env (production)"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ZONEWISE_MCP_SECRET: ${{ secrets.ZONEWISE_MCP_SECRET }}
+        run: |  # nosemgrep: yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell -- curl output piped to python3 for JSON parsing only, never executed as shell
+          set -euo pipefail
+          PROJECT="prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E"
+          API="https://api.vercel.com"
+
+          RESULT=$(curl -s -X POST "$API/v10/projects/$PROJECT/env" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"key\":\"ZONEWISE_MCP_SECRET\",\"value\":\"$ZONEWISE_MCP_SECRET\",\"type\":\"encrypted\",\"target\":[\"production\"]}")
+
+          if echo "$RESULT" | grep -q '"error"'; then
+            echo "ENV PUSH RESPONSE (may be duplicate-key, non-fatal):"
+            echo "$RESULT" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('error',{}).get('code'), '-', d.get('error',{}).get('message'))"
+          else
+            echo "ENV PUSH: SUCCESS — ZONEWISE_MCP_SECRET set for production"
+          fi
+
+      - name: "Trigger production redeploy so the new env var is picked up"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          curl -s -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"zonewise-web","project":"prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E","target":"production","gitSource":{"type":"github","org":"breverdbidder","repo":"zonewise-web","ref":"main"}}' \
+            -o /tmp/deploy_resp.json -w "HTTP:%{http_code}\n"
+          python3 -c "import json; d=json.load(open('/tmp/deploy_resp.json')); print('url:', d.get('url'), 'id:', d.get('id'), 'readyState:', d.get('readyState'))" || cat /tmp/deploy_resp.json
