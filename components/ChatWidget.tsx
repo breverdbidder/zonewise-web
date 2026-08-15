@@ -47,7 +47,7 @@ interface ChatWidgetProps {
 const CHIPS = [
   { icon: '🏠', text: 'What are the zoning rules for RS-2 in Satellite Beach, FL?' },
   { icon: '📍', text: 'Analyze the property at 1247 Oak Ridge Dr, Melbourne FL 32940' },
-  { icon: '⚖️', text: 'What liens survive a foreclosure sale vs a tax deed sale in Florida?' },
+  { icon: '⚖️', text: 'What setbacks and height limits apply in a C-2 district?' },
   { icon: '📊', text: 'Compare C-1 vs C-2 zoning in Brevard County' },
   { icon: '🗺️', text: 'What are permitted uses for PUD zoning in Palm Bay?' },
   { icon: '💰', text: 'Show me the top Brevard County zip codes for real estate investing' },
