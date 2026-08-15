@@ -334,7 +334,7 @@ export function HeroCinematicSection() {
                   window.location.href = '/explorer'
                 }}
               >
-                5 free choropleth clicks <ArrowRight className="ml-2 h-4 w-4 inline" />
+                5 free parcel reports <ArrowRight className="ml-2 h-4 w-4 inline" />
               </ParticleButton>
               <Link
                 href="/explorer"
