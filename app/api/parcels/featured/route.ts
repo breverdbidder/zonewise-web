@@ -73,7 +73,7 @@ export async function GET() {
         .maybeSingle(),
       supabase
         .from('zoning_assignments')
-        .select('zoning_code, jurisdiction')
+        .select('zone_code, jurisdiction') // column is zone_code, not zoning_code
         .eq('parcel_id', parcel.parcel_id)
         .limit(1)
         .maybeSingle(),
@@ -100,7 +100,7 @@ export async function GET() {
           opening_bid: auctionRes.data?.opening_bid ?? null,
         },
         zonewise: {
-          zoning_code: zoningRes.data?.zoning_code ?? null,
+          zoning_code: zoningRes.data?.zone_code ?? null,
           jurisdiction: zoningRes.data?.jurisdiction ?? null,
           status: zoningRes.data
             ? `${zoningRes.data.zoning_code} (${zoningRes.data.jurisdiction})`
