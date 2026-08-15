@@ -1,24 +1,17 @@
 name: Set Clerk production keys
 
-# Sets the Clerk publishable + secret keys on the Vercel PRODUCTION environment
-# and redeploys. Values are passed as workflow inputs (never committed).
-#
-# SECURITY: workflow inputs are visible in the Actions run metadata. Treat any
-# secret passed here as disclosed and rotate it in the Clerk dashboard after the
-# deploy is confirmed working.
-#
-# Context: /sign-in, /sign-up and /login returned HTTP 500 because
-# ConditionalClerkProvider skips <ClerkProvider> when the publishable key is
-# unset, while app/sign-in/[[...sign-in]]/page.tsx renders <SignIn /> anyway.
+# Takes the Clerk keys as dispatch INPUTS so they are never committed to the
+# repository. Values are written straight to Vercel production and masked in
+# logs. Rotate the secret key in Clerk after a successful run.
 
 on:
   workflow_dispatch:
     inputs:
       pk:
-        description: "Clerk publishable key (pk_test_ / pk_live_)"
+        description: "Clerk publishable key (pk_...)"
         required: true
       sk:
-        description: "Clerk secret key (sk_test_ / sk_live_)"
+        description: "Clerk secret key (sk_...)"
         required: true
 
 permissions:
@@ -27,7 +20,7 @@ permissions:
 jobs:
   set:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     env:
       PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
       TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
@@ -37,13 +30,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate key formats before writing anything
+      - name: Mask secrets
         run: |
-          set -euo pipefail
-          case "$PK" in pk_test_*|pk_live_*) echo "publishable key format OK";; *) echo "BAD publishable key format"; exit 1;; esac
-          case "$SK" in sk_test_*|sk_live_*) echo "secret key format OK";; *) echo "BAD secret key format"; exit 1;; esac
+          echo "::add-mask::$SK"
+          echo "::add-mask::$PK"
 
-      - name: Upsert production env vars
+      - name: Validate key format
+        run: |
+          case "$PK" in pk_test_*|pk_live_*) echo "publishable key format ok";; *) echo "BAD publishable key format"; exit 1;; esac
+          case "$SK" in sk_test_*|sk_live_*) echo "secret key format ok";; *) echo "BAD secret key format"; exit 1;; esac
+
+      - name: Write to Vercel production
         run: |
           set -euo pipefail
           curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
@@ -57,26 +54,33 @@ jobs:
                 'NEXT_PUBLIC_CLERK_SIGN_UP_URL':'/sign-up'}
           envs=json.load(open('env.json')); envs=envs.get('envs',envs if isinstance(envs,list) else [])
 
-          def req(url,method,body=None):
-              r=urllib.request.Request(url,data=json.dumps(body).encode() if body else None,
-                  method=method,headers={'Authorization':f'Bearer {tok}','Content-Type':'application/json'})
-              return urllib.request.urlopen(r).read()
-
-          for key,val in vals.items():
-              # delete any existing production-scoped entry (may hold the bad sealed value)
+          def existing_prod(key):
               for e in envs:
                   if e['key']==key and e.get('target')==['production']:
-                      try:
-                          req(f"https://api.vercel.com/v9/projects/{pid}/env/{e['id']}?teamId={team}",'DELETE')
-                          print(f"  removed stale {key}")
-                      except urllib.error.HTTPError as ex:
-                          print(f"  could not remove {key}: {ex.code}")
+                      return e['id']
+              return None
+
+          for k,v in vals.items():
+              eid=existing_prod(k)
+              if eid:
+                  req=urllib.request.Request(
+                    f"https://api.vercel.com/v9/projects/{pid}/env/{eid}?teamId={team}",
+                    data=json.dumps({"value":v}).encode(), method='PATCH',
+                    headers={'Authorization':f'Bearer {tok}','Content-Type':'application/json'})
+                  action='UPDATED'
+              else:
+                  req=urllib.request.Request(
+                    f"https://api.vercel.com/v10/projects/{pid}/env?teamId={team}",
+                    data=json.dumps({"key":k,"value":v,"type":"encrypted",
+                                     "target":["production"]}).encode(), method='POST',
+                    headers={'Authorization':f'Bearer {tok}','Content-Type':'application/json'})
+                  action='ADDED'
               try:
-                  req(f"https://api.vercel.com/v10/projects/{pid}/env?teamId={team}",'POST',
-                      {"key":key,"value":val,"type":"encrypted","target":["production"]})
-                  print(f"  SET {key} -> production")
+                  urllib.request.urlopen(req).read()
+                  print(f"  {action} {k}")
               except urllib.error.HTTPError as ex:
-                  print(f"  FAILED {key}: {ex.code} {ex.read()[:160]}")
+                  print(f"  FAILED {k}: {ex.code} {ex.read()[:180]}")
+                  raise SystemExit(1)
           PY
 
       - name: Build and deploy
@@ -95,6 +99,9 @@ jobs:
             echo "$code  $r"
             [ "$code" = "200" ] || fail=1
           done
-          echo "--- clerk present in landing html ---"
-          curl -s https://zonewise.ai | grep -o 'clerk.accounts.dev' | head -1 || echo "not found"
+          if curl -s https://zonewise.ai | grep -q 'clerk.accounts.dev'; then
+            echo "clerk frontend api present in landing html"
+          else
+            echo "WARNING: clerk not referenced in landing html"
+          fi
           exit $fail
