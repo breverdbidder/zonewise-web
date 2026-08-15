@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string
-)
+import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -32,6 +27,8 @@ export async function POST(req: NextRequest) {
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     req.headers.get('x-real-ip') ||
     'unknown'
+
+  const supabase = createServiceClient()
 
   // 1. Update the feature-preference toggle. This table already exists and
   //    this write is safe regardless of whether the audit table below has
@@ -69,9 +66,6 @@ export async function POST(req: NextRequest) {
   })
 
   if (auditError) {
-    // Do not fail the user-facing request on this -- the preference write
-    // above already succeeded. Surface loudly in logs so it gets noticed
-    // and the migration gets applied.
     console.error(
       'sms consent: audit log insert failed (sms_consent_events likely not yet migrated)',
       auditError
