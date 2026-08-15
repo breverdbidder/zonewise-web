@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export const revalidate = 3600
+// force-dynamic: same build-time prerender defect as /api/stats — the featured
+// parcel lookup ran without DB access at build and pinned the hardcoded
+// fallback parcel into the response.
+export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 function getSupabase() {
   return createClient(
