@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export const revalidate = 3600
+// force-dynamic: this route was prerendered at build time, where Supabase env
+// is not available, so it served fl_parcels: 0 / fl_parcels_alive: false
+// indefinitely while the database actually held 10.5M parcels. Query the DB per
+// request and cache only briefly at the edge.
+export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 function getSupabase() {
   return createClient(
