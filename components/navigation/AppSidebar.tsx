@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold text-slate-100">ZoneWise.AI</span>
-                  <span className="truncate text-xs text-slate-400">Foreclosure Intelligence</span>
+                  <span className="truncate text-xs text-slate-400">Zoning & Feasibility</span>
                 </div>
               </a>
             </SidebarMenuButton>
