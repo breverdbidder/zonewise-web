@@ -4,7 +4,17 @@ import { useState } from 'react'
 import type { SiteData } from '@/types/feasibility'
 import { COLORS, fmt } from '@/lib/feasibility/constants'
 import { Card, SectionLabel } from './ui'
-import MapboxMap from './MapboxMap'
+import dynamic from 'next/dynamic'
+// mapbox-gl is ~731KB and blocks the main thread for ~1.9s at init.
+// Loading it on demand keeps it out of the initial bundle.
+const MapboxMap = dynamic(() => import('./MapboxMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center bg-slate-900 rounded-xl w-full h-full" style={{ minHeight: 180 }}>
+      <span className="text-slate-400 text-sm animate-pulse">Loading map…</span>
+    </div>
+  ),
+})
 
 interface CapacityTabProps {
   site: SiteData
