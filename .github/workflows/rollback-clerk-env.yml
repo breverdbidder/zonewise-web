@@ -1,0 +1,67 @@
+name: Rollback Clerk env
+
+# I cloned Clerk env vars preview -> production, but the Vercel API returned
+# SEALED values (eyJ2Ijoi...) rather than plaintext even with decrypt=true.
+# Writing those sealed blobs into production as plaintext gave Clerk an invalid
+# publishable key, which made ConditionalClerkProvider mount ClerkProvider with
+# a bad key and took EVERY route to HTTP 500.
+#
+# This removes the four production vars I added, restoring the prior state
+# (auth broken, rest of site working) while the real keys are set from the
+# Clerk dashboard.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+      TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete production-only Clerk vars
+        run: |
+          set -euo pipefail
+          curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$PROJECT_ID/env?teamId=$TEAM_ID" > env.json
+          python3 - <<'PY'
+          import json,os,urllib.request
+          tok=os.environ['VERCEL_TOKEN']; pid=os.environ['PROJECT_ID']; team=os.environ['TEAM_ID']
+          envs=json.load(open('env.json')); envs=envs.get('envs',envs if isinstance(envs,list) else [])
+          KEYS={'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY','CLERK_SECRET_KEY',
+                'NEXT_PUBLIC_CLERK_SIGN_IN_URL','NEXT_PUBLIC_CLERK_SIGN_UP_URL'}
+          for e in envs:
+              if e['key'] in KEYS and e.get('target')==['production']:
+                  req=urllib.request.Request(
+                    f"https://api.vercel.com/v9/projects/{pid}/env/{e['id']}?teamId={team}",
+                    method='DELETE', headers={'Authorization':f'Bearer {tok}'})
+                  try:
+                      urllib.request.urlopen(req).read()
+                      print(f"  DELETED {e['key']} (production-only)")
+                  except urllib.error.HTTPError as ex:
+                      print(f"  FAILED  {e['key']}: {ex.code}")
+              elif e['key'] in KEYS:
+                  print(f"  KEPT    {e['key']} targets={e.get('target')}")
+          PY
+
+      - name: Redeploy
+        run: |
+          npm install -g vercel@latest
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+      - name: Smoke test
+        run: |
+          sleep 25
+          for r in / /pricing /feasibility; do
+            echo "$(curl -s -o /dev/null -w '%{http_code}' https://zonewise.ai$r)  $r"
+          done
