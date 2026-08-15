@@ -31,7 +31,7 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
   const avgOcc = Math.round(comps.reduce((s, c) => s + c.occ, 0) / comps.length)
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1 min-w-0">
         <div className="flex gap-1.5 mb-4">
           {views.map((t) => (
@@ -115,7 +115,7 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
         </Card>
       </div>
 
-      <div className="w-[260px] flex-shrink-0">
+      <div className="w-full lg:w-[260px] flex-shrink-0">
         <Card className="p-4">
           <div className="text-[13px] font-bold mb-3" style={{ color: COLORS.brand }}>Comp Filters</div>
           {[
