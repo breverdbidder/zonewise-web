@@ -19,7 +19,10 @@ export default function DashboardGroupLayout({
       <AppSidebar />
       <SidebarInset className="bg-[#020617] h-screen overflow-hidden flex flex-col">
         <SiteHeader />
-        <div className="flex-1 min-h-0 overflow-hidden">
+        {/* overflow-y-auto (not hidden): on mobile no child pane supplies its own
+            scroll, so content taller than the shell was clipped and unreachable —
+            the page simply would not scroll. */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
           {children}
         </div>
       </SidebarInset>
