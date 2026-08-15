@@ -25,7 +25,7 @@ export default function CapacityTab({ site }: CapacityTabProps) {
   const buildableFootprint = Math.round(site.lotArea * site.coverage * 0.65)
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       <div className="flex-1">
         <MapboxMap lat={site.lat} lng={site.lng} zoom={18} pitch={60} style={{ height: 420 }} />
 
@@ -54,7 +54,7 @@ export default function CapacityTab({ site }: CapacityTabProps) {
         </div>
       </div>
 
-      <div className="w-[260px] flex-shrink-0">
+      <div className="w-full lg:w-[260px] flex-shrink-0">
         <Card className="p-4">
           <div className="text-[13px] font-bold text-slate-900 mb-3">Massing Controls</div>
           <SectionLabel text="Scenario" />
