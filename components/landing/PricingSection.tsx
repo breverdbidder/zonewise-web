@@ -17,7 +17,7 @@ const plans = [
     href: '/sign-up',
     highlighted: false,
     features: [
-      'Brevard County choropleth map',
+      'Statewide Florida choropleth map',
       'Public zoning lookup',
       'AI zoning chatbot (limited)',
       '5 auction records/month',
