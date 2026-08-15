@@ -1,0 +1,132 @@
+name: Fix Clerk production env
+
+# INCIDENT: /sign-in, /sign-up and /login return HTTP 500 in production.
+# Nobody can create an account or log in.
+#
+# Root cause (recurring — same failure as SUMMIT #399b, Apr 2026):
+#   Clerk keys are present in the Vercel PREVIEW environment but absent from
+#   PRODUCTION. components/ConditionalClerkProvider.tsx skips <ClerkProvider>
+#   when NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is unset, but
+#   app/sign-in/[[...sign-in]]/page.tsx renders Clerk's <SignIn /> regardless,
+#   so the component throws and the route 500s.
+#
+# This workflow clones the Clerk keys preview -> production via the Vercel API
+# and redeploys. It never prints secret values.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "true = report only, do not write env vars"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+      TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      DRY_RUN: ${{ github.event.inputs.dry_run }}
+    steps:
+      - name: Inspect current env vars
+        run: |
+          set -euo pipefail
+          curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$PROJECT_ID/env?teamId=$TEAM_ID&decrypt=true" \
+            > env.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('env.json'))
+          envs=d.get('envs',d if isinstance(d,list) else [])
+          keys=['NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY','CLERK_SECRET_KEY',
+                'NEXT_PUBLIC_CLERK_SIGN_IN_URL','NEXT_PUBLIC_CLERK_SIGN_UP_URL']
+          print(f"{'KEY':42} {'TARGETS':28} VALUE")
+          for e in envs:
+              if e.get('key') in keys:
+                  v=e.get('value') or ''
+                  masked=(v[:8]+'…') if v else '(unset)'
+                  print(f"{e['key']:42} {','.join(e.get('target',[])):28} {masked}")
+          PY
+
+      - name: Clone Clerk keys preview -> production
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,urllib.request
+          tok=os.environ['VERCEL_TOKEN']; pid=os.environ['PROJECT_ID']; team=os.environ['TEAM_ID']
+          dry = os.environ.get('DRY_RUN','false').lower()=='true'
+          envs=json.load(open('env.json'))
+          envs=envs.get('envs',envs if isinstance(envs,list) else [])
+
+          KEYS=['NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY','CLERK_SECRET_KEY']
+          URLS={'NEXT_PUBLIC_CLERK_SIGN_IN_URL':'/sign-in',
+                'NEXT_PUBLIC_CLERK_SIGN_UP_URL':'/sign-up'}
+
+          def has(key,target):
+              return any(e['key']==key and target in e.get('target',[]) for e in envs)
+          def value_from(key,target):
+              for e in envs:
+                  if e['key']==key and target in e.get('target',[]) and e.get('value'):
+                      return e['value']
+              return None
+
+          def post(key,value):
+              body=json.dumps({"key":key,"value":value,"type":"encrypted",
+                               "target":["production"]}).encode()
+              req=urllib.request.Request(
+                  f"https://api.vercel.com/v10/projects/{pid}/env?teamId={team}",
+                  data=body, method='POST',
+                  headers={'Authorization':f'Bearer {tok}','Content-Type':'application/json'})
+              try:
+                  urllib.request.urlopen(req).read()
+                  print(f"  ADDED  {key} -> production")
+              except urllib.error.HTTPError as ex:
+                  print(f"  FAILED {key}: {ex.code} {ex.read()[:200]}")
+
+          missing=[]
+          for k in KEYS:
+              if has(k,'production'):
+                  print(f"  OK     {k} already in production"); continue
+              v=value_from(k,'preview') or value_from(k,'development')
+              if not v:
+                  missing.append(k); print(f"  ERROR  {k} not found in preview or development"); continue
+              if dry: print(f"  DRY    would add {k} -> production")
+              else: post(k,v)
+
+          for k,v in URLS.items():
+              if has(k,'production'): print(f"  OK     {k} already in production"); continue
+              if dry: print(f"  DRY    would add {k}={v}")
+              else: post(k,v)
+
+          if missing:
+              raise SystemExit("Clerk keys absent from every environment — set them in Clerk dashboard first.")
+          PY
+
+      - name: Redeploy production
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          npm install -g vercel@latest
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+      - name: Smoke test authentication routes
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          sleep 25
+          fail=0
+          for r in /sign-in /sign-up; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://zonewise.ai$r)
+            echo "$code  $r"
+            [ "$code" = "200" ] || fail=1
+          done
+          if grep -q . <<< "$(curl -s https://zonewise.ai | grep -o 'clerk' | head -1)"; then
+            echo "clerk present in landing html"
+          fi
+          exit $fail
