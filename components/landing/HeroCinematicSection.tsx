@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { ParticleButton } from '@/components/cinematic/ParticleButton'
-import { TextScramble } from '@/components/cinematic/TextScramble'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
 
 const HERO_MARQUEE_ITEMS = [
@@ -301,13 +300,12 @@ export function HeroCinematicSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <TextScramble
-                text="10.8M PARCELS · 67 COUNTIES · 50-STATE ARCHITECTURE"
-                trigger="scroll"
-                className="text-xs sm:text-sm tracking-widest"
-                color="rgba(245,158,11,0.7)"
-                scramblingColor="rgba(255,255,255,0.15)"
-              />
+              <span
+                className="font-mono text-xs sm:text-sm tracking-widest tabular-nums"
+                style={{ color: 'rgba(245,158,11,0.7)' }}
+              >
+                10.8M PARCELS · 67 COUNTIES · 50-STATE ARCHITECTURE
+              </span>
             </motion.div>
 
             <motion.p
