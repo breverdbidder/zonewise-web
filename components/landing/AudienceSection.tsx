@@ -66,7 +66,7 @@ export function AudienceSection() {
               className="rounded-lg border p-8"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.5)' }}
             >
-              <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.1em] text-slate-500">
+              <div className="mb-4 font-mono text-xs uppercase tracking-[0.1em] text-slate-500">
                 {a.tag}
               </div>
               <h3 className="mb-6 text-xl font-semibold leading-snug text-white sm:text-2xl">
