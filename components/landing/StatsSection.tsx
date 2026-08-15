@@ -18,8 +18,8 @@ function formatNumber(n: number): string {
 export function StatsSection() {
   const [stats, setStats] = useState<StatsData>({
     counties: 67,
-    fl_parcels: 9410902,
-    auctions: 245000,
+    fl_parcels: 10800000,
+    auctions: 0,
     zoning_assignments: 351518,
   })
 
@@ -34,11 +34,13 @@ export function StatsSection() {
       })
   }, [])
 
+  // Auction counts and single-county coverage figures deliberately excluded:
+  // this surface is zoning + feasibility, statewide, and positioned nationwide.
   const items = [
-    { value: formatNumber(stats.auctions), label: 'Auction records' },
-    { value: formatNumber(stats.fl_parcels), label: 'FL parcels' },
-    { value: String(stats.counties), label: 'Florida counties' },
-    { value: '93.3%', label: 'Brevard zoning coverage' },
+    { value: formatNumber(stats.fl_parcels), label: 'Florida parcels mapped' },
+    { value: String(stats.counties), label: 'Counties live statewide' },
+    { value: '50', label: 'States in the architecture' },
+    { value: '20 yrs', label: 'Operating track record' },
   ]
 
   return (
@@ -47,7 +49,7 @@ export function StatsSection() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {items.map((s) => (
             <div key={s.label}>
-              <div className="text-3xl sm:text-4xl font-bold text-[#F59E0B] mb-1">
+              <div className="font-mono text-3xl sm:text-4xl font-bold tabular-nums text-[#F59E0B] mb-1">
                 {s.value}
               </div>
               <div className="text-sm text-slate-400">{s.label}</div>
