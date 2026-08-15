@@ -26,7 +26,19 @@ const clerkAppearance = {
   },
 }
 
-export default function ConditionalClerkProvider({ children }: { children: React.ReactNode }) {
+export default function ConditionalClerkProvider({
+  children,
+  nonce,
+}: {
+  children: React.ReactNode
+  /**
+   * CSP nonce from middleware (x-nonce). REQUIRED: script-src uses
+   * 'strict-dynamic', which makes host allowlists inert — Clerk's injected
+   * scripts are only trusted if they carry the nonce. Without this the sign-up
+   * form renders but every Clerk request is blocked and Continue does nothing.
+   */
+  nonce?: string
+}) {
   // If Clerk publishable key is not set, render children without ClerkProvider
   // This prevents the entire app from freezing when Clerk isn't configured
   if (!CLERK_KEY) {
@@ -34,7 +46,7 @@ export default function ConditionalClerkProvider({ children }: { children: React
   }
 
   return (
-    <ClerkProvider appearance={clerkAppearance}>
+    <ClerkProvider appearance={clerkAppearance} nonce={nonce}>
       {children}
     </ClerkProvider>
   )
