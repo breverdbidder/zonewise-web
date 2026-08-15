@@ -9,7 +9,6 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import { ParticleButton } from '@/components/cinematic/ParticleButton'
 import { TextScramble } from '@/components/cinematic/TextScramble'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
-import { HeroCornerCard } from './HeroCornerCard'
 
 const HERO_MARQUEE_ITEMS = [
   'Zoning Intelligence',
@@ -367,12 +366,6 @@ export function HeroCinematicSection() {
           ))}
         </div>
 
-        {/* Corner card — BidDeed + ZoneWise pairing */}
-        <HeroCornerCard
-          parcel={data.parcel}
-          biddeed={data.biddeed}
-          zonewise={data.zonewise}
-        />
       </div>
 
       {/* Kinetic marquee band below hero */}
