@@ -214,7 +214,7 @@ export default function DocsPage() {
                 <code className="text-slate-200 font-mono text-sm">/api/v1/kpis</code>
               </div>
               <p className="text-slate-400 text-sm">
-                Returns all 298 auction KPI definitions across 17 categories. Used to power the InsightWise report.
+                Returns all 298 property KPI definitions across 17 categories. Used to power the InsightWise report.
               </p>
             </div>
           </Section>
