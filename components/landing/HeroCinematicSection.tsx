@@ -12,10 +12,10 @@ import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
 import { HeroCornerCard } from './HeroCornerCard'
 
 const HERO_MARQUEE_ITEMS = [
-  'Nationwide Coverage',
+  'Zoning Intelligence',
   '67 Counties Live',
-  'All 50 States Planned',
-  'Real-Time Auction Data',
+  'Built for All 50 States',
+  'Feasibility Studies',
 ]
 
 /**
@@ -155,7 +155,7 @@ const FALLBACK_DATA: FeaturedParcelResponse = {
     dor_uc: '0100',
     just_value: 185000,
   },
-  biddeed: { status: 'No active auction', auction_type: null, sale_date: null, opening_bid: null },
+  biddeed: { status: 'Not currently listed', auction_type: null, sale_date: null, opening_bid: null },
   zonewise: { status: 'Not assigned', zoning_code: null, jurisdiction: null },
 }
 
