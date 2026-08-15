@@ -14,7 +14,7 @@ interface HybridPreviewProps {
 }
 
 const DEAL_INSIGHTS_TEMPLATES = [
-  (county: string) => `Foreclosure opportunity in ${county}: 47 auctions scheduled this month`,
+  (county: string) => `New feasibility signal in ${county}: 47 parcels match your buy box this month`,
   (county: string) => `Zoning change alert: ${county} rezoning 12 parcels from R-1 to C-1`,
   (county: string) => `Price event: ${county} median bid dropped 8% last 30 days`,
 ]
