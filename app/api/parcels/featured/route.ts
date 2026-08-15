@@ -43,7 +43,7 @@ export async function GET() {
     const { data: parcel, error: parcelError } = await supabase
       .from('fl_parcels')
       .select('parcel_id, phy_addr1, phy_city, phy_zipcd, cent_lat, cent_lon, co_no, dor_uc, jv')
-      .eq('co_no', 5)
+      .eq('co_no', 15) // Brevard is DOR co_no 15, not 5 — co_no=5 matched zero of 10.5M rows
       .ilike('phy_city', 'Palm Bay')
       .not('cent_lat', 'is', null)
       .not('cent_lon', 'is', null)
