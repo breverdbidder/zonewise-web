@@ -13,7 +13,7 @@ export default function SignUpCatchAllPage() {
             <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#f8fafc' }}>ZoneWise<span style={{ color: '#F59E0B' }}>.AI</span></span>
           </Link>
         </div>
-        <SignUp fallbackRedirectUrl="/dashboard" signInUrl="/sign-in" />
+        <SignUp fallbackRedirectUrl="/onboarding/sms-consent" signInUrl="/sign-in" />
       </div>
     </div>
   )
