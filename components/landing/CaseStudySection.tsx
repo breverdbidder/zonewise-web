@@ -115,7 +115,7 @@ export function CaseStudySection() {
               >
                 {t.figure}
               </div>
-              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-slate-500">
+              <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.06em] text-slate-500">
                 {t.figureLabel}
               </div>
             </motion.div>
@@ -128,7 +128,7 @@ export function CaseStudySection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-slate-800 pt-6 font-mono text-[11px] text-slate-500"
+          className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-slate-800 pt-6 font-mono text-xs text-slate-500"
         >
           <span>1581 &amp; 1591 Lakewood Drive NE, Palm Bay, FL</span>
           <span className="text-slate-700">·</span>
@@ -140,7 +140,7 @@ export function CaseStudySection() {
             href="https://everestcapitalusa.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#F59E0B] transition-colors hover:text-[#FBBF24]"
+            className="inline-block py-2 text-[#F59E0B] transition-colors hover:text-[#FBBF24]"
           >
             Full track record →
           </a>
