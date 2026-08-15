@@ -9,7 +9,7 @@ export function CTASection() {
           Ready to find your next deal?
         </h2>
         <p className="text-slate-400 mb-8 text-lg">
-          Join Brevard County investors using ZoneWise to underwrite faster and win at auction.
+          Zoning intelligence and feasibility analysis across all 67 Florida counties — with a platform built to run in all 50 states.
         </p>
         <Button
           size="lg"
