@@ -1,47 +1,56 @@
 "use client"
 
-import { Map, Gavel, Building2, MessageSquare, FileText, Activity } from 'lucide-react'
+import { Map, Ruler, Layers, MessageSquare, FileText, Building2 } from 'lucide-react'
 import { StickyCards } from '@/components/cinematic/StickyCards'
 import { KineticMarquee } from '@/components/cinematic/KineticMarquee'
 
+// Product spine: zoning intelligence + feasibility. No auction, foreclosure or
+// tax-deed content on this surface — that belongs to BidDeed.AI.
+// Every module listed here must be demonstrable in a live demo.
 const features = [
   {
     icon: Map,
-    title: 'Smart Choropleth Maps',
-    description: 'Interactive choropleth map of 10.8M+ parcels and growing. Zoning overlays, ZHVI heatmaps, and neighborhood comps at a glance.',
+    title: 'Parcel & Site Discovery',
+    description:
+      'Search 10.8M+ Florida parcels by address, by criteria, or by drawing a boundary on the map. Every county in the state, one interface.',
   },
   {
-    icon: MessageSquare,
-    title: 'AI Chat Analyst',
-    description: 'Cited answers on permitted uses, setbacks, and height limits from our own Supabase-backed RAG pipeline.',
-  },
-  {
-    icon: Activity,
-    title: 'Price Monitoring Alerts',
-    description: 'Real-time auction price tracking across all covered counties. Custom Telegram alerts when deals match your criteria.',
-  },
-  {
-    icon: Gavel,
-    title: 'Compounding Intelligence',
-    description: 'Every query, alert, and analysis feeds the model. The platform gets smarter the more you use it.',
-  },
-  {
-    icon: FileText,
-    title: 'Zoning Reports',
-    description: 'One-click PDF zoning reports with HBU analysis, comp sales, and legal lot coverage.',
+    icon: Ruler,
+    title: 'Zoning Intelligence',
+    description:
+      'Permitted uses, setbacks, height limits and FAR resolved per parcel — and cited back to the governing code, so you can check the answer rather than trust it.',
   },
   {
     icon: Building2,
-    title: 'Deal Scoring',
-    description: 'Every lot scored against live auction priors and comparable sales, weighed against repair cost and clearance data — know your ceiling before the gavel.',
+    title: 'Capacity & Massing',
+    description:
+      'Buildable envelope and unit yield from the controls that actually apply to the site. Compare scenarios before committing design fees.',
+  },
+  {
+    icon: Layers,
+    title: 'GIS & Utilities',
+    description:
+      'Flood, wetlands, future land use and utility service area on one map. Central water and sewer availability changes the legal envelope and the septic bedroom cap — so we surface it up front.',
+  },
+  {
+    icon: MessageSquare,
+    title: 'AI Analyst',
+    description:
+      'Ask in plain language. Cited answers on what a parcel permits, drawn from our own zoning pipeline rather than a general-purpose model guessing at code.',
+  },
+  {
+    icon: FileText,
+    title: 'Feasibility Reports',
+    description:
+      'One-click PDF with highest-and-best-use analysis, comparable sales, and legal lot coverage — formatted to survive an investment committee.',
   },
 ]
 
 const MARQUEE_ITEMS = [
-  'Nationwide Coverage',
+  'Zoning Intelligence',
+  'Feasibility Studies',
   '67 Counties Live',
-  'All 50 States Planned',
-  'Real-Time Auction Data',
+  'Built for All 50 States',
 ]
 
 export function FeaturesSection() {
@@ -62,10 +71,11 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-4 pb-20 sm:pb-28">
         <div className="mb-16 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Everything a serious investor needs
+            Feasibility in one search
           </h2>
           <p className="text-slate-400 max-w-xl mx-auto">
-            Built by a licensed FL broker and GC with 20 years buying distressed assets — online and in person at the courthouse. All 67 Florida counties live; built to scale nationwide.
+            Enter an address. Get the zoning, the envelope, the constraints and the numbers —
+            before you spend a dollar on design.
           </p>
         </div>
 
