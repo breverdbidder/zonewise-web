@@ -7,3 +7,4 @@ export { MeshGradientBg } from "./MeshGradientBg";
 export { TextScramble } from "./TextScramble";
 export { KineticMarquee } from "./KineticMarquee";
 export { HeroProperty3D } from "./HeroProperty3D";
+export { ParcelIntelligenceSection } from "./ParcelIntelligenceSection";
