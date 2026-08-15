@@ -405,7 +405,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
             <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
               <div className="mb-1 font-semibold text-slate-200">ZoneWise AI 🏛</div>
               <p className="mb-4 text-sm text-slate-400 leading-relaxed">
-                Ask me anything about Florida zoning, parcels, foreclosures, or tax deed auctions across all 67 counties.
+                Ask me anything about Florida zoning, parcels, land use, and development feasibility across all 67 counties.
               </p>
               <div className="flex flex-col gap-2">
                 {CHIPS.map((c, i) => (
@@ -439,7 +439,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
           <ComposerPrimitive.Root className="flex items-end gap-2">
             <ComposerPrimitive.Input
               rows={1}
-              placeholder="Ask about any FL property, zoning, or auction…"
+              placeholder="Ask about any FL parcel, zoning, or feasibility…"
               className="flex-1 resize-none rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 outline-none transition focus:border-amber-500/40 focus:bg-slate-800 disabled:opacity-50 max-h-[120px]" />
             <ComposerPrimitive.Send
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-slate-900 transition hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-sm">
@@ -521,7 +521,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
                 { label: 'KPIs per Property', val: '128' },
                 { label: 'Data Sources', val: 'FDOR · BCPAO · FEMA · Census' },
                 { label: 'AI Model', val: 'Claude Sonnet' },
-                { label: 'Auction Coverage', val: '⚖️ Foreclosure + 🏛 Tax Deed' },
+                { label: 'Coverage', val: '🗺 67 FL counties' },
               ].map(r => (
                 <div key={r.label} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2">
                   <span className="text-xs text-slate-400">{r.label}</span>
