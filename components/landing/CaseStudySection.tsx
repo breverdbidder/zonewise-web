@@ -46,7 +46,7 @@ const TIMELINE = [
 
 export function CaseStudySection() {
   return (
-    <section className="relative overflow-hidden border-y border-[#1E3A5F]/40 bg-[#020617] py-20 sm:py-28">
+    <section className="relative overflow-hidden border-y border-[#1E3A5F]/40 bg-[#020617] pt-20 pb-14 sm:pt-28 sm:pb-16">
       {/* Ambient navy wash — CSS only, no WebGL */}
       <div
         aria-hidden="true"
