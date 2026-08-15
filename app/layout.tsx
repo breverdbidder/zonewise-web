@@ -35,12 +35,12 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://zonewise.ai'),
-  title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
-  description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
+  title: 'ZoneWise.AI — Nationwide Zoning Intelligence & Feasibility',
+  description: 'AI-powered zoning intelligence and feasibility studies for developers and investors. All 67 Florida counties live, built for all 50 states.',
   manifest: '/manifest.json',
   openGraph: {
-    title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
-    description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
+    title: 'ZoneWise.AI — Nationwide Zoning Intelligence & Feasibility',
+    description: 'AI-powered zoning intelligence and feasibility studies for developers and investors. All 67 Florida counties live, built for all 50 states.',
     siteName: 'ZoneWise.AI',
     url: 'https://www.zonewise.ai',
     type: 'website',
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ZoneWise.AI — AI-Powered Auction Intelligence Nationwide',
-    description: 'AI-powered zoning and auction intelligence. Live in 67 Florida counties. Expanding to all 50 states. Deal scoring, parcel analysis, and real-time foreclosure data.',
+    title: 'ZoneWise.AI — Nationwide Zoning Intelligence & Feasibility',
+    description: 'AI-powered zoning intelligence and feasibility studies for developers and investors. All 67 Florida counties live, built for all 50 states.',
   },
   appleWebApp: {
     capable: true,
