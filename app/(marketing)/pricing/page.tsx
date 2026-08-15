@@ -35,7 +35,7 @@ const TIERS = [
       '20 AI chat messages / day',
       'Zoning filters (RU/BU/PUD/AU/IU)',
       'CSV export',
-      'Auction calendar (Brevard)',
+      'Statewide parcel coverage',
       'Priority support',
     ],
     cta: 'Start Free Trial',
