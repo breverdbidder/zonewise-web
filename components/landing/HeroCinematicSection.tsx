@@ -279,7 +279,7 @@ export function HeroCinematicSection() {
                 className="mb-6 border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
               >
                 <Sparkles className="mr-1.5 h-3 w-3" />
-                Powering Everest Capital USA — 10 years Brevard foreclosure investing
+                Powering Everest Capital USA — 20 years buying distressed assets, online and at the courthouse
               </Badge>
             </motion.div>
 
@@ -317,7 +317,7 @@ export function HeroCinematicSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              ZoneWise.AI maps the opportunity. BidDeed.AI wins the auction.
+              Nationwide zoning intelligence and feasibility analysis. ZoneWise.AI maps the opportunity — BidDeed.AI wins the auction.
             </motion.p>
 
             <motion.div
