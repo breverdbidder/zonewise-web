@@ -15,6 +15,7 @@ const MapboxMap = dynamic(() => import('./MapboxMap'), {
     </div>
   ),
 })
+import StaticMapPreview from './StaticMapPreview'
 import DemoDataBadge from '@/components/ui/DemoDataBadge'
 
 interface SiteTabProps {
@@ -56,7 +57,7 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
       <div className="w-full lg:w-[300px] lg:flex-shrink-0">
         <SectionLabel text="Subject Property" />
         <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
-        <MapboxMap lat={site.lat} lng={site.lng} zoom={15} pitch={0} style={{ height: 180, marginBottom: 16 }} />
+        <StaticMapPreview lat={site.lat} lng={site.lng} zoom={15} width={600} height={360} style={{ height: 180, marginBottom: 16 }} />
         <Card className="p-4">
           <SectionLabel text="Quick Stats" />
           {[
