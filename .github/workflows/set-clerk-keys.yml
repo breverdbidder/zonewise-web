@@ -1,0 +1,100 @@
+name: Set Clerk production keys
+
+# Sets the Clerk publishable + secret keys on the Vercel PRODUCTION environment
+# and redeploys. Values are passed as workflow inputs (never committed).
+#
+# SECURITY: workflow inputs are visible in the Actions run metadata. Treat any
+# secret passed here as disclosed and rotate it in the Clerk dashboard after the
+# deploy is confirmed working.
+#
+# Context: /sign-in, /sign-up and /login returned HTTP 500 because
+# ConditionalClerkProvider skips <ClerkProvider> when the publishable key is
+# unset, while app/sign-in/[[...sign-in]]/page.tsx renders <SignIn /> anyway.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pk:
+        description: "Clerk publishable key (pk_test_ / pk_live_)"
+        required: true
+      sk:
+        description: "Clerk secret key (sk_test_ / sk_live_)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  set:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+      TEAM_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      PK: ${{ github.event.inputs.pk }}
+      SK: ${{ github.event.inputs.sk }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate key formats before writing anything
+        run: |
+          set -euo pipefail
+          case "$PK" in pk_test_*|pk_live_*) echo "publishable key format OK";; *) echo "BAD publishable key format"; exit 1;; esac
+          case "$SK" in sk_test_*|sk_live_*) echo "secret key format OK";; *) echo "BAD secret key format"; exit 1;; esac
+
+      - name: Upsert production env vars
+        run: |
+          set -euo pipefail
+          curl -sS -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v9/projects/$PROJECT_ID/env?teamId=$TEAM_ID" > env.json
+          python3 - <<'PY'
+          import json,os,urllib.request,urllib.error
+          tok=os.environ['VERCEL_TOKEN']; pid=os.environ['PROJECT_ID']; team=os.environ['TEAM_ID']
+          vals={'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY':os.environ['PK'],
+                'CLERK_SECRET_KEY':os.environ['SK'],
+                'NEXT_PUBLIC_CLERK_SIGN_IN_URL':'/sign-in',
+                'NEXT_PUBLIC_CLERK_SIGN_UP_URL':'/sign-up'}
+          envs=json.load(open('env.json')); envs=envs.get('envs',envs if isinstance(envs,list) else [])
+
+          def req(url,method,body=None):
+              r=urllib.request.Request(url,data=json.dumps(body).encode() if body else None,
+                  method=method,headers={'Authorization':f'Bearer {tok}','Content-Type':'application/json'})
+              return urllib.request.urlopen(r).read()
+
+          for key,val in vals.items():
+              # delete any existing production-scoped entry (may hold the bad sealed value)
+              for e in envs:
+                  if e['key']==key and e.get('target')==['production']:
+                      try:
+                          req(f"https://api.vercel.com/v9/projects/{pid}/env/{e['id']}?teamId={team}",'DELETE')
+                          print(f"  removed stale {key}")
+                      except urllib.error.HTTPError as ex:
+                          print(f"  could not remove {key}: {ex.code}")
+              try:
+                  req(f"https://api.vercel.com/v10/projects/{pid}/env?teamId={team}",'POST',
+                      {"key":key,"value":val,"type":"encrypted","target":["production"]})
+                  print(f"  SET {key} -> production")
+              except urllib.error.HTTPError as ex:
+                  print(f"  FAILED {key}: {ex.code} {ex.read()[:160]}")
+          PY
+
+      - name: Build and deploy
+        run: |
+          npm install -g vercel@latest
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+      - name: Smoke test
+        run: |
+          sleep 30
+          fail=0
+          for r in / /pricing /feasibility /sign-in /sign-up; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://zonewise.ai$r)
+            echo "$code  $r"
+            [ "$code" = "200" ] || fail=1
+          done
+          echo "--- clerk present in landing html ---"
+          curl -s https://zonewise.ai | grep -o 'clerk.accounts.dev' | head -1 || echo "not found"
+          exit $fail
