@@ -45,6 +45,8 @@ const navGroups: NavGroup[] = [
     label: 'Analysis',
     items: [
       { title: 'Feasibility', url: '/feasibility', icon: Building2 },
+      // Building footprints + height estimates (Microsoft GlobalML, CDLA Permissive 2.0)
+      { title: 'Footprints', url: '/footprints', icon: Boxes },
       { title: 'Reports', url: '/report', icon: FileText },
       { title: 'KPIs', url: '/kpis', icon: Activity },
     ],
