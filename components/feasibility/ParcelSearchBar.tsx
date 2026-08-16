@@ -112,7 +112,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
       </div>
 
       {open && (results.length > 0 || hint) && (
-        <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-lg border shadow-2xl"
+        <div className="absolute z-[60] mt-2 w-full overflow-hidden rounded-lg border shadow-2xl"
              style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,.35)' }}>
           {results.map((r) => {
             const t = TRUST[r.trust_level] ?? TRUST.none
