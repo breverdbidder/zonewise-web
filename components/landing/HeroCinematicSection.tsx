@@ -189,7 +189,7 @@ export function HeroCinematicSection() {
   const slide = SLIDES[current]
 
   return (
-    <section className="relative overflow-hidden bg-[#020617]">
+    <section className="relative overflow-x-hidden bg-[#020617]">
       <div className="relative min-h-[85vh]">
         {/* Ken Burns animated background layers */}
         <AnimatePresence mode="sync">
