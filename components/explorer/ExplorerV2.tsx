@@ -35,7 +35,7 @@ function UpgradeModal({ reason, onClose }: { reason: 'parcel' | 'chat'; onClose:
         </h2>
         <p className="text-sm text-slate-400 text-center mb-4 leading-relaxed">
           {reason === 'parcel'
-            ? `You've used your ${FREE_PARCEL_CLICKS} free parcel clicks. Upgrade to Pro for unlimited access to Brevard's 262K+ parcels.`
+            ? `You've used your ${FREE_PARCEL_CLICKS} free parcel clicks. Upgrade to Pro for unlimited access to 4M+ parcels statewide.`
             : `You've used your ${FREE_CHAT_MESSAGES} free AI messages. Upgrade to Pro for unlimited ZoneWise AI chat.`}
         </p>
         <div className="space-y-2">
@@ -246,7 +246,7 @@ export default function ExplorerV2() {
         {/* Status bar */}
         <div className="absolute bottom-2 left-3 right-3 z-10 pointer-events-none">
           <div className="text-[10px] text-slate-600 text-center">
-            262K parcels · 27 ZIPs · Brevard County, FL
+            4M+ parcels · 36 counties · Florida
             {parcelClicks > 0 && ` · ${Math.max(0, FREE_PARCEL_CLICKS - parcelClicks)} clicks left`}
           </div>
         </div>
