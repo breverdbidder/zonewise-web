@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   // API routes — public data endpoints
   '/api/health(.*)',
   '/api/stats(.*)',
+  '/api/coverage(.*)', // public: customers verify county coverage BEFORE paying
   '/api/kpis(.*)',
   '/api/auctions(.*)',
   '/api/bcpao-lookup(.*)',
