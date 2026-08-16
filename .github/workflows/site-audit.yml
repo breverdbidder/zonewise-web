@@ -3,34 +3,49 @@ on:
   schedule:
     - cron: '0 */6 * * *'   # every 6 hours
   workflow_dispatch: {}
-  push:
-    branches: [main]
-    paths:
-      - 'app/**'
-      - 'components/**'
-      - 'scripts/audit-site.mjs'
+  # Audit the deploy that actually shipped, not the commit that triggered it.
+  # A push trigger fires while deploy-prod is still building, so the harness
+  # loads a stale HTML shell pointing at JS chunk hashes that are rotating out,
+  # and reports phantom 404-on-chunk blockers. Chaining off deploy-prod removes
+  # that race entirely.
+  workflow_run:
+    workflows: ["Deploy to Vercel Production"]
+    types: [completed]
+
+# Without this, a single six-file push spawned FIVE parallel production audits
+# that rate-limited the site (429) and produced false blockers. One at a time.
+concurrency:
+  group: site-audit
+  cancel-in-progress: true
 
 jobs:
   audit:
+    # Never audit against a build that did not ship.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
-      # A push-triggered run fires the instant the commit lands, before
-      # Vercel has finished deploying it. Give the deploy a head start;
-      # scheduled/manual runs skip this (nothing to wait for).
-      - name: Wait for deploy
-        if: github.event_name == 'push'
-        run: sleep 90
+      # deploy-prod aliases zonewise.ai as its final step; let the alias
+      # propagate before the harness starts loading pages.
+      - name: Settle after deploy
+        if: github.event_name == 'workflow_run'
+        run: sleep 25
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # "npm install playwright" pulls the LATEST playwright, drifting from
+      # the version pinned in package-lock.json and mismatching the browser
+      # build ("Executable doesn't exist"). npm ci installs exactly what is
+      # pinned; the audit's `playwright` import resolves via @playwright/test.
       - name: Install Playwright
         run: |
-          npm install playwright
+          npm ci
           npx playwright install --with-deps chromium
 
       - name: Run audit
