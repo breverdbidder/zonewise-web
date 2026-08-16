@@ -413,7 +413,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         ref={containerRef}
         className="w-full h-full"
         role="application"
-        aria-label="Interactive zoning map of Brevard County, Florida. Use arrow keys to pan, plus and minus to zoom."
+        aria-label="Interactive zoning map of Florida. Use arrow keys to pan, plus and minus to zoom."
         tabIndex={0}
       />
       {loading && (
