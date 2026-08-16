@@ -121,7 +121,7 @@ export const EXPLORER_CHIPS = [
   { icon: '🏠', text: 'What is the zoning at 798 Ocean Dr, Satellite Beach?' },
   { icon: '📍', text: 'Show me RU-1 residential parcels in Merritt Island' },
   { icon: '🔥', text: 'Show median home values heatmap by ZIP code' },
-  { icon: '📐', text: 'What''s the max lot coverage in an RU-1-11 zone?' },
+  { icon: '📐', text: "What's the max lot coverage in an RU-1-11 zone?" },
   { icon: '💰', text: 'Best ZIP codes for investment in Florida' },
   { icon: '🏗️', text: 'Where can I build multi-family in Palm Bay?' },
 ] as const
