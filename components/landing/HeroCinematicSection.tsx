@@ -354,13 +354,17 @@ export function HeroCinematicSection() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className="w-1.5 h-1.5 rounded-full transition-all duration-500"
-              style={{
-                background: i === current ? '#F59E0B' : 'rgba(255,255,255,0.2)',
-                width: i === current ? '24px' : '6px',
-              }}
+              className="flex items-center justify-center h-11 w-6 -my-[19px]"
               aria-label={`Go to slide ${i + 1}`}
-            />
+            >
+              <span
+                className="block h-1.5 rounded-full transition-all duration-500"
+                style={{
+                  background: i === current ? '#F59E0B' : 'rgba(255,255,255,0.2)',
+                  width: i === current ? '24px' : '6px',
+                }}
+              />
+            </button>
           ))}
         </div>
 
