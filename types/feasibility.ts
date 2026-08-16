@@ -8,6 +8,7 @@ export interface SiteData {
   zone: string
   zoneCity: string
   county: string
+  zip?: string
   flood: string
   qoz: string
   lotArea: number
@@ -150,6 +151,23 @@ export interface CompBenchmark {
   pctOfMarket: number | null
   soldPrice: number | null
   auctionDate: string | null
+}
+
+// Real rental comps for revenue-assumption sanity-checking in DevelopTab.
+// Interim/bootstrap source (HomeHarvest/Realtor.com, Aug 2026) behind the
+// getRentalComps() interface — see lib/feasibility/live-rental-comps.ts.
+// Informational only: the Unit Mix table's rents stay a manual assumption
+// (same pattern as CompBenchmark below), never silently overridden.
+export interface RentalCompBedroom {
+  bedrooms: number
+  medianRent: number
+  n: number
+}
+
+export interface RentalComps {
+  bedroomBreakdown: RentalCompBedroom[]
+  n: number
+  source: string
 }
 
 export type FeasibilityTab = 'Site' | 'Market' | 'Lodging' | 'Comps' | 'Capacity' | 'Develop' | 'Generate'

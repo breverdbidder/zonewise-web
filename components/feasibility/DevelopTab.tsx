@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import type { SiteData, UnitMix, CompBenchmark } from '@/types/feasibility'
+import type { SiteData, UnitMix, CompBenchmark, RentalComps } from '@/types/feasibility'
 import { COLORS, fmt, fmtD } from '@/lib/feasibility/constants'
 import { calcProForma, calcMultiYearReturns, distributeUnits } from '@/lib/feasibility/proforma'
 import { Badge, Card, SectionLabel } from './ui'
@@ -10,6 +10,15 @@ interface DevelopTabProps {
   site: SiteData
   unitMix: UnitMix[]
   compBenchmark?: CompBenchmark | null
+  rentalComps?: RentalComps | null
+}
+
+function bedroomLabel(bedrooms: number): string {
+  if (bedrooms === 0) return 'Studio'
+  if (bedrooms === 1) return 'One BR'
+  if (bedrooms === 2) return 'Two BR'
+  if (bedrooms === 3) return 'Three BR'
+  return `${bedrooms} BR`
 }
 
 interface SliderConfig {
@@ -22,7 +31,7 @@ interface SliderConfig {
   format: (v: number) => string
 }
 
-export default function DevelopTab({ site, unitMix, compBenchmark = null }: DevelopTabProps) {
+export default function DevelopTab({ site, unitMix, compBenchmark = null, rentalComps = null }: DevelopTabProps) {
   const [units, setUnits] = useState(16)
   const [vacancy, setVacancy] = useState(5)
   const [opex, setOpex] = useState(38)
@@ -189,6 +198,24 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null }: Deve
           {compBenchmark.pctOfMarket != null && ` · sold at ${compBenchmark.pctOfMarket}% of market value`}
           {compBenchmark.soldPrice != null && ` · this parcel sold ${fmtD(compBenchmark.soldPrice)}`}.
           <span className="text-slate-500"> Sale-price comp, not a rent comp — informational only, does not set unit rents below.</span>
+        </div>
+      )}
+
+      {/* Real rental comps — HomeHarvest/Realtor.com (interim source, see
+          lib/feasibility/live-rental-comps.ts). Informational benchmark next
+          to the manual Unit Mix rents; never overrides them. */}
+      {rentalComps && (
+        <div
+          className="rounded-lg px-3.5 py-2.5 mb-4 text-xs"
+          style={{ background: COLORS.brandLight, border: `1px solid ${COLORS.brand}40` }}
+        >
+          <span className="font-bold" style={{ color: COLORS.brandDark }}>Live Rental Comps (Realtor.com, {rentalComps.n} listings):</span>{' '}
+          {rentalComps.bedroomBreakdown.map((b, i) => (
+            <span key={b.bedrooms}>
+              {i > 0 && ' · '}{bedroomLabel(b.bedrooms)} median {fmtD(b.medianRent)} (n={b.n})
+            </span>
+          ))}
+          <span className="text-slate-500"> Scraped Realtor.com data, not MLS/Zillow/Redfin-licensed — informational only, does not set unit rents below.</span>
         </div>
       )}
 

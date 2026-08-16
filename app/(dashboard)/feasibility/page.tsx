@@ -2,6 +2,7 @@ import { FeasibilityLayout } from '@/components/feasibility'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { getLiveSiteData } from '@/lib/feasibility/live-data'
 import { getLiveCompBenchmark } from '@/lib/feasibility/live-comps'
+import { getRentalComps } from '@/lib/feasibility/live-rental-comps'
 import { parcelIdSchema } from '@/lib/validation'
 import {
   DEMO_SITE,
@@ -39,6 +40,12 @@ export default async function FeasibilityPage({ searchParams }: FeasibilityPageP
   // those stay as the manual revenue-assumption inputs in both paths.
   const compBenchmark = live ? await getLiveCompBenchmark(site.parcelId, site.county) : null
 
+  // Real rental comps (interim HomeHarvest/Realtor.com source, see
+  // lib/feasibility/live-rental-comps.ts) — informational benchmark next to
+  // the manual Unit Mix rents, same pattern as compBenchmark above. Only
+  // fetched when a real parcel is present; demo path stays untouched.
+  const rentalComps = live ? await getRentalComps({ county: site.county, zip: site.zip }) : null
+
   return (
     <ErrorBoundary>
       <FeasibilityLayout
@@ -52,6 +59,7 @@ export default async function FeasibilityPage({ searchParams }: FeasibilityPageP
         demographics={DEMO_MARKET_DEMOGRAPHICS}
         marketScore={DEMO_MARKET_SCORE}
         compBenchmark={compBenchmark}
+        rentalComps={rentalComps}
       />
     </ErrorBoundary>
   )

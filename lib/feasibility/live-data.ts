@@ -55,6 +55,7 @@ export async function getLiveSiteData(parcelId: string): Promise<LiveSiteResult 
     zone: zoneCode,
     zoneCity: jurisdiction,
     county: countyName,
+    zip: parcel.phy_zipcd || undefined,
     flood: 'X', // no per-parcel FEMA flood zone source wired in this pass
     qoz: 'No', // no per-parcel QOZ source wired in this pass
     lotArea: parcel.lnd_sqfoot ?? 0,

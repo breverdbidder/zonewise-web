@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type {
   FeasibilityTab, SiteData, ZoningControl, RentComp, UnitRent, UnitMix,
-  LodgingPermissions, NearbyLodgingParcel, MarketDemographics, MarketScore, CompBenchmark,
+  LodgingPermissions, NearbyLodgingParcel, MarketDemographics, MarketScore, CompBenchmark, RentalComps,
 } from '@/types/feasibility'
 import { COLORS } from '@/lib/feasibility/constants'
 import DemoDataBadge from '@/components/ui/DemoDataBadge'
@@ -26,6 +26,7 @@ interface FeasibilityLayoutProps {
   demographics: MarketDemographics
   marketScore: MarketScore
   compBenchmark?: CompBenchmark | null
+  rentalComps?: RentalComps | null
 }
 
 const TABS: FeasibilityTab[] = ['Site', 'Market', 'Lodging', 'Comps', 'Capacity', 'Develop', 'Generate']
@@ -41,6 +42,7 @@ export default function FeasibilityLayout({
   demographics,
   marketScore,
   compBenchmark = null,
+  rentalComps = null,
 }: FeasibilityLayoutProps) {
   const [tab, setTab] = useState<FeasibilityTab>('Site')
   const [betaBannerDismissed, setBetaBannerDismissed] = useState(false)
@@ -155,7 +157,7 @@ export default function FeasibilityLayout({
         {tab === 'Lodging'  && <LodgingTab site={site} lodging={lodging} nearbyLodging={nearbyLodging} />}
         {tab === 'Comps'    && <CompsTab site={site} comps={comps} unitRents={unitRents} />}
         {tab === 'Capacity' && <CapacityTab site={site} />}
-        {tab === 'Develop'  && <DevelopTab site={site} unitMix={unitMix} compBenchmark={compBenchmark} />}
+        {tab === 'Develop'  && <DevelopTab site={site} unitMix={unitMix} compBenchmark={compBenchmark} rentalComps={rentalComps} />}
         {tab === 'Generate' && <ExportTab site={site} />}
       </main>
     </div>
