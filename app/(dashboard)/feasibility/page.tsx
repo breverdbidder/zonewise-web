@@ -1,5 +1,6 @@
 import { FeasibilityLayout } from '@/components/feasibility'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import { ParcelSearchBar } from '@/components/feasibility/ParcelSearchBar'
 import { getLiveSiteData } from '@/lib/feasibility/live-data'
 import { getLiveCompBenchmark } from '@/lib/feasibility/live-comps'
 import { getRentalComps } from '@/lib/feasibility/live-rental-comps'
@@ -15,6 +16,8 @@ import {
   DEMO_MARKET_DEMOGRAPHICS,
   DEMO_MARKET_SCORE,
 } from '@/lib/feasibility/demo-data'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Site Feasibility | ZoneWise.AI',
@@ -48,6 +51,18 @@ export default async function FeasibilityPage({ searchParams }: FeasibilityPageP
 
   return (
     <ErrorBoundary>
+      {/* Address entry. Without this the page always fell back to DEMO_SITE —
+          ?parcel_id= was supported but unreachable from the UI. */}
+      <div className="border-b px-4 py-3 sm:px-6" style={{ borderColor: 'rgba(30,58,95,0.5)', background: '#020617' }}>
+        <div className="mx-auto max-w-3xl">
+          <ParcelSearchBar currentAddress={live ? site.address : undefined} />
+          {!live && (
+            <p className="mt-2 text-center text-xs text-slate-500">
+              Showing a sample site. Search any Florida address above to analyze a real parcel.
+            </p>
+          )}
+        </div>
+      </div>
       <FeasibilityLayout
         site={site}
         zoningControls={zoningControls}
