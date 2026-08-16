@@ -14,6 +14,7 @@ import {
   Boxes,
   PencilRuler,
   Calculator,
+  Scan,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -46,7 +47,7 @@ const navGroups: NavGroup[] = [
     items: [
       { title: 'Feasibility', url: '/feasibility', icon: Building2 },
       // Building footprints + height estimates (Microsoft GlobalML, CDLA Permissive 2.0)
-      { title: 'Footprints', url: '/footprints', icon: Boxes },
+      { title: 'Footprints', url: '/footprints', icon: Scan },
       { title: 'Reports', url: '/report', icon: FileText },
       { title: 'KPIs', url: '/kpis', icon: Activity },
     ],
