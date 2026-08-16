@@ -22,6 +22,12 @@
  *   node scripts/audit-site.mjs --base=http://localhost:3000
  *   node scripts/audit-site.mjs --shots             # also write screenshots
  *   node scripts/audit-site.mjs --json=report.json
+ *   node scripts/audit-site.mjs --viewport=Desktop  # one viewport (comma list ok)
+ *   node scripts/audit-site.mjs --routes=explorer,pricing
+ *
+ * A full 4-viewport run takes >4 min. --viewport and --routes exist so a run can
+ * be time-boxed across separate invocations; an unmatched filter value is a hard
+ * error, never a silent full run.
  *
  * Exit code is non-zero when any BLOCKER is found, so CI can gate on it.
  */
@@ -62,6 +68,24 @@ const VIEWPORTS = [
   { name: 'iPad Mini', device: devices['iPad Mini'] },   // 768px — tablet
   { name: 'Desktop', device: { viewport: { width: 1440, height: 900 } } },
 ]
+
+/** Comma-separated, case-insensitive, matched on `name`. Unmatched = hard error. */
+function selectByName(all, raw, kind) {
+  if (!raw || raw === true) return all
+  const wanted = String(raw).split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
+  const picked = all.filter((x) => wanted.includes(x.name.toLowerCase()))
+  const missing = wanted.filter((w) => !all.some((x) => x.name.toLowerCase() === w))
+  if (missing.length) {
+    console.error(
+      `Unknown ${kind}: ${missing.join(', ')}\nAvailable: ${all.map((x) => x.name).join(', ')}`
+    )
+    process.exit(2)
+  }
+  return picked
+}
+
+const ACTIVE_VIEWPORTS = selectByName(VIEWPORTS, args.viewport, 'viewport')
+const ACTIVE_ROUTES = selectByName(ROUTES, args.routes, 'route')
 
 /**
  * SSOT positioning guard. ZoneWise.AI sells zoning intelligence + feasibility.
@@ -141,17 +165,43 @@ const PROBE = () => {
     issues.push({ severity: 'WARN', kind: 'small-text', detail: d })
   )
 
-  // 5. tap targets under 44px (only when a touch viewport)
+  // 5. tap targets (only when a touch viewport)
+  //
+  // Two bands, because they are not the same finding:
+  //   tap-target-aa-fail  <24px — fails WCAG 2.2 AA (2.5.8). Real defect, fix it.
+  //   tap-target-aaa      <44px — misses WCAG 2.1 AAA (2.5.5) / Apple HIG.
+  //                               Comfort issue, not a conformance failure.
+  //
+  // Two classes are excluded entirely, because "fix it" would be the wrong call:
+  //   a) vendor widget chrome we do not author — Mapbox GL's own map controls
+  //      and Clerk's hosted sign-in UI. Overriding their internals is a
+  //      maintenance trap; that sizing is theirs to ship.
+  //   b) inline links inside running prose. WCAG 2.5.8 explicitly exempts a
+  //      target in a sentence; padding one to 44px breaks the line box.
   if (window.matchMedia('(pointer: coarse)').matches) {
-    const tiny = new Set()
+    const VENDOR = '.mapboxgl-ctrl, [class^="cl-"], [class*=" cl-"], [data-clerk-element]'
+    const isInlineProse = (el) => {
+      if (el.tagName !== 'A') return false
+      const p = el.parentElement
+      if (!p || !/^(P|LI|TD|BLOCKQUOTE|H[1-6])$/.test(p.tagName)) return false
+      if (getComputedStyle(el).display !== 'inline') return false
+      const own = (el.textContent || '').trim().length
+      return (p.textContent || '').trim().length > own + 10
+    }
+    const aa = new Set()
+    const aaa = new Set()
     document.querySelectorAll('a,button,[role="button"]').forEach((el) => {
+      if (el.closest(VENDOR) || isInlineProse(el)) return
       const r = el.getBoundingClientRect()
-      if (r.width > 0 && r.height > 0 && r.height < 44) {
-        tiny.add(`${Math.round(r.height)}px "${(el.textContent || '').trim().slice(0, 24)}"`)
-      }
+      if (r.width <= 0 || r.height <= 0 || r.height >= 44) return
+      const d = `${Math.round(r.height)}px "${(el.textContent || '').trim().slice(0, 24)}"`
+      ;(r.height < 24 ? aa : aaa).add(d)
     })
-    ;[...tiny].slice(0, 6).forEach((d) =>
-      issues.push({ severity: 'WARN', kind: 'small-tap-target', detail: d })
+    ;[...aa].slice(0, 6).forEach((d) =>
+      issues.push({ severity: 'WARN', kind: 'tap-target-aa-fail', detail: d })
+    )
+    ;[...aaa].slice(0, 6).forEach((d) =>
+      issues.push({ severity: 'WARN', kind: 'tap-target-aaa', detail: d })
     )
   }
 
@@ -193,10 +243,10 @@ async function run() {
   const results = []
   if (SHOTS) fs.mkdirSync(SHOT_DIR, { recursive: true })
 
-  for (const vp of VIEWPORTS) {
+  for (const vp of ACTIVE_VIEWPORTS) {
     const ctx = await browser.newContext({ ...vp.device, ignoreHTTPSErrors: true })
 
-    for (const route of ROUTES) {
+    for (const route of ACTIVE_ROUTES) {
       const page = await ctx.newPage()
       const pageErrors = []
       page.on('pageerror', (e) => pageErrors.push(e.message.slice(0, 120)))
@@ -261,6 +311,7 @@ async function run() {
 
   console.log(`\n${'='.repeat(72)}`)
   console.log(`ZoneWise site audit — ${BASE}`)
+  console.log(`viewports: ${ACTIVE_VIEWPORTS.map((v) => v.name).join(', ')}`)
   console.log(`${blockers.length} blockers · ${warns.length} warnings`)
   console.log('='.repeat(72))
 
