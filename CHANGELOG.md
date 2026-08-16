@@ -6,6 +6,9 @@ All notable changes to ZoneWise.AI web are documented here.
 
 ## [Unreleased]
 
+### Added
+- Pro Forma Studio (`/proforma`) — development financial modeling engine (cost, revenue, NOI, cap-rate-implied value, leverage, cash-on-cash, multi-year DCF IRR, equity multiple) plus an Algoma-style before/after outcome report with a real downloadable PDF. Every number ships with its formula. See `PROJECT_STATE.json` CP6.
+
 ### In Progress
 - Multi-county expansion beyond Brevard
 - Improved AI chat with zoning code citations

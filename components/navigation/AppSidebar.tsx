@@ -13,6 +13,7 @@ import {
   CircleHelp,
   Boxes,
   PencilRuler,
+  Calculator,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -53,6 +54,7 @@ const navGroups: NavGroup[] = [
     items: [
       { title: '3D Massing', url: '/massing', icon: Boxes },
       { title: 'Floor Plans', url: '/floorplan', icon: PencilRuler },
+      { title: 'Pro Forma', url: '/proforma', icon: Calculator },
     ],
   },
   {
