@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo } from 'react'
 import { Calculator, Loader2, FileDown, Image as ImageIcon, X } from 'lucide-react'
 import type { ConstructionType, DealType, ProFormaInputs } from '@/lib/development-analysis/proforma-engine'
 import type { OutcomeReportData } from '@/lib/reports/proforma-outcome-report'
+import { useLeadGate } from '@/hooks/useLeadGate'
+import EmailGateInline from '@/components/gate/EmailGateInline'
 
 const CONSTRUCTION_TYPES: { value: ConstructionType; label: string }[] = [
   { value: 'SF', label: 'Single Family' },
@@ -155,6 +157,7 @@ export default function ProFormaStudio() {
   const [loading, setLoading] = useState(false)
   const [exportingPdf, setExportingPdf] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const gate = useLeadGate()
 
   const canCalculate = useMemo(
     () => isScenarioComplete(scenario) && (!compareEnabled || isScenarioComplete(baseline)),
@@ -184,6 +187,10 @@ export default function ProFormaStudio() {
         }),
       })
       const data = await res.json()
+      if (res.status === 402 && data.code === 'usage_cap_reached') {
+        gate.requireGate(null, 'proforma_usage_cap', data.error)
+        return
+      }
       if (!res.ok) throw new Error(data.error || 'Calculation failed')
       setReport(data.report)
     } catch (err: any) {
@@ -268,7 +275,7 @@ export default function ProFormaStudio() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base font-semibold text-white">Outcome Report</h2>
                 <button
-                  onClick={handleDownloadPdf}
+                  onClick={() => gate.requireGate(handleDownloadPdf, 'proforma_pdf_export', 'Enter your email to download the full Pro Forma PDF.')}
                   disabled={exportingPdf}
                   className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
                 >
@@ -287,50 +294,69 @@ export default function ProFormaStudio() {
                 ))}
               </div>
 
-              {report.comparison && (
-                <div className="mb-6 overflow-x-auto">
-                  <h3 className="text-sm font-semibold text-slate-200 mb-2">Baseline vs Optimized</h3>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-slate-500 border-b border-slate-800">
-                        <th className="py-1.5 font-medium">Metric</th>
-                        <th className="py-1.5 font-medium">Baseline</th>
-                        <th className="py-1.5 font-medium">Optimized</th>
-                        <th className="py-1.5 font-medium">Delta</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {report.comparison.map((row) => (
-                        <tr key={row.label} className="border-b border-slate-800/50">
-                          <td className="py-1.5 text-slate-300">{row.label}</td>
-                          <td className="py-1.5 text-slate-400">{row.baseline}</td>
-                          <td className="py-1.5 text-slate-200">{row.optimized}</td>
-                          <td className="py-1.5 text-orange-400">{row.delta}</td>
-                        </tr>
+              {gate.unlocked ? (
+                <>
+                  {report.comparison && (
+                    <div className="mb-6 overflow-x-auto">
+                      <h3 className="text-sm font-semibold text-slate-200 mb-2">Baseline vs Optimized</h3>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-slate-500 border-b border-slate-800">
+                            <th className="py-1.5 font-medium">Metric</th>
+                            <th className="py-1.5 font-medium">Baseline</th>
+                            <th className="py-1.5 font-medium">Optimized</th>
+                            <th className="py-1.5 font-medium">Delta</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {report.comparison.map((row) => (
+                            <tr key={row.label} className="border-b border-slate-800/50">
+                              <td className="py-1.5 text-slate-300">{row.label}</td>
+                              <td className="py-1.5 text-slate-400">{row.baseline}</td>
+                              <td className="py-1.5 text-slate-200">{row.optimized}</td>
+                              <td className="py-1.5 text-orange-400">{row.delta}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-200 mb-2">Formula Transparency</h3>
+                    <div className="space-y-2">
+                      {report.formulaLines.map((line) => (
+                        <div key={line.label} className="border-b border-slate-800/50 pb-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-slate-300">{line.label}</span>
+                            <span className="text-slate-100 font-mono">{line.result.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                          </div>
+                          <div className="text-xs text-slate-500 font-mono">= {line.formula}</div>
+                          {line.note && <div className="text-xs text-slate-600 italic mt-0.5">{line.note}</div>}
+                        </div>
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                    <p className="text-xs text-slate-500 italic mt-4 border-t border-slate-800 pt-3">{report.assumptionsNote}</p>
+                  </div>
+                </>
+              ) : (
+                <div className="border-t border-slate-800 pt-4">
+                  <h3 className="text-sm font-semibold text-slate-200 mb-1">Formula Transparency — locked</h3>
+                  <p className="text-xs text-slate-500 mb-3">
+                    See the full per-line formula breakdown{report.comparison ? ' and baseline comparison' : ''} — enter your email to unlock.
+                  </p>
+                  <EmailGateInline
+                    onSubmit={(email) => gate.unlockWithSource(email, 'proforma_pdf_export')}
+                    ctaLabel="Unlock full breakdown"
+                  />
                 </div>
               )}
-
-              <div>
-                <h3 className="text-sm font-semibold text-slate-200 mb-2">Formula Transparency</h3>
-                <div className="space-y-2">
-                  {report.formulaLines.map((line) => (
-                    <div key={line.label} className="border-b border-slate-800/50 pb-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-300">{line.label}</span>
-                        <span className="text-slate-100 font-mono">{line.result.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
-                      </div>
-                      <div className="text-xs text-slate-500 font-mono">= {line.formula}</div>
-                      {line.note && <div className="text-xs text-slate-600 italic mt-0.5">{line.note}</div>}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-slate-500 italic mt-4 border-t border-slate-800 pt-3">{report.assumptionsNote}</p>
-              </div>
             </div>
           </div>
+        )}
+
+        {gate.showGate && (
+          <EmailGateInline onSubmit={gate.submitGate} ctaLabel="Continue" message={gate.gateMessage ?? undefined} />
         )}
       </div>
     </div>

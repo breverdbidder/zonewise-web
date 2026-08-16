@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/client'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
 import { computeParcelCandidates, computeMultiUnitCandidates, parseParcelPolygon, type CandidateFootprint, type MultiUnitCandidate, type LayoutType } from '@/lib/development-analysis/site-massing-solver'
 import { resolveZoningForParcel, zoningStandardsToSolverInputs } from '@/lib/development-analysis/parcel-zoning-resolver'
+import { useLeadGate } from '@/hooks/useLeadGate'
+import EmailGateInline from '@/components/gate/EmailGateInline'
 
 // ─── Zone typology classifier ─────────────────────────────────────────────────
 type ZoneTypology = 'SF' | 'GARDEN_MF' | 'MID_RISE' | 'HIGH_RISE'
@@ -172,6 +174,7 @@ export default function MassingEngine() {
   const [dxfDownloading, setDxfDownloading] = useState(false)
   const [dxfError, setDxfError] = useState<string | null>(null)
   const persistedParcelRef = useRef<string | null>(null)
+  const gate = useLeadGate()
 
   const [webglLost, setWebglLost] = useState(false)
 
@@ -975,8 +978,15 @@ export default function MassingEngine() {
         candidates: candidateInputs,
       }),
     })
-      .then(r => r.json())
-      .then(d => { if (d.run_id) setRunId(d.run_id); if (Array.isArray(d.options)) setOptionIds(d.options) })
+      .then(async r => {
+        const d = await r.json().catch(() => ({}))
+        if (r.status === 402 && d.code === 'usage_cap_reached') {
+          gate.requireGate(null, 'massing_usage_cap', d.error || "You've used your free lookups for this session — enter your email to keep exploring.")
+          return
+        }
+        if (d.run_id) setRunId(d.run_id)
+        if (Array.isArray(d.options)) setOptionIds(d.options)
+      })
       .catch(() => { /* run persistence is best-effort — DXF download does not depend on it */ })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, zoning, layoutType])
@@ -1241,7 +1251,7 @@ export default function MassingEngine() {
                       Download Render
                     </button>
                     <button
-                      onClick={handleDownloadDxf}
+                      onClick={() => gate.requireGate(handleDownloadDxf, 'massing_cad_export', 'Enter your email to download the CAD file.')}
                       disabled={dxfDownloading || candidates.length === 0}
                       className="text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
                       title={candidates.length === 0 ? (layoutType === 'single_family' ? 'No parcel boundary polygon available for this property' : 'No compliant layout found for this parcel + layout type (lot may be too small, or over the zone\'s density/coverage cap)') : undefined}
@@ -1250,6 +1260,15 @@ export default function MassingEngine() {
                     </button>
                   </div>
                 </div>
+                {gate.showGate && (
+                  <div className="px-4 py-3 border-b border-slate-800">
+                    <EmailGateInline
+                      onSubmit={gate.submitGate}
+                      ctaLabel="Get my CAD file"
+                      message={gate.gateMessage ?? undefined}
+                    />
+                  </div>
+                )}
                 {dxfError && (
                   <div className="px-4 py-2 text-xs text-red-400 border-b border-slate-800">{dxfError}</div>
                 )}

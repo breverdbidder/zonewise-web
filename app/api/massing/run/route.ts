@@ -3,6 +3,7 @@
 // client (see MassingEngine.tsx) — not on every render/frame.
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { checkFreeRunCap, recordFreeRun, usageCapBody } from '@/lib/gate/server'
 
 interface SubFootprintInput { kind: 'building' | 'access_drive'; label?: string; ringLngLat: [number, number][] }
 
@@ -53,6 +54,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'At least one candidate footprint is required' }, { status: 400 })
   }
 
+  // PLG usage cap: 3 free massing/floorplan/proforma tool-runs per anonymous
+  // session before the email gate is required (see lib/gate/server.ts).
+  if (checkFreeRunCap(request).blocked) {
+    return NextResponse.json(usageCapBody(), { status: 402 })
+  }
+
   const supabase = createServiceClient()
 
   const { data: run, error: runError } = await supabase
@@ -93,11 +100,15 @@ export async function POST(request: NextRequest) {
 
   if (optionsError) {
     // Run row is already written; report partial success rather than hiding it.
-    return NextResponse.json(
+    const partial = NextResponse.json(
       { run_id: run.id, options: [], error: `Run persisted but options failed: ${optionsError.message}` },
       { status: 207 },
     )
+    recordFreeRun(request, partial)
+    return partial
   }
 
-  return NextResponse.json({ run_id: run.id, options: options ?? [] })
+  const success = NextResponse.json({ run_id: run.id, options: options ?? [] })
+  recordFreeRun(request, success)
+  return success
 }

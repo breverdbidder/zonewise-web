@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { setLeadGateCookie } from '@/lib/gate/server'
 
 function getSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -26,12 +27,17 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       if (error.code === '23505') {
-        return NextResponse.json({ message: 'Welcome back!' })
+        // Already captured this email previously — still gate this session.
+        const res = NextResponse.json({ message: 'Welcome back!' })
+        setLeadGateCookie(res)
+        return res
       }
       return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Thanks! Starting your session.' })
+    const res = NextResponse.json({ message: 'Thanks! Starting your session.' })
+    setLeadGateCookie(res)
+    return res
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }

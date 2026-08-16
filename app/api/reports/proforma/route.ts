@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { SECURITY_HEADERS } from '@/lib/validation'
+import { checkFreeRunCap, recordFreeRun, usageCapBody } from '@/lib/gate/server'
 import {
   calculateProForma,
   type ProFormaInputs,
@@ -91,6 +92,10 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  if (checkFreeRunCap(req).blocked) {
+    return NextResponse.json(usageCapBody(), { status: 402, headers: SECURITY_HEADERS })
+  }
+
   try {
     const scenario = toScenario(parsed.data.scenario)
     const baseline = parsed.data.baseline ? toScenario(parsed.data.baseline) : undefined
@@ -102,7 +107,9 @@ export async function POST(req: NextRequest) {
       generatedAt: new Date().toISOString(),
     })
 
-    return NextResponse.json({ ok: true, report }, { headers: SECURITY_HEADERS })
+    const res = NextResponse.json({ ok: true, report }, { headers: SECURITY_HEADERS })
+    recordFreeRun(req, res)
+    return res
   } catch (err: any) {
     // Thrown by calculateProForma for missing/invalid comps input — this is
     // an expected, user-correctable 400, not a server error. The engine

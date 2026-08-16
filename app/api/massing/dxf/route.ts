@@ -12,6 +12,7 @@
 // storage hiccup should not block the user's download.
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { isLeadGated, leadRequiredBody } from '@/lib/gate/server'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { exportSiteMassingDXF, saveSiteMassingDxfToStorage, SiteDxfUnsupportedCountyError } = require('@/lib/development-analysis/site-dxf.js')
 
@@ -55,6 +56,12 @@ export async function POST(request: NextRequest) {
   const { parcel, zoning, candidate, runId, optionId } = body
   if (!parcel?.county || !parcel?.boundaryLngLat || !zoning?.zone_code || !candidate?.footprintLngLat) {
     return NextResponse.json({ error: 'parcel.county, parcel.boundaryLngLat, zoning.zone_code, and candidate are required' }, { status: 400 })
+  }
+
+  // PLG email gate: CAD/DXF download is the export payoff moment for
+  // Massing — require a captured lead before streaming the file.
+  if (!isLeadGated(request)) {
+    return NextResponse.json(leadRequiredBody(), { status: 402 })
   }
 
   let buf: Buffer

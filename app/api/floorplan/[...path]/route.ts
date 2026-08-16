@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SECURITY_HEADERS } from '@/lib/validation'
+import { checkFreeRunCap, recordFreeRun, usageCapBody, isLeadGated, leadRequiredBody } from '@/lib/gate/server'
 
 /**
  * Proxies /api/floorplan/* to the ZoneWise Floor Plan Worker.
@@ -12,6 +13,16 @@ const WORKER_BASE = 'https://zonewise-floorplan.brevardbidderai.workers.dev/floo
 
 async function proxy(request: NextRequest, path: string[]) {
   const target = `${WORKER_BASE}/${path.join('/')}${request.nextUrl.search}`
+  const action = path[0]
+
+  // PLG gates — only the two full-tool-run/export actions this issue names.
+  // Everything else (get, list, etc.) stays ungated.
+  if (request.method === 'POST' && action === 'compile' && checkFreeRunCap(request).blocked) {
+    return NextResponse.json(usageCapBody(), { status: 402, headers: SECURITY_HEADERS })
+  }
+  if (request.method === 'POST' && action === 'save' && !isLeadGated(request)) {
+    return NextResponse.json(leadRequiredBody(), { status: 402, headers: SECURITY_HEADERS })
+  }
 
   try {
     const response = await fetch(target, {
@@ -23,13 +34,17 @@ async function proxy(request: NextRequest, path: string[]) {
     })
 
     const body = await response.text()
-    return new NextResponse(body, {
+    const result = new NextResponse(body, {
       status: response.status,
       headers: {
         ...SECURITY_HEADERS,
         'Content-Type': response.headers.get('content-type') || 'application/json',
       },
     })
+    if (request.method === 'POST' && action === 'compile' && response.ok) {
+      recordFreeRun(request, result)
+    }
+    return result
   } catch (error) {
     console.error('[api/floorplan] proxy error:', error)
     return NextResponse.json(

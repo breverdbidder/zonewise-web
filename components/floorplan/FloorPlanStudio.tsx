@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from 'react'
 import { Save, History, AlertTriangle, CheckCircle2, XCircle, MinusCircle, Loader2, FileDown, FolderOpen } from 'lucide-react'
+import { useLeadGate } from '@/hooks/useLeadGate'
+import EmailGateInline from '@/components/gate/EmailGateInline'
 
 /**
  * ZoneWise Floor Plan Studio
@@ -142,6 +144,7 @@ export default function FloorPlanStudio() {
   const [exportingPdf, setExportingPdf] = useState(false)
   const [loadingPlan, setLoadingPlan] = useState(false)
   const [netError, setNetError] = useState<string | null>(null)
+  const gate = useLeadGate()
 
   const handleCompile = useCallback(async () => {
     setCompiling(true)
@@ -157,6 +160,11 @@ export default function FloorPlanStudio() {
         body: JSON.stringify(body),
       })
       const data = await res.json()
+
+      if (res.status === 402 && data.code === 'usage_cap_reached') {
+        gate.requireGate(null, 'floorplan_usage_cap', data.error)
+        return
+      }
 
       if (!res.ok || !data.ok) {
         setSvg(null)
@@ -194,6 +202,10 @@ export default function FloorPlanStudio() {
         body: JSON.stringify(body),
       })
       const data = await res.json()
+      if (res.status === 402 && data.code === 'lead_required') {
+        gate.requireGate(() => handleSave(), 'floorplan_pdf_export', data.error)
+        return
+      }
       if (!res.ok || !data.ok) {
         setNetError(data.error || 'Save failed.')
         return
@@ -304,7 +316,7 @@ export default function FloorPlanStudio() {
               Load
             </button>
             <button
-              onClick={handleSave}
+              onClick={() => gate.requireGate(handleSave, 'floorplan_pdf_export', 'Enter your email to save this plan.')}
               disabled={saving}
               className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
             >
@@ -312,7 +324,7 @@ export default function FloorPlanStudio() {
               Save
             </button>
             <button
-              onClick={handleDownloadPdf}
+              onClick={() => gate.requireGate(handleDownloadPdf, 'floorplan_pdf_export', 'Enter your email to download this plan as a PDF.')}
               disabled={!svg || exportingPdf}
               title={!svg ? 'Compile a plan first' : 'Download this plan as a PDF'}
               className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
@@ -327,6 +339,12 @@ export default function FloorPlanStudio() {
           </div>
         </div>
       </header>
+
+      {gate.showGate && (
+        <div className="max-w-7xl mx-auto mt-4 px-6">
+          <EmailGateInline onSubmit={gate.submitGate} ctaLabel="Continue" message={gate.gateMessage ?? undefined} />
+        </div>
+      )}
 
       {netError && (
         <div className="max-w-7xl mx-auto mt-4 px-6">
