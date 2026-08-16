@@ -72,7 +72,7 @@ export default function PricingPage() {
       <PricingTracker source="direct" />
       {/* Nav */}
       <nav className="h-14 flex items-center px-6 border-b border-slate-800">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 min-h-11">
           <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1E3A5F] to-[#2d5a8f] flex items-center justify-center">
             <span className="text-white text-xs font-bold">Z</span>
           </div>
@@ -81,7 +81,7 @@ export default function PricingPage() {
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-4">
-          <Link href="/explore" className="text-sm text-slate-400 hover:text-white transition-colors">
+          <Link href="/explore" className="text-sm text-slate-400 hover:text-white transition-colors flex items-center min-h-11">
             Explore
           </Link>
           <Link
