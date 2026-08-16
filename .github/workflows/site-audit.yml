@@ -18,6 +18,10 @@ concurrency:
   group: site-audit
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   audit:
     # Never audit against a build that did not ship.
@@ -68,6 +72,18 @@ jobs:
           else
             echo "## Site audit — harness did not produce a report (crashed)" > summary.md
           fi
+
+      # gh issue create validates labels BEFORE creating and aborts with
+      # "could not add label: 'site-audit' not found" if it is missing. The
+      # label never existed, so this step failed on every run and no blocker
+      # was ever reported. Create it idempotently first.
+      - name: Ensure site-audit label exists
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create site-audit --repo "$GITHUB_REPOSITORY" \
+            --color B60205 --description "Automated production site audit" 2>/dev/null || true
 
       - name: File / update GitHub issue on blockers
         if: always()
