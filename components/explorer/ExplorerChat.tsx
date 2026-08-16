@@ -116,7 +116,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
         <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-base">🤖</div>
         <div>
           <div className="text-sm font-bold text-white">ZoneWise Explorer AI</div>
-          <div className="text-[11px] text-slate-400">Brevard County · 262K parcels</div>
+          <div className="text-[11px] text-slate-400">36 FL Counties · 4M+ parcels</div>
         </div>
         <div className="ml-auto text-[10px] text-slate-600 bg-slate-900 border border-slate-800 rounded px-2 py-1">
           {remaining}/{FREE_CHAT_MESSAGES} free
@@ -129,7 +129,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
           <div className="py-6 text-center">
             <div className="text-4xl mb-3 opacity-20">💬</div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-[220px] mx-auto">
-              Ask about any Brevard property, zone, or market trend.
+              Ask about any Florida property, zone, or market trend.
             </p>
           </div>
         )}
@@ -176,7 +176,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={remaining > 0 ? 'Try: "Show me R1 zones in Brevard near water"' : 'Upgrade for unlimited chat'}
+            placeholder={remaining > 0 ? 'Try: "Show me R1 zones near water"' : 'Upgrade for unlimited chat'}
             disabled={streaming || remaining === 0}
             className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500/60 transition-colors disabled:opacity-50"
           />
