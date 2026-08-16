@@ -1,0 +1,93 @@
+name: "Site Audit (production)"
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'scripts/audit-site.mjs'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # A push-triggered run fires the instant the commit lands, before
+      # Vercel has finished deploying it. Give the deploy a head start;
+      # scheduled/manual runs skip this (nothing to wait for).
+      - name: Wait for deploy
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run audit
+        id: audit
+        continue-on-error: true
+        run: node scripts/audit-site.mjs --json=report.json
+
+      - name: Summarize
+        if: always()
+        run: |
+          if [ -f report.json ]; then
+            node -e "
+              const r = require('./report.json').results;
+              const b = r.filter(x => x.severity === 'BLOCKER');
+              const w = r.filter(x => x.severity === 'WARN');
+              console.log(b.length + ' blockers, ' + w.length + ' warnings');
+              const lines = b.map(x => '- **' + x.view + '** [' + x.kind + '] ' + x.detail).join('\n');
+              require('fs').writeFileSync('summary.md', '## Site audit — ' + b.length + ' blockers, ' + w.length + ' warnings\n\n' + (lines || '_No blockers._'));
+            "
+          else
+            echo "## Site audit — harness did not produce a report (crashed)" > summary.md
+          fi
+
+      - name: File / update GitHub issue on blockers
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BLOCKERS=$(node -e "console.log(require('fs').existsSync('report.json') ? require('./report.json').results.filter(x=>x.severity==='BLOCKER').length : 1)")
+          if [ "$BLOCKERS" -gt 0 ]; then
+            EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --label site-audit --state open --json number --jq '.[0].number' || echo "")
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body-file summary.md
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "Site audit: $BLOCKERS blocker(s) on production" --body-file summary.md --label site-audit
+            fi
+          else
+            EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --label site-audit --state open --json number --jq '.[0].number' || echo "")
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body "✅ Audit is clean — closing." || true
+              gh issue close "$EXISTING" --repo "$GITHUB_REPOSITORY" || true
+            fi
+          fi
+
+      - name: Notify Telegram
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          [ -f summary.md ] && curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" -d text="$(cat summary.md | head -c 3500)" || true
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-audit-report
+          path: report.json
+          if-no-files-found: ignore
