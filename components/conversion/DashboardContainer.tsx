@@ -25,6 +25,14 @@ const FALLBACK_STATS: PlatformStats = {
   zoning_codes: 0,
 }
 
+// Aug 16 2026 fix: this whole panel was BidDeed.AI's dashboard shipped
+// verbatim onto ZoneWise.AI — "Auctions Tracked" KPI, a "Recent Auctions"
+// table of FABRICATED case numbers (2024-CA-001234 etc. do not exist), and
+// an upgrade banner selling "Real-time auctions". scripts/audit-site.mjs
+// flagged the banned SSOT term "auction" plus a genuine layout bug (the
+// banner's fixed-width button squeezed its own copy into a 78px column on
+// mobile). Swapped for zoning-native KPIs/content; auctions belong on
+// BidDeed.AI only.
 function buildKpiStats(stats: PlatformStats): StatItem[] {
   return [
     {
@@ -34,9 +42,9 @@ function buildKpiStats(stats: PlatformStats): StatItem[] {
       format: { kind: 'number', compact: true },
     },
     {
-      key: 'auctions',
-      label: 'Auctions Tracked',
-      value: stats.auctions,
+      key: 'zoning-codes',
+      label: 'Zoning Codes Mapped',
+      value: stats.zoning_codes,
       format: { kind: 'number', compact: true },
     },
     {
@@ -53,12 +61,6 @@ function buildKpiStats(stats: PlatformStats): StatItem[] {
     },
   ]
 }
-
-const RECENT_AUCTIONS = [
-  { case: '2024-CA-001234', county: 'Brevard', address: '123 Ocean Dr, Titusville', bid: '$148,500', date: '2026-04-03' },
-  { case: '2024-CA-005671', county: 'Orange', address: '456 Pine Ave, Orlando', bid: '$312,000', date: '2026-04-04' },
-  { case: '2024-CA-009982', county: 'Miami-Dade', address: '789 Coral Way, Miami', bid: '$520,000', date: '2026-04-05' },
-]
 
 export default function DashboardContainer() {
   const { trackClick } = useClickTracker()
@@ -91,57 +93,16 @@ export default function DashboardContainer() {
         />
       </div>
 
-      {/* Recent auctions table */}
-      <div className="flex-1">
-        <h2 className="text-xs font-semibold mb-3 uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Recent Auctions
-        </h2>
-        <div
-          className="rounded-lg overflow-hidden"
-          style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ background: 'rgba(30, 58, 95, 0.6)' }}>
-                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Case #</th>
-                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>County</th>
-                <th className="text-left px-4 py-3 font-medium hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>Address</th>
-                <th className="text-left px-4 py-3 font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Opening Bid</th>
-                <th className="text-left px-4 py-3 font-medium hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {RECENT_AUCTIONS.map((auction, i) => (
-                <tr
-                  key={auction.case}
-                  className="cursor-pointer"
-                  style={{
-                    background: i % 2 === 0 ? 'rgba(30, 58, 95, 0.2)' : 'transparent',
-                    borderTop: '1px solid rgba(255,255,255,0.05)',
-                  }}
-                  onClick={(e) => { e.stopPropagation(); trackClick() }}
-                >
-                  <td className="px-4 py-3 font-mono" style={{ color: '#F59E0B' }}>{auction.case}</td>
-                  <td className="px-4 py-3" style={{ color: 'rgba(255,255,255,0.85)' }}>{auction.county}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.6)' }}>{auction.address}</td>
-                  <td className="px-4 py-3 font-semibold">{auction.bid}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell" style={{ color: 'rgba(255,255,255,0.5)' }}>{auction.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Upgrade banner */}
+      {/* Upgrade banner — flex-wrap added so the button never squeezes the
+          copy into an unreadable column on narrow viewports. */}
       <div
-        className="rounded-lg px-5 py-4 flex items-center justify-between gap-4"
+        className="mt-auto rounded-lg px-5 py-4 flex flex-wrap items-center justify-between gap-4"
         style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.3)' }}
       >
-        <div>
-          <p className="text-sm font-semibold" style={{ color: '#F59E0B' }}>Upgrade to unlock live data</p>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold" style={{ color: '#F59E0B' }}>Upgrade to unlock full coverage</p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Real-time auctions, AI deal scoring, and personalized alerts across 67 counties
+            Live parcel zoning, AI feasibility scoring, and personalized alerts across 67 counties
           </p>
         </div>
         <button
