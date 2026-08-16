@@ -15,6 +15,21 @@ import type {
 } from "./schema";
 import { Sparkline } from "./sparkline";
 
+const DEFAULT_LOCALE = "en-US";
+
+// navigator.language can carry a POSIX-style suffix (e.g. "en-US@posix") on
+// some Linux/Chromium environments, which is not valid BCP 47 and throws in
+// `new Intl.NumberFormat()`. Validate before use, falling back on failure.
+function sanitizeLocale(locale: string | undefined): string {
+  if (!locale) return DEFAULT_LOCALE;
+  try {
+    Intl.getCanonicalLocales(locale);
+    return locale;
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
 interface FormattedValueProps {
   value: string | number;
   format?: StatFormat;
@@ -223,9 +238,10 @@ export function StatsDisplay({
   className,
   locale: localeProp,
 }: StatsDisplayProps) {
-  const locale =
+  const locale = sanitizeLocale(
     localeProp ??
-    (typeof navigator !== "undefined" ? navigator.language : undefined);
+      (typeof navigator !== "undefined" ? navigator.language : undefined),
+  );
   const hasHeader = Boolean(title || description);
   const isSingle = stats.length === 1;
 

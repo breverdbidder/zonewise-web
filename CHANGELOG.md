@@ -9,6 +9,9 @@ All notable changes to ZoneWise.AI web are documented here.
 ### Added
 - Pro Forma Studio (`/proforma`) — development financial modeling engine (cost, revenue, NOI, cap-rate-implied value, leverage, cash-on-cash, multi-year DCF IRR, equity multiple) plus an Algoma-style before/after outcome report with a real downloadable PDF. Every number ships with its formula. See `PROJECT_STATE.json` CP6.
 
+### Fixed
+- `/dashboard` crash (`RangeError: Invalid language tag: en-US@posix`) — `StatsDisplay` derived its `Intl.NumberFormat` locale from `navigator.language`, which some Linux/Chromium environments report with a POSIX-style suffix (e.g. `en-US@posix`) that is not valid BCP 47. `components/tool-ui/stats-display/stats-display.tsx` now validates the resolved locale via `Intl.getCanonicalLocales` and falls back to `en-US` on an invalid tag, matching the existing pattern in `data-table.tsx`/`citation.tsx`.
+
 ### In Progress
 - Multi-county expansion beyond Brevard
 - Improved AI chat with zoning code citations
