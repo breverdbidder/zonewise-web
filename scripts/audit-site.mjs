@@ -82,7 +82,7 @@ const BANNED_TERMS = [
 // so /docs correctly describing that behavior is accurate, not stale copy.
 const BREVARD_ALLOWED_CONTEXTS = [
   'Recorded, Brevard County Clerk',
-  'defaults to &quot;brevard&quot;',
+  'defaults to "brevard"',
   '"county": "brevard"',
 ]
 
@@ -178,7 +178,7 @@ async function auditView(page, label, results) {
     const onlyProvenance = probe.text
       .split(/\n/)
       .filter((l) => /brevard/i.test(l))
-      .every((l) => l.includes(BREVARD_ALLOWED_CONTEXT))
+      .every((l) => BREVARD_ALLOWED_CONTEXTS.some((ctx) => l.includes(ctx)))
     if (!onlyProvenance) {
       results.push({ view: label, severity: 'WARN', kind: 'geography-positioning', detail: 'Brevard outside provenance line' })
     }
