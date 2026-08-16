@@ -11,6 +11,8 @@ import {
   Settings,
   CreditCard,
   CircleHelp,
+  Boxes,
+  PencilRuler,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -44,6 +46,13 @@ const navGroups: NavGroup[] = [
       { title: 'Feasibility', url: '/feasibility', icon: Building2 },
       { title: 'Reports', url: '/report', icon: FileText },
       { title: 'KPIs', url: '/kpis', icon: Activity },
+    ],
+  },
+  {
+    label: 'Design Tools',
+    items: [
+      { title: '3D Massing', url: '/massing', icon: Boxes },
+      { title: 'Floor Plans', url: '/floorplan', icon: PencilRuler },
     ],
   },
   {
