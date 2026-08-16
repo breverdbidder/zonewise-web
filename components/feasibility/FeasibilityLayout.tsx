@@ -67,15 +67,17 @@ export default function FeasibilityLayout({
           </span>
         </div>
 
-        {/* Tabs — horizontally scrollable so they never collide with the user/chat controls on mobile */}
+        {/* Tabs — horizontally scrollable so they never collide with the user/chat controls on mobile.
+            Inactive-tab text brightened from rgba(255,255,255,.5) to .8 and bumped a size
+            (13px -> 14px) — the old value read as illegible gray on the navy bar. */}
         <div className="flex items-center flex-1 min-w-0 overflow-x-auto">
           {TABS.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="shrink-0 bg-transparent border-none px-4 py-4 text-[13px] font-medium transition-all cursor-pointer"
+              className="shrink-0 bg-transparent border-none px-4 py-4 text-[14px] font-medium transition-all cursor-pointer"
               style={{
-                color: tab === t ? '#fff' : 'rgba(255,255,255,0.5)',
+                color: tab === t ? '#fff' : 'rgba(255,255,255,0.8)',
                 borderBottom: tab === t ? `2px solid ${COLORS.brand}` : '2px solid transparent',
                 marginBottom: -2,
               }}
@@ -85,13 +87,14 @@ export default function FeasibilityLayout({
           ))}
         </div>
 
-        {/* NLP Chat — click to open Export tab */}
+        {/* NLP Chat — click to open Export tab. Text brightened from white/50 to white/90
+            and bumped a size so it's legible at a glance, not just on hover. */}
         <button
           onClick={() => setTab('Generate')}
-          className="hidden sm:flex items-center gap-2 bg-white/[0.08] px-3.5 py-1.5 rounded-lg cursor-pointer hover:bg-white/[0.12] transition-colors border-none shrink-0"
+          className="hidden sm:flex items-center gap-2 bg-white/[0.1] px-3.5 py-1.5 rounded-lg cursor-pointer hover:bg-white/[0.16] transition-colors border-none shrink-0"
         >
-          <span className="text-xs opacity-70">💬</span>
-          <span className="text-xs text-white/50 italic">Ask anything about this site...</span>
+          <span className="text-xs opacity-90">💬</span>
+          <span className="text-[13px] text-white/90 italic">Ask anything about this site...</span>
         </button>
 
         {/* User */}
