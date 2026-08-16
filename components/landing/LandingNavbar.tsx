@@ -15,9 +15,9 @@ export function LandingNavbar() {
             <span className="font-semibold text-white">ZoneWise.AI</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm text-slate-400">
-            <Link href="/explorer" className="hover:text-white transition-colors">Explorer</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-            <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
+            <Link href="/explorer" className="hover:text-white transition-colors flex items-center min-h-11">Explorer</Link>
+            <Link href="/pricing" className="hover:text-white transition-colors flex items-center min-h-11">Pricing</Link>
+            <Link href="/docs" className="hover:text-white transition-colors flex items-center min-h-11">Docs</Link>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" asChild>
