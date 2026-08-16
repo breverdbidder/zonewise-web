@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/health(.*)',
   '/api/stats(.*)',
   '/api/coverage(.*)', // public: customers verify county coverage BEFORE paying
+  '/api/parcels/search(.*)', // public: look up any address before paying
   '/api/kpis(.*)',
   '/api/auctions(.*)',
   '/api/bcpao-lookup(.*)',
