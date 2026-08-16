@@ -14,6 +14,11 @@ export async function GET(request: NextRequest) {
 
   const county = searchParams.get('county')
   const type = searchParams.get('type')
+  // sale_type is the reliably-populated column (foreclosure/tax_deed) --
+  // auction_type (the `type` param above) is null on ~72% of Brevard rows.
+  // Added alongside `type` rather than replacing it to avoid breaking any
+  // existing caller of `type`.
+  const saleType = searchParams.get('sale_type')
   const zoningCategory = searchParams.get('zoning_category')
   const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200)
   const offset = parseInt(searchParams.get('offset') || '0')
@@ -32,6 +37,7 @@ export async function GET(request: NextRequest) {
 
   if (county) query = query.ilike('county', county)
   if (type) query = query.eq('auction_type', type)
+  if (saleType) query = query.eq('sale_type', saleType)
   if (zoningCategory) query = query.eq('zoning_category', zoningCategory)
   if (hasCoords === 'true') {
     query = query.not('centroid_lat', 'is', null).not('centroid_lng', 'is', null)
