@@ -4,6 +4,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 
+interface SubFootprintInput { kind: 'building' | 'access_drive'; label?: string; ringLngLat: [number, number][] }
+
 interface CandidateInput {
   rank: number
   layoutType: string
@@ -13,6 +15,7 @@ interface CandidateInput {
   lotCoveragePct: number
   setbackCompliant: boolean
   score: number
+  subFootprints?: SubFootprintInput[] // present for townhome_row / multifamily_grid — real per-unit + access-drive rings
 }
 
 interface RunInput {
@@ -73,7 +76,9 @@ export async function POST(request: NextRequest) {
     run_id: run.id,
     option_rank: c.rank,
     layout_type: c.layoutType,
-    footprints: { footprintLngLat: c.footprintLngLat },
+    footprints: c.subFootprints
+      ? { footprintLngLat: c.footprintLngLat, subFootprints: c.subFootprints }
+      : { footprintLngLat: c.footprintLngLat },
     unit_count: c.unitCount,
     gross_floor_area_sqft: c.grossFloorAreaSqft,
     lot_coverage_pct: c.lotCoveragePct,

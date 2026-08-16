@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import * as THREE from 'three'
 import { createClient } from '@/lib/supabase/client'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
-import { computeParcelCandidates, parseParcelPolygon, type CandidateFootprint } from '@/lib/development-analysis/site-massing-solver'
+import { computeParcelCandidates, computeMultiUnitCandidates, parseParcelPolygon, type CandidateFootprint, type MultiUnitCandidate, type LayoutType } from '@/lib/development-analysis/site-massing-solver'
 
 // ─── Zone typology classifier ─────────────────────────────────────────────────
 type ZoneTypology = 'SF' | 'GARDEN_MF' | 'MID_RISE' | 'HIGH_RISE'
@@ -110,6 +110,7 @@ function deriveMetrics(parcel: ParcelResult, zoning: ZoningData) {
   const stories = (s.max_stories as number) ?? Math.floor(maxH / 11) ?? 2
   const parkingPerUnit = (s.parking_per_unit as number) ?? 2
   const parkingPer1k = (s.parking_per_1000sf as number) ?? 4
+  const maxDensityDuAcre = (s.max_density_du_acre as number) ?? undefined
 
   // Assume slightly rectangular lot (1.2:1 ratio)
   const lotW = Math.sqrt(lotArea * 1.2)
@@ -138,7 +139,7 @@ function deriveMetrics(parcel: ParcelResult, zoning: ZoningData) {
 
   return {
     lotArea, front, side, rear, maxH, maxCov, far, stories,
-    parkingPerUnit, parkingPer1k, lotW, lotD, env,
+    parkingPerUnit, parkingPer1k, lotW, lotD, env, maxDensityDuAcre,
     covPct, farActual, useType, units, density,
     requiredSpaces, spaceArea, acreage,
   }
@@ -223,8 +224,10 @@ export default function MassingEngine() {
   const [error, setError] = useState<string | null>(null)
   const [isFallback, setIsFallback] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
-  const [candidates, setCandidates] = useState<CandidateFootprint[]>([])
+  const [layoutType, setLayoutType] = useState<LayoutType>('single_family')
+  const [candidates, setCandidates] = useState<(CandidateFootprint | MultiUnitCandidate)[]>([])
   const [runId, setRunId] = useState<string | null>(null)
+  const [optionIds, setOptionIds] = useState<{ id: string; option_rank: number }[]>([])
   const [dxfDownloading, setDxfDownloading] = useState(false)
   const [dxfError, setDxfError] = useState<string | null>(null)
   const persistedParcelRef = useRef<string | null>(null)
@@ -1010,24 +1013,59 @@ export default function MassingEngine() {
   // ── Real-parcel-polygon candidate footprints + run persistence ──────────────
   // Separate from the 3D render effect above (which stays untouched — the
   // Three.js scene is not part of this feature). Runs the real-boundary
-  // solver and persists one run per parcel selection, not on every render.
+  // solver and persists one run per parcel+layout-type selection, not on
+  // every render. single_family uses the original per-orientation solver;
+  // townhome_row/multifamily_grid use the ported Worker unit-packing logic
+  // (computeMultiUnitCandidates, #19149 SSOT consolidation).
   useEffect(() => {
     if (!selected || !zoning) { setCandidates([]); return }
     const m = deriveMetrics(selected, zoning)
     const ring = parseParcelPolygon(selected.geometry)
     if (!ring || ring.length < 3) { setCandidates([]); return }
 
-    const top = computeParcelCandidates(
-      ring, zoning.zone_code,
-      { front: m.front, side: m.side, rear: m.rear },
-      m.maxH, m.maxCov, m.far, 5,
-    )
+    const top: (CandidateFootprint | MultiUnitCandidate)[] = layoutType === 'single_family'
+      ? computeParcelCandidates(
+          ring, zoning.zone_code,
+          { front: m.front, side: m.side, rear: m.rear },
+          m.maxH, m.maxCov, m.far, 5,
+        )
+      : computeMultiUnitCandidates(
+          ring, layoutType,
+          { front: m.front, side: m.side, rear: m.rear },
+          m.maxCov,
+          { maxDensityDuAcre: m.maxDensityDuAcre, maxCandidates: 5 },
+        )
     setCandidates(top)
     setRunId(null)
+    setOptionIds([])
     setDxfError(null)
 
-    if (top.length === 0 || zoning.co_no == null || persistedParcelRef.current === selected.parcel_id) return
-    persistedParcelRef.current = selected.parcel_id
+    const persistKey = `${selected.parcel_id}:${layoutType}`
+    if (top.length === 0 || zoning.co_no == null || persistedParcelRef.current === persistKey) return
+    persistedParcelRef.current = persistKey
+
+    const candidateInputs = top.map(c => 'subFootprints' in c
+      ? {
+          rank: c.rank,
+          layoutType: c.layoutType,
+          footprintLngLat: c.footprintLngLat,
+          unitCount: c.unitCount,
+          grossFloorAreaSqft: c.grossFloorAreaSqft,
+          lotCoveragePct: c.lotCoveragePct,
+          setbackCompliant: c.setbackCompliant,
+          score: c.score,
+          subFootprints: c.subFootprints,
+        }
+      : {
+          rank: c.rank,
+          layoutType: c.layoutType,
+          footprintLngLat: c.footprintLngLat,
+          unitCount: m.units,
+          grossFloorAreaSqft: c.env.actualGFA * c.fitScale * c.fitScale,
+          lotCoveragePct: c.covPct,
+          setbackCompliant: c.setbackCompliant,
+          score: c.score,
+        })
 
     fetch('/api/massing/run', {
       method: 'POST',
@@ -1037,23 +1075,14 @@ export default function MassingEngine() {
         co_no: zoning.co_no,
         zoning,
         boundaryLngLat: ring,
-        candidates: top.map(c => ({
-          rank: c.rank,
-          layoutType: c.layoutType,
-          footprintLngLat: c.footprintLngLat,
-          unitCount: m.units,
-          grossFloorAreaSqft: c.env.actualGFA * c.fitScale * c.fitScale,
-          lotCoveragePct: c.covPct,
-          setbackCompliant: c.setbackCompliant,
-          score: c.score,
-        })),
+        candidates: candidateInputs,
       }),
     })
       .then(r => r.json())
-      .then(d => { if (d.run_id) setRunId(d.run_id) })
+      .then(d => { if (d.run_id) setRunId(d.run_id); if (Array.isArray(d.options)) setOptionIds(d.options) })
       .catch(() => { /* run persistence is best-effort — DXF download does not depend on it */ })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, zoning])
+  }, [selected, zoning, layoutType])
 
   // ── CAD/DXF export ───────────────────────────────────────────────────────────
   const handleDownloadDxf = useCallback(async () => {
@@ -1063,13 +1092,19 @@ export default function MassingEngine() {
     setDxfDownloading(true)
     setDxfError(null)
     try {
+      const top = candidates[0]
+      const matchingOption = optionIds.find(o => o.option_rank === top.rank)
       const res = await fetch('/api/massing/dxf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           parcel: { parcel_id: selected.parcel_id, address: selected.address, county: zoning.county, boundaryLngLat: ring },
           zoning: { zone_code: zoning.zone_code, district_name: zoning.district_name },
-          candidate: candidates[0],
+          candidate: top,
+          // Persists the generated DXF to Storage + writes dxf_path on the
+          // option row, when the run was successfully persisted first.
+          runId: runId ?? undefined,
+          optionId: matchingOption?.id,
         }),
       })
       if (!res.ok) {
@@ -1089,7 +1124,7 @@ export default function MassingEngine() {
     } finally {
       setDxfDownloading(false)
     }
-  }, [selected, zoning, candidates])
+  }, [selected, zoning, candidates, runId, optionIds])
 
   // ── Snapshot export ──────────────────────────────────────────────────────────
   const handleSnapshot = useCallback(() => {
@@ -1291,6 +1326,17 @@ export default function MassingEngine() {
                   <span className="text-sm font-semibold text-slate-200">3D Building Envelope</span>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-500 hidden sm:inline">Drag to rotate · Scroll to zoom</span>
+                    <div className="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                      {(['single_family', 'townhome_row', 'multifamily_grid'] as LayoutType[]).map(lt => (
+                        <button
+                          key={lt}
+                          onClick={() => setLayoutType(lt)}
+                          className={`px-2.5 py-1 transition-colors ${layoutType === lt ? 'bg-amber-500 text-slate-950 font-semibold' : 'bg-slate-800 text-slate-300 hover:text-white'}`}
+                        >
+                          {lt === 'single_family' ? 'Single Family' : lt === 'townhome_row' ? 'Townhome Row' : 'Multifamily Grid'}
+                        </button>
+                      ))}
+                    </div>
                     <button
                       onClick={handleSnapshot}
                       className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
@@ -1301,7 +1347,7 @@ export default function MassingEngine() {
                       onClick={handleDownloadDxf}
                       disabled={dxfDownloading || candidates.length === 0}
                       className="text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
-                      title={candidates.length === 0 ? 'No parcel boundary polygon available for this property' : undefined}
+                      title={candidates.length === 0 ? (layoutType === 'single_family' ? 'No parcel boundary polygon available for this property' : 'No compliant layout found for this parcel + layout type (lot may be too small, or over the zone\'s density/coverage cap)') : undefined}
                     >
                       {dxfDownloading ? 'Exporting…' : 'Download CAD (DXF)'}
                     </button>
