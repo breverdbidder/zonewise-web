@@ -118,7 +118,7 @@ export default function ExportTab({ site }: ExportTabProps) {
   }
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-col lg:flex-row gap-5">
       {/* LEFT: Chat interface */}
       <div className="flex-1 min-w-0 flex flex-col" style={{ minHeight: 520 }}>
         <div className="flex items-center gap-2 mb-3">
@@ -206,7 +206,7 @@ export default function ExportTab({ site }: ExportTabProps) {
       </div>
 
       {/* RIGHT: Quick prompts */}
-      <div className="w-[280px] flex-shrink-0">
+      <div className="w-full lg:w-[280px] flex-shrink-0">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
           Quick Generate
         </div>
