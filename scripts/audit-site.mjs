@@ -250,11 +250,30 @@ async function run() {
       const page = await ctx.newPage()
       const pageErrors = []
       page.on('pageerror', (e) => pageErrors.push(e.message.slice(0, 120)))
-      page.on('console', (m) => { if (m.type() === 'error') pageErrors.push(m.text().slice(0, 120)) })
+      page.on('console', (m) => {
+        if (m.type() !== 'error') return
+        const t = m.text()
+        // A 429 is this harness's own request rate against production, not a
+        // product defect. It used to surface as a phantom js-error BLOCKER.
+        if (/\b429\b/.test(t)) return
+        pageErrors.push(t.slice(0, 120))
+      })
 
       const label = `${vp.name} ${route.path}`
       try {
-        const resp = await page.goto(BASE + route.path, { waitUntil: 'networkidle', timeout: 60000 })
+        // Production rate-limits a fast sequential walk of 7 routes x 7 tabs.
+        // Concurrency was only half the story: even a single CI run walking all
+        // four viewports trips 429 on whichever routes land last (consistently
+        // Desktop /pricing and /feasibility). Throttle, then back off and retry
+        // before believing a 429.
+        await page.waitForTimeout(1200)
+        let resp = null
+        for (let attempt = 0; attempt < 3; attempt++) {
+          resp = await page.goto(BASE + route.path, { waitUntil: 'networkidle', timeout: 60000 })
+          if (!resp || resp.status() !== 429) break
+          pageErrors.length = 0
+          await page.waitForTimeout(5000 * (attempt + 1))
+        }
         if (!resp || resp.status() >= 400) {
           results.push({ view: label, severity: 'BLOCKER', kind: 'bad-status', detail: String(resp && resp.status()) })
           await page.close()
