@@ -52,12 +52,15 @@ export default async function FeasibilityPage({ searchParams }: FeasibilityPageP
   return (
     <ErrorBoundary>
       {/* Address entry. Without this the page always fell back to DEMO_SITE —
-          ?parcel_id= was supported but unreachable from the UI. */}
-      <div className="border-b px-4 py-3 sm:px-6" style={{ borderColor: 'rgba(30,58,95,0.5)', background: '#020617' }}>
+          ?parcel_id= was supported but unreachable from the UI.
+          Bar brightened + highlighted per Ariel request Aug 16 2026: amber
+          accent border/glow so it reads as the primary action, brighter
+          placeholder/helper text so nothing on the dark bg goes dim. */}
+      <div className="border-b-2 px-4 py-4 sm:px-6" style={{ borderColor: 'rgba(245,158,11,0.35)', background: '#020617', boxShadow: 'inset 0 -12px 24px -20px rgba(245,158,11,0.25)' }}>
         <div className="mx-auto max-w-3xl">
           <ParcelSearchBar currentAddress={live ? site.address : undefined} />
           {!live && (
-            <p className="mt-2 text-center text-xs text-slate-500">
+            <p className="mt-2.5 text-center text-sm font-medium text-slate-300">
               Showing a sample site. Search any Florida address above to analyze a real parcel.
             </p>
           )}
