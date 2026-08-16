@@ -100,7 +100,7 @@ export default function ExplorerMobileSheet({
             className="flex-1 flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-400 min-h-[44px]"
           >
             <span className="text-base">🔍</span>
-            <span>Ask anything about Brevard...</span>
+            <span>Ask anything about Florida zoning...</span>
           </button>
           <button
             onClick={() => { setSheetState('half'); setActiveTab('chat') }}
