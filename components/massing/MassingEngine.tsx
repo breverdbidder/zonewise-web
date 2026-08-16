@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { createClient } from '@/lib/supabase/client'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
 import { computeParcelCandidates, computeMultiUnitCandidates, parseParcelPolygon, type CandidateFootprint, type MultiUnitCandidate, type LayoutType } from '@/lib/development-analysis/site-massing-solver'
+import { resolveZoningForParcel, zoningStandardsToSolverInputs } from '@/lib/development-analysis/parcel-zoning-resolver'
 
 // ─── Zone typology classifier ─────────────────────────────────────────────────
 type ZoneTypology = 'SF' | 'GARDEN_MF' | 'MID_RISE' | 'HIGH_RISE'
@@ -101,16 +102,9 @@ function deriveMetrics(parcel: ParcelResult, zoning: ZoningData) {
   const acreage = parcel.acres ?? 0.25
   const lotArea = acreage * 43560
 
-  const front = (s.front_setback_ft as number) ?? (s.front_setback as number) ?? 25
-  const side = (s.side_setback_ft as number) ?? (s.side_setback as number) ?? 7.5
-  const rear = (s.rear_setback_ft as number) ?? (s.rear_setback as number) ?? 20
-  const maxH = (s.max_height_ft as number) ?? 35
-  const maxCov = (s.max_lot_coverage_pct as number) ?? (s.max_coverage_pct as number) ?? 40
-  const far = (s.floor_area_ratio as number) ?? 0.5
-  const stories = (s.max_stories as number) ?? Math.floor(maxH / 11) ?? 2
+  const { front, side, rear, maxH, maxCov, far, stories, maxDensityDuAcre } = zoningStandardsToSolverInputs(s)
   const parkingPerUnit = (s.parking_per_unit as number) ?? 2
   const parkingPer1k = (s.parking_per_1000sf as number) ?? 4
-  const maxDensityDuAcre = (s.max_density_du_acre as number) ?? undefined
 
   // Assume slightly rectangular lot (1.2:1 ratio)
   const lotW = Math.sqrt(lotArea * 1.2)
@@ -157,59 +151,6 @@ function buildUnitMix(totalUnits: number) {
   const allocated = mix.reduce((s, r) => s + r.count, 0)
   mix[mix.length - 1].count += totalUnits - allocated
   return mix
-}
-
-// ─── Fallback zoning controls ─────────────────────────────────────────────────
-const FALLBACK_CONTROLS: Record<string, {
-  zone_name: string, max_height_ft: number, max_stories: number,
-  front_setback_ft: number, side_setback_ft: number, rear_setback_ft: number,
-  max_lot_coverage_pct: number, max_far: number, parking_per_unit: number,
-  parking_per_1000sf: number, max_density_du_acre: number
-}> = {
-  // Single Family Residential
-  SFR:          { zone_name: 'Single Family Residential', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
-  'VAC-RES':    { zone_name: 'Vacant Residential', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
-  'R-1A':       { zone_name: 'Single Family Residential A', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 6 },
-  'R-1AA':      { zone_name: 'Single Family Residential AA', max_height_ft: 35, max_stories: 2, front_setback_ft: 30, side_setback_ft: 10, rear_setback_ft: 25, max_lot_coverage_pct: 35, max_far: 0.4, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 4 },
-  'R1AA':       { zone_name: 'Single Family Residential AA', max_height_ft: 35, max_stories: 2, front_setback_ft: 30, side_setback_ft: 10, rear_setback_ft: 25, max_lot_coverage_pct: 35, max_far: 0.4, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 4 },
-  'R-1B':       { zone_name: 'Single Family Residential B', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 45, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
-  'R1B':        { zone_name: 'Single Family Residential B', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 45, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 8 },
-  SRE:          { zone_name: 'Suburban Residential Estate', max_height_ft: 35, max_stories: 2, front_setback_ft: 30, side_setback_ft: 10, rear_setback_ft: 25, max_lot_coverage_pct: 35, max_far: 0.35, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 4 },
-  RE:           { zone_name: 'Residential Estate', max_height_ft: 35, max_stories: 2, front_setback_ft: 35, side_setback_ft: 15, rear_setback_ft: 30, max_lot_coverage_pct: 30, max_far: 0.3, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 2 },
-  REU:          { zone_name: 'Residential Estate Urban', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 7.5, rear_setback_ft: 20, max_lot_coverage_pct: 40, max_far: 0.5, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 6 },
-  // Multifamily
-  'MFR-CONDO':  { zone_name: 'Multi-Family Residential Condo', max_height_ft: 45, max_stories: 4, front_setback_ft: 20, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 60, max_far: 1.5, parking_per_unit: 1.5, parking_per_1000sf: 0, max_density_du_acre: 24 },
-  TOWNHOUSE:    { zone_name: 'Townhouse Residential', max_height_ft: 40, max_stories: 3, front_setback_ft: 20, side_setback_ft: 0, rear_setback_ft: 15, max_lot_coverage_pct: 55, max_far: 1.2, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 16 },
-  'RES-COMMON': { zone_name: 'Residential Common Area', max_height_ft: 35, max_stories: 2, front_setback_ft: 25, side_setback_ft: 10, rear_setback_ft: 20, max_lot_coverage_pct: 20, max_far: 0.2, parking_per_unit: 0, parking_per_1000sf: 0, max_density_du_acre: 0 },
-  // PUD / Mixed
-  PUD:          { zone_name: 'Planned Unit Development', max_height_ft: 60, max_stories: 5, front_setback_ft: 15, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 65, max_far: 2.0, parking_per_unit: 1.5, parking_per_1000sf: 3.5, max_density_du_acre: 30 },
-  // Transitional / Special
-  'TR-3':       { zone_name: 'Transitional Residential 3', max_height_ft: 45, max_stories: 3, front_setback_ft: 20, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 50, max_far: 1.0, parking_per_unit: 1.5, parking_per_1000sf: 0, max_density_du_acre: 15 },
-  // Commercial
-  OFFICE:       { zone_name: 'Office', max_height_ft: 60, max_stories: 5, front_setback_ft: 15, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 70, max_far: 2.5, parking_per_unit: 0, parking_per_1000sf: 3.33, max_density_du_acre: 0 },
-  CP:           { zone_name: 'Commercial Professional', max_height_ft: 45, max_stories: 3, front_setback_ft: 15, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 65, max_far: 2.0, parking_per_unit: 0, parking_per_1000sf: 4, max_density_du_acre: 0 },
-  'C-CP':       { zone_name: 'Commercial Professional', max_height_ft: 45, max_stories: 3, front_setback_ft: 15, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 65, max_far: 2.0, parking_per_unit: 0, parking_per_1000sf: 4, max_density_du_acre: 0 },
-  // Institutional / Government
-  'GOV-MUNI':   { zone_name: 'Government Municipal', max_height_ft: 60, max_stories: 4, front_setback_ft: 20, side_setback_ft: 15, rear_setback_ft: 20, max_lot_coverage_pct: 60, max_far: 1.5, parking_per_unit: 0, parking_per_1000sf: 3, max_density_du_acre: 0 },
-  'SCHOOL-PUB': { zone_name: 'Public School', max_height_ft: 45, max_stories: 3, front_setback_ft: 30, side_setback_ft: 20, rear_setback_ft: 25, max_lot_coverage_pct: 50, max_far: 1.0, parking_per_unit: 0, parking_per_1000sf: 3, max_density_du_acre: 0 },
-  // Agricultural
-  ACREAGE:      { zone_name: 'Agricultural Acreage', max_height_ft: 35, max_stories: 2, front_setback_ft: 40, side_setback_ft: 15, rear_setback_ft: 30, max_lot_coverage_pct: 25, max_far: 0.2, parking_per_unit: 2, parking_per_1000sf: 0, max_density_du_acre: 1 },
-  GML:          { zone_name: 'General Mixed Land', max_height_ft: 45, max_stories: 3, front_setback_ft: 20, side_setback_ft: 10, rear_setback_ft: 15, max_lot_coverage_pct: 60, max_far: 1.5, parking_per_unit: 1.5, parking_per_1000sf: 3.5, max_density_du_acre: 20 },
-}
-
-function getFallbackControls(zoneCode: string) {
-  const c = (zoneCode || '').toUpperCase().trim()
-  if (FALLBACK_CONTROLS[c]) return FALLBACK_CONTROLS[c]
-  if (c.startsWith('R-1') || c.startsWith('R1') || c.startsWith('RS')) return FALLBACK_CONTROLS['SFR']
-  if (c.startsWith('R-2') || c.startsWith('R2')) return { ...FALLBACK_CONTROLS['SFR'], zone_name: 'Residential ' + c, max_density_du_acre: 10 }
-  if (c.startsWith('R-3') || c.startsWith('R3') || c.startsWith('RM') || c.startsWith('MFR') || c.startsWith('RU-2')) return FALLBACK_CONTROLS['MFR-CONDO']
-  if (c.startsWith('RU-1') || c.startsWith('RU-')) return { ...FALLBACK_CONTROLS['SFR'], zone_name: 'Rural Residential ' + c }
-  if (c.startsWith('C-') || c.startsWith('BU') || c.startsWith('GU')) return FALLBACK_CONTROLS['OFFICE']
-  if (c.startsWith('I-') || c.startsWith('M-')) return { ...FALLBACK_CONTROLS['OFFICE'], zone_name: 'Industrial ' + c, max_height_ft: 50, max_lot_coverage_pct: 70 }
-  if (c.startsWith('PUD') || c.startsWith('MU') || c.startsWith('MXD')) return FALLBACK_CONTROLS['PUD']
-  if (c.startsWith('AG') || c.startsWith('AU')) return FALLBACK_CONTROLS['ACREAGE']
-  if (c.includes('MULTIPLE') || c.includes('MULTI')) return FALLBACK_CONTROLS['MFR-CONDO']
-  return { ...FALLBACK_CONTROLS['SFR'], zone_name: 'Unknown Zone: ' + c }
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -278,63 +219,19 @@ export default function MassingEngine() {
     setIsFallback(false)
     const supabase = createClient()
     try {
-      const { data: za, error: e1 } = await supabase
-        .from('zoning_assignments')
-        .select('zone_code, jurisdiction, county, co_no')
-        .eq('parcel_id', parcel.parcel_id)
-        .limit(1)
-        .single()
-      if (e1 || !za) throw new Error('No zoning assignment found for this parcel')
+      const resolved = await resolveZoningForParcel(supabase, parcel.parcel_id)
+      if (!resolved) throw new Error('No zoning assignment found for this parcel')
 
-      const { data: zd, error: e2 } = await supabase
-        .from('zoning_districts')
-        .select('id, code, name')
-        .eq('code', za.zone_code)
-        .limit(1)
-        .single()
-
-      let standards: Record<string, unknown>
-      let districtName: string
-      let uses: { use_description: string; use_type: string }[]
-      let districtId: string
-
-      if (e2 || !zd) {
-        // Use fallback controls based on zone code pattern
-        const fb = getFallbackControls(za.zone_code)
-        standards = fb as unknown as Record<string, unknown>
-        districtName = fb.zone_name
-        uses = []
-        districtId = ''
-        setIsFallback(true)
-      } else {
-        const { data: zs } = await supabase
-          .from('zone_standards')
-          .select('*')
-          .eq('zoning_district_id', zd.id)
-          .limit(1)
-          .single()
-
-        const { data: pu } = await supabase
-          .from('permitted_uses')
-          .select('use_description, use_type')
-          .eq('zoning_district_id', zd.id)
-          .limit(20)
-
-        standards = (zs ?? {}) as Record<string, unknown>
-        districtName = zd.name
-        uses = pu ?? []
-        districtId = zd.id
-      }
-
+      setIsFallback(resolved.is_fallback)
       setZoning({
-        zone_code: za.zone_code,
-        jurisdiction: za.jurisdiction ?? null,
-        county: za.county ?? null,
-        co_no: za.co_no ?? null,
-        district_id: districtId,
-        district_name: districtName,
-        standards,
-        uses,
+        zone_code: resolved.zone_code,
+        jurisdiction: resolved.jurisdiction,
+        county: resolved.county,
+        co_no: resolved.co_no,
+        district_id: resolved.district_id,
+        district_name: resolved.district_name,
+        standards: resolved.standards,
+        uses: resolved.uses,
       })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load zoning data')
