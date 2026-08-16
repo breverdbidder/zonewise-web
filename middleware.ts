@@ -24,6 +24,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/reports(.*)',
   '/api/csp-report(.*)',
   '/api/floorplan(.*)',
+  '/api/massing(.*)', // public: 3D Massing Engine has no login gate, same as /massing page itself
   // Stripe webhooks MUST be public (Stripe sends without auth)
   '/api/stripe/webhook(.*)',
   // Pages — public access
@@ -37,6 +38,7 @@ const isPublicRoute = createRouteMatcher([
   '/explorer(.*)',
   '/massing(.*)',
   '/floorplan(.*)',
+  '/proforma(.*)',
   '/auth(.*)',
   '/foreclosures(.*)',
   '/conquest(.*)',

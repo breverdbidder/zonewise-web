@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { SECURITY_HEADERS } from '@/lib/validation'
 import { calcProForma, calcMultiYearReturns } from '@/lib/feasibility/proforma'
-import { buildProFormaOutcomeReportPdf, type OutcomeReportScenario } from '@/lib/reports/proforma-outcome-report'
+import { buildProFormaOutcomeReportPdf, type OutcomeReportScenario } from '@/lib/reports/develop-tab-outcome-report'
 
 const scenarioInputSchema = z.object({
   label: z.string().min(1).max(60),

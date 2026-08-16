@@ -1,198 +1,274 @@
-// ZoneWise.AI — Pro Forma Outcome Report (Algoma before/after case-study style)
-// Pure function, server-safe: uses jsPDF's core drawing API (text/lines/rects/
-// images) only — no DOM, no svg2pdf.js (that's the browser-only path used by
-// FloorPlanStudio for SVG floor plans; this report has no SVG to embed).
+// Pro Forma Outcome Report Generator — ZoneWise.AI
+// Mirrors Algoma's before/after case-study format (headline stat callouts,
+// one massing render, formula-transparency section, optional comparison
+// block) for pro forma scenarios computed by lib/development-analysis/
+// proforma-engine.ts. Comparison is optional — a single scenario renders a
+// standalone report.
+//
+// buildOutcomeReportData() is pure/isomorphic (server or client). PDF export
+// reuses the already-installed jsPDF the same way components/floorplan/
+// FloorPlanStudio.tsx does (dynamic client-side import — jsPDF touches
+// Canvas for text metrics, so it can never run at SSR time). Unlike the
+// floor plan export, there is no SVG source to convert, so this draws
+// directly with jsPDF's text/rect/image primitives instead of svg2pdf —
+// same library, no new PDF dependency added.
 
-import { jsPDF } from 'jspdf'
-import type { SiteData, ProFormaOutputs } from '@/types/feasibility'
-import type { MultiYearOutputs } from '@/lib/feasibility/proforma'
+import type { ProFormaOutputs, FormulaLine } from '@/lib/development-analysis/proforma-engine'
 
-// Only these SiteData fields are used in the report — callers (e.g. the API
-// route) don't need to supply/validate the full SiteData shape.
-export type OutcomeReportSite = Pick<SiteData, 'address' | 'zone' | 'county'>
-
-export interface OutcomeReportScenario {
+export interface HeadlineStat {
   label: string
-  units: number
-  vacancyPct: number
-  opexPct: number
-  capRatePct: number
-  constructionPSF: number
-  softCostPct: number
-  holdYears: number
-  exitCapRatePct: number
-  pf: ProFormaOutputs
-  returns: MultiYearOutputs
+  value: string
+  sublabel?: string
 }
 
-export interface OutcomeReportInput {
-  site: OutcomeReportSite
-  optimized: OutcomeReportScenario
-  /** Optional as-of-right baseline for a before/after comparison block. */
-  baseline?: OutcomeReportScenario
-  /** Optional PNG data URL (data:image/png;base64,...) from MassingEngine's snapshot export. */
-  massingPngDataUrl?: string
-  /** ISO timestamp supplied by the caller — Date.now() is intentionally not called here. */
+export interface OutcomeReportScenario {
+  name: string
+  address: string
+  unitCount: number
+  grossFloorAreaSqft: number
+  outputs: ProFormaOutputs
+}
+
+export interface ComparisonRow {
+  label: string
+  baseline: string
+  optimized: string
+  delta: string
+}
+
+export interface OutcomeReportData {
   generatedAt: string
+  scenario: OutcomeReportScenario
+  baseline?: OutcomeReportScenario
+  headline: HeadlineStat[]
+  comparison?: ComparisonRow[]
+  formulaLines: FormulaLine[]
+  massingSnapshotDataUrl?: string
+  assumptionsNote: string
+}
+
+function fmtUSD(n: number): string {
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+}
+function fmtPct(n: number): string {
+  return `${(n * 100).toFixed(1)}%`
+}
+function fmtX(n: number): string {
+  return `${n.toFixed(2)}x`
+}
+function fmtDeltaUSD(n: number): string {
+  return `${n >= 0 ? '+' : ''}${fmtUSD(n)}`
+}
+
+const FORMULA_ORDER: (keyof ProFormaOutputs)[] = [
+  'hardCosts', 'softCosts', 'totalDevelopmentCost',
+  'grossPotentialRevenue', 'effectiveGrossIncome', 'operatingExpenses', 'noi',
+  'capRateImpliedValue', 'loanAmount', 'equityRequired', 'annualDebtService',
+  'year1CashFlow', 'cashOnCashReturn', 'irr', 'equityMultiple',
+]
+
+/**
+ * Build the report data structure from already-computed pro forma outputs
+ * (see calculateProForma). Does not compute anything itself — it only
+ * reshapes engine output into the case-study layout. `generatedAt` must be
+ * supplied by the caller (ISO string) — this module never calls Date.now()
+ * itself so it stays safely reusable from any calling context.
+ */
+export function buildOutcomeReportData(params: {
+  scenario: OutcomeReportScenario
+  baseline?: OutcomeReportScenario
+  massingSnapshotDataUrl?: string
+  generatedAt: string
+}): OutcomeReportData {
+  const { scenario, baseline, massingSnapshotDataUrl, generatedAt } = params
+  const o = scenario.outputs
+
+  const unitDelta = baseline ? scenario.unitCount - baseline.unitCount : null
+  const revenueDelta = baseline ? o.grossPotentialRevenue.result - baseline.outputs.grossPotentialRevenue.result : null
+
+  const headline: HeadlineStat[] = [
+    {
+      label: 'Units',
+      value: String(scenario.unitCount),
+      sublabel: baseline && unitDelta !== null ? `${unitDelta >= 0 ? '+' : ''}${unitDelta} vs ${baseline.unitCount}-unit baseline` : undefined,
+    },
+    { label: 'Total Development Cost', value: fmtUSD(o.totalDevelopmentCost.result) },
+    {
+      label: 'Projected Gross Revenue',
+      value: fmtUSD(o.grossPotentialRevenue.result),
+      sublabel: baseline && revenueDelta !== null ? `${fmtDeltaUSD(revenueDelta)} vs baseline` : undefined,
+    },
+    { label: `${o.assumptions.holdPeriodYears}-Year IRR`, value: fmtPct(o.irr.result) },
+    { label: 'Equity Multiple', value: fmtX(o.equityMultiple.result) },
+  ]
+
+  let comparison: ComparisonRow[] | undefined
+  if (baseline) {
+    const b = baseline.outputs
+    comparison = [
+      { label: 'Units', baseline: String(baseline.unitCount), optimized: String(scenario.unitCount), delta: `${(unitDelta ?? 0) >= 0 ? '+' : ''}${unitDelta}` },
+      { label: 'Total Development Cost', baseline: fmtUSD(b.totalDevelopmentCost.result), optimized: fmtUSD(o.totalDevelopmentCost.result), delta: fmtDeltaUSD(o.totalDevelopmentCost.result - b.totalDevelopmentCost.result) },
+      { label: 'Projected Gross Revenue', baseline: fmtUSD(b.grossPotentialRevenue.result), optimized: fmtUSD(o.grossPotentialRevenue.result), delta: fmtDeltaUSD(o.grossPotentialRevenue.result - b.grossPotentialRevenue.result) },
+      { label: 'NOI', baseline: fmtUSD(b.noi.result), optimized: fmtUSD(o.noi.result), delta: fmtDeltaUSD(o.noi.result - b.noi.result) },
+      { label: `${o.assumptions.holdPeriodYears}-Year IRR`, baseline: fmtPct(b.irr.result), optimized: fmtPct(o.irr.result), delta: fmtPct(o.irr.result - b.irr.result) },
+      { label: 'Equity Multiple', baseline: fmtX(b.equityMultiple.result), optimized: fmtX(o.equityMultiple.result), delta: `${(o.equityMultiple.result - b.equityMultiple.result) >= 0 ? '+' : ''}${(o.equityMultiple.result - b.equityMultiple.result).toFixed(2)}x` },
+    ]
+  }
+
+  const formulaLines = FORMULA_ORDER.map((key) => o[key] as FormulaLine)
+
+  return {
+    generatedAt,
+    scenario,
+    baseline,
+    headline,
+    comparison,
+    formulaLines,
+    massingSnapshotDataUrl,
+    assumptionsNote: `${o.assumptions.hardCostSource} Soft cost: ${o.assumptions.softCostPctSource}. Comps: ${o.assumptions.comps.note}`,
+  }
 }
 
 const NAVY: [number, number, number] = [30, 58, 95] // #1E3A5F
 const AMBER: [number, number, number] = [245, 158, 11] // #F59E0B
-const VOID: [number, number, number] = [2, 6, 23] // #020617
-const SLATE: [number, number, number] = [100, 116, 139]
+const SLATE_900: [number, number, number] = [15, 23, 42]
+const SLATE_500: [number, number, number] = [100, 116, 139]
 
-const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US')
-const pct = (n: number) => `${n.toFixed(1)}%`
-
-function drawStatBox(doc: jsPDF, x: number, y: number, w: number, h: number, label: string, value: string) {
-  doc.setDrawColor(...NAVY)
-  doc.setLineWidth(1)
-  doc.roundedRect(x, y, w, h, 4, 4, 'S')
-  doc.setTextColor(...SLATE)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.text(label.toUpperCase(), x + 10, y + 16)
-  doc.setTextColor(...NAVY)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
-  doc.text(value, x + 10, y + 34)
-}
-
-export function buildProFormaOutcomeReportPdf(input: OutcomeReportInput): Buffer {
-  const { site, optimized, baseline, massingPngDataUrl, generatedAt } = input
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' })
-  const pageWidth = doc.internal.pageSize.getWidth()
-  const margin = 48
-  const contentWidth = pageWidth - margin * 2
+/**
+ * Render an OutcomeReportData into a downloadable PDF and trigger the
+ * browser download. Client-only — call from a button handler, never at
+ * module load or during SSR (jsPDF needs Canvas for text-width metrics).
+ */
+export async function generateProFormaPdf(data: OutcomeReportData, filenameHint?: string): Promise<void> {
+  const { jsPDF } = await import('jspdf')
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' })
+  const pageWidth = pdf.internal.pageSize.getWidth()
+  const margin = 40
   let y = 0
 
-  // Header band
-  doc.setFillColor(...VOID)
-  doc.rect(0, 0, pageWidth, 92, 'F')
-  doc.setTextColor(255, 255, 255)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(18)
-  doc.text('ZoneWise.AI — Development Outcome Report', margin, 38)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  doc.setTextColor(...AMBER)
-  doc.text(site.address, margin, 58)
-  doc.setTextColor(220, 220, 220)
-  doc.text(`${site.zone} · ${site.county} County, FL · Generated ${generatedAt}`, margin, 74)
+  // ─── Header band ────────────────────────────────────────────────────
+  pdf.setFillColor(...NAVY)
+  pdf.rect(0, 0, pageWidth, 70, 'F')
+  pdf.setTextColor(255, 255, 255)
+  pdf.setFontSize(18)
+  pdf.setFont('helvetica', 'bold')
+  pdf.text('ZoneWise.AI — Pro Forma Outcome Report', margin, 30)
+  pdf.setFontSize(10)
+  pdf.setFont('helvetica', 'normal')
+  pdf.text(data.scenario.address || data.scenario.name, margin, 48)
+  pdf.setTextColor(...AMBER)
+  pdf.text(`Generated ${data.generatedAt}`, margin, 62)
+  y = 95
 
-  y = 118
+  // ─── Headline stat callouts ─────────────────────────────────────────
+  const statCount = data.headline.length
+  const statW = (pageWidth - margin * 2) / statCount
+  data.headline.forEach((stat, i) => {
+    const x = margin + i * statW
+    pdf.setTextColor(...AMBER)
+    pdf.setFontSize(16)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text(stat.value, x, y, { maxWidth: statW - 6 })
+    pdf.setTextColor(...SLATE_900)
+    pdf.setFontSize(8)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(stat.label, x, y + 14, { maxWidth: statW - 6 })
+    if (stat.sublabel) {
+      pdf.setTextColor(...SLATE_500)
+      pdf.setFontSize(7)
+      pdf.text(stat.sublabel, x, y + 25, { maxWidth: statW - 6 })
+    }
+  })
+  y += 45
+  pdf.setDrawColor(...NAVY)
+  pdf.line(margin, y, pageWidth - margin, y)
+  y += 20
 
-  // Headline stat callouts — Algoma's "+47 units / $27.7M revenue / 12,500x ROI" format
-  const returnLabel = optimized.returns.irr != null ? 'IRR' : 'Equity Multiple'
-  const returnValue = optimized.returns.irr != null
-    ? pct(optimized.returns.irr * 100)
-    : `${optimized.returns.equityMultiple.toFixed(2)}x`
-  const boxW = (contentWidth - 24) / 3
-  drawStatBox(doc, margin, y, boxW, 50, 'Units', String(optimized.pf.adjustedUnits))
-  drawStatBox(doc, margin + boxW + 12, y, boxW, 50, 'Projected Revenue (GPR)', money(optimized.pf.gpr))
-  drawStatBox(doc, margin + (boxW + 12) * 2, y, boxW, 50, returnLabel, returnValue)
-  y += 74
-
-  // Massing render — reuses MassingEngine's existing PNG snapshot capability.
-  // No second renderer is built here; if the caller has no snapshot on hand
-  // (e.g. the Develop tab isn't rendering a live 3D scene), this section is
-  // omitted rather than faked.
-  if (massingPngDataUrl) {
-    const imgH = 200
+  // ─── Massing render ──────────────────────────────────────────────────
+  if (data.massingSnapshotDataUrl) {
     try {
-      doc.addImage(massingPngDataUrl, 'PNG', margin, y, contentWidth, imgH)
+      const imgW = pageWidth - margin * 2
+      const imgH = imgW * (2 / 3) // matches MassingEngine's 2400x1600 snapshot AR
+      pdf.addImage(data.massingSnapshotDataUrl, 'PNG', margin, y, imgW, imgH)
       y += imgH + 16
     } catch {
-      doc.setFontSize(9)
-      doc.setTextColor(...SLATE)
-      doc.text('Massing render image could not be embedded.', margin, y)
-      y += 20
+      // Bad/unsupported data URL — skip the image rather than fail the whole PDF.
     }
-  } else {
-    doc.setFillColor(241, 245, 249)
-    doc.rect(margin, y, contentWidth, 40, 'F')
-    doc.setFontSize(9)
-    doc.setTextColor(...SLATE)
-    doc.text('Massing render not available for this scenario.', margin + 10, y + 24)
-    y += 56
   }
 
-  // Formula transparency — every number shows its formula and inputs, no black box.
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
-  doc.setTextColor(...NAVY)
-  doc.text('Formula Transparency', margin, y)
-  y += 16
-
-  const formulaRows: Array<[string, string]> = [
-    ['Gross Potential Rent (GPR)', `sum(units x rent x 12) = ${money(optimized.pf.gpr)}`],
-    ['Effective Gross Income (EGI)', `GPR x (1 - ${optimized.vacancyPct}% vacancy) = ${money(optimized.pf.egi)}`],
-    ['Net Operating Income (NOI)', `EGI x (1 - ${optimized.opexPct}% opex) = ${money(optimized.pf.noi)}`],
-    ['Stabilized Value', `NOI ÷ ${optimized.capRatePct}% cap rate = ${money(optimized.pf.stabilizedValue)}`],
-    ['Total Development Cost', `(${optimized.pf.totalGSF.toLocaleString('en-US')} SF × $${optimized.constructionPSF}/SF hard) × (1 + ${optimized.softCostPct}% soft) = ${money(optimized.pf.totalDevCost)}`],
-    ['Exit Value', `Year ${optimized.holdYears} NOI ÷ ${optimized.exitCapRatePct}% exit cap rate = ${money(optimized.returns.exitValue)}`],
-    [returnLabel, optimized.returns.irr != null
-      ? `IRR solved from ${optimized.holdYears + 1}-period cash flow (financial pkg irr()) = ${returnValue}`
-      : `Total distributions ÷ initial equity = ${returnValue}`],
-  ]
-
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  for (const [label, formula] of formulaRows) {
-    doc.setTextColor(...NAVY)
-    doc.setFont('helvetica', 'bold')
-    doc.text(label, margin, y)
-    doc.setFont('helvetica', 'normal')
-    doc.setTextColor(...SLATE)
-    const lines = doc.splitTextToSize(formula, contentWidth - 4) as string[]
-    doc.text(lines, margin, y + 12)
-    y += 12 + lines.length * 11 + 6
-  }
-
-  // Optional as-of-right vs optimized comparison block
-  if (baseline) {
-    y += 8
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(11)
-    doc.setTextColor(...NAVY)
-    doc.text('As-of-Right vs. Optimized', margin, y)
+  // ─── Comparison block (optional) ────────────────────────────────────
+  if (data.comparison && data.comparison.length > 0) {
+    pdf.setTextColor(...NAVY)
+    pdf.setFontSize(12)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Baseline vs Optimized', margin, y)
     y += 16
-
-    const deltaUnits = optimized.pf.adjustedUnits - baseline.pf.adjustedUnits
-    const deltaRevenue = optimized.pf.gpr - baseline.pf.gpr
-    const compareRows: Array<[string, string, string, string]> = [
-      ['Units', String(baseline.pf.adjustedUnits), String(optimized.pf.adjustedUnits), `${deltaUnits >= 0 ? '+' : ''}${deltaUnits}`],
-      ['Projected Revenue', money(baseline.pf.gpr), money(optimized.pf.gpr), `${deltaRevenue >= 0 ? '+' : ''}${money(deltaRevenue)}`],
-      ['NOI', money(baseline.pf.noi), money(optimized.pf.noi), `${money(optimized.pf.noi - baseline.pf.noi)}`],
-      ['Stabilized Value', money(baseline.pf.stabilizedValue), money(optimized.pf.stabilizedValue), money(optimized.pf.stabilizedValue - baseline.pf.stabilizedValue)],
-    ]
-    doc.setFontSize(9)
-    const colW = contentWidth / 4
-    ;['Metric', 'As-of-Right', 'Optimized', 'Delta'].forEach((h, i) => {
-      doc.setFont('helvetica', 'bold')
-      doc.setTextColor(...SLATE)
-      doc.text(h, margin + i * colW, y)
-    })
-    y += 14
-    for (const row of compareRows) {
-      row.forEach((cell, i) => {
-        doc.setFont('helvetica', i === 0 ? 'bold' : 'normal')
-        doc.setTextColor(...NAVY)
-        doc.text(cell, margin + i * colW, y)
-      })
+    pdf.setFontSize(9)
+    const colW = (pageWidth - margin * 2) / 4
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Metric', margin, y)
+    pdf.text('Baseline', margin + colW, y)
+    pdf.text('Optimized', margin + colW * 2, y)
+    pdf.text('Delta', margin + colW * 3, y)
+    y += 4
+    pdf.setDrawColor(...SLATE_500)
+    pdf.line(margin, y, pageWidth - margin, y)
+    y += 12
+    pdf.setFont('helvetica', 'normal')
+    for (const row of data.comparison) {
+      if (y > 720) { pdf.addPage(); y = 40 }
+      pdf.setTextColor(...SLATE_900)
+      pdf.text(row.label, margin, y)
+      pdf.text(row.baseline, margin + colW, y)
+      pdf.text(row.optimized, margin + colW * 2, y)
+      pdf.setTextColor(...AMBER)
+      pdf.text(row.delta, margin + colW * 3, y)
       y += 14
     }
+    y += 12
   }
 
-  // Footer disclosure
-  const pageHeight = doc.internal.pageSize.getHeight()
-  doc.setFontSize(7)
-  doc.setTextColor(...SLATE)
-  doc.text(
-    'Assumptions shown above are user-adjustable inputs, not verified market data unless explicitly labeled as a live comp. ZoneWise.AI.',
-    margin,
-    pageHeight - 24
-  )
+  // ─── Formula transparency section ───────────────────────────────────
+  pdf.setTextColor(...NAVY)
+  pdf.setFontSize(12)
+  pdf.setFont('helvetica', 'bold')
+  if (y > 700) { pdf.addPage(); y = 40 }
+  pdf.text('Formula Transparency', margin, y)
+  y += 16
+  pdf.setFontSize(8.5)
+  for (const line of data.formulaLines) {
+    if (y > 730) { pdf.addPage(); y = 40 }
+    pdf.setFont('helvetica', 'bold')
+    pdf.setTextColor(...SLATE_900)
+    pdf.text(`${line.label}: ${line.result.toLocaleString('en-US', { maximumFractionDigits: 2 })}`, margin, y)
+    y += 11
+    pdf.setFont('helvetica', 'normal')
+    pdf.setTextColor(...SLATE_500)
+    pdf.text(`= ${line.formula}`, margin + 8, y, { maxWidth: pageWidth - margin * 2 - 8 })
+    y += 11
+    if (line.note) {
+      pdf.setFont('helvetica', 'italic')
+      pdf.setFontSize(7.5)
+      const noteLines = pdf.splitTextToSize(line.note, pageWidth - margin * 2 - 8)
+      pdf.text(noteLines, margin + 8, y)
+      y += noteLines.length * 9
+      pdf.setFontSize(8.5)
+    }
+    y += 4
+  }
 
-  return Buffer.from(doc.output('arraybuffer'))
+  // ─── Assumptions footer ──────────────────────────────────────────────
+  if (y > 700) { pdf.addPage(); y = 40 }
+  y += 10
+  pdf.setDrawColor(...NAVY)
+  pdf.line(margin, y, pageWidth - margin, y)
+  y += 14
+  pdf.setFont('helvetica', 'italic')
+  pdf.setFontSize(7.5)
+  pdf.setTextColor(...SLATE_500)
+  const assumptionLines = pdf.splitTextToSize(`Assumptions: ${data.assumptionsNote}`, pageWidth - margin * 2)
+  pdf.text(assumptionLines, margin, y)
+
+  const safeName = (filenameHint || data.scenario.name || 'proforma-outcome-report').replace(/[^a-z0-9_-]+/gi, '-')
+  pdf.save(`${safeName}.pdf`)
 }

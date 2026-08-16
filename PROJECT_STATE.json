@@ -2,7 +2,7 @@
   "project": "zonewise-web",
   "framework": "Next.js",
   "deployment": "Vercel → zonewise.ai",
-  "last_updated": "2026-03-25",
+  "last_updated": "2026-08-16",
   "brand": {
     "primary": "#1E3A5F",
     "accent": "#F59E0B",
@@ -37,9 +37,34 @@
         "lib/feasibility/demo-data.ts",
         "app/(dashboard)/feasibility/page.tsx"
       ]
+    },
+    "CP6": {
+      "status": "complete",
+      "name": "Pro Forma Modeling Engine + Outcome Reports — Algoma Parity",
+      "date": "2026-08-16",
+      "new_files": [
+        "lib/development-analysis/proforma-engine.ts",
+        "lib/reports/proforma-outcome-report.ts",
+        "app/api/reports/proforma/route.ts",
+        "app/(dashboard)/proforma/page.tsx",
+        "components/proforma/ProFormaStudio.tsx",
+        "tests/lib/proforma-engine.test.ts",
+        "__tests__/api/proforma.test.ts"
+      ],
+      "modified_files": [
+        "components/navigation/AppSidebar.tsx",
+        "middleware.ts",
+        "package.json"
+      ],
+      "notes": "Development cost/revenue/NOI/IRR/equity-multiple engine, sibling to hbu-engine.ts. IRR/NPV via financial npm package (numpy-financial port) — no hand-rolled finance math. Hard cost $/sf table is a starting assumption anchored to hbu-engine.ts, explicitly labeled as such everywhere it renders. RENTAL/FOR_SALE deal types both refuse to compute without a manually-supplied comp (monthlyRentPerUnit / avgSalePricePerUnit) — never fabricates rent/sale comps. rent_comps and proforma_scenarios tables already existed in migrations/20260218_add_feasibility_tables.sql (unused by this engine — DB persistence of scenarios is a follow-up, not in scope here). PDF export is client-side jsPDF (already a dependency, same pattern as FloorPlanStudio), drawn directly with jsPDF's text/rect/image primitives rather than via svg2pdf since there is no SVG source to convert. Visually verified: rendered a real downloaded PDF to PNG via poppler pdftoppm and read it."
     }
   },
   "recent_decisions": [
+    {
+      "date": "2026-08-16",
+      "decision": "CP6 — Pro Forma Modeling Engine + Outcome Reports (Algoma parity)",
+      "rationale": "Closes the last major competitive-intel gap vs Algoma: a development pro forma calculator plus a before/after outcome report generator, matching Algoma's flagship case-study marketing artifact."
+    },
     {
       "date": "2026-03-25",
       "decision": "CP5 — ZoneWise Feasibility Intelligence: water setbacks, lodging/STR intel, market context",
