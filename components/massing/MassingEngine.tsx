@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import * as THREE from 'three'
 import { createClient } from '@/lib/supabase/client'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
+import { computeParcelCandidates, parseParcelPolygon, type CandidateFootprint } from '@/lib/development-analysis/site-massing-solver'
 
 // ─── Zone typology classifier ─────────────────────────────────────────────────
 type ZoneTypology = 'SF' | 'GARDEN_MF' | 'MID_RISE' | 'HIGH_RISE'
@@ -35,6 +36,8 @@ interface ParcelResult {
 interface ZoningData {
   zone_code: string
   jurisdiction: string | null
+  county: string | null
+  co_no: number | null
   district_id: string
   district_name: string
   standards: Record<string, unknown>
@@ -220,6 +223,11 @@ export default function MassingEngine() {
   const [error, setError] = useState<string | null>(null)
   const [isFallback, setIsFallback] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [candidates, setCandidates] = useState<CandidateFootprint[]>([])
+  const [runId, setRunId] = useState<string | null>(null)
+  const [dxfDownloading, setDxfDownloading] = useState(false)
+  const [dxfError, setDxfError] = useState<string | null>(null)
+  const persistedParcelRef = useRef<string | null>(null)
 
   const [webglLost, setWebglLost] = useState(false)
 
@@ -269,7 +277,7 @@ export default function MassingEngine() {
     try {
       const { data: za, error: e1 } = await supabase
         .from('zoning_assignments')
-        .select('zone_code, jurisdiction')
+        .select('zone_code, jurisdiction, county, co_no')
         .eq('parcel_id', parcel.parcel_id)
         .limit(1)
         .single()
@@ -318,6 +326,8 @@ export default function MassingEngine() {
       setZoning({
         zone_code: za.zone_code,
         jurisdiction: za.jurisdiction ?? null,
+        county: za.county ?? null,
+        co_no: za.co_no ?? null,
         district_id: districtId,
         district_name: districtName,
         standards,
@@ -997,6 +1007,90 @@ export default function MassingEngine() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected, zoning])
 
+  // ── Real-parcel-polygon candidate footprints + run persistence ──────────────
+  // Separate from the 3D render effect above (which stays untouched — the
+  // Three.js scene is not part of this feature). Runs the real-boundary
+  // solver and persists one run per parcel selection, not on every render.
+  useEffect(() => {
+    if (!selected || !zoning) { setCandidates([]); return }
+    const m = deriveMetrics(selected, zoning)
+    const ring = parseParcelPolygon(selected.geometry)
+    if (!ring || ring.length < 3) { setCandidates([]); return }
+
+    const top = computeParcelCandidates(
+      ring, zoning.zone_code,
+      { front: m.front, side: m.side, rear: m.rear },
+      m.maxH, m.maxCov, m.far, 5,
+    )
+    setCandidates(top)
+    setRunId(null)
+    setDxfError(null)
+
+    if (top.length === 0 || zoning.co_no == null || persistedParcelRef.current === selected.parcel_id) return
+    persistedParcelRef.current = selected.parcel_id
+
+    fetch('/api/massing/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        parcel_id: selected.parcel_id,
+        co_no: zoning.co_no,
+        zoning,
+        boundaryLngLat: ring,
+        candidates: top.map(c => ({
+          rank: c.rank,
+          layoutType: c.layoutType,
+          footprintLngLat: c.footprintLngLat,
+          unitCount: m.units,
+          grossFloorAreaSqft: c.env.actualGFA * c.fitScale * c.fitScale,
+          lotCoveragePct: c.covPct,
+          setbackCompliant: c.setbackCompliant,
+          score: c.score,
+        })),
+      }),
+    })
+      .then(r => r.json())
+      .then(d => { if (d.run_id) setRunId(d.run_id) })
+      .catch(() => { /* run persistence is best-effort — DXF download does not depend on it */ })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, zoning])
+
+  // ── CAD/DXF export ───────────────────────────────────────────────────────────
+  const handleDownloadDxf = useCallback(async () => {
+    if (!selected || !zoning || candidates.length === 0) return
+    const ring = parseParcelPolygon(selected.geometry)
+    if (!ring) { setDxfError('No parcel boundary available for this property'); return }
+    setDxfDownloading(true)
+    setDxfError(null)
+    try {
+      const res = await fetch('/api/massing/dxf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parcel: { parcel_id: selected.parcel_id, address: selected.address, county: zoning.county, boundaryLngLat: ring },
+          zoning: { zone_code: zoning.zone_code, district_name: zoning.district_name },
+          candidate: candidates[0],
+        }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || `DXF export failed (${res.status})`)
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      const addrSlug = selected.address.replace(/[^a-z0-9]/gi, '_').substring(0, 40)
+      link.download = `ZoneWise_Massing_${addrSlug}.dxf`
+      link.href = url
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      setDxfError(e instanceof Error ? e.message : 'DXF export failed')
+    } finally {
+      setDxfDownloading(false)
+    }
+  }, [selected, zoning, candidates])
+
   // ── Snapshot export ──────────────────────────────────────────────────────────
   const handleSnapshot = useCallback(() => {
     const canvas = canvasRef.current
@@ -1203,8 +1297,19 @@ export default function MassingEngine() {
                     >
                       Download Render
                     </button>
+                    <button
+                      onClick={handleDownloadDxf}
+                      disabled={dxfDownloading || candidates.length === 0}
+                      className="text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
+                      title={candidates.length === 0 ? 'No parcel boundary polygon available for this property' : undefined}
+                    >
+                      {dxfDownloading ? 'Exporting…' : 'Download CAD (DXF)'}
+                    </button>
                   </div>
                 </div>
+                {dxfError && (
+                  <div className="px-4 py-2 text-xs text-red-400 border-b border-slate-800">{dxfError}</div>
+                )}
                 <div style={{ position: 'relative', width: '100%', height: 420 }}>
                   {webglLost ? (
                     <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#020617] text-center">
