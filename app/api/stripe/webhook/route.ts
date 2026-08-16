@@ -9,6 +9,19 @@ async function getStripe() {
   })
 }
 
+// Fallback only: primary tier source is session.metadata.tier, set by
+// app/api/stripe/checkout. This map covers checkouts created outside that
+// flow (e.g. a Stripe Payment Link). Sourced from public.stripe_products
+// (live_mode=true) 2026-08-16 — monthly + annual price ids per tier.
+const PRICE_ID_TO_TIER: Record<string, string> = {
+  'price_1ToWiPKaSTwZgYdf6sCxgRqs': 'investor',
+  'price_1ToWiVKaSTwZgYdfbxRGo8hz': 'investor',
+  'price_1ToWibKaSTwZgYdfZiWM5fdy': 'pro',
+  'price_1ToWigKaSTwZgYdfO4jTa0po': 'pro',
+  'price_1ToWinKaSTwZgYdf80Dg54Km': 'proplus',
+  'price_1ToWiuKaSTwZgYdfn4cJqqBh': 'proplus',
+}
+
 export async function POST(request: NextRequest) {
   // Check if Stripe is configured
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -47,14 +60,39 @@ export async function POST(request: NextRequest) {
       const session = event.data.object
       const userId = session.metadata?.userId
       if (userId) {
-        await supabaseAdmin.from('subscriptions').upsert({
-          user_id: userId,
-          stripe_customer_id: session.customer,
-          stripe_subscription_id: session.subscription,
-          status: 'active',
-          plan: 'pro',
-          updated_at: new Date().toISOString()
-        })
+        // Primary source: tier set by app/api/stripe/checkout when the
+        // session was created. Fallback: derive from the purchased price,
+        // for checkouts created outside that flow (e.g. a Payment Link).
+        let plan = session.metadata?.tier
+        if (!plan) {
+          try {
+            const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1 })
+            const priceId = lineItems.data[0]?.price?.id
+            plan = priceId ? PRICE_ID_TO_TIER[priceId] : undefined
+          } catch {
+            plan = undefined
+          }
+        }
+
+        if (!plan) {
+          console.error(`checkout.session.completed ${session.id}: could not determine plan tier, skipping subscriptions write`)
+          break
+        }
+
+        const { error } = await supabaseAdmin.from('subscriptions').upsert(
+          {
+            user_id: userId,
+            stripe_customer_id: session.customer,
+            stripe_subscription_id: session.subscription,
+            status: 'active',
+            plan,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id' }
+        )
+        if (error) {
+          console.error(`checkout.session.completed ${session.id}: subscriptions upsert failed: ${error.message}`)
+        }
       }
       break
     }

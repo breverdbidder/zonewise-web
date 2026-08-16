@@ -17,11 +17,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { priceId } = await request.json()
+    const { priceId, tier } = await request.json()
     const { userId } = await auth()
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (!priceId || !tier) {
+      return NextResponse.json({ error: 'priceId and tier are required' }, { status: 400 })
     }
 
     // Entitlement check: verify subscription status from Supabase, never trust JWT alone
@@ -56,7 +60,7 @@ export async function POST(request: NextRequest) {
         mode: 'subscription',
         success_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?success=true`,
         cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/chat?canceled=true`,
-        metadata: { userId },
+        metadata: { userId, tier },
       },
       { idempotencyKey }
     )
