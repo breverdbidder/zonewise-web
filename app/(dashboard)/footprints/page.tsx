@@ -84,11 +84,6 @@ export default function FootprintsPage() {
             before relying on a height in an investment decision.
           </p>
         </div>
-
-        <p className="mt-8 font-mono text-[11px] text-slate-600">
-          Source: Microsoft GlobalMLBuildingFootprints · CDLA Permissive 2.0 · imagery 2014–2025 ·
-          heights in metres
-        </p>
       </div>
     </div>
   )
