@@ -72,8 +72,8 @@ export async function GET() {
         .limit(1)
         .maybeSingle(),
       supabase
-        .from('zoning_assignments')
-        .select('zone_code, jurisdiction') // column is zone_code, not zoning_code
+        .from('v_parcel_zoning_trust')
+        .select('zone_code, jurisdiction, zone_source, trust_level, trust_note')
         .eq('parcel_id', parcel.parcel_id)
         .limit(1)
         .maybeSingle(),
@@ -101,6 +101,12 @@ export async function GET() {
         },
         zonewise: {
           zoning_code: zoningRes.data?.zone_code ?? null,
+        // Provenance shown to the customer. "RS-2, verified, City of Palm Bay GIS"
+        // reads very differently from a bare code — and an estimated value must
+        // never be presented as if it came from a zoning map.
+        zone_source: zoningRes.data?.zone_source ?? null,
+        trust_level: zoningRes.data?.trust_level ?? 'unverified',
+        trust_note: zoningRes.data?.trust_note ?? null,
           jurisdiction: zoningRes.data?.jurisdiction ?? null,
           status: zoningRes.data
             ? `${zoningRes.data.zoning_code} (${zoningRes.data.jurisdiction})`
