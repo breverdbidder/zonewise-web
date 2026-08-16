@@ -150,7 +150,7 @@ export default function DocsPage() {
               </p>
               <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm mb-4">
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs">
-                  <div className="text-slate-500">parcel_id</div><div className="text-slate-200">string · required · Brevard PARCEL_ID format</div>
+                  <div className="text-slate-500">parcel_id</div><div className="text-slate-200">string · required · FL county PARCEL_ID format</div>
                   <div className="text-slate-500">county</div><div className="text-slate-200">string · optional · defaults to &quot;brevard&quot;</div>
                 </div>
               </div>
