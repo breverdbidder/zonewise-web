@@ -76,7 +76,15 @@ const BANNED_TERMS = [
   { term: '10 years', allowIn: [] },
   { term: '10+ years', allowIn: [] },
 ]
-const BREVARD_ALLOWED_CONTEXT = 'Recorded, Brevard County Clerk'
+// Two legitimate reasons a line can say "brevard" without it being positioning
+// drift: (1) case-study provenance framing, (2) documenting a real API default —
+// lib/explorer/tracking.ts genuinely defaults county to 'brevard' server-side,
+// so /docs correctly describing that behavior is accurate, not stale copy.
+const BREVARD_ALLOWED_CONTEXTS = [
+  'Recorded, Brevard County Clerk',
+  'defaults to &quot;brevard&quot;',
+  '"county": "brevard"',
+]
 
 // ─── in-page probes (run inside the browser) ──────────────────────────────────
 
