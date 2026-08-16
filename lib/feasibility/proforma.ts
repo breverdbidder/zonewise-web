@@ -1,6 +1,7 @@
 // ZoneWise.AI — Pro Forma Calculation Engine
 // Pure functions. No UI. No side effects.
 
+import { irr as calcIrrRaw } from 'financial'
 import type { UnitMix, UnitMixWithCount, ProFormaInputs, ProFormaOutputs } from '@/types/feasibility'
 
 /**
@@ -82,5 +83,80 @@ export function calcProForma(inputs: ProFormaInputs, mix: UnitMix[]): ProFormaOu
     devSpread,
     totalGSF,
     adjustedUnits,
+  }
+}
+
+/** Multi-year hold inputs for IRR / equity-multiple. Additive — does not touch ProFormaInputs. */
+export interface MultiYearInputs {
+  holdYears: number
+  exitCapRatePct: number
+  /** Annual NOI growth rate applied compounding each year. Default 0 (flat). */
+  rentGrowthPct?: number
+  /** % of exit value consumed by selling costs (broker fees, closing). Default 0. */
+  sellingCostPct?: number
+  /** % of totalDevCost funded by equity; remainder assumed debt-free/all-cash if omitted. Default 100. */
+  equityPct?: number
+}
+
+export interface MultiYearOutputs {
+  /** Year 0..holdYears. Index 0 = -initialEquity. Last index includes exit sale proceeds. */
+  cashFlows: number[]
+  /** NOI per year, year 1..holdYears, with rentGrowthPct compounding applied. */
+  yearlyNOI: number[]
+  exitNOI: number
+  exitValue: number
+  netSaleProceeds: number
+  /** Annual IRR as a decimal (e.g. 0.12 = 12%), or null if unsolvable for the given cash flows. */
+  irr: number | null
+  equityMultiple: number
+  totalDistributions: number
+  initialEquity: number
+}
+
+/**
+ * IRR + equity multiple over a multi-year hold, exiting at a cap-rate-implied sale value.
+ * Uses the `financial` package (numpy-financial port) for IRR — not hand-rolled.
+ */
+export function calcMultiYearReturns(base: ProFormaOutputs, mv: MultiYearInputs): MultiYearOutputs {
+  const holdYears = Math.max(1, Math.round(mv.holdYears))
+  const rentGrowthPct = mv.rentGrowthPct ?? 0
+  const sellingCostPct = mv.sellingCostPct ?? 0
+  const equityPct = mv.equityPct ?? 100
+  const initialEquity = base.totalDevCost * (equityPct / 100)
+
+  const yearlyNOI: number[] = []
+  for (let y = 1; y <= holdYears; y++) {
+    yearlyNOI.push(base.noi * Math.pow(1 + rentGrowthPct / 100, y - 1))
+  }
+
+  const exitNOI = yearlyNOI[yearlyNOI.length - 1] * (1 + rentGrowthPct / 100)
+  const exitValue = mv.exitCapRatePct > 0 ? exitNOI / (mv.exitCapRatePct / 100) : 0
+  const netSaleProceeds = exitValue * (1 - sellingCostPct / 100)
+
+  const cashFlows: number[] = [-initialEquity]
+  yearlyNOI.forEach((noi, i) => {
+    const isLastYear = i === yearlyNOI.length - 1
+    cashFlows.push(noi + (isLastYear ? netSaleProceeds : 0))
+  })
+
+  let irrResult: number | null = null
+  if (initialEquity > 0) {
+    const r = calcIrrRaw(cashFlows)
+    irrResult = typeof r === 'number' && Number.isFinite(r) ? r : null
+  }
+
+  const totalDistributions = cashFlows.slice(1).reduce((s, v) => s + v, 0)
+  const equityMultiple = initialEquity > 0 ? totalDistributions / initialEquity : 0
+
+  return {
+    cashFlows,
+    yearlyNOI,
+    exitNOI,
+    exitValue,
+    netSaleProceeds,
+    irr: irrResult,
+    equityMultiple,
+    totalDistributions,
+    initialEquity,
   }
 }

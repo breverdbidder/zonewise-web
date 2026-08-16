@@ -140,6 +140,18 @@ export interface ProFormaOutputs {
   adjustedUnits: number
 }
 
+// Real sold-comp benchmark from v_brevard_td_sold_cma (Brevard tax-deed sold
+// parcels only). This is a SALE-price CMA, not a rent comp — used to display
+// a real market-value reference alongside the pro forma, never to silently
+// override unit rents (see lib/feasibility/live-comps.ts).
+export interface CompBenchmark {
+  medianComp: number
+  nComps: number
+  pctOfMarket: number | null
+  soldPrice: number | null
+  auctionDate: string | null
+}
+
 export type FeasibilityTab = 'Site' | 'Market' | 'Lodging' | 'Comps' | 'Capacity' | 'Develop' | 'Generate'
 export type SiteSubTab = 'Summary' | 'Zoning' | 'Map View'
 export type CompsView = 'Map' | 'Table' | 'Charts'

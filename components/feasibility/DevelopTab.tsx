@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import type { SiteData, UnitMix } from '@/types/feasibility'
+import type { SiteData, UnitMix, CompBenchmark } from '@/types/feasibility'
 import { COLORS, fmt, fmtD } from '@/lib/feasibility/constants'
-import { calcProForma, distributeUnits } from '@/lib/feasibility/proforma'
+import { calcProForma, calcMultiYearReturns, distributeUnits } from '@/lib/feasibility/proforma'
 import { Badge, Card, SectionLabel } from './ui'
 
 interface DevelopTabProps {
   site: SiteData
   unitMix: UnitMix[]
+  compBenchmark?: CompBenchmark | null
 }
 
 interface SliderConfig {
@@ -21,13 +22,15 @@ interface SliderConfig {
   format: (v: number) => string
 }
 
-export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
+export default function DevelopTab({ site, unitMix, compBenchmark = null }: DevelopTabProps) {
   const [units, setUnits] = useState(16)
   const [vacancy, setVacancy] = useState(5)
   const [opex, setOpex] = useState(38)
   const [capRate, setCapRate] = useState(6.5)
   const [costPSF, setCostPSF] = useState(185)
   const [softPct, setSoftPct] = useState(18)
+  const [holdYears, setHoldYears] = useState(5)
+  const [exitCapRate, setExitCapRate] = useState(7.0)
 
   const pf = useMemo(() => calcProForma({
     totalUnits: units,
@@ -38,7 +41,55 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
     softCostPct: softPct,
   }, unitMix), [units, vacancy, opex, capRate, costPSF, softPct, unitMix])
 
+  const returns = useMemo(() => calcMultiYearReturns(pf, {
+    holdYears,
+    exitCapRatePct: exitCapRate,
+  }), [pf, holdYears, exitCapRate])
+
   const mix = useMemo(() => distributeUnits(unitMix, units), [unitMix, units])
+
+  const [downloadingReport, setDownloadingReport] = useState(false)
+  const [reportError, setReportError] = useState<string | null>(null)
+
+  const handleDownloadReport = async () => {
+    setDownloadingReport(true)
+    setReportError(null)
+    try {
+      const res = await fetch('/api/reports/proforma-outcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          site: { address: site.address, zone: site.zone, county: site.county },
+          unitMix,
+          optimized: {
+            label: 'Optimized',
+            totalUnits: units,
+            vacancyPct: vacancy,
+            opexPct: opex,
+            capRatePct: capRate,
+            constructionPSF: costPSF,
+            softCostPct: softPct,
+            holdYears,
+            exitCapRatePct: exitCapRate,
+          },
+          generatedAt: new Date().toISOString(),
+        }),
+      })
+      if (!res.ok) throw new Error(`Report generation failed (${res.status})`)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      const addrSlug = site.address.replace(/[^a-z0-9]/gi, '_').substring(0, 40)
+      link.href = url
+      link.download = `ZoneWise_Outcome_${addrSlug}.pdf`
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (err: any) {
+      setReportError(err.message || 'Report generation failed.')
+    } finally {
+      setDownloadingReport(false)
+    }
+  }
 
   const sliders: SliderConfig[] = [
     { label: 'Total Units', value: units, setter: setUnits, min: 4, max: 40, step: 1, format: (x) => String(x) },
@@ -47,6 +98,8 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
     { label: 'Cap Rate %', value: capRate, setter: setCapRate, min: 4, max: 9, step: 0.25, format: (x) => x + '%' },
     { label: 'Construction $/SF', value: costPSF, setter: setCostPSF, min: 120, max: 350, step: 5, format: (x) => '$' + x },
     { label: 'Soft Cost %', value: softPct, setter: setSoftPct, min: 10, max: 30, step: 1, format: (x) => x + '%' },
+    { label: 'Hold Period (yrs)', value: holdYears, setter: setHoldYears, min: 1, max: 15, step: 1, format: (x) => String(x) },
+    { label: 'Exit Cap Rate %', value: exitCapRate, setter: setExitCapRate, min: 4, max: 9, step: 0.25, format: (x) => x + '%' },
   ]
 
   const proFormaSections = [
@@ -98,6 +151,17 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
         { label: 'Dev Spread', value: `${pf.devSpread > 0 ? '+' : ''}${pf.devSpread.toFixed(2)}%`, color: pf.devSpread > 0 ? COLORS.success : COLORS.danger },
       ],
     },
+    {
+      title: `${holdYears}-Year Hold Returns`,
+      color: COLORS.info,
+      bg: '#EFF6FF',
+      rows: [
+        { label: `Exit Value (Yr ${holdYears} NOI ÷ ${exitCapRate}%)`, value: fmtD(returns.exitValue) },
+        { label: 'Net Sale Proceeds', value: fmtD(returns.netSaleProceeds) },
+        { label: 'IRR', value: returns.irr != null ? `${(returns.irr * 100).toFixed(1)}%` : '—', color: COLORS.info, bold: true },
+        { label: 'Equity Multiple', value: `${returns.equityMultiple.toFixed(2)}x`, color: COLORS.info, bold: true },
+      ],
+    },
   ]
 
   return (
@@ -113,6 +177,21 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
         <Badge text="Interactive" color={COLORS.accent} />
       </div>
 
+      {/* Real comp benchmark — Brevard sold tax-deed CMA (sale-price, not rent).
+          Only renders when a live match exists; never fabricates a rent conversion. */}
+      {compBenchmark && (
+        <div
+          className="rounded-lg px-3.5 py-2.5 mb-4 text-xs"
+          style={{ background: COLORS.brandLight, border: `1px solid ${COLORS.brand}40` }}
+        >
+          <span className="font-bold" style={{ color: COLORS.brandDark }}>Live Comp Benchmark (Brevard sold tax-deed CMA):</span>{' '}
+          Median comp {fmtD(compBenchmark.medianComp)} from {compBenchmark.nComps} comps
+          {compBenchmark.pctOfMarket != null && ` · sold at ${compBenchmark.pctOfMarket}% of market value`}
+          {compBenchmark.soldPrice != null && ` · this parcel sold ${fmtD(compBenchmark.soldPrice)}`}.
+          <span className="text-slate-500"> Sale-price comp, not a rent comp — informational only, does not set unit rents below.</span>
+        </div>
+      )}
+
       {/* KPI Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-5">
         {[
@@ -120,8 +199,8 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
           ['Value', fmtD(pf.stabilizedValue), true],
           ['Dev Cost', fmtD(pf.totalDevCost), false],
           ['Profit', fmtD(pf.profit), pf.profit > 0],
-          ['YoC', `${pf.yieldOnCost.toFixed(1)}%`, pf.devSpread > 0],
-          ['Spread', `${pf.devSpread > 0 ? '+' : ''}${pf.devSpread.toFixed(1)}%`, pf.devSpread > 0],
+          ['IRR', returns.irr != null ? `${(returns.irr * 100).toFixed(1)}%` : '—', (returns.irr ?? 0) > 0],
+          ['Eq. Multiple', `${returns.equityMultiple.toFixed(2)}x`, returns.equityMultiple > 1],
         ].map(([l, v, hi]) => (
           <div
             key={l as string}
@@ -174,7 +253,7 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
           </Card>
 
           <div className="text-[13px] font-bold mt-4 mb-2.5 flex items-center">
-            Unit Mix<Badge text="Comp-Derived" color={COLORS.success} />
+            Unit Mix<Badge text="Manual Assumption" color={COLORS.accent} />
           </div>
           <Card>
             <div className="overflow-x-auto">
@@ -246,6 +325,20 @@ export default function DevelopTab({ site, unitMix }: DevelopTabProps) {
                 ))}
               </div>
             ))}
+            <div className="px-4 py-3.5">
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                disabled={downloadingReport}
+                className="w-full text-xs font-bold py-2.5 rounded-lg cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: COLORS.brand, color: '#fff' }}
+              >
+                {downloadingReport ? 'Generating…' : 'Download Outcome Report (PDF)'}
+              </button>
+              {reportError && (
+                <div className="text-xs mt-2" style={{ color: COLORS.danger }}>{reportError}</div>
+              )}
+            </div>
           </Card>
         </div>
       </div>
