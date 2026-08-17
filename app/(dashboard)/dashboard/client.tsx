@@ -97,13 +97,13 @@ export default function DashboardClient() {
           h-full fills the SidebarInset remaining space after SiteHeader.
           No h-dvh — container height is owned by the layout shell.
         */}
-        <div className="flex h-full min-h-0 bg-[#020617] md:flex-row flex-col">
+        <div className="flex h-full min-h-0 bg-[#020617] md:flex-row flex-col overflow-y-auto md:overflow-hidden">
           {/* Left: Dashboard KPIs / artifact panel */}
           <div
             className="
               relative min-h-0 overflow-auto
               border-b border-[#1E3A5F]/30
-              [height:40vh]
+              h-auto
               md:h-full md:w-[60%] md:flex-none
               md:border-b-0 md:border-r
             "
@@ -116,7 +116,7 @@ export default function DashboardClient() {
           </div>
 
           {/* Right: Chat panel (Thread via Dify) */}
-          <div className="flex min-h-0 flex-1 flex-col [height:60vh] md:h-full">
+          <div className="flex flex-1 flex-col min-h-[70vh] md:min-h-0 md:h-full">
             <Thread />
           </div>
         </div>
