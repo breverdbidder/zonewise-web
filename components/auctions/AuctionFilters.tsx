@@ -60,10 +60,15 @@ export default function AuctionFilters({
           <button
             key={mode}
             onClick={() => onViewModeChange(mode)}
-            className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+            // Every label is bold and full-contrast black (white in dark mode),
+            // not thin gray - these are primary navigation, not hints. Because
+            // colour no longer distinguishes the selected tab, the active pill
+            // carries the state via background + shadow, and hover moved from a
+            // colour shift to a background wash.
+            className={`px-3.5 py-1.5 text-sm font-bold rounded transition-colors ${
               viewMode === mode
                 ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+                : 'text-gray-900 dark:text-white hover:bg-white/60 dark:hover:bg-slate-700/60'
             }`}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
