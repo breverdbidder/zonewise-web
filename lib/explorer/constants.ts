@@ -17,6 +17,23 @@ export const BREVARD_BOUNDS: [[number, number], [number, number]] = [
 
 export const BREVARD_CENTER: [number, number] = [-80.72, 28.30]
 
+// Default map view. Miami-Dade, not Brevard: Brevard is where the product
+// started, and opening there read as a Brevard tool to everyone else. Miami-Dade
+// is chosen on evidence, not brand — it is our LARGEST fully-mapped county
+// (579,043 parcels, 578,936 with geometry = 100%), so first paint is a dense,
+// working map rather than a sparse one. Counties like Pinellas (0% geometry) and
+// Broward (30%) would open near-empty and must never be the default.
+// Verified against mv_county_parcel_stats on 2026-08-17.
+export const MIAMI_DADE_BOUNDS: [[number, number], [number, number]] = [
+  [-80.87, 25.13],
+  [-80.11, 25.98],
+]
+
+export const MIAMI_DADE_CENTER: [number, number] = [-80.30, 25.72]
+
+export const DEFAULT_MAP_BOUNDS = MIAMI_DADE_BOUNDS
+export const DEFAULT_MAP_CENTER = MIAMI_DADE_CENTER
+
 export const ZONING_COLORS: Record<string, string> = {
   RU: '#22C55E', BU: '#3B82F6', TU: '#8B5CF6', IU: '#EF4444',
   PUD: '#F59E0B', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
