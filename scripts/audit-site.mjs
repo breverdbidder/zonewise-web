@@ -154,7 +154,7 @@ const ACTIVE_ROUTES = selectByName(ROUTES, args.routes, 'route')
 const BANNED_TERMS = [
   // These three are SSOT positioning rules for the ZoneWise surface, but
   // AuctionRadar (/auctions) IS the distressed-inventory sourcing view - it
-  // legitimately says all three. Scoped exemption, not a silenced check.
+  // legitimately says both. Scoped exemption, not a silenced check.
   { term: 'foreclosure', allowIn: ['/auctions'] },
   { term: 'tax deed', allowIn: ['/auctions'] },
   { term: '10 years', allowIn: [] },
