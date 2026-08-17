@@ -25,22 +25,33 @@ export interface PlatformStats {
   parcels: number
 }
 
+let inflight: Promise<PlatformStats | null> | null = null
+
+function loadStats(): Promise<PlatformStats | null> {
+  if (inflight) return inflight
+  inflight = fetch('/api/stats')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => {
+      if (!d) return null
+      const counties = Number(d.counties)
+      const parcels = Number(d.parcels_total ?? d.fl_parcels)
+      // /api/stats returns a degraded payload rather than failing when the DB
+      // is unreachable. Never overwrite good fallbacks with that.
+      if (counties > 0 && parcels > 1_000_000) return { counties, parcels }
+      return null
+    })
+    .catch(() => null)
+  return inflight
+}
+
 export function usePlatformStats(): PlatformStats {
   const [stats, setStats] = useState<PlatformStats>(FALLBACK)
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/stats')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (cancelled || !d) return
-        const counties = Number(d.counties)
-        const parcels = Number(d.parcels_total ?? d.fl_parcels)
-        // /api/stats returns a degraded payload rather than failing when the DB
-        // is unreachable. Never overwrite good fallbacks with that.
-        if (counties > 0 && parcels > 1_000_000) setStats({ counties, parcels })
-      })
-      .catch(() => {})
+    loadStats().then((d) => {
+      if (!cancelled && d) setStats(d)
+    })
     return () => {
       cancelled = true
     }
