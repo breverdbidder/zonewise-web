@@ -112,6 +112,10 @@ const ROUTES = [
   { path: '/feasibility', name: 'feasibility', authGated: true, tabs: [
       'Site', 'Market', 'Lodging', 'Comps', 'Capacity', 'Develop', 'Generate',
     ] },
+  // AuctionRadar. Added Aug 17 2026: this route was never in the audit list
+  // (it was hidden from nav on Aug 15 and restored Aug 17), which is exactly
+  // how a mobile toolbar-overlap bug reached production unseen.
+  { path: '/auctions', name: 'auctions' },
   { path: '/report', name: 'report' },
   { path: '/docs', name: 'docs', public: true },
 ]
@@ -148,9 +152,12 @@ const ACTIVE_ROUTES = selectByName(ROUTES, args.routes, 'route')
  * inside an explicit provenance string.
  */
 const BANNED_TERMS = [
-  { term: 'foreclosure', allowIn: [] },
-  { term: 'tax deed', allowIn: [] },
-  { term: 'auction', allowIn: [] },
+  // These three are SSOT positioning rules for the ZoneWise surface, but
+  // AuctionRadar (/auctions) IS the distressed-inventory sourcing view - it
+  // legitimately says all three. Scoped exemption, not a silenced check.
+  { term: 'foreclosure', allowIn: ['/auctions'] },
+  { term: 'tax deed', allowIn: ['/auctions'] },
+  { term: 'auction', allowIn: ['/auctions'] },
   { term: '10 years', allowIn: [] },
   { term: '10+ years', allowIn: [] },
   // Standing rule from Ariel, Aug 17 2026: this vendor is a data source we pay
@@ -278,7 +285,14 @@ const PROBE = () => {
 async function auditView(page, label, results) {
   const probe = await page.evaluate(PROBE)
 
-  for (const { term } of BANNED_TERMS) {
+  for (const { term, allowIn } of BANNED_TERMS) {
+    // `allowIn` was declared when BANNED_TERMS was written but never actually
+    // read, so every term was enforced on every route regardless. Wiring it up
+    // is what makes /auditing /auctions possible at all - otherwise the route
+    // files a banned-term BLOCKER and Telegram-alerts Ariel on correct copy.
+    // Note: propertyonion entries keep allowIn: [] deliberately. That standing
+    // rule has no exemptions anywhere on any surface.
+    if ((allowIn || []).some((p) => label.includes(p))) continue
     const re = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
     if (re.test(probe.text)) {
       results.push({ view: label, severity: 'BLOCKER', kind: 'banned-term', detail: `"${term}" present` })
