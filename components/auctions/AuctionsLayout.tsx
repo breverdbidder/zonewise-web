@@ -28,7 +28,9 @@ export default function AuctionsLayout() {
 
   const [selectedCounty, setSelectedCounty] = useState('')
   const [selectedType, setSelectedType] = useState('')
-  const [viewMode, setViewMode] = useState<ViewMode>('table')
+  // Calendar is the landing view (Ariel, Aug 17 2026): discovery starts with
+  // "what is coming up and when", not with a wall of rows.
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar')
   const [selectedAuction, setSelectedAuction] = useState<Auction | null>(null)
   const [dayFilter, setDayFilter] = useState<DayFilter | null>(null)
 
@@ -45,7 +47,12 @@ export default function AuctionsLayout() {
   useEffect(() => {
     const init = async () => {
       try {
-        await Promise.all([fetchSummary(), fetchAuctions()])
+        // The calendar fetches its own per-day counts (~7 KB) and does not
+        // read these rows at all. Pulling a 200-row browse page (~195 KB) on
+        // first paint for a view nobody is looking at was pure waste, so rows
+        // are fetched only when a row-based view is actually selected.
+        await fetchSummary()
+        if (viewMode !== 'calendar') await fetchAuctions()
       } catch (err) {
         console.error('Init failed:', err)
         // Surface the real failure. This page used to swallow both fetch
@@ -64,7 +71,7 @@ export default function AuctionsLayout() {
   }, [])
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && viewMode !== 'calendar') {
       setError(null)
       fetchAuctions().catch((err) => {
         console.error('Failed to fetch auctions:', err)
@@ -74,7 +81,7 @@ export default function AuctionsLayout() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCounty, selectedType, dayFilter])
+  }, [selectedCounty, selectedType, dayFilter, viewMode])
 
   async function fetchSummary() {
     const res = await fetch('/api/auctions/summary')
