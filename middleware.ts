@@ -154,7 +154,15 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
   const pathname = req.nextUrl.pathname
   const clientIp = getClientIp(req)
 
-  if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/api/auth')) {
+  const isRscPrefetch =
+    req.headers.get('rsc') === '1' ||
+    req.headers.get('next-router-prefetch') === '1' ||
+    req.nextUrl.searchParams.has('_rsc')
+
+  if (
+    !isRscPrefetch &&
+    (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/api/auth'))
+  ) {
     const result = checkRateLimit(`auth:${clientIp}`, RATE_LIMITS.auth)
     if (!result.allowed) {
       return tooManyRequests(req, result.resetAt)
