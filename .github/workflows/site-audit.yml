@@ -52,10 +52,30 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
 
+      # Log in once and reuse the session so /feasibility's 7 tabs are actually
+      # audited instead of reporting tab-unreachable 28 times a run. Exit code 2
+      # means "no credentials configured" — a supported mode, not a failure, so
+      # the audit still runs, just without the gated tabs.
+      # .auth/state.json holds a LIVE SESSION COOKIE and is never uploaded.
+      - name: Build authenticated session
+        id: authstate
+        continue-on-error: true
+        env:
+          AUDIT_USER_EMAIL: ${{ secrets.AUDIT_USER_EMAIL }}
+          AUDIT_USER_PASSWORD: ${{ secrets.AUDIT_USER_PASSWORD }}
+        run: node scripts/auth-state.mjs --out=.auth/state.json
+
       - name: Run audit
         id: audit
         continue-on-error: true
-        run: node scripts/audit-site.mjs --json=report.json
+        run: |
+          if [ -f .auth/state.json ]; then
+            echo "Auditing WITH an authenticated session (gated tabs included)."
+            node scripts/audit-site.mjs --json=report.json --auth=.auth/state.json
+          else
+            echo "Auditing anonymously; auth-gated tabs will be reported as unaudited."
+            node scripts/audit-site.mjs --json=report.json
+          fi
 
       - name: Summarize
         if: always()
