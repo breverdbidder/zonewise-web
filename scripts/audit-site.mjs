@@ -49,13 +49,24 @@ const BASE = args.base || 'https://zonewise.ai'
 const SHOTS = Boolean(args.shots)
 const SHOT_DIR = args.shotDir || './audit-shots'
 
+// Reuse a Clerk session minted by scripts/auth-state.mjs. Without one, every
+// auth-gated route quietly serves the sign-in page and the harness audits that
+// instead of the app. A missing file when --auth was explicitly asked for is a
+// hard error, never a silent unauthenticated run.
+const AUTH_FILE = args.auth === true ? '.auth/state.json' : args.auth || null
+const AUTH_STATE = AUTH_FILE && fs.existsSync(AUTH_FILE) ? AUTH_FILE : null
+if (AUTH_FILE && !AUTH_STATE) {
+  console.error(`audit: --auth=${AUTH_FILE} given but that file does not exist`)
+  process.exit(2)
+}
+
 /** Public + app routes. Add new routes here as they ship. */
 const ROUTES = [
   { path: '/', name: 'landing', public: true },
   { path: '/pricing', name: 'pricing', public: true },
   { path: '/explorer', name: 'explorer' },
   { path: '/dashboard', name: 'dashboard' },
-  { path: '/feasibility', name: 'feasibility', tabs: [
+  { path: '/feasibility', name: 'feasibility', authGated: true, tabs: [
       'Site', 'Market', 'Lodging', 'Comps', 'Capacity', 'Develop', 'Generate',
     ] },
   { path: '/report', name: 'report' },
@@ -244,7 +255,11 @@ async function run() {
   if (SHOTS) fs.mkdirSync(SHOT_DIR, { recursive: true })
 
   for (const vp of ACTIVE_VIEWPORTS) {
-    const ctx = await browser.newContext({ ...vp.device, ignoreHTTPSErrors: true })
+    const ctx = await browser.newContext({
+      ...vp.device,
+      ignoreHTTPSErrors: true,
+      ...(AUTH_STATE ? { storageState: AUTH_STATE } : {}),
+    })
 
     for (const route of ACTIVE_ROUTES) {
       const page = await ctx.newPage()
@@ -294,9 +309,24 @@ async function run() {
           })
         }
 
+        // An auth-gated route answers HTTP 200 while quietly serving the Clerk
+        // sign-in page, so `bad-status` never fires and the harness audits a
+        // login form believing it is the app. Status is not enough — check where
+        // we actually landed.
+        const landedOn = new URL(page.url()).pathname
+        const bounced = Boolean(route.authGated) && landedOn.startsWith('/sign-in')
+        if (bounced && AUTH_STATE) {
+          results.push({ view: label, severity: 'BLOCKER', kind: 'auth-state-rejected', detail: `session supplied but ${route.path} still bounced to ${landedOn}` })
+        }
+
         // walk in-page tabs — these are distinct views and must be audited too.
         // This is the step that was skipped on 2026-08-15; four broken tabs shipped.
+        let tabsSkipped = 0
         for (const tab of route.tabs || []) {
+          // Unauthenticated, all 7 tabs "fail" identically because the page
+          // behind them never rendered. That is 28 WARNs a run of noise, not 28
+          // findings. Say it once per view instead.
+          if (bounced && !AUTH_STATE) { tabsSkipped++; continue }
           try {
             await page.click(`text="${tab}"`, { timeout: 5000 })
             await page.waitForTimeout(1600)
@@ -310,6 +340,9 @@ async function run() {
           } catch {
             results.push({ view: `${label} [${tab}]`, severity: 'WARN', kind: 'tab-unreachable', detail: 'could not activate tab' })
           }
+        }
+        if (tabsSkipped) {
+          results.push({ view: label, severity: 'INFO', kind: 'tabs-unaudited-no-session', detail: `${tabsSkipped} tabs behind Clerk — run scripts/auth-state.mjs to audit them` })
         }
       } catch (e) {
         results.push({ view: label, severity: 'BLOCKER', kind: 'navigation-failed', detail: String(e.message).slice(0, 120) })
