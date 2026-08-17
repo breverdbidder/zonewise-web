@@ -46,6 +46,49 @@ const args = Object.fromEntries(
 )
 
 const BASE = args.base || 'https://zonewise.ai'
+
+// ── cross-page numeric consistency ───────────────────────────────────────────
+// Every page was internally consistent, so a CROSS-page contradiction stayed
+// invisible: /explorer claimed "36 FL Counties · 4M+ parcels" for months while
+// the homepage claimed 67 / 10.8M and a visitor watched our coverage halve on
+// one click. Coverage numbers now come from the county SSOT via /api/stats, so
+// every page's headline claim can be checked against a single truth.
+const PARCEL_CLAIM = /(\d+(?:\.\d+)?)\s*M\+?\s*parcels/gi
+const COUNTY_CLAIM = /\b(\d{1,3})[\s-](?:FL\s+|Florida\s+)?count(?:y|ies)\b/gi
+
+let SSOT = null
+
+async function loadSsot(base) {
+  try {
+    const res = await fetch(`${base}/api/stats`)
+    if (!res.ok) return null
+    const d = await res.json()
+    const counties = Number(d.counties)
+    const parcels = Number(d.parcels_total ?? d.fl_parcels)
+    // /api/stats degrades rather than failing; do not gate CI on a bad payload.
+    if (counties > 0 && parcels > 1_000_000) return { counties, parcelsM: parcels / 1_000_000 }
+  } catch {}
+  return null
+}
+
+function checkStatClaims(text, label, results) {
+  if (!SSOT) return
+  for (const m of text.matchAll(PARCEL_CLAIM)) {
+    const claimed = parseFloat(m[1])
+    // 0.15M tolerance absorbs honest rounding (10.5 vs 10.51), not drift.
+    if (Math.abs(claimed - SSOT.parcelsM) > 0.15) {
+      results.push({ view: label, severity: 'BLOCKER', kind: 'stat-drift',
+        detail: `claims ${claimed}M parcels, SSOT says ${SSOT.parcelsM.toFixed(1)}M` })
+    }
+  }
+  for (const m of text.matchAll(COUNTY_CLAIM)) {
+    const claimed = parseInt(m[1], 10)
+    if (claimed !== SSOT.counties) {
+      results.push({ view: label, severity: 'BLOCKER', kind: 'stat-drift',
+        detail: `claims ${claimed} counties, SSOT says ${SSOT.counties}` })
+    }
+  }
+}
 const SHOTS = Boolean(args.shots)
 const SHOT_DIR = args.shotDir || './audit-shots'
 
@@ -251,6 +294,8 @@ async function auditView(page, label, results) {
 
 async function run() {
   const browser = await chromium.launch()
+  SSOT = await loadSsot(BASE)
+  if (!SSOT) console.warn('audit: /api/stats unavailable — skipping cross-page stat consistency check')
   const results = []
   if (SHOTS) fs.mkdirSync(SHOT_DIR, { recursive: true })
 
@@ -315,6 +360,7 @@ async function run() {
         }
 
         await auditView(page, label, results)
+        checkStatClaims(await page.evaluate(() => document.body.innerText || ''), label, results)
         if (SHOTS) {
           await page.screenshot({
             path: path.join(SHOT_DIR, `${vp.name.replace(/\s/g, '')}_${route.name}.png`),
