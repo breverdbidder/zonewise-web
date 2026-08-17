@@ -7,7 +7,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { getMapboxToken } from '@/lib/feasibility/constants'
 import {
-  ENDPOINTS, BREVARD_BOUNDS, BREVARD_CENTER, ZONING_LABELS,
+  ENDPOINTS, BREVARD_BOUNDS, DEFAULT_MAP_CENTER, FLORIDA_BOUNDS, ZONING_LABELS,
   type ParcelAttributes, formatAddress, formatCurrency, getZoningColor,
   CHOROPLETH_COLOR_STOPS, type ChoroplethMetric, type ZoningFilter,
 } from '@/lib/explorer/constants'
@@ -97,11 +97,16 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
     const map = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: BREVARD_CENTER,
+      center: DEFAULT_MAP_CENTER,
       zoom: 10,
-      minZoom: 9,
+      // minZoom was 9, which could not frame the state; 6 lets a user pull back
+      // to all of Florida. maxBounds was a Brevard-sized box that made every
+      // other county unreachable by panning — the default center was never the
+      // real constraint. BREVARD_BOUNDS below is unrelated and correctly stays
+      // Brevard: it bounds the BCPAO raster overlays, which only cover Brevard.
+      minZoom: 6,
       maxZoom: 19,
-      maxBounds: [[-81.5, 27.5], [-80.0, 29.0]] as mapboxgl.LngLatBoundsLike,
+      maxBounds: FLORIDA_BOUNDS as mapboxgl.LngLatBoundsLike,
       attributionControl: false,
     })
 
