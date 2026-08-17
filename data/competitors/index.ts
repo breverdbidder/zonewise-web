@@ -1,8 +1,12 @@
 // data/competitors/index.ts
 // Battle Cards Sprint S0a — competitor registry
 // The 11 competitors locked Mar 30 2026 + MapWise added Apr 3 2026.
+// One card was REMOVED Aug 17 2026 on a standing instruction from Ariel: that
+// vendor is a data source we pay for, not a name we put in front of
+// customers, and it is never referenced anywhere on our websites. Do not
+// re-add it. The registry is 10.
 // Each competitor's full profile lives in its own file and is imported here.
-// S0b-S0e progressively fill in full profiles for all 11.
+// S0b-S0e progressively fill in full profiles for all 10.
 
 import type { CompetitorProfile, ThreatLevel } from '@/types/competitors'
 import { propzone } from './propzone'
@@ -14,7 +18,6 @@ export const COMPETITOR_SLUGS = [
   'propzone',         // #2 CRITICAL  — S0b SHIPPED (full profile below)
   'zoneomics',        // #3 CRITICAL
   'mapwise',          // #11 HIGH     — S0d (namesake threat, added Apr 3)
-  'propertyonion',    // #4 HIGH
   'forma-zoneomics',  // #5 HIGH
   'testfit',          // #6 MEDIUM
   'reventure',        // #7 MEDIUM
@@ -59,7 +62,7 @@ function stub(
   }
 }
 
-// ── REGISTRY: 11 profiles ────────────────────────────────────────────────
+// ── REGISTRY: 10 profiles ────────────────────────────────────────────────
 export const COMPETITORS: Record<CompetitorSlug, CompetitorProfile> = {
   propzone,
   algoma,
@@ -76,13 +79,6 @@ export const COMPETITORS: Record<CompetitorSlug, CompetitorProfile> = {
     '26-year FL incumbent GIS map viewer for real estate professionals',
     'HIGH',
     'mapwise.com',
-  ),
-  propertyonion: stub(
-    'propertyonion',
-    'PropertyOnion',
-    '130 KPIs for FL real estate investors — foreclosure overlap',
-    'HIGH',
-    'propertyonion.com',
   ),
   'forma-zoneomics': stub(
     'forma-zoneomics',
