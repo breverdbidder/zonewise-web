@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { getRecommendation } from '@/lib/scoring'
 import ZoningBadge from './ZoningBadge'
+import { formatCountyLabel } from '@/lib/counties'
 import type { Auction, SortField, SortDirection } from '@/types/auctions'
 
 interface Props {
@@ -119,7 +120,7 @@ export default function AuctionTable({ auctions, loading, onSelectAuction }: Pro
                   onClick={() => onSelectAuction(auction)}
                   className="hover:bg-gray-50 dark:hover:bg-slate-800/30 cursor-pointer transition-colors"
                 >
-                  <td className="px-3 py-2.5 text-sm text-gray-900 dark:text-slate-200 whitespace-nowrap">{auction.county}</td>
+                  <td className="px-3 py-2.5 text-sm text-gray-900 dark:text-slate-200 whitespace-nowrap">{formatCountyLabel(auction.county)}</td>
                   <td className="px-3 py-2.5 text-sm text-gray-600 dark:text-slate-400 font-mono whitespace-nowrap">{auction.case_number}</td>
                   <td className="px-3 py-2.5 text-sm text-gray-900 dark:text-slate-200 max-w-xs truncate">
                     {auction.property_address || (
