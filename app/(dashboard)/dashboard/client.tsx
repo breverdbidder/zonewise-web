@@ -101,18 +101,26 @@ export default function DashboardClient() {
           {/* Left: Dashboard KPIs / artifact panel */}
           <div
             className="
-              relative min-h-0 overflow-auto
+              relative min-h-0 overflow-auto shrink-0
               border-b border-[#1E3A5F]/30
               h-auto
               md:h-full md:w-[60%] md:flex-none
               md:border-b-0 md:border-r
             "
           >
+            {/*
+              shrink-0 above matters: without it, the chat panel's
+              min-h-[70vh] wins the flex-shrink fight on mobile and this
+              h-auto panel gets crushed to ~120px (2 of 4 KPI cards mostly
+              invisible) instead of showing its real ~500px of content. With
+              shrink-0 this panel renders at full height and the OUTER
+              container's overflow-y-auto is what scrolls the user down to
+              the chat panel below it - no scroll affordance needed inside
+              this box because nothing is clipped inside it anymore.
+            */}
             <ClickTrackerProvider>
               <DashboardContainer />
             </ClickTrackerProvider>
-            {/* Scroll affordance: content routinely exceeds the 40vh mobile height */}
-            <div className="pointer-events-none sticky bottom-0 left-0 h-8 w-full bg-gradient-to-t from-[#020617] to-transparent md:hidden" />
           </div>
 
           {/* Right: Chat panel (Thread via Dify) */}
