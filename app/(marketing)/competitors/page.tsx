@@ -9,14 +9,14 @@ import { getAllCardSummaries } from '@/data/competitors'
 import { ThreatBadge } from '@/components/competitors/ThreatBadge'
 
 export const metadata: Metadata = {
-  title: 'Competitive Landscape — ZoneWise.AI vs 11 Competitors',
+  title: 'Competitive Landscape — ZoneWise.AI vs 10 Competitors',
   description:
-    'Head-to-head comparisons against PropZone/Gridics, Zoneomics, Algoma, MapWise, PropertyOnion, Forma+Zoneomics, TestFit, Reventure, Foreclosure.com, AI Topia, CoreLogic/ATTOM.',
+    'Head-to-head comparisons against PropZone/Gridics, Zoneomics, Algoma, MapWise, Forma+Zoneomics, TestFit, Reventure, Foreclosure.com, AI Topia, CoreLogic/ATTOM.',
   alternates: {
     canonical: 'https://zonewise.ai/competitors',
   },
   openGraph: {
-    title: 'ZoneWise.AI — Beats 11 Competitors on Data, AI, and Price',
+    title: 'ZoneWise.AI — Beats 10 Competitors on Data, AI, and Price',
     description:
       'Side-by-side comparisons across zoning data, auction intelligence, ML predictions, lien analysis, and pricing.',
     url: 'https://zonewise.ai/competitors',
@@ -41,7 +41,7 @@ export default function CompetitorsIndexPage() {
             Competitive Landscape
           </span>
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            ZoneWise.AI <span className="text-[#F59E0B]">vs</span> 11 Competitors
+            ZoneWise.AI <span className="text-[#F59E0B]">vs</span> 10 Competitors
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
             Head-to-head comparisons across zoning data, auction intelligence, ML
