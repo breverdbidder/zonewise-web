@@ -34,6 +34,28 @@ export interface Auction {
   zoning_category: string | null
   zone_code: string | null
   municipality: string | null
+
+  // --- Columns that actually exist on multi_county_auctions -------------
+  // Several fields above (just_value, total_living_area, centroid_lat/lng,
+  // zoning_category, fl_parcel_id, is_condo) are NOT columns on that table;
+  // they were carried over from an earlier enriched source and always come
+  // back undefined at runtime, which is why parts of the detail panel render
+  // an em dash for every row. They are left in place so existing readers keep
+  // compiling; the real column names are declared here and should be
+  // preferred by anything new.
+  sale_type?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  living_area_sqft?: number | null
+  lot_size?: number | null
+  beds?: number | null
+  baths?: number | null
+  sqft?: number | null
+  city?: string | null
+  zip?: string | null
+  property_type?: string | null
+  auction_status?: string | null
+  auction_url?: string | null
 }
 
 /** Enriched auction detail (from /api/auctions/[id]) */
@@ -59,6 +81,14 @@ export interface ZoningInfo {
   homestead_value: number | null
 }
 
+/** Per-county aggregate from the SSOT summary function. */
+export interface CountyDetail {
+  county: string
+  total: number
+  upcoming: number
+  next_auction_date: string | null
+}
+
 export interface AuctionSummary {
   total: number
   by_county: Record<string, number>
@@ -67,6 +97,16 @@ export interface AuctionSummary {
   with_address: number
   vacant_land: number
   condos: number
+  // Added Aug 17 2026 with the SSOT summary function. Optional so any older
+  // consumer of this shape keeps compiling.
+  upcoming?: number
+  counties?: number
+  counties_upcoming?: number
+  by_sale_type?: Record<string, number>
+  counties_detail?: CountyDetail[]
+  date_min?: string | null
+  date_max?: string | null
+  generated_at?: string | null
 }
 
 export interface AuctionsResponse {
@@ -74,6 +114,31 @@ export interface AuctionsResponse {
   total: number
   limit: number
   offset: number
+  ignored_filters?: string[]
+}
+
+/** Per-day typed counts from /api/auctions/calendar. */
+export interface AuctionCalendarDay {
+  date: string
+  foreclosure_count: number
+  tax_deed_count: number
+  other_count: number
+  total: number
+}
+
+export interface AuctionCalendarResponse {
+  from: string
+  to: string
+  county: string | null
+  sale_type: string | null
+  days: AuctionCalendarDay[]
+  totals: {
+    foreclosure_count: number
+    tax_deed_count: number
+    other_count: number
+    total: number
+    days_with_auctions: number
+  }
 }
 
 export type SortField = 'auction_date' | 'county' | 'just_value' | 'property_address' | 'zoning_category'
