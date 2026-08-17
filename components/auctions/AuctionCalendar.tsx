@@ -167,6 +167,47 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
         .zw-auction-calendar :global(.fc-event) {
           cursor: pointer;
         }
+
+        /*
+         * MOBILE TOOLBAR OVERLAP FIX (Aug 17 2026).
+         *
+         * FullCalendar renders .fc-toolbar as a no-wrap flex row with
+         * justify-content: space-between. Swapping the CSP-blocked data: icon
+         * font for text buttons ("< Prev" / "Next >" / Today / Month / List)
+         * roughly tripled the width of the left and right chunks, so below
+         * ~768px the three chunks overflow the row and paint ON TOP of the
+         * month title. Reported from a live phone screenshot.
+         *
+         * Fix is to stack the chunks on narrow viewports. Do NOT "fix" this by
+         * reverting buttonIcons - that reintroduces the font-src block and the
+         * arrows go back to being invisible dark rectangles.
+         */
+        .zw-auction-calendar :global(.fc .fc-toolbar.fc-header-toolbar) {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+        .zw-auction-calendar :global(.fc .fc-toolbar-chunk) {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 0.25rem;
+        }
+        .zw-auction-calendar :global(.fc .fc-toolbar-title) {
+          font-size: 1.05rem;
+          line-height: 1.3;
+          text-align: center;
+        }
+        @media (min-width: 768px) {
+          .zw-auction-calendar :global(.fc .fc-toolbar.fc-header-toolbar) {
+            flex-direction: row;
+            align-items: center;
+          }
+          .zw-auction-calendar :global(.fc .fc-toolbar-title) {
+            font-size: 1.5rem;
+          }
+        }
       `}</style>
       <div className="flex flex-wrap items-center gap-4 mb-4">
         <div className="flex items-center gap-1.5">
