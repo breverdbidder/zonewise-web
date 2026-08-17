@@ -29,16 +29,26 @@ import { NavMain, type NavGroup } from './NavMain'
 import { NavUser } from './NavUser'
 
 const navGroups: NavGroup[] = [
+  // Discovery leads the nav on purpose. It is stage 1 of The Everest Ascent, and
+  // it is the one thing competitors like Algoma cannot match: parcel-level
+  // distressed sourcing wired directly into zoning and feasibility analysis.
+  //
+  // History: hidden from the nav on Aug 15 2026 (Ariel, "Option B") because
+  // auction CONTENT belongs to BidDeed.AI's surface. Restored Aug 17 2026 under
+  // a Discovery group rather than back under Intelligence — the distinction that
+  // resolves both positions is sourcing vs trading. ZoneWise surfaces distressed
+  // inventory as a way to FIND parcels to analyse; the bidding/execution workflow
+  // stays on BidDeed.AI.
+  {
+    label: 'Discovery',
+    items: [
+      { title: 'Auctions', url: '/auctions', icon: Gavel },
+    ],
+  },
   {
     label: 'Intelligence',
     items: [
       { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
-      // Auctions hidden from ZoneWise nav (Ariel, Aug 15 2026, Option B).
-      // The /auctions route and components/auctions/ REMAIN INTACT and reachable
-      // by direct URL — this only removes it from the demo/nav path, because
-      // auction content belongs to BidDeed.AI's surface, not ZoneWise's.
-      // Restore this line to re-expose it.
-      // { title: 'Auctions', url: '/auctions', icon: Gavel },
       { title: 'Explorer', url: '/explorer', icon: Map },
     ],
   },
