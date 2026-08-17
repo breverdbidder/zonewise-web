@@ -181,6 +181,29 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
           center: 'title',
           right: 'dayGridMonth,listWeek',
         }}
+        /*
+         * buttonIcons={false} is deliberate and must not be reverted.
+         *
+         * FullCalendar draws prev/next with an embedded `data:` icon font.
+         * middleware.ts sets `font-src 'self' https://fonts.gstatic.com` with no
+         * `data:` allowance, so the browser blocks that font and both arrows
+         * paint as empty dark rectangles - which is why month navigation looked
+         * broken even though the buttons were live and datesSet was refetching
+         * correctly the whole time. Text labels sidestep the block entirely
+         * without loosening CSP site-wide for a glyph.
+         *
+         * The range is intentionally open in both directions: the table holds
+         * auctions back to 2017-04-10, and scrolling into past months is how a
+         * bidder reads sale history. Do not add validRange.
+         */
+        buttonIcons={false}
+        buttonText={{
+          prev: '‹ Prev',
+          next: 'Next ›',
+          today: 'Today',
+          month: 'Month',
+          list: 'List',
+        }}
         events={events}
         datesSet={handleDatesSet}
         eventClick={(info) => {
