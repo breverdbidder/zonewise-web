@@ -48,7 +48,13 @@ export default function AuctionsLayout() {
         await Promise.all([fetchSummary(), fetchAuctions()])
       } catch (err) {
         console.error('Init failed:', err)
-        setError('Failed to load auction data')
+        // Surface the real failure. This page used to swallow both fetch
+        // errors and then render "0 auctions across 0 Florida counties" with
+        // permanent skeleton cards - visually identical to a site that has no
+        // data at all, which is the worst possible way to fail.
+        setError(
+          `Could not load auction data: ${err instanceof Error ? err.message : 'unknown error'}`
+        )
       } finally {
         setLoading(false)
       }
@@ -58,25 +64,26 @@ export default function AuctionsLayout() {
   }, [])
 
   useEffect(() => {
-    if (!loading) fetchAuctions()
+    if (!loading) {
+      setError(null)
+      fetchAuctions().catch((err) => {
+        console.error('Failed to fetch auctions:', err)
+        setError(
+          `Could not load auctions: ${err instanceof Error ? err.message : 'unknown error'}`
+        )
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCounty, selectedType, dayFilter])
 
   async function fetchSummary() {
-    try {
-      const res = await fetch('/api/auctions/summary')
-      if (res.ok) {
-        const data = await res.json()
-        setSummary(data)
-      }
-    } catch (err) {
-      console.error('Failed to fetch summary:', err)
-    }
+    const res = await fetch('/api/auctions/summary')
+    if (!res.ok) throw new Error(`summary endpoint returned ${res.status}`)
+    setSummary(await res.json())
   }
 
   async function fetchAuctions() {
-    try {
-      const params = new URLSearchParams({ limit: '200' })
+    const params = new URLSearchParams({ limit: '200' })
       if (selectedCounty) params.set('county', selectedCounty)
       // sale_type, not type: auction_type is NULL on 12,959 rows, so the old
       // `type` filter silently hid real auctions from every filtered view.
@@ -92,15 +99,11 @@ export default function AuctionsLayout() {
         params.set('upcoming', 'true')
       }
 
-      const res = await fetch(`/api/auctions?${params}`)
-      if (res.ok) {
-        const json: AuctionsResponse = await res.json()
-        setAuctions(json.data)
-        setTotal(json.total)
-      }
-    } catch (err) {
-      console.error('Failed to fetch auctions:', err)
-    }
+    const res = await fetch(`/api/auctions?${params}`)
+    if (!res.ok) throw new Error(`auctions endpoint returned ${res.status}`)
+    const json: AuctionsResponse = await res.json()
+    setAuctions(json.data)
+    setTotal(json.total)
   }
 
   function handleSelectDay(date: string, saleType?: string) {
