@@ -153,6 +153,12 @@ const BANNED_TERMS = [
   { term: 'auction', allowIn: [] },
   { term: '10 years', allowIn: [] },
   { term: '10+ years', allowIn: [] },
+  // Standing rule from Ariel, Aug 17 2026: this vendor is a data source we pay
+  // for, not a name we put in front of customers, and it must never appear on
+  // any of our sites. These entries are the regression net so a future card,
+  // comparison table or KPI blurb cannot quietly reintroduce it.
+  { term: 'propertyonion', allowIn: [] },
+  { term: 'property onion', allowIn: [] },
 ]
 // Two legitimate reasons a line can say "brevard" without it being positioning
 // drift: (1) case-study provenance framing, (2) documenting a real API default —
