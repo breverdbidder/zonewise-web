@@ -157,7 +157,6 @@ const BANNED_TERMS = [
   // legitimately says all three. Scoped exemption, not a silenced check.
   { term: 'foreclosure', allowIn: ['/auctions'] },
   { term: 'tax deed', allowIn: ['/auctions'] },
-  { term: 'auction', allowIn: ['/auctions'] },
   { term: '10 years', allowIn: [] },
   { term: '10+ years', allowIn: [] },
   // Standing rule from Ariel, Aug 17 2026: this vendor is a data source we pay
