@@ -283,11 +283,24 @@ async function run() {
         // before believing a 429.
         await page.waitForTimeout(1200)
         let resp = null
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 4; attempt++) {
           resp = await page.goto(BASE + route.path, { waitUntil: 'networkidle', timeout: 60000 })
           if (!resp || resp.status() !== 429) break
           pageErrors.length = 0
-          await page.waitForTimeout(5000 * (attempt + 1))
+          // 5s/10s/15s was not enough — the rate-limit window outlasts it.
+          // Back off exponentially instead: 10s, 20s, 40s.
+          if (attempt < 3) await page.waitForTimeout(10000 * Math.pow(2, attempt))
+        }
+        // A 429 is our own request rate, never a statement about the product, so
+        // it must not gate CI or fire a Telegram alert at Ariel. /feasibility is
+        // the repeat offender because unauthenticated it serves Clerk's hosted
+        // sign-in page, which is rate-limited harder than our own routes. A
+        // PERSISTENT 429 still has to be visible though, so record it as a WARN
+        // and skip the view rather than audit an error page and report garbage.
+        if (resp && resp.status() === 429) {
+          results.push({ view: label, severity: 'WARN', kind: 'rate-limited-skipped', detail: 'still 429 after 4 attempts; view not audited' })
+          await page.close()
+          continue
         }
         if (!resp || resp.status() >= 400) {
           results.push({ view: label, severity: 'BLOCKER', kind: 'bad-status', detail: String(resp && resp.status()) })
