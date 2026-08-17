@@ -5,7 +5,6 @@ import { createClient } from '@supabase/supabase-js'
 // Supabase env is unavailable, so it served fl_parcels: 0 / alive: false
 // indefinitely while the database held 10.5M parcels.
 export const dynamic = 'force-dynamic'
-export const revalidate = 60
 
 function getSupabase() {
   return createClient(
