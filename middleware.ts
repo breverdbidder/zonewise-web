@@ -72,6 +72,84 @@ function getClientIp(req: NextRequest): string {
   return forwarded?.split(',')[0].trim() || realIp || 'unknown'
 }
 
+/**
+ * Rate-limit response.
+ *
+ * Every 429 used to return the bare string 'Too Many Requests', which a browser
+ * renders as an unstyled white page in monospace: no branding, no explanation,
+ * no way back. A real user clicking quickly through sign-in can land on it, and
+ * it reads like the site is broken rather than briefly protecting itself.
+ *
+ * API clients still get machine-readable JSON — an HTML page is the wrong answer
+ * for fetch(). Content negotiation decides that, not the request path, so
+ * /api/auth called from a browser form and from a script both behave correctly.
+ *
+ * No external assets and no JS: this response deliberately bypasses the CSP/
+ * nonce pipeline, so it must be fully self-contained. The meta refresh honours
+ * Retry-After, so the page recovers on its own without the user doing anything.
+ */
+function tooManyRequests(req: NextRequest, resetAt: number): NextResponse {
+  const retryAfter = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000))
+  const headers: Record<string, string> = {
+    'Retry-After': String(retryAfter),
+    'Cache-Control': 'no-store',
+  }
+
+  if (!(req.headers.get('accept') || '').includes('text/html')) {
+    return NextResponse.json(
+      {
+        error: 'too_many_requests',
+        message: 'Rate limit exceeded. Please retry shortly.',
+        retry_after_seconds: retryAfter,
+      },
+      { status: 429, headers }
+    )
+  }
+
+  const html = `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="${retryAfter}">
+<title>One moment · ZoneWise.AI</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+         background:#060b16; color:#e2e8f0; padding:24px;
+         font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  .card { width:100%; max-width:440px; background:rgba(15,23,42,.6); border:1px solid #1e293b;
+          border-radius:16px; padding:32px 28px; text-align:center; }
+  .brand { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:22px; }
+  .mark { width:36px; height:36px; border-radius:9px; background:#1d4ed8; color:#fff;
+          font-weight:800; font-size:18px; display:flex; align-items:center; justify-content:center; }
+  .name { font-size:17px; font-weight:700; color:#fff; }
+  .name span { color:#f59e0b; }
+  h1 { font-size:20px; margin:0 0 10px; color:#fff; }
+  p { margin:0 0 22px; font-size:14px; line-height:1.6; color:#94a3b8; }
+  .wait { font-variant-numeric:tabular-nums; font-weight:700; color:#f59e0b; }
+  a { display:inline-flex; align-items:center; justify-content:center; min-height:44px;
+      padding:0 22px; border-radius:10px; background:#f59e0b; color:#0b1220;
+      font-weight:700; font-size:14px; text-decoration:none; }
+  .fine { margin-top:18px; font-size:12px; color:#475569; }
+</style></head>
+<body>
+  <main class="card">
+    <div class="brand"><div class="mark">Z</div><div class="name">ZoneWise<span>.AI</span></div></div>
+    <h1>One moment</h1>
+    <p>We are seeing a burst of requests from your connection. This page retries
+       itself in <span class="wait">${retryAfter}s</span> — no need to refresh.</p>
+    <a href="/">Back to ZoneWise.AI</a>
+    <div class="fine">Nothing is wrong with your account. This is a temporary rate limit.</div>
+  </main>
+</body></html>`
+
+  return new NextResponse(html, {
+    status: 429,
+    headers: { ...headers, 'Content-Type': 'text/html; charset=utf-8' },
+  })
+}
+
 function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
   const pathname = req.nextUrl.pathname
   const clientIp = getClientIp(req)
@@ -79,18 +157,12 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
   if (pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up') || pathname.startsWith('/api/auth')) {
     const result = checkRateLimit(`auth:${clientIp}`, RATE_LIMITS.auth)
     if (!result.allowed) {
-      return new NextResponse('Too Many Requests', {
-        status: 429,
-        headers: { 'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)) },
-      })
+      return tooManyRequests(req, result.resetAt)
     }
   } else if (pathname.startsWith('/api/stripe/checkout')) {
     const result = checkRateLimit(`checkout:${clientIp}`, CHECKOUT_LIMIT)
     if (!result.allowed) {
-      return new NextResponse('Too Many Requests', {
-        status: 429,
-        headers: { 'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)) },
-      })
+      return tooManyRequests(req, result.resetAt)
     }
   } else if (pathname.startsWith('/api/csp-report')) {
     // CSP reports: silently drop over limit (no 429 to avoid noise)
@@ -101,10 +173,7 @@ function rateLimitMiddleware(req: NextRequest): NextResponse | undefined {
   } else if (pathname.startsWith('/api/')) {
     const result = checkRateLimit(`api:${clientIp}`, API_LIMIT)
     if (!result.allowed) {
-      return new NextResponse('Too Many Requests', {
-        status: 429,
-        headers: { 'Retry-After': String(Math.ceil((result.resetAt - Date.now()) / 1000)) },
-      })
+      return tooManyRequests(req, result.resetAt)
     }
   }
 }
