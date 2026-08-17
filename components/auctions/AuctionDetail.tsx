@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import { formatCountyLabel } from '@/lib/counties'
 import type { AuctionDetail as AuctionDetailType } from '@/types/auctions'
 import { parseDimensionalStandards } from '@/lib/zoning'
 
@@ -172,7 +173,7 @@ export default function AuctionDetail({ auctionId }: Props) {
                 {auction.property_address || 'No Address'}
               </h1>
               <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                {auction.county} County &middot; {auction.case_number}
+                {formatCountyLabel(auction.county)} County &middot; {auction.case_number}
               </p>
             </div>
 
@@ -248,8 +249,8 @@ export default function AuctionDetail({ auctionId }: Props) {
               <InfoRow label="Year Built" value={auction.year_built && auction.year_built > 0 ? auction.year_built : null} />
               <InfoRow label="Living Area" value={auction.total_living_area && auction.total_living_area > 0 ? `${auction.total_living_area.toLocaleString()} sqft` : null} />
               <InfoRow label="Lot Size" value={auction.lot_sqft ? `${auction.lot_sqft.toLocaleString()} sqft` : null} />
-              <InfoRow label="Vacant Land" value={auction.is_vacant_land ? 'Yes' : 'No'} />
-              <InfoRow label="Condo" value={auction.is_condo ? 'Yes' : 'No'} />
+              <InfoRow label="Vacant Land" value={auction.is_vacant_land == null ? null : auction.is_vacant_land ? 'Yes' : 'No'} />
+              <InfoRow label="Condo" value={auction.is_condo == null ? null : auction.is_condo ? 'Yes' : 'No'} />
             </SectionCard>
 
             {/* Zoning & Classification */}
