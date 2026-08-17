@@ -11,6 +11,7 @@ import {
   type ChoroplethMetric, type ZoningFilter,
 } from '@/lib/explorer/constants'
 import type { ParcelAttributes } from '@/lib/explorer/constants'
+import { usePlatformStats, formatParcels } from '@/lib/explorer/usePlatformStats'
 import ChoroplethLayer from './ChoroplethLayer'
 import LayerControls from './LayerControls'
 import ZoningLegend from './ZoningLegend'
@@ -68,6 +69,7 @@ function UpgradeModal({ reason, onClose }: { reason: 'parcel' | 'chat'; onClose:
 // ── Main ExplorerV2 ───────────────────────────────────────────────────────────
 export default function ExplorerV2() {
   const mapRef = useRef<ExplorerMapHandle>(null)
+  const stats = usePlatformStats()
 
   // Choropleth state
   const [choroplethData, setChoroplethData] = useState<ChoroplethGeoJSON | null>(null)
@@ -246,7 +248,7 @@ export default function ExplorerV2() {
         {/* Status bar */}
         <div className="absolute bottom-2 left-3 right-3 z-10 pointer-events-none">
           <div className="text-[10px] text-slate-600 text-center">
-            4M+ parcels · 36 counties · Florida
+            {formatParcels(stats.parcels)} parcels · {stats.counties} counties · Florida
             {parcelClicks > 0 && ` · ${Math.max(0, FREE_PARCEL_CLICKS - parcelClicks)} clicks left`}
           </div>
         </div>
