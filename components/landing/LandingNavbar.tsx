@@ -21,14 +21,14 @@ export function LandingNavbar() {
           </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white" asChild>
-              <Link href="/sign-in">Sign in</Link>
+              <Link href="/sign-in" prefetch={false}>Sign in</Link>
             </Button>
             <Button
               size="sm"
               className="bg-[#F59E0B] text-slate-900 hover:bg-[#D97706] font-semibold"
               asChild
             >
-              <Link href="/sign-up">Start free</Link>
+              <Link href="/sign-up" prefetch={false}>Start free</Link>
             </Button>
           </div>
         </div>
