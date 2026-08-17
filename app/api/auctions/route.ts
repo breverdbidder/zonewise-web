@@ -25,6 +25,46 @@ function getSupabase() {
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
+// Only the columns the auction surfaces actually render. select('*') pulled
+// all 130+ columns of multi_county_auctions - roughly 3.4 KB per row, so the
+// default 200-row page shipped about 690 KB of JSON to the browser on every
+// single load. That payload, not the query, was what made the page feel slow.
+const SELECT_COLUMNS = [
+  'id', 'county', 'case_number', 'property_address', 'city', 'zip',
+  'auction_date', 'auction_time', 'sale_type', 'auction_type', 'auction_status',
+  'plaintiff', 'opening_bid', 'judgment_amount', 'assessed_value',
+  'market_value', 'property_type', 'beds', 'baths', 'sqft',
+  'living_area_sqft', 'lot_size', 'year_built', 'parcel_id', 'owner_name',
+  'latitude', 'longitude', 'photo_url', 'auction_url', 'source_url',
+  'cert_number', 'redemption_deadline', 'sold_amount', 'winning_bidder',
+].join(',')
+
+/**
+ * The auction components were written against a schema this table does not
+ * have. AuctionMap plots on centroid_lat/centroid_lng; AuctionTable and
+ * AuctionSpreadsheet render just_value, total_living_area, is_vacant_land.
+ * NONE of those are columns on multi_county_auctions, so the map had been
+ * plotting zero pins and those columns had been blank on every row since the
+ * surface shipped - silently, because Supabase returns `any` and TypeScript
+ * validated the phantom type in types/auctions.ts instead of the real table.
+ *
+ * Rather than rewrite four components, the real columns are mapped onto the
+ * names they already read. dor_use_code and zoning_category have no source on
+ * this table at all and stay undefined: blank is honest, invented is not.
+ */
+function mapRow(r: Record<string, unknown>) {
+  const g = (k: string) => (r[k] ?? null) as number | string | null
+  return {
+    ...r,
+    auction_type: r.auction_type ?? r.sale_type,
+    just_value: g('market_value') ?? g('assessed_value'),
+    total_living_area: g('living_area_sqft') ?? g('sqft'),
+    centroid_lat: g('latitude'),
+    centroid_lng: g('longitude'),
+    is_vacant_land: r.property_type === 'vacant_land',
+  }
+}
+
 /**
  * Auction browse endpoint (AuctionRadar).
  *
@@ -90,7 +130,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from('multi_county_auctions')
-    .select('*', { count: 'exact' })
+    .select(SELECT_COLUMNS, { count: 'exact' })
     .order('auction_date', { ascending, nullsFirst: false })
     .range(offset, offset + limit - 1)
 
@@ -116,7 +156,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     {
-      data,
+      data: (data || []).map((r) => mapRow(r as Record<string, unknown>)),
       total: count,
       limit,
       offset,
