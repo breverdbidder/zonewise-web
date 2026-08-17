@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic'
 import AuctionSummaryCards from './AuctionSummaryCards'
 import AuctionFilters from './AuctionFilters'
 import AuctionTable from './AuctionTable'
+import { formatCountyLabel } from '@/lib/counties'
 import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/types/auctions'
 
 // Dynamic imports - these components require window, break SSR
@@ -251,7 +252,7 @@ export default function AuctionsLayout() {
                     {selectedAuction.property_address || 'No Address'}
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-slate-400">
-                    {selectedAuction.county} County &middot; {selectedAuction.case_number}
+                    {formatCountyLabel(selectedAuction.county)} County &middot; {selectedAuction.case_number}
                   </p>
                 </div>
                 <button
@@ -281,7 +282,7 @@ export default function AuctionsLayout() {
                   <p className="text-gray-500 dark:text-slate-400">Just Value</p>
                   <p className="text-gray-900 dark:text-white font-medium">
                     {selectedAuction.just_value
-                      ? '$' + selectedAuction.just_value.toLocaleString()
+                      ? '$' + selectedAuction.just_value.toLocaleString('en-US', { maximumFractionDigits: 0 })
                       : '—'}
                   </p>
                 </div>
