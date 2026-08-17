@@ -6,7 +6,20 @@ export const dynamic = 'force-dynamic'
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      // Next's App Router caches fetch() by default and supabase-js goes
+      // through fetch, so RPC results get frozen in the Data Cache. A county
+      // normalisation shipped inside the SQL function kept serving the
+      // pre-fix numbers indefinitely - through `export const dynamic =
+      // 'force-dynamic'` AND through a cache-busting query string, because
+      // neither of those touches the Data Cache. Auction data is live; it is
+      // never cached at the data layer. Edge caching stays with Cache-Control.
+      global: {
+        fetch: (url: RequestInfo | URL, init?: RequestInit) =>
+          fetch(url, { ...init, cache: 'no-store' }),
+      },
+    }
   )
 }
 
