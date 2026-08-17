@@ -44,3 +44,7 @@ probe-results/*.json
 CLAUDE_CODE_MISSION*.md
 PASTE_INTO_CLAUDE_CODE.md
 OPUS_*_MISSION.md
+
+# Playwright audit session state — contains a live Clerk session cookie
+.auth/
+audit-shots/
