@@ -8,10 +8,15 @@ import AuctionFilters from './AuctionFilters'
 import AuctionTable from './AuctionTable'
 import type { Auction, AuctionSummary, AuctionsResponse, ViewMode } from '@/types/auctions'
 
-// Dynamic imports — these components require window, break SSR
+// Dynamic imports - these components require window, break SSR
 const AuctionMap = dynamic(() => import('./AuctionMap'), { ssr: false })
 const AuctionCalendar = dynamic(() => import('./AuctionCalendar'), { ssr: false })
 import AuctionSpreadsheet from './AuctionSpreadsheet'
+
+interface DayFilter {
+  date: string
+  saleType?: string
+}
 
 export default function AuctionsLayout() {
   const router = useRouter()
@@ -23,13 +28,19 @@ export default function AuctionsLayout() {
 
   const [selectedCounty, setSelectedCounty] = useState('')
   const [selectedType, setSelectedType] = useState('')
-  const [selectedZoning, setSelectedZoning] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [selectedAuction, setSelectedAuction] = useState<Auction | null>(null)
+  const [dayFilter, setDayFilter] = useState<DayFilter | null>(null)
 
-  const counties = summary
-    ? Object.keys(summary.by_county).sort()
-    : []
+  const counties = summary ? Object.keys(summary.by_county).sort() : []
+
+  // Header counts come from the SSOT summary function, not from the length of
+  // whatever page happens to be loaded. The old header multiplied two wrong
+  // numbers together: `total` from the current query and `counties.length`
+  // from a PostgREST-truncated 1,000-row sample, which is where "34 Florida
+  // counties" came from while 56 counties have upcoming auctions.
+  const headerTotal = summary?.total ?? total
+  const headerCounties = summary?.counties ?? counties.length
 
   useEffect(() => {
     const init = async () => {
@@ -43,11 +54,13 @@ export default function AuctionsLayout() {
       }
     }
     init()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (!loading) fetchAuctions()
-  }, [selectedCounty, selectedType, selectedZoning])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCounty, selectedType, dayFilter])
 
   async function fetchSummary() {
     try {
@@ -65,8 +78,19 @@ export default function AuctionsLayout() {
     try {
       const params = new URLSearchParams({ limit: '200' })
       if (selectedCounty) params.set('county', selectedCounty)
-      if (selectedType) params.set('type', selectedType)
-      if (selectedZoning) params.set('zoning_category', selectedZoning)
+      // sale_type, not type: auction_type is NULL on 12,959 rows, so the old
+      // `type` filter silently hid real auctions from every filtered view.
+      if (selectedType) params.set('sale_type', selectedType)
+
+      if (dayFilter) {
+        params.set('from', dayFilter.date)
+        params.set('to', dayFilter.date)
+        if (dayFilter.saleType) params.set('sale_type', dayFilter.saleType)
+      } else {
+        // Default the browse list to what is actually coming up. Without this
+        // the list opened on the farthest-future rows in the table (2027).
+        params.set('upcoming', 'true')
+      }
 
       const res = await fetch(`/api/auctions?${params}`)
       if (res.ok) {
@@ -77,6 +101,11 @@ export default function AuctionsLayout() {
     } catch (err) {
       console.error('Failed to fetch auctions:', err)
     }
+  }
+
+  function handleSelectDay(date: string, saleType?: string) {
+    setDayFilter({ date, saleType })
+    setViewMode('table')
   }
 
   if (loading) {
@@ -109,7 +138,16 @@ export default function AuctionsLayout() {
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Auction Intelligence</h2>
           <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
-            {total} auctions across {counties.length} Florida counties
+            {headerTotal.toLocaleString()} auctions across {headerCounties} Florida counties
+            {summary?.upcoming ? (
+              <>
+                {' '}&middot;{' '}
+                <span className="text-gray-700 dark:text-slate-300 font-medium">
+                  {summary.upcoming.toLocaleString()} upcoming
+                </span>
+                {summary.counties_upcoming ? ` in ${summary.counties_upcoming} counties` : ''}
+              </>
+            ) : null}
           </p>
         </div>
 
@@ -119,13 +157,36 @@ export default function AuctionsLayout() {
           counties={counties}
           selectedCounty={selectedCounty}
           selectedType={selectedType}
-          selectedZoning={selectedZoning}
           viewMode={viewMode}
           onCountyChange={setSelectedCounty}
           onTypeChange={setSelectedType}
-          onZoningChange={setSelectedZoning}
           onViewModeChange={setViewMode}
         />
+
+        {dayFilter && (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zw-navy-500/10 text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700">
+              Showing{' '}
+              {dayFilter.saleType === 'tax_deed'
+                ? 'tax deed'
+                : dayFilter.saleType === 'foreclosure'
+                  ? 'foreclosure'
+                  : 'all'}{' '}
+              auctions on{' '}
+              <span className="font-semibold">
+                {new Date(dayFilter.date + 'T00:00:00').toLocaleDateString()}
+              </span>
+              <button
+                onClick={() => setDayFilter(null)}
+                className="text-gray-400 hover:text-gray-700 dark:hover:text-slate-200 text-base leading-none"
+                aria-label="Clear day filter"
+              >
+                &times;
+              </button>
+            </span>
+            <span className="text-gray-500 dark:text-slate-400">{total} matching</span>
+          </div>
+        )}
 
         {viewMode === 'table' && (
           <AuctionTable
@@ -143,9 +204,9 @@ export default function AuctionsLayout() {
         )}
         {viewMode === 'calendar' && (
           <AuctionCalendar
-            auctions={auctions}
-            loading={false}
-            onSelectAuction={(auction) => router.push(`/auctions/${auction.id}`)}
+            county={selectedCounty}
+            saleType={selectedType}
+            onSelectDay={handleSelectDay}
           />
         )}
         {viewMode === 'spreadsheet' && (
