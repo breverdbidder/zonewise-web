@@ -65,9 +65,17 @@ import AuctionMap from '../components/auctions/AuctionMap'
 
 describe('AuctionMap', () => {
   it('renders without crashing', () => {
-    const { container } = render(
-      <AuctionMap auctions={[]} loading={false} onSelectAuction={vi.fn()} />
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({ data: [], returned: 0, total_mappable: 0, total_matching: 0 }),
+        })
+      ) as unknown as typeof fetch
     )
+    const { container } = render(<AuctionMap onSelectAuction={vi.fn()} />)
     expect(container).toBeDefined()
   })
 })

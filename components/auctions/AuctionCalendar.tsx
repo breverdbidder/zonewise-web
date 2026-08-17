@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
@@ -62,6 +62,14 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const requestId = useRef(0)
+  // The range FullCalendar currently has in view. datesSet only fires on a
+  // month/view change, so a county/saleType change needs somewhere else to
+  // read "what range am I looking at right now" from.
+  const rangeRef = useRef<{ from: string; to: string } | null>(null)
+  // Skip the very first run of the county/saleType effect below: it fires on
+  // mount before datesSet has ever populated rangeRef, and the initial fetch
+  // is already handled by datesSet itself.
+  const didMountRef = useRef(false)
 
   const loadRange = useCallback(
     async (from: string, to: string) => {
@@ -99,10 +107,28 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
       // FullCalendar's range end is exclusive; step back one day.
       const end = new Date(arg.end.getTime() - 86400000)
       const to = end.toISOString().slice(0, 10)
+      rangeRef.current = { from, to }
       loadRange(from, to)
     },
     [loadRange]
   )
+
+  // Changing county or sale type used to fire zero network requests: nothing
+  // called loadRange except datesSet, and FullCalendar only calls that on a
+  // view/date change. The badges kept showing counts for the PREVIOUS filter
+  // under a label that now disagreed with them. Re-run the currently visible
+  // range through the new filter instead of waiting for datesSet to refire -
+  // it won't, because the visible dates haven't changed.
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true
+      return
+    }
+    if (rangeRef.current) {
+      loadRange(rangeRef.current.from, rangeRef.current.to)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [county, saleType])
 
   const events = days.flatMap((d) => {
     const parts: { type: string; count: number }[] = [
@@ -127,7 +153,21 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
   })
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+    <div className="zw-auction-calendar bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+      {/*
+        FullCalendar's day badges are click-handled in JS, not native <a> tags
+        with a `url`, so FullCalendar never applies its own cursor:pointer to
+        them - they compute cursor:auto and give no visual hint they're
+        clickable. `:global()` is required because .fc-event is markup
+        FullCalendar renders internally, not JSX authored in this file, so
+        plain styled-jsx scoping (which only tags literal JSX elements) would
+        never match it.
+      */}
+      <style jsx>{`
+        .zw-auction-calendar :global(.fc-event) {
+          cursor: pointer;
+        }
+      `}</style>
       <div className="flex flex-wrap items-center gap-4 mb-4">
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-red-500" />
@@ -206,6 +246,18 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
         }}
         events={events}
         datesSet={handleDatesSet}
+        eventDidMount={(info) => {
+          const { date, saleType: type, count } = info.event.extendedProps as {
+            date: string
+            saleType: string
+            count: number
+          }
+          const label = type === 'other' ? 'auctions' : TYPE_STYLE[type]?.label.toLowerCase() || 'auctions'
+          info.el.title = `View ${plural(count, label)} on ${date}`
+          info.el.dataset.date = date
+          info.el.dataset.saleType = type
+          info.el.dataset.count = String(count)
+        }}
         eventClick={(info) => {
           const { date, saleType: type } = info.event.extendedProps as {
             date: string

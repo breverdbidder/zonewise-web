@@ -47,12 +47,13 @@ export default function AuctionsLayout() {
   useEffect(() => {
     const init = async () => {
       try {
-        // The calendar fetches its own per-day counts (~7 KB) and does not
-        // read these rows at all. Pulling a 200-row browse page (~195 KB) on
-        // first paint for a view nobody is looking at was pure waste, so rows
-        // are fetched only when a row-based view is actually selected.
+        // The calendar and map fetch their own data (per-day counts, and
+        // filtered coordinate-only pins) and do not read these rows at all.
+        // Pulling a 200-row browse page (~195 KB) on first paint for a view
+        // nobody is looking at was pure waste, so rows are fetched only when
+        // a row-based view is actually selected.
         await fetchSummary()
-        if (viewMode !== 'calendar') await fetchAuctions()
+        if (viewMode !== 'calendar' && viewMode !== 'map') await fetchAuctions()
       } catch (err) {
         console.error('Init failed:', err)
         // Surface the real failure. This page used to swallow both fetch
@@ -71,7 +72,7 @@ export default function AuctionsLayout() {
   }, [])
 
   useEffect(() => {
-    if (!loading && viewMode !== 'calendar') {
+    if (!loading && viewMode !== 'calendar' && viewMode !== 'map') {
       setError(null)
       fetchAuctions().catch((err) => {
         console.error('Failed to fetch auctions:', err)
@@ -186,6 +187,14 @@ export default function AuctionsLayout() {
               <span className="font-semibold">
                 {new Date(dayFilter.date + 'T00:00:00').toLocaleDateString()}
               </span>
+              {viewMode !== 'map' && (
+                <button
+                  onClick={() => setViewMode('map')}
+                  className="text-zw-navy-600 dark:text-zw-navy-300 underline hover:no-underline"
+                >
+                  View on map
+                </button>
+              )}
               <button
                 onClick={() => setDayFilter(null)}
                 className="text-gray-400 hover:text-gray-700 dark:hover:text-slate-200 text-base leading-none"
@@ -194,7 +203,9 @@ export default function AuctionsLayout() {
                 &times;
               </button>
             </span>
-            <span className="text-gray-500 dark:text-slate-400">{total} matching</span>
+            {viewMode !== 'map' && (
+              <span className="text-gray-500 dark:text-slate-400">{total} matching</span>
+            )}
           </div>
         )}
 
@@ -207,8 +218,9 @@ export default function AuctionsLayout() {
         )}
         {viewMode === 'map' && (
           <AuctionMap
-            auctions={auctions}
-            loading={false}
+            county={selectedCounty}
+            saleType={selectedType}
+            dayFilter={dayFilter}
             onSelectAuction={setSelectedAuction}
           />
         )}
