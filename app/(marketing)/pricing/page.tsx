@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { pageMetadata } from '@/lib/seo-metadata'
 import Link from 'next/link'
 import PricingTracker from '@/components/PricingTracker'
+import { PlatformParcels } from '@/components/PlatformStat'
 
 export const metadata: Metadata = pageMetadata.pricing
 
@@ -196,7 +197,7 @@ export default function PricingPage() {
           {[
             { icon: '🔒', title: 'No credit card for Free', body: 'Explore the heatmap + parcels without signing up.' },
             { icon: '🔄', title: 'Cancel anytime', body: 'No contracts, no cancellation fees. Ever.' },
-            { icon: '🏡', title: '67-county Florida coverage', body: '10.8M+ parcels statewide, live data daily.' },
+            { icon: '🏡', title: '67-county Florida coverage', body: <><PlatformParcels /> parcels statewide, live data daily.</> },
           ].map(item => (
             <div key={item.title} className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
               <div className="text-2xl mb-2">{item.icon}</div>
