@@ -376,6 +376,15 @@ async function run() {
         // A 429 is this harness's own request rate against production, not a
         // product defect. It used to surface as a phantom js-error BLOCKER.
         if (/\b429\b/.test(t)) return
+        // FullCalendar declares @font-face 'fcicons' with a data: URI and
+        // middleware.ts sets font-src with no `data:` allowance, so Chromium
+        // logs a CSP refusal on /auctions. VERIFIED LIVE before adding this:
+        // ZERO elements on the page compute to that family (buttonIcons={false}
+        // means nothing consumes it), so the refusal has no visual effect - it
+        // would only fail CI on a page that is actually fine. The alternative
+        // is loosening font-src, which is a security change and Ariel's call.
+        // Deliberately narrow: fonts only, data: URIs only.
+        if (/Refused to load the font 'data:/.test(t)) return
         pageErrors.push(t.slice(0, 120))
       })
 
