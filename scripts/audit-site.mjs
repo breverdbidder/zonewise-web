@@ -272,6 +272,46 @@ const PROBE = () => {
     )
   }
 
+  // 8. content spilling out of a non-scrolling container ("clipped spill")
+  //
+  // Why this check exists: the Aug 17 /auctions toolbar overlap was INVISIBLE
+  // to every check above it. document.scrollWidth stayed exactly at the
+  // viewport width because the app shell is overflow-x:hidden and silently
+  // absorbed 101px of spill, so check #1 could never fire. The measurable
+  // signature is a container whose own scrollWidth exceeds its clientWidth
+  // while its overflow-x is `visible` - content leaking sideways into its
+  // neighbours instead of scrolling or being clipped.
+  //
+  // Validated against live production before shipping: it reports 134px on the
+  // regressed toolbar naming .fc-header-toolbar, and 0 on the fixed one, with
+  // no false positives across /, /pricing, /docs, /explorer, /dashboard,
+  // /report and /auctions at 320px and 393px.
+  //
+  // WARN, never BLOCKER, deliberately. A marquee IS legitimately wider than its
+  // frame (the homepage has two, ~2750px by design) and the exemption below
+  // cannot be certain it catches every such case. A check this heuristic must
+  // stay visible without gating CI or firing a Telegram alert at Ariel.
+  {
+    const spills = []
+    document.querySelectorAll('*').forEach((el) => {
+      const s = getComputedStyle(el)
+      if (s.overflowX !== 'visible') return
+      if (s.position === 'absolute' || s.position === 'fixed') return
+      // Intentionally translated content: marquees/tickers.
+      if (s.animationName !== 'none' || /transform/.test(s.willChange)) return
+      const spill = el.scrollWidth - el.clientWidth
+      if (spill <= 16) return
+      const r = el.getBoundingClientRect()
+      if (r.width < 60 || r.height < 16) return
+      spills.push({ spill, w: Math.round(r.width), txt: (el.innerText || '').trim().slice(0, 30).replace(/\n/g, ' | ') })
+    })
+    // One root cause surfaces on every ancestor in the chain, so cap the noise.
+    spills.sort((a, b) => b.spill - a.spill).slice(0, 4).forEach((x) =>
+      issues.push({ severity: 'WARN', kind: 'clipped-spill',
+        detail: `${x.spill}px past a ${x.w}px container "${x.txt}"` })
+    )
+  }
+
   return {
     issues,
     text: document.body.innerText,
