@@ -1409,7 +1409,7 @@ export default function MassingEngine() {
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               Search any property to generate a 3D building envelope with zoning controls, capacity analysis, unit mix, and parking requirements.
             </p>
-            <div className="mt-6 flex items-center justify-center gap-6 text-xs text-slate-600">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-6 text-xs text-slate-600">
               <span>Height data: 97%</span>
               <span>Setbacks: 95%</span>
               <span>Coverage: 100%</span>

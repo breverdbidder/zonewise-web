@@ -77,12 +77,12 @@ function ScenarioFields({
   return (
     <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
       <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="sm:col-span-2">
           <label className={labelCls}>Scenario Name</label>
           <input className={inputCls} value={form.name} onChange={(e) => set('name', e.target.value)} />
         </div>
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <label className={labelCls}>Address</label>
           <input className={inputCls} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="123 Main St, Brevard County, FL" />
         </div>
@@ -132,12 +132,12 @@ function ScenarioFields({
           <input className={inputCls} type="number" min={1} max={40} value={form.holdPeriodYears} onChange={(e) => set('holdPeriodYears', e.target.value)} />
         </div>
         {form.dealType === 'RENTAL' ? (
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label className={labelCls}>Monthly Rent / Unit ($) — manual comps input</label>
             <input className={inputCls} type="number" min={0} value={form.monthlyRentPerUnit} onChange={(e) => set('monthlyRentPerUnit', e.target.value)} placeholder="You supply this — not scraped or fabricated" />
           </div>
         ) : (
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label className={labelCls}>Avg Sale Price / Unit ($) — manual comps input</label>
             <input className={inputCls} type="number" min={0} value={form.avgSalePricePerUnit} onChange={(e) => set('avgSalePricePerUnit', e.target.value)} placeholder="You supply this — not scraped or fabricated" />
           </div>

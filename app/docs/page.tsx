@@ -48,7 +48,7 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[#020617] text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Nav */}
-      <nav className="h-14 flex items-center px-6 border-b border-slate-800 sticky top-0 bg-[#020617]/95 backdrop-blur-sm z-20">
+      <nav className="h-14 flex items-center px-4 sm:px-6 border-b border-slate-800 sticky top-0 bg-[#020617]/95 backdrop-blur-sm z-20">
         <Link href="/" className="flex items-center gap-2 min-h-11">
           <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1E3A5F] to-[#2d5a8f] flex items-center justify-center">
             <span className="text-white text-xs font-bold">Z</span>
@@ -57,11 +57,11 @@ export default function DocsPage() {
             ZoneWise<span className="text-[#F59E0B]">.AI</span>
           </span>
         </Link>
-        <div className="ml-auto flex items-center gap-6 text-sm text-slate-400">
-          <Link href="/explorer" className="hover:text-white transition-colors flex items-center min-h-11">Explorer</Link>
-          <Link href="/pricing" className="hover:text-white transition-colors flex items-center min-h-11">Pricing</Link>
-          <Link href="/help" className="hover:text-white transition-colors flex items-center min-h-11">Help</Link>
-          <Link href="/sign-up" className="bg-[#F59E0B] text-slate-950 px-4 py-2 rounded-lg font-bold text-sm hover:brightness-110 transition-all">
+        <div className="ml-auto flex items-center gap-3 sm:gap-6 text-sm text-slate-400">
+          <Link href="/explorer" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Explorer</Link>
+          <Link href="/pricing" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Pricing</Link>
+          <Link href="/help" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Help</Link>
+          <Link href="/sign-up" className="bg-[#F59E0B] text-slate-950 px-3 sm:px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
             Get API Key
           </Link>
         </div>

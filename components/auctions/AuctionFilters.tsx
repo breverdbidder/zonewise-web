@@ -60,7 +60,12 @@ export default function AuctionFilters({
         <option value="tax_deed">Tax Deed</option>
       </select>
 
-      <div className="ml-auto flex items-center bg-gray-100 dark:bg-slate-800 rounded-md p-0.5">
+      {/* w-full + overflow-x-auto: at 320-393px the four labels (esp. "Spreadsheet")
+          don't fit bg-gray-100's fixed padding, and this pill wraps onto its own
+          flex-wrap line with nothing to shrink against - it was clipping "Spreadsheet"
+          off the right edge of the screen with no way to reach it (measured: 59px
+          past a 288px container). Scrolling beats clipping when there's truly no room. */}
+      <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-0.5 bg-gray-100 dark:bg-slate-800 rounded-md p-0.5 overflow-x-auto">
         {(['table', 'map', 'calendar', 'spreadsheet'] as const).map((mode) => (
           <button
             key={mode}
@@ -70,7 +75,7 @@ export default function AuctionFilters({
             // colour no longer distinguishes the selected tab, the active pill
             // carries the state via background + shadow, and hover moved from a
             // colour shift to a background wash.
-            className={`px-3.5 py-1.5 text-sm font-bold rounded transition-colors ${
+            className={`px-2.5 sm:px-3.5 py-1.5 text-sm font-bold rounded transition-colors whitespace-nowrap shrink-0 ${
               viewMode === mode
                 ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-900 dark:text-white hover:bg-white/60 dark:hover:bg-slate-700/60'

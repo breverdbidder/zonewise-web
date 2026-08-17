@@ -122,6 +122,21 @@ const ROUTES = [
   { path: '/auctions', name: 'auctions' },
   { path: '/report', name: 'report' },
   { path: '/docs', name: 'docs', public: true },
+  // Reconciled 2026-08-17 (issue #19202): every route under app/(dashboard)/
+  // and app/(marketing)/ diffed against this list via `find app -name page.tsx`.
+  // authGated reflects middleware.ts isPublicRoute — /app, /feasibility,
+  // /footprints and /settings/* are absent from that matcher, everything
+  // else below is public (may still render a logged-out/demo state).
+  { path: '/app', name: 'app', authGated: true },
+  { path: '/chat', name: 'chat' },
+  { path: '/explore', name: 'explore' },
+  { path: '/floorplan', name: 'floorplan' },
+  { path: '/footprints', name: 'footprints', authGated: true },
+  { path: '/massing', name: 'massing' },
+  { path: '/proforma', name: 'proforma' },
+  { path: '/settings/account', name: 'settings-account', authGated: true },
+  { path: '/settings/billing', name: 'settings-billing', authGated: true },
+  { path: '/competitors', name: 'competitors', public: true },
 ]
 
 const VIEWPORTS = [
