@@ -1,5 +1,6 @@
 'use client'
 
+import { formatCountyLabel } from '@/lib/counties'
 import type { ViewMode } from '@/types/auctions'
 
 /**
@@ -30,7 +31,11 @@ export default function AuctionFilters({
   onTypeChange,
   onViewModeChange,
 }: Props) {
-  const selectClass = 'px-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-gray-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-zw-navy-500/30'
+  // min-w-0 + max-w-full: the county list contains long names, and without
+  // them the select sizes to its widest option and spills out of the filter
+  // row at 320px (measured: 59px past a 288px container).
+  // min-h-11 is the WCAG 2.5.8 touch size, dropped back to auto at md.
+  const selectClass = 'px-3 py-1.5 min-h-11 md:min-h-0 min-w-0 max-w-full text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-gray-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-zw-navy-500/30'
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -41,7 +46,7 @@ export default function AuctionFilters({
       >
         <option value="">All Counties</option>
         {counties.map((c) => (
-          <option key={c} value={c}>{c}</option>
+          <option key={c} value={c}>{formatCountyLabel(c)}</option>
         ))}
       </select>
 
