@@ -31,6 +31,14 @@ export const MIAMI_DADE_BOUNDS: [[number, number], [number, number]] = [
 
 export const MIAMI_DADE_CENTER: [number, number] = [-80.30, 25.72]
 
+// Statewide pan limit. The map previously used maxBounds [[-81.5,27.5],[-80.0,29.0]]
+// — a Brevard-sized box that made every other county physically unreachable by
+// panning, whatever the default center said. Florida plus a small margin.
+export const FLORIDA_BOUNDS: [[number, number], [number, number]] = [
+  [-88.0, 24.2],
+  [-79.7, 31.2],
+]
+
 export const DEFAULT_MAP_BOUNDS = MIAMI_DADE_BOUNDS
 export const DEFAULT_MAP_CENTER = MIAMI_DADE_CENTER
 
