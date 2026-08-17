@@ -42,7 +42,11 @@ const navGroups: NavGroup[] = [
   {
     label: 'Discovery',
     items: [
-      { title: 'Auctions', url: '/auctions', icon: Gavel },
+      // AuctionRadar is the trademarked Everest Ascent stage-1 brand (Ariel,
+      // Aug 17 2026). The ROUTE stays /auctions on purpose — renaming the URL
+      // would break existing links and SEO for zero gain; only the label carries
+      // the brand.
+      { title: 'AuctionRadar', url: '/auctions', icon: Gavel },
     ],
   },
   {
