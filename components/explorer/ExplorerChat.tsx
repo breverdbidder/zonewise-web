@@ -6,6 +6,7 @@ import { FREE_CHAT_MESSAGES } from '@/lib/explorer/constants'
 import { handleMapResponse, stripMapActions } from '@/lib/explorer/chat-actions'
 import { trackEvent } from '@/lib/explorer/tracking'
 import SearchChips from './SearchChips'
+import { usePlatformStats, formatParcels } from '@/lib/explorer/usePlatformStats'
 import type { ExplorerMapHandle } from './ExplorerMap'
 
 interface Message {
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onGate }: Props) {
+  const stats = usePlatformStats()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [streaming, setStreaming] = useState(false)
@@ -116,7 +118,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
         <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-base">🤖</div>
         <div>
           <div className="text-sm font-bold text-white">ZoneWise Explorer AI</div>
-          <div className="text-[11px] text-slate-400">36 FL Counties · 4M+ parcels</div>
+          <div className="text-[11px] text-slate-400">{stats.counties} FL Counties · {formatParcels(stats.parcels)} parcels</div>
         </div>
         <div className="ml-auto text-[10px] text-slate-600 bg-slate-900 border border-slate-800 rounded px-2 py-1">
           {remaining}/{FREE_CHAT_MESSAGES} free
