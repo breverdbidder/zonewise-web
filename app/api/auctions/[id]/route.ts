@@ -92,12 +92,14 @@ export async function GET(
   const { id } = await params
   const supabase = getSupabase()
 
-  // Fetch auction
+  // auction_detail_enriched returns every multi_county_auctions column PLUS a
+  // zw_parcels join on normalised pin_clean (owner, values, year built, living
+  // area, DOR use code, zoning) and the sale_type/assessed_value fallbacks.
+  // The fl_parcels block below keys on auction.fl_parcel_id and auction.fl_co_no,
+  // which are PHANTOM columns that do not exist on multi_county_auctions, so it
+  // has never once run. Left in place rather than ripped out in the same change.
   const { data: auction, error } = await supabase
-    .from('multi_county_auctions')
-    .select('*')
-    .eq('id', id)
-    .single()
+    .rpc('auction_detail_enriched', { p_id: id })
 
   if (error || !auction) {
     return NextResponse.json(
