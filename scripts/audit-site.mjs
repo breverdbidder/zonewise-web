@@ -81,6 +81,9 @@ function checkStatClaims(text, label, results) {
         detail: `claims ${claimed}M parcels, SSOT says ${SSOT.parcelsM.toFixed(1)}M` })
     }
   }
+  // /auctions prints QUERY RESULTS, not coverage claims: "2,781 upcoming in 57
+  // counties" is a correct filtered count the SSOT cannot adjudicate. Parcel
+  // claims above are still checked on every route.
   if (label.includes('/auctions')) return
   for (const m of text.matchAll(COUNTY_CLAIM)) {
     const claimed = parseInt(m[1], 10)
