@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { PlatformParcels, PlatformCounties } from '@/components/PlatformStat'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
@@ -304,7 +305,7 @@ export function HeroCinematicSection() {
                 className="font-mono text-xs sm:text-sm tracking-widest tabular-nums"
                 style={{ color: 'rgba(245,158,11,0.7)' }}
               >
-                10.8M PARCELS · 67 COUNTIES · 50-STATE ARCHITECTURE
+                <PlatformParcels /> PARCELS · <PlatformCounties /> COUNTIES · 50-STATE ARCHITECTURE
               </span>
             </motion.div>
 
