@@ -40,6 +40,14 @@ const isPublicRoute = createRouteMatcher([
   '/api/massing(.*)', // public: 3D Massing Engine has no login gate, same as /massing page itself
   // Stripe webhooks MUST be public (Stripe sends without auth)
   '/api/stripe/webhook(.*)',
+  // Next.js metadata routes. app/icon.tsx serves the favicon at /icon?<hash>;
+  // it was not allowlisted, so Clerk's auth.protect() 404'd it on every page
+  // load (non-navigational requests get 404, not a redirect) — one console
+  // error per page view, site-wide, and no favicon in the tab. Same for the
+  // OG image. Found by the 2026-08-20 audit.
+  '/icon(.*)',
+  '/apple-icon(.*)',
+  '/opengraph-image(.*)',
   // Pages — public access
   '/',
   '/chat(.*)',
