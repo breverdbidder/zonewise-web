@@ -66,7 +66,7 @@ export function CurtainReveal({
                 The intelligence lives here
               </h3>
               <p className="text-base md:text-lg max-w-[45ch] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
-                245K+ auction records. 10.8M FL parcels. AI deal scoring.
+                188K+ auction records. 10.5M FL parcels. AI deal scoring.
               </p>
             </>
           )}
