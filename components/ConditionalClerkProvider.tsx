@@ -20,9 +20,31 @@ const clerkAppearance = {
     headerTitle: 'text-white',
     headerSubtitle: 'text-slate-400',
     socialButtonsBlockButton: 'border-slate-600 text-slate-300 hover:bg-slate-800',
-    formFieldInput: 'bg-slate-800 border-slate-600 text-white',
+    // placeholder: explicitly styled — the live Clerk card renders its light
+    // theme despite baseTheme:dark, and the dark input's default placeholder
+    // was near-invisible on it (dark-on-dark, flagged in the 2026-08-20 audit).
+    formFieldInput: 'bg-slate-800 border-slate-600 text-white placeholder:text-slate-400',
     footerActionLink: 'text-[#F59E0B] hover:text-[#fbbf24]',
     userButtonAvatarBox: 'w-7 h-7',
+  },
+}
+
+// The shared dev instance is named "My Application" in Clerk's dashboard, so
+// stock cards can render "Sign in to My Application". Renaming the instance
+// would mis-title the OTHER property (biddeed shares this pool), so each site
+// overrides the strings locally instead.
+const clerkLocalization = {
+  signIn: {
+    start: {
+      title: 'Sign in to ZoneWise.AI',
+      subtitle: 'Welcome back! Please sign in to continue',
+    },
+  },
+  signUp: {
+    start: {
+      title: 'Create your ZoneWise.AI account',
+      subtitle: 'One account works across ZoneWise.AI and BidDeed.AI',
+    },
   },
 }
 
@@ -46,7 +68,7 @@ export default function ConditionalClerkProvider({
   }
 
   return (
-    <ClerkProvider appearance={clerkAppearance} nonce={nonce}>
+    <ClerkProvider appearance={clerkAppearance} localization={clerkLocalization} nonce={nonce}>
       {children}
     </ClerkProvider>
   )
