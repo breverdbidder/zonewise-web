@@ -184,7 +184,7 @@ export function Hero3DSection() {
 
             <div className="mb-4 flex justify-center">
               <TextScramble
-                text="245K AUCTIONS · 10.8M PARCELS · 67 COUNTIES"
+                text="188K AUCTIONS · 10.5M PARCELS · 67 COUNTIES"
                 trigger="scroll"
                 className="text-xs sm:text-sm tracking-widest"
                 color="rgba(245,158,11,0.7)"
