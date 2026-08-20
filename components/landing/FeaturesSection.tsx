@@ -12,7 +12,7 @@ const features = [
     icon: Map,
     title: 'Parcel & Site Discovery',
     description:
-      'Search 10.8M+ Florida parcels by address, by criteria, or by drawing a boundary on the map. Every county in the state, one interface.',
+      'Search 10.5M+ Florida parcels by address, by criteria, or by drawing a boundary on the map. Every county in the state, one interface.',
   },
   {
     icon: Ruler,
