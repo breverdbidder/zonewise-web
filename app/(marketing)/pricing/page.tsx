@@ -14,7 +14,7 @@ const TIERS = [
     annualPrice: 0,
     description: 'Explore the market — no card needed',
     features: [
-      'Choropleth heatmap (all 27 ZIPs)',
+      'Choropleth heatmap (all 67 counties)',
       '5 parcel clicks / day',
       '3 AI chat messages / day',
       'Basic zoning overlay',
