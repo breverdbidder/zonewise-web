@@ -6,7 +6,7 @@
 
 ZoneWise.AI provides AI-powered intelligence for real estate investors, developers, and professionals operating in Florida:
 
-- **Zoning Intelligence:** Instant zoning lookups across 369 jurisdictions and 5,950 zoning districts covering 10.8 million parcels statewide.
+- **Zoning Intelligence:** Instant zoning lookups across 369 jurisdictions and 5,950 zoning districts covering 10.5 million parcels statewide.
 - **Foreclosure Auction Data:** Live foreclosure auction tracking powered by BidDeed.AI, with deal scoring, judgment analysis, and automated bid calculations.
 - **Parcel Analysis:** Detailed parcel reports including zoning classification, permitted uses, setbacks, and development feasibility.
 - **Choropleth Maps:** Free interactive zoning maps for every Florida county — color-coded by district, filterable by use type.
@@ -17,7 +17,7 @@ ZoneWise.AI provides AI-powered intelligence for real estate investors, develope
 - **Counties:** All 67 Florida counties
 - **Jurisdictions:** 369 municipal and unincorporated jurisdictions
 - **Zoning Districts:** 5,950 unique zoning classifications
-- **Parcels:** 10.8 million parcels statewide
+- **Parcels:** 10.5 million parcels statewide
 - **Auction Data:** Daily foreclosure auction updates via BidDeed.AI pipeline
 
 ## Products
