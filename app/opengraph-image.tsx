@@ -112,7 +112,7 @@ export default function OGImage() {
             { value: '67', label: 'Counties' },
             { value: '369', label: 'Jurisdictions' },
             { value: '5,950', label: 'Districts' },
-            { value: '10.8M', label: 'Parcels' },
+            { value: '10.5M', label: 'Parcels' },
           ].map((stat) => (
             <div
               key={stat.label}
