@@ -11,7 +11,7 @@ const BEATS = [
   {
     eyebrow: '01 — Smart Choropleth Maps',
     title: 'Every parcel, scored before you bid.',
-    body: 'ZoneWise maps zoning overlays, ZHVI heatmaps, and neighborhood comps across 10.8M+ parcels — the cluster you see extrude is what our engine flags for a closer look.',
+    body: 'ZoneWise maps zoning overlays, ZHVI heatmaps, and neighborhood comps across 10.5M+ parcels — the cluster you see extrude is what our engine flags for a closer look.',
   },
   {
     eyebrow: '02 — Compounding Intelligence',
