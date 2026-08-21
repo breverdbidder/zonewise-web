@@ -28,7 +28,7 @@ const faqs: FAQItem[] = [
     category: 'Data',
     question: 'What data sources do you use?',
     answer:
-      'We aggregate data from Florida GIO (10.8M parcels), county GIS systems, property appraiser records, and public zoning ordinances. Data is refreshed regularly to maintain accuracy.',
+      'We aggregate data from Florida GIO (10.5M parcels), county GIS systems, property appraiser records, and public zoning ordinances. Data is refreshed regularly to maintain accuracy.',
   },
   {
     category: 'Data',
