@@ -73,7 +73,7 @@ export default function AccountSettingsPage() {
         <div className="mt-10 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}>
           <h2 className="text-sm font-semibold text-white">Data &amp; coverage</h2>
           <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
-            ZoneWise.AI covers all 67 Florida counties across 10.8M+ parcels. Feasibility tools are
+            ZoneWise.AI covers all 67 Florida counties across 10.5M+ parcels. Feasibility tools are
             in beta and some values are sample data while coverage expands.
           </p>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] text-slate-500">
