@@ -23,6 +23,28 @@ const plans = [
       '5 parcel reports per month',
     ],
   },
+  // Tier list mirrors /pricing exactly — the two drifted (homepage showed
+  // Free+Pro with "Most popular" on Pro while /pricing showed three tiers
+  // with "Most popular" on Starter), which is contradictory price anchoring
+  // on the same site. Flagged by the 2026-08-20 audit. Change /pricing and
+  // this list together.
+  {
+    name: 'Starter',
+    price: '39',
+    prefix: '$',
+    description: 'For active investors & developers.',
+    cta: 'Start Free Trial',
+    href: '/sign-up?plan=starter',
+    highlighted: true,
+    badge: 'Most popular',
+    features: [
+      'Everything in Free',
+      '50 parcel clicks / day',
+      'Zoning filters (RU/BU/PUD/AU/IU)',
+      'CSV export',
+      'Statewide parcel coverage',
+    ],
+  },
   {
     name: 'Pro',
     price: '99',
@@ -30,8 +52,7 @@ const plans = [
     description: 'Full intelligence for active investors.',
     cta: 'Start Pro',
     href: '/sign-up?plan=pro',
-    highlighted: true,
-    badge: 'Most popular',
+    highlighted: false,
     features: [
       '67 counties and growing — nationwide expansion in progress',
       'Unlimited parcel reports',
@@ -47,12 +68,12 @@ const plans = [
 export function PricingSection() {
   return (
     <section className="bg-[#020617] py-20 sm:py-28" id="pricing">
-      <div className="mx-auto max-w-4xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <div className="mb-12 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Simple pricing</h2>
           <p className="text-slate-400">Start free. Upgrade when you find a deal worth closing.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <Card
               key={plan.name}
