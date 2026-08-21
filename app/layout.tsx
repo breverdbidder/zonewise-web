@@ -188,7 +188,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   "name": "How many Florida counties does ZoneWise.AI cover?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "ZoneWise.AI covers all 67 Florida counties, including 369 jurisdictions and 5,950 zoning districts encompassing 10.8 million parcels statewide."
+                    "text": "ZoneWise.AI covers all 67 Florida counties, including 369 jurisdictions and 5,950 zoning districts encompassing 10.5 million parcels statewide."
                   }
                 },
                 {
@@ -236,7 +236,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   "name": "What data sources does ZoneWise.AI use?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "ZoneWise.AI combines data from the Florida Geographic Information Office (FL GIO) covering 10.8 million parcels, county-level GIS systems, court records for foreclosure data, and property appraiser databases. Data is updated daily through automated pipelines."
+                    "text": "ZoneWise.AI combines data from the Florida Geographic Information Office (FL GIO) covering 10.5 million parcels, county-level GIS systems, court records for foreclosure data, and property appraiser databases. Data is updated daily through automated pipelines."
                   }
                 }
               ]
