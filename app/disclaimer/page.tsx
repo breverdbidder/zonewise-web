@@ -1,5 +1,12 @@
 import Link from 'next/link'
 
+// Without this the page inherited the root layout's marketing title, which
+// made the 2026-08-20 audit read /disclaimer as "serving the homepage".
+export const metadata = {
+  title: 'Zoning Information Disclaimer | ZoneWise.AI',
+  description: 'Data sources, accuracy limits, and appropriate use of ZoneWise.AI zoning information.',
+}
+
 export default function DisclaimerPage() {
   return (
     <div className="min-h-screen bg-white text-slate-800">
