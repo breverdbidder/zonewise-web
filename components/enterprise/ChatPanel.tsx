@@ -87,7 +87,7 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
               <div className="mt-8 flex items-center justify-center gap-6 text-xs text-gray-400 dark:text-slate-500">
                 <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>67 Counties</span></div>
                 <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>298 KPIs</span></div>
-                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>10.8M Parcels</span></div>
+                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>10.5M Parcels</span></div>
               </div>
             </div>
           </div>
