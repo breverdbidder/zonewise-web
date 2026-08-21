@@ -28,7 +28,7 @@ const TOUR_STEPS: TourStep[] = [
     icon: '🗺️',
     title: 'Welcome to ZoneWise',
     description:
-      'Explore 10.8M Florida parcels with AI-powered zoning intelligence. Every county. Every parcel. Every zoning rule — at your fingertips.',
+      'Explore 10.5M Florida parcels with AI-powered zoning intelligence. Every county. Every parcel. Every zoning rule — at your fingertips.',
   },
   {
     icon: '📍',
