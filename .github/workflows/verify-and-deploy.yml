@@ -1,6 +1,9 @@
 name: "Verify Domain + Deploy Production"
 on:
   workflow_dispatch: {}
+concurrency:
+  group: verify-and-deploy-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   verify-deploy:
     runs-on: ubuntu-latest

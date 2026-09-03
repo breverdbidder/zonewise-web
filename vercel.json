@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install --legacy-peer-deps",
+  "ignoreCommand": "git rev-parse HEAD^ >/dev/null 2>&1 || exit 1; git diff --quiet HEAD^ HEAD -- . ':(exclude).agents' ':(exclude).claude' ':(exclude).dev-intel-dispatch' ':(exclude).stitch' ':(exclude).github' ':(exclude)docs' ':(exclude)reports' ':(exclude)summit-artifacts' ':(exclude)test-results' ':(exclude)memory.md' ':(exclude)greptile.json' ':(exclude)react-doctor-baseline.json' ':(exclude)PROJECT_STATE.json' ':(exclude).skills-install-trigger' ':(exclude)AGENTS.md' ':(exclude)BRAINSTORM_PROTOCOL.md' ':(exclude)BRAND_COLORS.md' ':(exclude)CHANGELOG.md' ':(exclude)CLAUDE.md' ':(exclude)DESIGN.md' ':(exclude)HIGGSFIELD_GATE.md' ':(exclude)HONESTY-PROTOCOL.md' ':(exclude)INFRASTRUCTURE.md' ':(exclude)POSITIONING.md' ':(exclude)README.md' ':(exclude)REPOEVAL-PROTOCOL.md' ':(exclude)REPO_MAP.md' ':(exclude)SECURITY.md' ':(exclude)SHADCN_V4_INTEGRATION.md' ':(exclude)SUPERPOWERS.md' ':(exclude)TODO.md' ':(exclude)LICENSE'",
   "rewrites": [
     { "source": "/competitors", "destination": "/competitors.html" },
     { "source": "/competitors/propzone.html", "destination": "/competitors/propzone" },
