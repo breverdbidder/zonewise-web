@@ -48,3 +48,7 @@ OPUS_*_MISSION.md
 # Playwright audit session state — contains a live Clerk session cookie
 .auth/
 audit-shots/
+
+# cloudflare / opennext
+.open-next/
+.wrangler/
