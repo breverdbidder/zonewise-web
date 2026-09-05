@@ -15,6 +15,16 @@
   // R2 is NOT enabled on the account (API 10042 "Please enable R2 through the Cloudflare
   // Dashboard"), so the R2 incremental-cache binding is removed; ISR routes render dynamically
   // until R2 is enabled (then restore r2IncrementalCache in open-next.config.ts + this binding).
+  //
+  // Cutover 2026-09-05 (chat, DNS-scoped token): the Vercel A/CNAME records on zonewise.ai and www
+  // were replaced by proxied placeholder A records (192.0.2.1) so these zone routes receive the
+  // traffic — the same proxied-record + Worker-route pattern biddeed.ai and mcp.biddeed.ai use.
+  // mcp.zonewise.ai is deliberately NOT bound: the MCP route only exists in unmerged PR #102.
+  // Rollback: cli-anything-biddeed docs/spec/20026-rollback.md.
+  "routes": [
+    { "pattern": "zonewise.ai/*", "zone_name": "zonewise.ai" },
+    { "pattern": "www.zonewise.ai/*", "zone_name": "zonewise.ai" }
+  ],
   "observability": {
     "enabled": true
   }
