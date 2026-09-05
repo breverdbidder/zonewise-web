@@ -6,7 +6,16 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // LAUNCH-A (#20035): "/" is a prerendered static file, so by default
+    // Cloudflare serves it directly and never invokes the Worker — Next's
+    // own middleware.ts and next.config.mjs headers() (which already declare
+    // HSTS/nosniff/Referrer-Policy/X-Frame-Options) never run. Verified live
+    // 2026-09-05: curl -sI https://zonewise.ai/ returned none of them.
+    // Scoping run_worker_first to just "/" (not a blanket true) sends only
+    // the homepage through the full OpenNext/Next pipeline — every other
+    // static asset keeps the zero-Worker-invocation cost path.
+    "run_worker_first": ["/"]
   },
   // Plan probe result 2026-09-05 12:22 UTC (sibling #20025, run 33965846032): the account is on
   // Workers FREE — Cloudflare rejects `limits.cpu_ms` (code 100328). Removed to restore service:
