@@ -1,0 +1,181 @@
+name: Cloudflare Exit Gate
+
+# Vercel -> Cloudflare exit readiness probe (issue #20026, #20025, #20027).
+#
+# Read-only credential/permission gate. Confirms the real CLOUDFLARE_API_TOKEN
+# / VERCEL_TOKEN repo secrets can actually reach the Cloudflare and Vercel
+# APIs this migration depends on, and prints which Vercel env var NAMES exist
+# (never values) so we know what cloudflare-production.yml will need to have
+# mirrored as Worker secrets.
+#
+# HARD BOUNDARY: this workflow performs NO DNS reads/writes and NO Worker
+# route/deploy changes. It only reads account/zone/script metadata. The
+# "DNS probe" item from the original spec (create+delete a throwaway DNS
+# record to prove write access) is intentionally NOT implemented here --
+# creating or deleting any real DNS record, even a scratch TXT record, is a
+# live production DNS write, and this repo's migration boundary explicitly
+# defers all DNS changes to a separate, human-driven cutover step. That check
+# is skipped and reported as "not run" below rather than silently omitted.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  exit-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mask secrets defensively
+        run: |
+          echo "::add-mask::${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          echo "::add-mask::${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          echo "::add-mask::${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Check required secrets are present
+        id: presence
+        run: |
+          missing=0
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID VERCEL_TOKEN; do
+            val="${!name}"
+            if [ -z "$val" ]; then
+              echo "MISSING: $name"
+              missing=1
+            else
+              echo "present: $name"
+            fi
+          done
+          echo "missing=$missing" >> "$GITHUB_OUTPUT"
+
+      - name: "Check 1: GET /accounts/:id/workers/scripts (Cloudflare API reachability)"
+        id: check_scripts
+        if: steps.presence.outputs.missing == '0'
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/scripts.json -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          echo "HTTP $code"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "200" ]; then
+            echo "PASS: workers/scripts endpoint returned 200"
+          else
+            echo "FAIL: workers/scripts endpoint returned $code" >&2
+            cat /tmp/scripts.json
+          fi
+
+      - name: "Check 2: GET /zones?name=zonewise.ai (zone lookup, read-only)"
+        id: check_zone
+        if: steps.presence.outputs.missing == '0'
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/zones.json -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/zones?name=zonewise.ai" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          echo "HTTP $code"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+          zone_id=$(jq -r '.result[0].id // empty' /tmp/zones.json 2>/dev/null || true)
+          if [ -n "$zone_id" ]; then
+            echo "::add-mask::$zone_id"
+          fi
+          echo "zone_id=$zone_id" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "200" ]; then
+            echo "PASS: zones lookup returned 200"
+          else
+            echo "FAIL: zones lookup returned $code" >&2
+            cat /tmp/zones.json
+          fi
+
+      - name: "Check 3: GET /zones/:id/workers/routes (read-only route listing)"
+        id: check_routes
+        if: steps.presence.outputs.missing == '0' && steps.check_zone.outputs.zone_id != ''
+        run: |
+          set -euo pipefail
+          zone_id="${{ steps.check_zone.outputs.zone_id }}"
+          code=$(curl -sS -o /tmp/routes.json -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/zones/${zone_id}/workers/routes" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          echo "HTTP $code"
+          echo "http_code=$code" >> "$GITHUB_OUTPUT"
+          count=$(jq -r '.result | length' /tmp/routes.json 2>/dev/null || echo "unknown")
+          echo "existing worker routes on zone: $count"
+          if [ "$code" = "200" ]; then
+            echo "PASS: workers/routes listing returned 200"
+          else
+            echo "FAIL: workers/routes listing returned $code" >&2
+            cat /tmp/routes.json
+          fi
+
+      - name: "Check 3b: zone lookup returned no zone (skip routes check)"
+        if: steps.presence.outputs.missing == '0' && steps.check_zone.outputs.zone_id == ''
+        run: echo "SKIPPED: no zone id found for zonewise.ai, cannot list routes"
+
+      - name: Install Vercel CLI
+        if: steps.presence.outputs.missing == '0'
+        run: npm install -g vercel@latest
+
+      - name: "Check 4: vercel pull (env var NAMES only, never values)"
+        id: check_vercel
+        if: steps.presence.outputs.missing == '0'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vercel-pull
+          cd /tmp/vercel-pull
+          if vercel pull --yes --environment=production --token="${VERCEL_TOKEN}" \
+              --scope=team_UEds2qBzyD9e7rOrX8aakj9K > /tmp/vercel_pull.log 2>&1; then
+            echo "PASS: vercel pull succeeded"
+            echo "status=pass" >> "$GITHUB_OUTPUT"
+          else
+            echo "FAIL: vercel pull failed" >&2
+            cat /tmp/vercel_pull.log
+            echo "status=fail" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo ""
+          echo "### Vercel production env var names (values redacted) ###"
+          if [ -f .env.production.local ]; then
+            while IFS='=' read -r key _; do
+              [ -z "$key" ] && continue
+              case "$key" in \#*) continue ;; esac
+              val=$(grep "^${key}=" .env.production.local | cut -d'=' -f2-)
+              if [ -n "$val" ]; then
+                echo "${key}=<set>"
+              else
+                echo "${key}=<empty>"
+              fi
+            done < .env.production.local
+          else
+            echo "No .env.production.local produced by vercel pull"
+          fi
+
+      - name: "SKIPPED BY DESIGN: DNS write probe"
+        run: |
+          echo "SKIPPED: creating/deleting a scratch DNS record (even a throwaway"
+          echo "TXT record) is a live production DNS write. This migration's"
+          echo "boundary explicitly excludes all DNS changes from automation --"
+          echo "cutover is a separate, human-driven step. Not run for safety."
+
+      - name: Missing secrets summary
+        if: steps.presence.outputs.missing == '1'
+        run: |
+          echo "BLOCKED: one or more required secrets (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, VERCEL_TOKEN) are not configured on this repo." >&2
+          exit 1
+
+      - name: Gate summary
+        if: always()
+        run: |
+          echo "## Cloudflare Exit Gate Summary"
+          echo "- Check 1 (workers/scripts):     HTTP ${{ steps.check_scripts.outputs.http_code || 'not run' }}"
+          echo "- Check 2 (zones?name=...):      HTTP ${{ steps.check_zone.outputs.http_code || 'not run' }}"
+          echo "- Check 3 (workers/routes):      HTTP ${{ steps.check_routes.outputs.http_code || 'not run' }}"
+          echo "- Check 4 (vercel pull):         ${{ steps.check_vercel.outputs.status || 'not run' }}"
+          echo "- DNS write probe:               SKIPPED (safety, see step above)"

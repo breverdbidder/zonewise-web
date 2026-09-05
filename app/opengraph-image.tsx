@@ -1,6 +1,9 @@
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
+// Cloudflare exit (#20026): same reasoning as app/api/csp-report/route.ts --
+// OpenNext cannot bundle a separate edge-runtime function alongside the main
+// Worker function. next/og's ImageResponse only needs Web APIs, so dropping
+// this is a no-op behavior-wise.
 export const alt = 'ZoneWise.AI — AI Zoning Intelligence for Florida Real Estate'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'

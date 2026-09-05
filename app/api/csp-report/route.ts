@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export const runtime = 'edge'
+// Cloudflare exit (#20026): OpenNext bundles the whole app into one Worker
+// function and cannot bundle a separate edge-runtime function alongside it
+// ("app/api/csp-report/route cannot use the edge runtime"). This route only
+// uses standard Web APIs (crypto.subtle, Request/Response, Supabase JS
+// client) with nothing Vercel-edge-specific, so dropping the edge runtime
+// directive is a no-op behavior-wise and lets it run in the same Worker
+// context as every other route.
 
 export async function POST(request: NextRequest) {
   // Never echo body back — security best practice
