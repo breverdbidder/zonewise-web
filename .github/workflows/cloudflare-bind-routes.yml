@@ -2,10 +2,14 @@ name: Cloudflare bind routes (triggers only)
 
 # Vercel -> Cloudflare exit (#20026). Applies the `routes` block of
 # wrangler.production.jsonc to the already-deployed zonewise-web-production
-# Worker WITHOUT rebuilding or re-uploading code (`wrangler triggers deploy`).
-# ~30 s instead of a ~10 min OpenNext build. Requires the Worker to exist
-# (run cloudflare-production.yml first). No DNS changes here — DNS is handled
-# out of band with rollback values in cli-anything-biddeed docs/spec/20026-rollback.md.
+# Worker WITHOUT rebuilding or re-uploading code. ~30 s instead of a ~10 min
+# OpenNext build. Requires the Worker to exist (run cloudflare-production.yml
+# first). No DNS changes here — DNS is handled out of band with rollback values
+# in cli-anything-biddeed docs/spec/20026-rollback.md.
+#
+# 2026-09-05: `wrangler triggers deploy` validates assets.directory even though
+# it uploads nothing, so an empty placeholder dir is created first; if wrangler
+# still refuses, the same routes are applied through the Cloudflare API.
 
 on:
   workflow_dispatch: {}
@@ -20,20 +24,44 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ZONE_ID: b32406b78aaaefd55557d77c843a5940
+      WORKER: zonewise-web-production
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Apply routes from wrangler.production.jsonc
-        run: npx --yes wrangler@latest triggers deploy --config wrangler.production.jsonc
+      - name: Apply routes (wrangler triggers deploy, API fallback)
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p .open-next/assets
+          if npx --yes wrangler@latest triggers deploy --config wrangler.production.jsonc; then
+            echo "routes applied via wrangler"
+          else
+            echo "wrangler refused — applying routes via Cloudflare API"
+            for pat in "zonewise.ai/*" "www.zonewise.ai/*"; do
+              code=$(curl -sS -o /tmp/r.json -w '%{http_code}' -X POST \
+                "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/workers/routes" \
+                -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: application/json' \
+                --data "{\"pattern\":\"$pat\",\"script\":\"$WORKER\"}")
+              echo "POST route $pat -> $code"; jq -c '{success, errors}' /tmp/r.json || cat /tmp/r.json
+            done
+          fi
+          echo "--- routes now on zone:"
+          curl -sS "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/workers/routes" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -c '.result[]? | {pattern, script}' || true
       - name: Verify over the real hostnames
         shell: bash
         run: |
-          sleep 10
+          sleep 15
+          fail=0
           for h in zonewise.ai www.zonewise.ai; do
             for p in / /pricing /api/stats; do
-              curl -sS -o /dev/null -D /tmp/h -w "$h$p -> %{http_code}  " --max-time 60 "https://$h$p" || true
-              grep -i '^server:' /tmp/h | tr -d '\r' || echo
+              code=$(curl -sS -o /dev/null -D /tmp/h -w '%{http_code}' --max-time 60 "https://$h$p" || echo 000)
+              srv=$(grep -i '^server:' /tmp/h | tr -d '\r' || true)
+              echo "$h$p -> $code  $srv"
+              case "$code" in 2*|3*) ;; *) fail=1;; esac
             done
           done
+          exit $fail
