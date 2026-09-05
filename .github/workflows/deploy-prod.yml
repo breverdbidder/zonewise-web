@@ -1,8 +1,8 @@
 name: Deploy to Vercel Production
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# push-on-main trigger removed to stop metered Vercel build minutes; workflow_dispatch kept manual-only until zonewise-web is paused/detached in Part 2 of #20027.
 on:
   workflow_dispatch: {}
-  push:
-    branches: [main]
 
 concurrency:
   group: deploy-prod

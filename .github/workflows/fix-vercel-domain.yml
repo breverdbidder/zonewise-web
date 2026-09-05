@@ -1,4 +1,6 @@
 name: "Fix Vercel Domain Assignment"
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# Vercel domain-fix helper for a project being decommissioned; workflow_dispatch-only already.
 on:
   workflow_dispatch: {}
 concurrency:
