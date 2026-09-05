@@ -1,4 +1,6 @@
 name: Fix Clerk production env
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# Fixes Clerk env in Vercel for a project being decommissioned; workflow_dispatch-only already.
 
 # INCIDENT: /sign-in, /sign-up and /login return HTTP 500 in production.
 # Nobody can create an account or log in.
