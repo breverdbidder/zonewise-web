@@ -1,0 +1,39 @@
+name: Cloudflare bind routes (triggers only)
+
+# Vercel -> Cloudflare exit (#20026). Applies the `routes` block of
+# wrangler.production.jsonc to the already-deployed zonewise-web-production
+# Worker WITHOUT rebuilding or re-uploading code (`wrangler triggers deploy`).
+# ~30 s instead of a ~10 min OpenNext build. Requires the Worker to exist
+# (run cloudflare-production.yml first). No DNS changes here — DNS is handled
+# out of band with rollback values in cli-anything-biddeed docs/spec/20026-rollback.md.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  bind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply routes from wrangler.production.jsonc
+        run: npx --yes wrangler@latest triggers deploy --config wrangler.production.jsonc
+      - name: Verify over the real hostnames
+        shell: bash
+        run: |
+          sleep 10
+          for h in zonewise.ai www.zonewise.ai; do
+            for p in / /pricing /api/stats; do
+              curl -sS -o /dev/null -D /tmp/h -w "$h$p -> %{http_code}  " --max-time 60 "https://$h$p" || true
+              grep -i '^server:' /tmp/h | tr -d '\r' || echo
+            done
+          done
