@@ -1,0 +1,127 @@
+name: Cloudflare OpenNext Production
+
+# Vercel -> Cloudflare exit (issue #20026, #20025, #20027).
+#
+# Builds zonewise-web with @opennextjs/cloudflare and deploys it as a
+# Cloudflare Worker, reachable ONLY at its workers.dev URL. This workflow
+# does NOT add any zone route / custom domain binding and does NOT touch DNS
+# in any way -- production traffic keeps flowing through Vercel until a
+# separate, human-driven cutover step points zonewise.ai at this Worker.
+#
+# Runtime env/secrets are pulled live from Vercel's production environment
+# (same source of truth deploy-prod.yml already uses) and pushed into the
+# Worker via `wrangler secret bulk`, rather than hardcoding an env var list
+# here -- this avoids drifting out of sync with whatever is actually
+# configured in Vercel as the app grows.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_UEds2qBzyD9e7rOrX8aakj9K
+      VERCEL_PROJECT_ID: prj_EaXgEO6WDoSpCeLhuCemtbPr6e8E
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mask secrets defensively
+        run: |
+          echo "::add-mask::${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          echo "::add-mask::${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          echo "::add-mask::${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Validate required secrets are present
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing CLOUDFLARE_API_TOKEN' >&2; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Missing CLOUDFLARE_ACCOUNT_ID' >&2; exit 1; }
+          test -n "$VERCEL_TOKEN" || { echo 'Missing VERCEL_TOKEN' >&2; exit 1; }
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull production env from Vercel (values used locally only, never echoed)
+        run: |
+          set -euo pipefail
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN" \
+            --scope="$VERCEL_ORG_ID"
+          # vercel pull writes .env.production.local (gitignored) -- copy the
+          # public NEXT_PUBLIC_* vars into .env.local so `next build` inlines
+          # them, same as it would on Vercel.
+          cp .env.production.local .env.local
+
+      - name: Build OpenNext Worker (production)
+        run: npx opennextjs-cloudflare build --config wrangler.production.jsonc
+
+      - name: Deploy production Worker (workers.dev only, no zone route)
+        run: npx wrangler deploy --config wrangler.production.jsonc
+
+      - name: Push pulled env vars into the Worker as secrets (bulk, values never echoed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f .env.production.local ]; then
+            echo "No .env.production.local from vercel pull -- skipping secret bulk push"
+            exit 0
+          fi
+          node -e "
+            const fs = require('fs');
+            const lines = fs.readFileSync('.env.production.local', 'utf8').split('\n');
+            const obj = {};
+            for (const line of lines) {
+              const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+              if (!m) continue;
+              let val = m[2];
+              if (val.startsWith('\"') && val.endsWith('\"')) val = val.slice(1, -1);
+              obj[m[1]] = val;
+            }
+            fs.writeFileSync('/tmp/secrets-bulk.json', JSON.stringify(obj));
+            console.log('Prepared secret bulk payload with ' + Object.keys(obj).length + ' keys (names only): ' + Object.keys(obj).join(', '));
+          "
+          npx wrangler secret bulk /tmp/secrets-bulk.json --config wrangler.production.jsonc
+          rm -f /tmp/secrets-bulk.json .env.production.local .env.local
+
+      - name: Print deployment target without secrets
+        run: |
+          echo "Cloudflare OpenNext production Worker deployed: zonewise-web-production"
+          echo "Reachable at its workers.dev URL only -- no zone route bound by this workflow."
+          echo "DNS cutover for zonewise.ai is intentionally NOT part of this workflow (see #20026)."
+
+      - name: Public smoke checks against the workers.dev URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          sub=$(curl -sS "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.subdomain')
+          base="https://zonewise-web-production.$sub.workers.dev"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "Worker base URL: $base"
+          for path in / /pricing /coverage /robots.txt /competitors; do
+            code=$(curl -L -sS -o /tmp/response -w '%{http_code}' --max-time 45 "$base$path")
+            server_hdr=$(curl -sS -D - -o /dev/null --max-time 45 "$base$path" | grep -i '^server:' || true)
+            echo "$path -> $code   $server_hdr"
+          done
+        id: smoke

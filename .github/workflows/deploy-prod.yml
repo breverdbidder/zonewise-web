@@ -1,8 +1,15 @@
+# DEPRECATED (issue #20026, Vercel -> Cloudflare exit): this workflow deploys
+# to Vercel, which is being retired as the production platform for
+# zonewise.ai in favor of a Cloudflare Worker (see
+# .github/workflows/cloudflare-production.yml). The push-to-main trigger has
+# been removed so this can no longer fire automatically and race the
+# Cloudflare deploy; it is kept as workflow_dispatch-only for manual rollback
+# to Vercel if the Cloudflare cutover needs to be reversed. Do not re-add the
+# push trigger without also resolving which platform is authoritative for
+# zonewise.ai DNS.
 name: Deploy to Vercel Production
 on:
   workflow_dispatch: {}
-  push:
-    branches: [main]
 
 concurrency:
   group: deploy-prod
