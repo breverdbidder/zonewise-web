@@ -8,15 +8,13 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "limits": {
-    "cpu_ms": 30000
-  },
-  "r2_buckets": [
-    {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "zonewise-web-inc-cache"
-    }
-  ],
+  // Plan probe result 2026-09-05 12:22 UTC (sibling #20025, run 33965846032): the account is on
+  // Workers FREE — Cloudflare rejects `limits.cpu_ms` (code 100328). Removed to restore service:
+  // Vercel returned 402 DEPLOYMENT_DISABLED on zonewise.ai the same minute. Workers Paid ($5/mo)
+  // is Ariel's decision, surfaced in #20026.
+  // R2 is NOT enabled on the account (API 10042 "Please enable R2 through the Cloudflare
+  // Dashboard"), so the R2 incremental-cache binding is removed; ISR routes render dynamically
+  // until R2 is enabled (then restore r2IncrementalCache in open-next.config.ts + this binding).
   "observability": {
     "enabled": true
   }
