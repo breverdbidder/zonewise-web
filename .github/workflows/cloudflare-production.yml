@@ -3,16 +3,18 @@ name: Cloudflare OpenNext Production
 # Vercel -> Cloudflare exit (issue #20026, #20025, #20027).
 #
 # Builds zonewise-web with @opennextjs/cloudflare and deploys it as a
-# Cloudflare Worker, reachable ONLY at its workers.dev URL. This workflow
-# does NOT add any zone route / custom domain binding and does NOT touch DNS
-# in any way -- production traffic keeps flowing through Vercel until a
-# separate, human-driven cutover step points zonewise.ai at this Worker.
+# Cloudflare Worker. Custom-domain/route binding is controlled by
+# wrangler.production.jsonc (`routes`), NOT by this workflow; DNS is handled
+# out of band (chat, DNS-scoped token) with rollback values recorded in
+# cli-anything-biddeed docs/spec/20026-rollback.md.
 #
 # Runtime env/secrets are pulled live from Vercel's production environment
-# (same source of truth deploy-prod.yml already uses) and pushed into the
-# Worker via `wrangler secret bulk`, rather than hardcoding an env var list
-# here -- this avoids drifting out of sync with whatever is actually
-# configured in Vercel as the app grows.
+# (same source of truth deploy-prod.yml used) and pushed into the Worker via
+# `wrangler secret bulk`. `vercel pull` writes .vercel/.env.production.local
+# (fixed 2026-09-05 — the first run looked for it at the repo root and died).
+# Vercel "sensitive" values come back as the literal "[SENSITIVE]"; those are
+# never pushed — the key NAME is logged and a same-named repo secret is used
+# as fallback when one exists.
 
 on:
   workflow_dispatch: {}
@@ -27,7 +29,7 @@ concurrency:
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -64,29 +66,66 @@ jobs:
         run: npm install -g vercel@latest
 
       - name: Pull production env from Vercel (values used locally only, never echoed)
+        shell: bash
+        env:
+          FALLBACK_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          FALLBACK_STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          FALLBACK_STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          FALLBACK_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FALLBACK_INTERNAL_AUTH_TOKEN: ${{ secrets.INTERNAL_AUTH_TOKEN }}
+          FALLBACK_ZONEWISE_MCP_SECRET: ${{ secrets.ZONEWISE_MCP_SECRET }}
+          FALLBACK_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          FALLBACK_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FALLBACK_DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          FALLBACK_EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
+          FALLBACK_NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+          FALLBACK_NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          FALLBACK_NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
         run: |
           set -euo pipefail
           vercel pull --yes --environment=production --token="$VERCEL_TOKEN" \
             --scope="$VERCEL_ORG_ID"
-          # vercel pull writes .env.production.local (gitignored) -- copy the
-          # public NEXT_PUBLIC_* vars into .env.local so `next build` inlines
-          # them, same as it would on Vercel.
-          cp .env.production.local .env.local
+          SRC=.vercel/.env.production.local
+          test -f "$SRC" || { echo "::error::vercel pull produced no $SRC" >&2; exit 1; }
+          # Resolve "[SENSITIVE]" placeholders from same-named repo secrets (names only in logs).
+          node -e "
+            const fs = require('fs');
+            const lines = fs.readFileSync('$SRC', 'utf8').split('\n');
+            const out = []; const sensitive = []; const resolved = []; const unresolved = [];
+            for (const line of lines) {
+              const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+              if (!m) { continue; }
+              let val = m[2];
+              if (val.startsWith('\"') && val.endsWith('\"')) val = val.slice(1, -1);
+              if (val === '[SENSITIVE]') {
+                sensitive.push(m[1]);
+                const fb = process.env['FALLBACK_' + m[1]];
+                if (fb) { resolved.push(m[1]); out.push(m[1] + '=' + JSON.stringify(fb)); }
+                else { unresolved.push(m[1]); }
+                continue;
+              }
+              if (m[1].startsWith('VERCEL_')) continue;
+              out.push(m[1] + '=' + JSON.stringify(val));
+            }
+            fs.writeFileSync('.env.production.local', out.join('\n') + '\n');
+            console.log('Pulled keys (names only): ' + out.map(l => l.split('=')[0]).join(', '));
+            console.log('Vercel-sensitive keys: ' + (sensitive.join(', ') || 'none'));
+            console.log('  resolved from repo secrets: ' + (resolved.join(', ') || 'none'));
+            console.log('  UNRESOLVED (not bound): ' + (unresolved.join(', ') || 'none'));
+            if (unresolved.includes('CLERK_SECRET_KEY')) { console.error('::error::CLERK_SECRET_KEY is Vercel-sensitive and has no repo-secret fallback'); process.exit(1); }
+          "
+          rm -f "$SRC"
 
       - name: Build OpenNext Worker (production)
         run: npx opennextjs-cloudflare build --config wrangler.production.jsonc
 
-      - name: Deploy production Worker (workers.dev only, no zone route)
+      - name: Deploy production Worker
         run: npx wrangler deploy --config wrangler.production.jsonc
 
       - name: Push pulled env vars into the Worker as secrets (bulk, values never echoed)
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f .env.production.local ]; then
-            echo "No .env.production.local from vercel pull -- skipping secret bulk push"
-            exit 0
-          fi
           node -e "
             const fs = require('fs');
             const lines = fs.readFileSync('.env.production.local', 'utf8').split('\n');
@@ -94,21 +133,13 @@ jobs:
             for (const line of lines) {
               const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
               if (!m) continue;
-              let val = m[2];
-              if (val.startsWith('\"') && val.endsWith('\"')) val = val.slice(1, -1);
-              obj[m[1]] = val;
+              obj[m[1]] = JSON.parse(m[2]);
             }
             fs.writeFileSync('/tmp/secrets-bulk.json', JSON.stringify(obj));
             console.log('Prepared secret bulk payload with ' + Object.keys(obj).length + ' keys (names only): ' + Object.keys(obj).join(', '));
           "
           npx wrangler secret bulk /tmp/secrets-bulk.json --config wrangler.production.jsonc
-          rm -f /tmp/secrets-bulk.json .env.production.local .env.local
-
-      - name: Print deployment target without secrets
-        run: |
-          echo "Cloudflare OpenNext production Worker deployed: zonewise-web-production"
-          echo "Reachable at its workers.dev URL only -- no zone route bound by this workflow."
-          echo "DNS cutover for zonewise.ai is intentionally NOT part of this workflow (see #20026)."
+          rm -f /tmp/secrets-bulk.json .env.production.local
 
       - name: Public smoke checks against the workers.dev URL
         shell: bash
@@ -117,11 +148,12 @@ jobs:
           sub=$(curl -sS "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.subdomain')
           base="https://zonewise-web-production.$sub.workers.dev"
-          echo "base=$base" >> "$GITHUB_OUTPUT"
           echo "Worker base URL: $base"
-          for path in / /pricing /coverage /robots.txt /competitors; do
-            code=$(curl -L -sS -o /tmp/response -w '%{http_code}' --max-time 45 "$base$path")
-            server_hdr=$(curl -sS -D - -o /dev/null --max-time 45 "$base$path" | grep -i '^server:' || true)
-            echo "$path -> $code   $server_hdr"
+          fail=0
+          for path in / /pricing /coverage /robots.txt /competitors /sign-in /api/stats; do
+            code=$(curl -L -sS -o /tmp/response -w '%{http_code}' --max-time 60 "$base$path" || echo 000)
+            echo "$path -> $code"
+            case "$code" in 2*|3*) ;; *) fail=1;; esac
           done
+          exit $fail
         id: smoke
