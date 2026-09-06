@@ -112,7 +112,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
           <p className="text-lg font-bold text-[#1E3A5F] dark:text-white">{mb?.low != null ? `${money(mb.low)} – ${money(mb.high)}` : 'Pending'}</p>
           {mb?.midpoint != null && (
             <p className="text-xs text-slate-500">
-              Midpoint {money(mb.midpoint)} · Investment Grade {cover.investment_grade || '—'} · Shapira Max Bid {money(cover.shapira_max_bid)}
+              Midpoint {money(mb.midpoint)} · Investment Grade {cover.investment_grade || '—'} · SIGNAL$ Max Bid {money(cover.shapira_max_bid)}
             </p>
           )}
         </div>
@@ -277,7 +277,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <TwoCol
           pairs={[
             ['Entry Bid', money(opp.entry_bid || cover.entry_bid)],
-            ['Shapira Max Bid', money(smbVal)],
+            ['SIGNAL$ Max Bid', money(smbVal)],
             ['Walk Away Above', money(smbVal)],
             ['Value Midpoint', money(opp.value_midpoint)],
           ]}
