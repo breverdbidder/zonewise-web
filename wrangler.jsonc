@@ -1,0 +1,16 @@
+{
+  "name": "zonewise-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "kv_namespaces": [
+    // PLACEHOLDER — no CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID available in
+    // this session (repo has these as GH secrets, but no workflow injects them
+    // into this session's env, and this session may not edit workflow files —
+    // see docs/spec/19812.md), so `wrangler kv namespace create
+    // NEXT_CACHE_WORKERS_KV` could not be run. This MUST be replaced with a
+    // real namespace id before any `wrangler deploy`.
+    { "binding": "NEXT_CACHE_WORKERS_KV", "id": "REPLACE_WITH_REAL_KV_NAMESPACE_ID" }
+  ]
+}
