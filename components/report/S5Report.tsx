@@ -608,7 +608,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <Row label="Certification" value={prov.certification_disclosure || 'Pending'} />
         <Row label="Effective Date" value={prov.effective_date || report.title_search?.effective_date || 'Pending'} alt />
         <Row label="Snapshot sha256" value={report.title_search?.snapshot_sha256 ? String(report.title_search.snapshot_sha256).slice(0, 16) + '…' : 'Pending — no versioned snapshot for this sale yet'} />
-        <Para>{prov.model_disclosure || 'Shapira Models — probability withheld until out-of-time validation on verified outcomes passes.'}</Para>
+        <Para>{prov.model_disclosure || 'SIGNAL$ Models — probability withheld until out-of-time validation on verified outcomes passes.'}</Para>
       </>
     )
   },
