@@ -73,7 +73,12 @@ export default function BuyBoxForm() {
 
   const inputStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.15)',
+    // Control-boundary fix (issue #20109 pattern): resting border was
+    // rgba(255,255,255,0.15) (~1.3:1 vs bg, fails WCAG 2.1 SC 1.4.11).
+    // hsl(217.2 20% 45%) is the fixed --input token from app/globals.css
+    // (~3.82:1 vs background) — hardcoded here since this component uses
+    // inline styles, not Tailwind classes, so border-input doesn't apply.
+    border: '1px solid hsl(217.2, 20%, 45%)',
     borderRadius: '6px',
     color: '#FFFFFF',
     padding: '0.5rem 0.75rem',
@@ -88,7 +93,10 @@ export default function BuyBoxForm() {
     fontSize: '0.75rem',
     fontWeight: 500,
     cursor: 'pointer',
-    border: active ? '1px solid #F59E0B' : '1px solid rgba(255,255,255,0.15)',
+    // Resting (inactive) border fixed from rgba(255,255,255,0.15) to the
+    // --input token equivalent (hsl(217.2 20% 45%), ~3.82:1 vs background)
+    // per issue #20109 pattern — active state (amber) untouched.
+    border: active ? '1px solid #F59E0B' : '1px solid hsl(217.2, 20%, 45%)',
     background: active ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)',
     color: active ? '#F59E0B' : 'rgba(255,255,255,0.7)',
     transition: 'all 0.15s',

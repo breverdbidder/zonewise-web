@@ -1,0 +1,105 @@
+name: Failure Alert — runners & deploys (Telegram)
+
+# Ariel, Sep 10 2026 ("Go 1-4", item 4). The biddeed-web CC runner failed
+# 5/5 runs over 31h and nobody was told. This pings Telegram within ~30 min
+# of any failed run in the watched set. Read-only: it only reads public run
+# metadata with the job token and posts one message. Lives in zonewise-web
+# because this repo already holds TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID.
+
+on:
+  schedule:
+    - cron: '7,37 * * * *'   # off the quarter-hour on purpose
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'Send a test message even if nothing failed'
+        type: boolean
+        default: false
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: failure-alert
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Scan watched repos and alert
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TEST: ${{ inputs.test }}
+          SELF_REPO: ${{ github.repository }}
+          SELF_RUN: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, urllib.request, urllib.parse, datetime as dt
+          from zoneinfo import ZoneInfo
+          ET = ZoneInfo('America/New_York')
+          H = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'User-Agent': 'failure-alert'}
+          def gh(path):
+              req = urllib.request.Request('https://api.github.com' + path, headers=H)
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return json.load(r)
+          def ts(s): return dt.datetime.fromisoformat(s.replace('Z', '+00:00'))
+          now = dt.datetime.now(dt.timezone.utc)
+          # Window starts where the previous successful scan started, so no gap and no double alert.
+          since = now - dt.timedelta(minutes=35)
+          try:
+              prev = gh(f"/repos/{os.environ['SELF_REPO']}/actions/workflows/failure-alert.yml/runs?status=success&per_page=1")['workflow_runs']
+              if prev: since = min(ts(prev[0]['run_started_at']), now - dt.timedelta(minutes=5))
+          except Exception as e:
+              print('prev-run lookup failed, using 35 min window:', e)
+          since = max(since, now - dt.timedelta(hours=6))
+          WATCH = {
+              'breverdbidder/biddeed-web': None,                      # every workflow
+              'breverdbidder/zonewise-web': None,                     # every workflow
+              'breverdbidder/cli-anything-biddeed': {                 # runners + deploys only
+                  '.github/workflows/cc-runner-ghonly.yml', '.github/workflows/deploy-worker.yml',
+                  '.github/workflows/deploy-staging.yml', '.github/workflows/deploy-winnerdata-ff.yml',
+                  '.github/workflows/rls-gate.yml'},
+          }
+          BAD = {'failure', 'timed_out', 'startup_failure'}
+          hits = []
+          for repo, paths in WATCH.items():
+              q = urllib.parse.quote('>=' + (since - dt.timedelta(hours=6)).strftime('%Y-%m-%dT%H:%M:%SZ'))
+              runs = gh(f"/repos/{repo}/actions/runs?per_page=100&created={q}")['workflow_runs']
+              for r in runs:
+                  if r.get('conclusion') not in BAD: continue
+                  if paths is not None and r['path'] not in paths: continue
+                  if repo == os.environ['SELF_REPO'] and r['path'].endswith('failure-alert.yml'): continue
+                  if ts(r['updated_at']) < since: continue
+                  label = r['name']
+                  if r['path'].endswith('cc-runner-ghonly.yml'):
+                      try:
+                          jobs = [j['name'] for j in gh(f"/repos/{repo}/actions/runs/{r['id']}/jobs")['jobs'] if j['name'].startswith('run-cc')]
+                          if jobs: label = 'CC Runner ' + ', '.join(jobs)
+                      except Exception: pass
+                  hits.append((ts(r['updated_at']), repo.split('/')[1], label, r['html_url']))
+          hits.sort()
+          print(f"window {since.astimezone(ET):%b %d %I:%M %p} ET -> now: {len(hits)} failed run(s)")
+          for h in hits: print(' ', h[0].astimezone(ET).strftime('%I:%M %p'), h[1], h[2], h[3])
+          if not hits and os.environ.get('TEST') != 'true':
+              sys.exit(0)
+          if hits:
+              lines = [f"⚠️ {len(hits)} failed run(s) since {since.astimezone(ET):%I:%M %p} ET"]
+              lines += [f"• {h[0].astimezone(ET):%I:%M %p} ET · {h[1]} · {h[2]}\n  {h[3]}" for h in hits[:15]]
+              if len(hits) > 15: lines.append(f"…and {len(hits)-15} more")
+          else:
+              lines = [f"✅ Failure alert is armed (test). Watching biddeed-web, zonewise-web, and cli-anything-biddeed runners + deploys every 30 min. Nothing failed since {since.astimezone(ET):%I:%M %p} ET."]
+          tok, chat = os.environ.get('TG_TOKEN'), os.environ.get('TG_CHAT')
+          if not tok or not chat:
+              print('::error::TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID missing'); sys.exit(1)
+          body = urllib.parse.urlencode({'chat_id': chat, 'text': '\n'.join(lines), 'disable_web_page_preview': 'true'}).encode()
+          with urllib.request.urlopen(urllib.request.Request(f'https://api.telegram.org/bot{tok}/sendMessage', data=body), timeout=30) as r:
+              res = json.load(r)
+          c = res.get('result', {}).get('chat', {})
+          print('telegram ok:', res.get('ok'), '| chat type:', c.get('type'), '| chat title/user:', c.get('title') or c.get('username') or c.get('first_name'))
+          if not res.get('ok'): sys.exit(1)
+          PY

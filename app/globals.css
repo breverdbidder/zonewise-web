@@ -59,7 +59,23 @@
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 96%;
   --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
+  /* Control-boundary fix (issue #20109 pattern, zonewise-web instance):
+     --input was identical to --border (217.2 32.6% 17.5%), a low-contrast
+     container-edge token that resolves to ~1.37:1 against --background
+     (222.2 84% 4.9%) — invisible as a form-control boundary and fails WCAG
+     2.1 SC 1.4.11 (non-text contrast >=3:1). New value 217.2 20% 45% keeps
+     the same hue family (217.2, slate-blue) so it still reads as part of
+     the palette, but lifts lightness from 17.5% to 45% and lowers
+     saturation from 32.6% to 20% to avoid looking like a saturated accent.
+     Computed contrast ratio vs background: ~3.82:1 (relative luminance via
+     WCAG formula: bg rgb(2,8,23) lum 0.0025; --input rgb(92,109,138)
+     lum 0.0876; (0.0876+0.05)/(0.0025+0.05) = 3.82). Meets the >=3:1 floor
+     with headroom. Deliberately not the brand accent (38 92% 50%, orange —
+     reserved for focus/active) and not pure white (0 0% 100%, too harsh
+     for a resting border). border-input (Tailwind, shadcn convention) maps
+     to this token in tailwind.config.ts, so components/ui/input.tsx and
+     components/ui/select.tsx inherit the fix with no further changes. */
+  --input: 217.2 20% 45%;
   --ring: 213 54% 34%;
   --radius: 0.5rem;
 
