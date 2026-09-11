@@ -425,19 +425,32 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
       ? `Median income ${nbhd.median_income != null ? '$' + Number(nbhd.median_income).toLocaleString() : '—'}, ownership ${nbhd.ownership_rate != null ? Math.round(nbhd.ownership_rate * 100) + '%' : '—'}, poverty rate ${nbhd.poverty_rate != null ? Math.round(nbhd.poverty_rate * 100) + '%' : '—'}${nbhd.median_rent != null ? `, median rent $${Number(nbhd.median_rent).toLocaleString()}` : ''} — ${nbhd.source || 'Census ACS'}`
       : (nbhd.reason || 'Pending — layer not yet wired for this county')
     const schoolsText = schools.available
-      ? (schools.display || (Array.isArray(schools.nearest) ? schools.nearest.map((s: any) => `${s.name} (${s.level}, ${s.distance_mi} mi)`).join('; ') : 'delivered'))
+      ? ((Array.isArray(schools.nearest) ? schools.nearest.map((s: any) => `${String(s.level || '')[0]?.toUpperCase() ?? ''}${String(s.level || '').slice(1)}: ${s.name} (${s.distance_mi}mi)`).join(' · ') : '') || 'Pending — no schools found within 5mi')
       : (schools.reason || 'Pending — school layer not wired; source TBD')
-    const poiText = poi.available
-      ? (poi.display || 'delivered')
-      : (poi.reason || 'Pending — nearby places layer not wired')
+    // #20290: poi.classes[] = { key, label, count, nearest_mi, names[] } within
+    // poi.radius_mi of the subject — one row per class, exactly like pdf.js.
+    const poiClasses: any[] = poi.available && Array.isArray(poi.classes) ? poi.classes : []
     return (
       <>
         <Row label="Market Grade" value={ctx.market_grade || 'Pending'} alt />
         <Row label="Flood Zone" value={floodText} />
         <Row label="Neighborhood" value={nbhdText} alt />
         <Row label="Schools" value={schoolsText} />
-        <Row label="Nearby Places" value={poiText} alt />
-        <Row label="Median Income" value={nbhd.available && nbhd.median_income != null ? `$${Number(nbhd.median_income).toLocaleString()}` : 'Pending'} />
+        <Row label="Median Income" value={nbhd.available && nbhd.median_income != null ? `$${Number(nbhd.median_income).toLocaleString()}` : 'Pending'} alt />
+        {poi.available ? (
+          poiClasses.map((c: any, i: number) => (
+            <Row
+              key={c.key || c.label || i}
+              label={c.label || c.key || 'Place'}
+              value={c.count > 0
+                ? `nearest ${c.nearest_mi} mi · ${c.count} within ${poi.radius_mi} mi — ${poi.source || 'OpenStreetMap'}${c.names?.length ? ` (${c.names.join(', ')})` : ''}`
+                : `none within ${poi.radius_mi} mi — ${poi.source || 'OpenStreetMap'}`}
+              alt={i % 2 === 0}
+            />
+          ))
+        ) : (
+          <Row label="Nearby Places" value={poi.reason || 'Pending — nearby places layer not wired'} />
+        )}
         <Row label="Other Hazards" value="Pending — not sourced" alt />
       </>
     )
@@ -446,7 +459,12 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
   shapira_ml(report) {
     const ml = report.context_layers?.ml_model || {}
     const p = ml.probability_third_party_purchase
-    const canPrint = ml.print_probability === true && typeof p === 'number' && ml.withheld !== true
+    // Same contract as pdf.js + composer.scoreModel(): when the validation gate
+    // has not passed, the composer replaces the probability with a 'withheld —'
+    // string and sets ml.withheld=true; a numeric probability therefore means
+    // the gate passed. (The earlier `print_probability` flag was never emitted
+    // by the composer, so this twin could never print even a validated number.)
+    const canPrint = typeof p === 'number' && ml.withheld !== true
     const bl = ml.base_learners || {}
     const hasDistinctLearners = canPrint && ml.method === 'ml_scores_nightly_batch'
       && typeof bl.xgb_prob === 'number' && typeof bl.lgbm_prob === 'number' && typeof bl.catb_prob === 'number'
@@ -455,7 +473,13 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
       <>
         <Row label="Model" value={ml.model_version || 'Pending — model version not reported'} alt />
         <Row label="Method" value={ml.method || 'Pending'} />
-        <Row label="Validation Gate" value={ml.validation_status || (canPrint ? 'passed' : 'open — out-of-time validation on verified outcomes has not passed')} alt />
+        <Row
+          label="Validation"
+          value={ml.withheld
+            ? `Not passed — ${ml.withheld_reason || 'out-of-time validation on verified outcomes has not passed'}`
+            : (canPrint ? 'Passed out-of-time validation on verified outcomes (shapira_model_validations)' : 'Pending')}
+          alt
+        />
         {canPrint ? (
           <>
             <Row label="3rd-Party Probability" value={`${(Number(p) * 100).toFixed(1)}%`} />
@@ -657,6 +681,12 @@ export default function S5Report({ template, report }: S5ReportProps) {
           Case {cover.case_number || '—'} · Parcel {cover.parcel_id || '—'}
         </p>
       </div>
+      {typeof report.executive_summary?.text === 'string' && report.executive_summary.text.trim() && (
+        <div className="border-x border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-5 py-3">
+          <p className="text-[11px] font-bold tracking-wide text-[#0A2540] dark:text-[#4DA6FF]">EXECUTIVE SUMMARY</p>
+          <p className="text-sm text-slate-800 dark:text-slate-200 mt-1">{report.executive_summary.text}</p>
+        </div>
+      )}
       <div className="space-y-4 mt-4">
         {template.map((section) => (
           <div key={section.section_key} className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-800">
