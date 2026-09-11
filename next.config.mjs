@@ -51,6 +51,17 @@ const nextConfig = {
         headers: securityHeaders,
       },
       {
+        // Ported from vercel.json (Vercel -> Cloudflare exit, issue #20026).
+        // vercel.json applied this + a duplicate set of security headers to
+        // ALL routes; the security headers are already covered by
+        // securityHeaders above, so only the version marker is added here to
+        // avoid emitting duplicate header lines.
+        source: '/(.*)',
+        headers: [
+          { key: 'X-ZoneWise-Version', value: 'v4-nextjs-restored' },
+        ],
+      },
+      {
         source: '/api/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store' },
@@ -59,6 +70,11 @@ const nextConfig = {
     ]
   },
   images: {
+    // Cloudflare Workers (workerd) cannot run Vercel's Node/sharp-based image
+    // optimizer -- this is a platform constraint, not a preference, and
+    // applies regardless of remotePatterns being configured. next/image
+    // still works, it just serves the original asset unoptimized.
+    unoptimized: true,
     remotePatterns: [
       { protocol: 'https', hostname: 'www.bcpao.us' },
       { protocol: 'https', hostname: '*.supabase.co' },
@@ -83,6 +99,20 @@ const nextConfig = {
       {
         source: '/demo.html',
         destination: '/demo',
+      },
+      // Ported from vercel.json (Vercel -> Cloudflare exit, issue #20026):
+      // preserve /competitors 1:1 so behavior doesn't change post-cutover.
+      {
+        source: '/competitors',
+        destination: '/competitors.html',
+      },
+      {
+        source: '/competitors/propzone.html',
+        destination: '/competitors/propzone',
+      },
+      {
+        source: '/competitors/algoma.html',
+        destination: '/competitors/algoma',
       },
     ]
   },

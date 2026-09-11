@@ -30,6 +30,10 @@ npm-debug.log*
 # vercel
 .vercel
 
+# cloudflare / opennextjs-cloudflare (issue #20026)
+.open-next/
+.wrangler/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
