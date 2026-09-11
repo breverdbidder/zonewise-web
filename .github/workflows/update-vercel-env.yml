@@ -1,4 +1,6 @@
 name: "Update Vercel Env Var"
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# Vercel env-var management for a project being decommissioned; workflow_dispatch-only already, kept as manual escape hatch.
 on:
   workflow_dispatch:
     inputs:

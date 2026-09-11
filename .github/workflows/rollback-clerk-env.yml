@@ -1,4 +1,6 @@
 name: Rollback Clerk env
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# Rolls back Clerk env in Vercel for a project being decommissioned; workflow_dispatch-only already.
 
 # I cloned Clerk env vars preview -> production, but the Vercel API returned
 # SEALED values (eyJ2Ijoi...) rather than plaintext even with decrypt=true.

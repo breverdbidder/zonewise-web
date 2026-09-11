@@ -1,4 +1,6 @@
 name: Set Clerk production keys
+# DEPRECATED — Vercel exit 2026-09-05 (issue #20027, part of #19812 Vercel decommission).
+# Sets Clerk keys into Vercel env for a project being decommissioned; workflow_dispatch-only already.
 
 # Takes the Clerk keys as dispatch INPUTS so they are never committed to the
 # repository. Values are written straight to Vercel production and masked in
