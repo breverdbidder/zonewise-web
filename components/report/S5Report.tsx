@@ -17,6 +17,12 @@
 //    mortgages, other encumbrances, lien hierarchy, additional comments,
 //    other-property instruments, disclosed limits.
 //  - Band colours = biddeed.ai SSOT palette (#0A2540 navy, #005EB8 brand).
+//
+// 2026-09-11 kill-list gate (cli-anything-biddeed #20240 → PR #20312): the
+// component runs applyKillListGate() over the raw /report/json payload before
+// any section renders — see the gate block below. Withheld model → SIGNAL$
+// Max Bid 'Hidden', ML row 'Withheld — model not validated on verified
+// outcomes', §18 Ceiling Call omitted, executive-summary bid clause dropped.
 import { Fragment, type ReactNode } from 'react'
 import type { S5TemplateRow } from '@/app/api/report/route'
 
@@ -29,6 +35,75 @@ const BAND_COLOR: Record<string, string> = {
 }
 
 type Report = Record<string, any>
+
+// ─── Kill-list gate (cli-anything-biddeed #20240 → PR #20312, Ariel's
+// 2026-09-11 ruling: the kill list covers PAID reports, every renderer).
+// This twin is fed the raw /report/json composer output, which still carries
+// the SIGNAL$ Max Bid, the sold-probability and the §18 ceiling call the web
+// report (src/worker.js applyKillListGate) and the canonical PDF (pdf.js
+// applyKillListGate) strip whenever context_layers.ml_model.withheld is true.
+// Same predicate, same stripped fields, same fallback text — 'Hidden' for a
+// max-bid figure, 'Withheld — model not validated on verified outcomes' for
+// the ML row. A validated model (withheld false + numeric probability, e.g.
+// td-soldvred-v1) passes through untouched.
+export const MAX_BID_HIDDEN_TEXT = 'Hidden'
+export const ML_WITHHELD_TEXT = 'Withheld — model not validated on verified outcomes (see §17 Provenance)'
+export const ML_NOT_DEPLOYED_TEXT = 'Withheld — artifact not deployed at scoring time'
+
+export function isKillListGated(report: Report | null | undefined): boolean {
+  const ml = report?.context_layers?.ml_model || {}
+  return ml.withheld === true || typeof ml.probability_third_party_purchase !== 'number'
+}
+
+function mlWithheldText(ml: any): string {
+  return ml?.withheld === true ? ML_WITHHELD_TEXT : ML_NOT_DEPLOYED_TEXT
+}
+
+// The executive summary is composer prose built from cover.shapira_max_bid
+// ("Entry bid $X, SIGNAL$ Max Bid $Y — walk away above $Y."). pdf.js rebuilds
+// it through the composer; this twin has no composer, so it drops the
+// sentence(s) that carry the ceiling. Every clause ends in '.', so a
+// sentence split is exact.
+export function gateExecutiveSummary(text: string): string {
+  return text
+    .split(/(?<=\.)\s+/)
+    .filter((s) => !/SIGNAL\$ Max Bid|walk away above|ceiling held|walked correctly/i.test(s))
+    .join(' ')
+}
+
+export function applyKillListGate(report: Report): Report {
+  if (!report || !isKillListGated(report)) return report
+  const r: Report = JSON.parse(JSON.stringify(report))
+  if (r.cover) { r.cover.shapira_max_bid = null; r.cover.equity_at_ceiling = null }
+  if (r.opinion_of_price_bid_card) {
+    r.opinion_of_price_bid_card.shapira_max_bid = null
+    r.opinion_of_price_bid_card.shapira_ceiling = null
+  }
+  if (r.auction_outcome) {
+    if (r.auction_outcome.scorecard) delete r.auction_outcome.scorecard.ceiling_call
+    delete r.auction_outcome.ceiling_call
+    delete r.auction_outcome.predicted_third_party
+  }
+  const ml = r.context_layers?.ml_model
+  if (ml && ml.withheld === true && typeof ml.probability_third_party_purchase === 'number') {
+    ml.probability_third_party_purchase = `withheld — ${ml.withheld_reason || 'model not validated on verified outcomes'}`
+  }
+  if (Array.isArray(r.red_flags)) {
+    r.red_flags = r.red_flags.map((f: any) => (f && f.code === 'SURVIVING_LIEN_DEDUCTED' && typeof f.text === 'string')
+      ? { ...f, text: f.text.replace(/Ceiling before deduction: .*?; after: .*?\.\s*$/, `Ceiling before/after deduction: ${MAX_BID_HIDDEN_TEXT} — SIGNAL$ Max Bid withheld (see §15).`) }
+      : f)
+  }
+  if (typeof r.executive_summary?.text === 'string') {
+    r.executive_summary = { ...r.executive_summary, text: gateExecutiveSummary(r.executive_summary.text) }
+  }
+  return r
+}
+
+// Max-bid figure at any render site: 'Hidden' while gated, normal money()
+// formatting otherwise (incl. its 'Pending' for a legitimately null ceiling).
+function maxBidText(report: Report, val: unknown): string {
+  return isKillListGated(report) ? MAX_BID_HIDDEN_TEXT : money(val)
+}
 
 function money(val: unknown): string {
   if (val == null || val === '') return 'Pending'
@@ -294,13 +369,14 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
           <p className="text-lg font-bold text-[#0A2540] dark:text-white">{mb?.low != null ? `${money(mb.low)} – ${money(mb.high)}` : 'Pending'}</p>
           {mb?.midpoint != null && (
             <p className="text-xs text-slate-500">
-              Midpoint {money(mb.midpoint)} · Investment Grade {cover.investment_grade || '—'} · SIGNAL$ Max Bid {money(cover.shapira_max_bid)}
+              Midpoint {money(mb.midpoint)} · Investment Grade {cover.investment_grade || '—'} · SIGNAL$ Max Bid {maxBidText(report, cover.shapira_max_bid)}
             </p>
           )}
         </div>
         {cover.equity_at_entry_bid != null && (
           <div className="mx-3 mb-3 p-3 rounded bg-green-600 text-white text-sm font-bold">
-            Day-1 Equity at Entry Bid: {money(cover.equity_at_entry_bid)} · Equity at Ceiling: {money(cover.equity_at_ceiling)}
+            {/* equity_at_ceiling = ARV midpoint − ceiling: printing it would hand back the withheld ceiling by subtraction */}
+            Day-1 Equity at Entry Bid: {money(cover.equity_at_entry_bid)} · Equity at Ceiling: {maxBidText(report, cover.equity_at_ceiling)}
           </div>
         )}
         {Array.isArray(value.anchors) && value.anchors.length > 0 && (
@@ -488,9 +564,9 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
             )}
           </>
         ) : (
-          <p className="px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400">
-            3rd-Party Probability: WITHHELD — a number the model has not validated on verified outcomes will not be printed under its name.
-          </p>
+          // Same fallback sentence the web report's §ML row prints (worker.js
+          // mlWithheldText) and pdf.js prints — PR #20312 parity.
+          <Row label="3rd-Party Probability" value={mlWithheldText(ml)} />
         )}
         {fv && typeof fv === 'object' && (
           <div className="px-3 pb-2">
@@ -556,8 +632,8 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <TwoCol
           pairs={[
             ['Entry Bid', money(opp.entry_bid || cover.entry_bid)],
-            ['SIGNAL$ Max Bid', money(smbVal)],
-            ['Walk Away Above', money(smbVal)],
+            ['SIGNAL$ Max Bid', maxBidText(report, smbVal)],
+            ['Walk Away Above', maxBidText(report, smbVal)],
             ['Value Midpoint', money(opp.value_midpoint)],
           ]}
         />
@@ -640,18 +716,23 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
   auction_outcome(report) {
     const outcome = report.auction_outcome || {}
     if (outcome.result || outcome.sale_status) {
-      return (
-        <TwoCol
-          pairs={[
-            ['Result', outcome.sale_status || outcome.result],
-            ['Sale Amount', money(outcome.sale_amount || outcome.winning_bid)],
-            ['Winning Bidder', outcome.winning_bidder || '—'],
-            ['Buyer Type', outcome.buyer_type || '—'],
-            ['Clearing Multiple', outcome.clearing_multiple ? `${outcome.clearing_multiple}×` : '—'],
-            ['Ceiling Call', outcome.scorecard?.ceiling_call || outcome.ceiling_call || 'Withheld'],
-          ]}
-        />
-      )
+      // Ceiling call: the composer grades it in scorecard.ceiling_call
+      // ('ceiling held' / 'walked correctly' against the SIGNAL$ Max Bid).
+      // applyKillListGate() deletes it while withheld and — like the web
+      // report and pdf.js — the row is then omitted, never printed as a dash.
+      const cc = outcome.scorecard?.ceiling_call
+      const ceilingCall: string | null = cc && typeof cc === 'object'
+        ? `${cc.verdict || 'graded'}${cc.headroom != null ? ` — ${money(cc.headroom)} headroom` : cc.overshoot != null ? ` — ${money(cc.overshoot)} over` : ''}`
+        : (typeof outcome.ceiling_call === 'string' ? outcome.ceiling_call : null)
+      const pairs: [string, unknown][] = [
+        ['Result', outcome.sale_status || outcome.result],
+        ['Sale Amount', money(outcome.sale_amount || outcome.winning_bid)],
+        ['Winning Bidder', outcome.winning_bidder || '—'],
+        ['Buyer Type', outcome.buyer_type || '—'],
+        ['Clearing Multiple', outcome.clearing_multiple ? `${outcome.clearing_multiple}×` : '—'],
+      ]
+      if (!isKillListGated(report)) pairs.push(['Ceiling Call', ceilingCall || '—'])
+      return <TwoCol pairs={pairs} />
     }
     return (
       <Row
@@ -667,7 +748,11 @@ interface S5ReportProps {
   report: Report
 }
 
-export default function S5Report({ template, report }: S5ReportProps) {
+export default function S5Report({ template, report: inputReport }: S5ReportProps) {
+  // Kill-list gate BEFORE anything renders — every SECTION_RENDERERS entry
+  // below receives the gated copy, so no code path can reach a withheld
+  // figure. Pass-through (same object) when the gate is open.
+  const report = applyKillListGate(inputReport)
   const cover = report.cover || {}
   return (
     <div className="max-w-3xl mx-auto">
