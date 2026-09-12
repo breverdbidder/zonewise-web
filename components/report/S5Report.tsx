@@ -536,7 +536,9 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
   property_record(report) {
     const prop = report.property_record || {}
     const auction = report.auction_listing || {}
+    const aerial = prop.aerial || {}
     return (
+      <>
       <TwoCol
         pairs={[
           ['Property Type', prop.property_type || 'Pending'],
@@ -550,6 +552,17 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
           ['Auction URL', auction.auction_url || 'Pending'],
         ]}
       />
+      {/* K9 (cli-anything-biddeed #20337): the same stored aerial the deal page renders; pdf.js prints the identical Pending sentence when no image is available */}
+      {typeof aerial.url === 'string' && aerial.url ? (
+        <div className="px-4 py-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={aerial.url} alt="Aerial view of the subject parcel" className="w-full max-w-md rounded border border-slate-200 dark:border-slate-800" loading="lazy" />
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Aerial source: {aerial.source || 'Pending'}</p>
+        </div>
+      ) : (
+        <Row label="Aerial" value="Pending — image not available at generation time" />
+      )}
+      </>
     )
   },
 
@@ -577,6 +590,13 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <Row label="Flood Zone" value={floodText} />
         <Row label="Neighborhood" value={nbhdText} alt />
         <Row label="Schools" value={schoolsText} />
+        {/* K4 (parent #20287): SABS attendance-boundary assignment from fetchSchools() (#20291) — Pending strings verbatim, never guessed; same row as pdf.js */}
+        <Row
+          label="Assigned Schools"
+          value={schools.available && schools.assigned
+            ? ['elementary', 'middle', 'high'].map((l) => `${l[0].toUpperCase()}${l.slice(1)}: ${schools.assigned[l] || 'Pending'}`).join(' · ')
+            : 'Pending — attendance boundary layer not available'}
+        />
         <Row label="Median Income" value={nbhd.available && nbhd.median_income != null ? `$${Number(nbhd.median_income).toLocaleString()}` : 'Pending'} alt />
         {poi.available ? (
           poiClasses.map((c: any, i: number) => (
