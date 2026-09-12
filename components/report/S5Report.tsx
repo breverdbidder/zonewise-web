@@ -8,9 +8,13 @@
 //  - context_layers reads the composer's OBJECTS (neighborhood.*, fema.*,
 //    schools.*, nearby_places.*) exactly like pdf.js — no more "[object Object]".
 //  - shapira_ml is data-driven; the probability prints ONLY when the composer
-//    has passed the validation gate (ml.print_probability === true and a
-//    numeric probability); otherwise WITHHELD with the gate named. Never the
-//    retired v14.0 text.
+//    has passed the validation gate (numeric probability and withheld !== true —
+//    the composer never emits a print_probability flag); otherwise WITHHELD
+//    with the gate named. Never the retired v14.0 text.
+//  - 2026-09-11 evening: POI per-class rows (#20290), NCES schools format
+//    (#20291), executive summary block (#20293), rental line + DOR value
+//    history rows (#20339), clearing-ratio sparkline (#20338), report sha256
+//    row (#20336) — each mirrors the pdf.js strings verbatim.
 //  - rehab_estimate renderer added (SSOT row §REHAB existed with no handler).
 //  - judgment_encumbrance renders report.title_search blocks 1–9 like pdf.js
 //    (#20254 / #20270): header, vesting, chain (gated on delivered), tax,
@@ -317,6 +321,52 @@ function TitleSearchBlocks({ ts }: { ts: any }) {
   )
 }
 
+// ─── Clearing-ratio sparkline (K10, cli-anything-biddeed #20338) — mirrors
+// pdf.js drawClearingRatioSparkline: monthly median sold ÷ assessed for the
+// subject's county and SAME sale type, months with >=10 verified outcomes,
+// at least 6 months or the composer sends { available:false, reason }.
+// Inline SVG in the SSOT colours (line #005EB8, axis #D7E3F1, text #0A2540).
+function ClearingRatioSparkline({ history }: { history: any }) {
+  const title = 'Clearing Ratio History — Monthly Median Sold ÷ Assessed (trailing 24mo)'
+  if (!Array.isArray(history) || history.length === 0) {
+    return (
+      <>
+        <SubHead>{title}</SubHead>
+        <Row label="Clearing Ratio History" value={(history && history.reason) || 'Pending — insufficient monthly history'} />
+      </>
+    )
+  }
+  const W = 600
+  const H = 60
+  const values: number[] = history.map((m: any) => Number(m.median_sold_to_assessed))
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = (max - min) || 1
+  const stepX = history.length > 1 ? W / (history.length - 1) : 0
+  const points = history.map((m: any, i: number) => `${(i * stepX).toFixed(1)},${(H - ((Number(m.median_sold_to_assessed) - min) / range) * H).toFixed(1)}`).join(' ')
+  const latest = history[history.length - 1]
+  const minPoint = history.reduce((a: any, b: any) => (Number(b.median_sold_to_assessed) < Number(a.median_sold_to_assessed) ? b : a))
+  const maxPoint = history.reduce((a: any, b: any) => (Number(b.median_sold_to_assessed) > Number(a.median_sold_to_assessed) ? b : a))
+  const ns: number[] = history.map((m: any) => Number(m.n))
+  const nLo = Math.min(...ns)
+  const nHi = Math.max(...ns)
+  return (
+    <>
+      <SubHead>{title}</SubHead>
+      <div className="px-4 pb-1">
+        <svg viewBox={`0 -4 ${W} ${H + 8}`} className="w-full h-16" role="img" aria-label={`Clearing ratio history, ${history.length} months, latest ${pct(latest.median_sold_to_assessed)}`}>
+          <line x1="0" y1={H} x2={W} y2={H} stroke="#D7E3F1" strokeWidth="1" />
+          <polyline points={points} fill="none" stroke="#005EB8" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
+      </div>
+      <Para>
+        Min {pct(minPoint.median_sold_to_assessed)} ({minPoint.month}, n={minPoint.n}) · Max {pct(maxPoint.median_sold_to_assessed)} ({maxPoint.month}, n={maxPoint.n}) · Latest {pct(latest.median_sold_to_assessed)} ({latest.month}, n={latest.n})
+      </Para>
+      <Para muted>Source: multi_county_auctions, {history.length} months with &gt;=10 verified outcomes each (n {nLo}-{nHi} per month).</Para>
+    </>
+  )
+}
+
 // ─── Section renderers — keyed by section_key, mirroring pdf.js ────────────
 const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
   subject_identification(report) {
@@ -387,6 +437,20 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
             ))}
           </div>
         )}
+        {/* §2-3 rental line + DOR value history (K11, cli-anything-biddeed #20339) — same strings as pdf.js; real listings / real roll fields only */}
+        <Row
+          label="Rental Estimate"
+          value={value.rental_estimate && value.rental_estimate.available !== false
+            ? `${money(value.rental_estimate.median_rent)}/mo · n=${value.rental_estimate.n} · ${value.rental_estimate.geography} · ${value.rental_estimate.bedrooms_rule} · as of ${value.rental_estimate.as_of}`
+            : (value.rental_estimate?.reason || 'Pending')}
+          alt
+        />
+        <Row
+          label="DOR Just Value History"
+          value={value.value_history && value.value_history.available !== false
+            ? `${money(value.value_history.jv_current)} (${value.value_history.roll_year ?? '?'}) vs. prior ${money(value.value_history.jv_prior)} (change ${money(value.value_history.jv_chng)}) · longer history: Pending`
+            : (value.value_history?.reason || 'Pending')}
+        />
       </>
     )
   },
@@ -417,6 +481,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         ) : (
           <Row label="Distressed CMA" value={distressed.note || 'Pending — no auction-cleared comps found for this county/sqft range'} />
         )}
+        <ClearingRatioSparkline history={(report.county_stats || report.county_market_priors || {}).clearing_ratio_history} />
         <SubHead>LAYER 2 — Retail Market Comps (Open Market ARV)</SubHead>
         {retailComps.length > 0 ? (
           <>
@@ -708,6 +773,8 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <Row label="Certification" value={prov.certification_disclosure || 'Pending'} />
         <Row label="Effective Date" value={prov.effective_date || report.title_search?.effective_date || 'Pending'} alt />
         <Row label="Snapshot sha256" value={report.title_search?.snapshot_sha256 ? String(report.title_search.snapshot_sha256).slice(0, 16) + '…' : 'Pending — no versioned snapshot for this sale yet'} />
+        {/* K7 (cli-anything-biddeed #20336): whole-report sha256 is written by the purchase writer into provenance.snapshot_sha256; a preview render prints Pending by construction */}
+        <Row label="Report snapshot sha256" value={prov.snapshot_sha256 || 'Pending — hashed at purchase'} alt />
         <Para>{prov.model_disclosure || 'SIGNAL$ Models — probability withheld until out-of-time validation on verified outcomes passes.'}</Para>
       </>
     )
