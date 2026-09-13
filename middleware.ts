@@ -32,6 +32,13 @@ const isPublicRoute = createRouteMatcher([
   '/api/parcels(.*)',
   '/api/zoning-chat(.*)',
   '/api/zoning-report(.*)',
+  // /report's own JSON API. The ROUTE enforces entitlement itself
+  // (anonymous callers get entitled:false -> teaser, never report JSON), so
+  // it must be reachable signed-out. It was missing here (only the plural
+  // /api/reports was listed), so auth.protect() 404'd every anonymous
+  // /api/report call; the Server Component then got an HTML 404 page instead
+  // of JSON and zonewise.ai/report rendered "Report service unavailable".
+  '/api/report(.*)',
   '/api/owner-intel(.*)',
   '/api/chat-v2(.*)',
   '/api/reports(.*)',
