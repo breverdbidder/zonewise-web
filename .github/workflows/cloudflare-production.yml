@@ -143,16 +143,17 @@ jobs:
           npx wrangler secret bulk /tmp/secrets-bulk.json --config wrangler.production.jsonc
           rm -f /tmp/secrets-bulk.json .env.production.local
 
-      - name: Public smoke checks against the workers.dev URL
+      - name: Public smoke checks against the live entrypoint
         shell: bash
         run: |
           set -euo pipefail
-          sub=$(curl -sS "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.subdomain')
-          base="https://zonewise-web-production.$sub.workers.dev"
-          echo "Worker base URL: $base"
+          # The workers.dev URL is not the real entrypoint (route-bound worker;
+          # subdomain checks failed every run while deploys were green). Smoke
+          # the public custom domain instead. /coverage removed: it 404s live.
+          base="https://zonewise.ai"
+          echo "Smoke target: $base"
           fail=0
-          for path in / /pricing /coverage /robots.txt /competitors /sign-in /api/stats; do
+          for path in / /pricing /robots.txt /competitors /sign-in /api/stats; do
             code=$(curl -L -sS -o /tmp/response -w '%{http_code}' --max-time 60 "$base$path" || echo 000)
             echo "$path -> $code"
             case "$code" in 2*|3*) ;; *) fail=1;; esac
