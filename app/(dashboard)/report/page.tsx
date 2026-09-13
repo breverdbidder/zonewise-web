@@ -9,7 +9,7 @@ import ZoningReport, { type ZoningReportData } from '@/components/reports/Zoning
 import ErrorBoundary from '@/components/ErrorBoundary'
 import ZoningDisclaimer from '@/components/ZoningDisclaimer'
 import S5Report from '@/components/report/S5Report'
-import type { S5TemplateRow } from '@/app/api/report/route'
+import { getS5ReportPayload, type S5TemplateRow } from '@/lib/s5-report'
 
 interface ReportPageProps {
   searchParams: Promise<{ parcel?: string; mca_id?: string; address?: string; print?: string }>
@@ -48,26 +48,14 @@ interface S5ApiResponse {
 }
 
 async function fetchS5Report(params: { mca_id?: string; address?: string }): Promise<S5ApiResponse | null> {
+  // Sept 13 2026: this Server Component previously fetched its own /api/report
+  // route over HTTP. On the Cloudflare Worker that same-zone subrequest stalls
+  // ~19s and fails, so the page rendered "Report service unavailable" for every
+  // user even while the API itself returned 200. The logic now runs in-process
+  // via the shared payload builder; entitlement stays server-derived inside it.
   try {
-    const qs = new URLSearchParams(
-      params.mca_id ? { mca_id: params.mca_id } : { address: params.address ?? '' }
-    )
-    // BUGFIX (Aug 14 2026): this Server Component previously fetched its own
-    // /api/report route with a bare absolute URL. That is a brand-new outbound
-    // HTTP request — Next.js does NOT attach the visitor's Clerk session cookie
-    // to it automatically. /api/report's auth() therefore always saw a logged-out
-    // caller, checkProEntitlement() always returned false, and the S5 report
-    // rendered as locked/unavailable for every user, including fully-entitled
-    // Pro accounts. Forwarding the incoming request's cookie header fixes this.
-    const incomingHeaders = await headers()
-    const cookie = incomingHeaders.get('cookie')
-    const res = await fetch(`${resolveBaseUrl()}/api/report?${qs.toString()}`, {
-      cache: 'no-store',
-      headers: cookie ? { cookie } : undefined,
-    })
-    // 404 (address not found) still carries a body worth showing — read it either way.
-    const body = await res.json().catch(() => null)
-    return body
+    const { body } = await getS5ReportPayload({ mcaId: params.mca_id, address: params.address })
+    return body as S5ApiResponse
   } catch {
     return null
   }
