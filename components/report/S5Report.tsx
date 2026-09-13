@@ -143,6 +143,18 @@ function Band({ label, title, color }: { label: string; title: string; color: st
   )
 }
 
+// DOR fl_parcels stores sale month + year — no day-level sold date exists in
+// the cadastral feed. Print real stored precision only, never a padded day.
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function compSaleDateText(c: any): string {
+  const yr = c.sale_yr1 ?? c.sale_year;
+  const mo = c.sale_mo1 ?? c.sale_month;
+  if (yr && Number(mo) >= 1 && Number(mo) <= 12) return `${MONTH_ABBR[Number(mo) - 1]} ${yr}`;
+  if (yr) return String(yr);
+  if (c.auction_date) return String(c.auction_date).slice(0, 10);
+  return '';
+}
+
 function Row({ label, value, alt }: { label: string; value: unknown; alt?: boolean }) {
   return (
     <div className={`flex justify-between gap-4 px-4 py-2 text-sm ${alt ? 'bg-slate-50 dark:bg-slate-900' : 'bg-white dark:bg-slate-950'}`}>
@@ -486,7 +498,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         {retailComps.length > 0 ? (
           <>
             {retailComps.map((c, i) => (
-              <Row key={i} label={c.address || c.property_address || 'Address pending'} value={`Sold ${money(c.sale_price1 ?? c.sold_amount)} · ${c.sale_yr1 ?? c.auction_date ?? ''}`} alt={i % 2 === 0} />
+              <Row key={i} label={c.address || c.property_address || 'Address pending'} value={`Sold ${money(c.sale_price1 ?? c.sold_amount ?? c.sale_price)} · ${compSaleDateText(c)}`} alt={i % 2 === 0} />
             ))}
             {cma.median_sale_price && (
               <Para muted>Retail stats: median {money(cma.median_sale_price)} · n={cma.n} · dispersion {cma.dispersion_flag || '—'}</Para>
