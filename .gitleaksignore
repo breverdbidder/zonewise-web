@@ -1,0 +1,30 @@
+# Gitleaks baseline 2026-09-13 - pre-existing findings triaged as dead/placeholder by trufflehog verified sweep.
+# Remove an entry only when the underlying file/history is cleaned. New secrets still fail the gate.
+04f9a16d38452a1570e2adb38b1d0d45996fa6c4:.env.example:generic-api-key:15
+1216ec4620f8b2fdb302241e29a91cac2d5d4e39:components/envelope/MiniMap.tsx:generic-api-key:22
+13e070a24f004c43ff624e001ba9015470800179:.env.production:generic-api-key:1
+333cfd9cd1e4f90f92eafa5c2c7f0cfe0a195f73:.github/workflows/deploy-biddeed.yml:cloudflare-api-token:37
+333cfd9cd1e4f90f92eafa5c2c7f0cfe0a195f73:.github/workflows/deploy-biddeed.yml:jwt:37
+3fa101fd10d6c12932545d849c9789b6a5e31cb9:.github/workflows/deploy-explorer-now.yml:generic-api-key:19
+3fa101fd10d6c12932545d849c9789b6a5e31cb9:.github/workflows/deploy-explorer-now.yml:generic-api-key:25
+3fa101fd10d6c12932545d849c9789b6a5e31cb9:.github/workflows/deploy-explorer-now.yml:generic-api-key:31
+53302c6b13c83c3c355d357cd670b6f6d4630366:components/SplitScreenPreview.tsx:generic-api-key:134
+53302c6b13c83c3c355d357cd670b6f6d4630366:src/prototypes/zonewise_feasibility_platform.jsx:generic-api-key:8
+664dc0c6c548ed2a7f6949dede645c8848177c5b:reports/summit-411/phase-a-rotation-report.md:supabase-pat:47
+6922d067256495b96a09f2ff98b784b539ddb161:.github/workflows/deploy-biddeed.yml:generic-api-key:38
+88a222ad6aabfc4ef81155021d588b6634a5797d:components/SplitScreenPreview.tsx:generic-api-key:133
+a6a069158f0852cc15f619641ba4e9f096e34afe:src/prototypes/zonewise_feasibility_platform.jsx:generic-api-key:8
+ab26140a4c13b9276fe30a1caf686497d9fccf16:reports/summit-411/leak-report-consolidated.md:jwt:74
+ab26140a4c13b9276fe30a1caf686497d9fccf16:reports/summit-411/leak-report-consolidated.md:supabase-pat:28
+ab26140a4c13b9276fe30a1caf686497d9fccf16:reports/summit-411/leak-report-consolidated.md:supabase-pat:80
+ab26140a4c13b9276fe30a1caf686497d9fccf16:reports/summit-411/leak-report-consolidated.md:supabase-service-role-jwt:74
+bd71465a62c3356467719ee37440f50b97b44ada:.env.production:generic-api-key:5
+bff687804a553b33941ac8d1514fd04f59cd97a0:app/kpis/page.tsx:jwt:7
+e243b14c96508d17d21132599dc2dee9d8d03519:INFRASTRUCTURE.md:generic-api-key:148
+e243b14c96508d17d21132599dc2dee9d8d03519:INFRASTRUCTURE.md:generic-api-key:151
+e436bbe9411b70695aff41c8af6ca567bf7eb87d:marketing/linkedin/receipts/manus/session.html:gcp-api-key:1
+e436bbe9411b70695aff41c8af6ca567bf7eb87d:marketing/linkedin/receipts/manus/session.html:generic-api-key:1
+e7141c5b82352613a5954617b0c85e71e1aa16a7:lib/stripe/server.ts:stripe-access-token:4
+ec8c777b1cff96f6f4d27a23a9110430e488694b:components/SplitScreenPreview.tsx:generic-api-key:134
+ec8c777b1cff96f6f4d27a23a9110430e488694b:src/prototypes/zonewise_feasibility_platform.jsx:generic-api-key:8
+fd57b51a907b5eb8fa7e87ab357063624ccac260:.claude/rules/components.md:generic-api-key:8
