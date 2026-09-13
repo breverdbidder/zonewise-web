@@ -617,6 +617,62 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
     )
   },
 
+
+// §ML model inputs, printed for humans (Ariel 2026-09-13: "UI UX is our
+// engagement"). Mirrors formatModelInputs() in cli-anything-biddeed
+// packages/biddeed-mcp/src/report/pdf.js — keep the two in lockstep. The exact
+// raw feature_vector stays in report_json (§17 provenance); print inverts the
+// log1p scaling (expm1 is the exact inverse), renders ratios as percents and
+// flags as Yes/No.
+const FEATURE_INPUT_LABELS: Record<string, string> = {
+  assessed_value_log1p: 'Assessed value',
+  prior_sale_price_log1p: 'Prior sale price',
+  beds_f: 'Bedrooms',
+  baths_f: 'Bathrooms',
+  sqft_f: 'Living area',
+  property_age: 'Property age',
+  opening_to_market: 'Opening bid vs market value',
+  judgment_to_market: 'Judgment vs market value',
+  years_since_prior_sale: 'Years since prior sale',
+  has_prior_sale: 'Prior sale on file',
+  is_foreclosure: 'Foreclosure sale',
+  is_tax_deed: 'Tax deed sale',
+  has_homestead: 'Homestead exemption',
+  owner_is_estate: 'Owner is an estate',
+  owner_is_entity: 'Owner is an entity',
+  owner_is_lender: 'Owner is the lender',
+  county_target_enc: 'County historical 3rd-party sale rate',
+  // is_diamond is the model's internal name for the data-quality flag: the
+  // parcel matched the auction record cleanly (parity_status matched_clean).
+  is_diamond: 'Clean parcel data match',
+}
+
+function featureInputLabel(key: string): string {
+  if (FEATURE_INPUT_LABELS[key]) return FEATURE_INPUT_LABELS[key]
+  const human = String(key).replace(/(_log1p|_f|_enc)$/, '').replace(/_/g, ' ')
+  return human.charAt(0).toUpperCase() + human.slice(1)
+}
+
+function featureInputValue(key: string, v: unknown): string {
+  if (typeof v !== 'number' || !Number.isFinite(v)) return safeStr(v)
+  if (key.endsWith('_log1p')) {
+    const real = Math.expm1(v) // exact inverse of the model's log1p scaling
+    return real < 1 ? 'None on file' : '$' + Math.round(real).toLocaleString('en-US')
+  }
+  if (key.endsWith('_to_market') || key.endsWith('_enc')) return (v * 100).toFixed(1) + '%'
+  if (/^(is|has|owner_is)_/.test(key)) return v ? 'Yes' : 'No'
+  if (key === 'property_age') return `${Math.round(v)} years`
+  if (key === 'years_since_prior_sale') return `${Math.round(v * 10) / 10} years`
+  if (key === 'sqft_f') return v > 0 ? `${Math.round(v).toLocaleString('en-US')} sqft` : 'Not on file'
+  if (Number.isInteger(v)) return String(v)
+  return String(Math.round(v * 100) / 100)
+}
+
+function formatModelInputs(fv: unknown): { label: string; value: string }[] {
+  if (!fv || typeof fv !== 'object') return []
+  return Object.entries(fv as Record<string, unknown>).map(([k, v]) => ({ label: featureInputLabel(k), value: featureInputValue(k, v) }))
+}
+
   shapira_ml(report) {
     const ml = report.context_layers?.ml_model || {}
     const p = ml.probability_third_party_purchase
@@ -653,11 +709,11 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
           // mlWithheldText) and pdf.js prints — PR #20312 parity.
           <Row label="3rd-Party Probability" value={mlWithheldText(ml)} />
         )}
-        {fv && typeof fv === 'object' && (
+        {formatModelInputs(fv).length > 0 && (
           <div className="px-3 pb-2">
-            <p className="text-xs font-bold text-slate-500 mb-1">Feature Vector (exact model inputs):</p>
-            {Object.entries(fv).map(([k, v], i) => (
-              <Row key={k} label={k.replace(/_/g, ' ')} value={safeStr(v)} alt={i % 2 === 0} />
+            <p className="text-xs font-bold text-slate-500 mb-1">Model Inputs (what the model scored):</p>
+            {formatModelInputs(fv).map(({ label, value }, i) => (
+              <Row key={label} label={label} value={value} alt={i % 2 === 0} />
             ))}
           </div>
         )}
