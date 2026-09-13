@@ -17,6 +17,8 @@ name: Cloudflare OpenNext Production
 # as fallback when one exists.
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch: {}
 
 permissions:
