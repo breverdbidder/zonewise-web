@@ -75,7 +75,7 @@ export default function AuctionFilters({
             // colour no longer distinguishes the selected tab, the active pill
             // carries the state via background + shadow, and hover moved from a
             // colour shift to a background wash.
-            className={`px-2.5 sm:px-3.5 py-1.5 text-sm font-bold rounded transition-colors whitespace-nowrap shrink-0 ${
+            className={`px-2.5 sm:px-3.5 py-1.5 min-h-11 md:min-h-0 text-sm font-bold rounded transition-colors whitespace-nowrap shrink-0 ${
               viewMode === mode
                 ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-900 dark:text-white hover:bg-white/60 dark:hover:bg-[rgb(var(--zw-elev)/0.6)]'
