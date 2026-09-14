@@ -48,7 +48,7 @@ h1 em{color:var(--orange);font-style:italic}
 .btn-outline:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05)}
 
 /* Search Demo */
-.search-demo{max-width:560px;margin:3rem auto 0;background:var(--bg2);border:1px solid var(--navy-700);border-radius:12px;padding:1rem;position:relative}
+.search-demo{max-width:680px;margin:3rem auto 0;background:var(--bg2);border:1px solid var(--navy-700);border-radius:12px;padding:1rem;position:relative}
 .search-input{width:100%;background:transparent;border:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;padding:.3rem .5rem}
 .search-input::placeholder{color:var(--sl400)}
 .search-hint{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--sl400);background:var(--bg3);padding:.2rem .5rem;border-radius:4px}
@@ -134,7 +134,7 @@ footer a{color:var(--orange);text-decoration:none}
       <a href="#how" class="btn-outline">See How It Works</a>
     </div>
     <div class="search-demo" id="searchDemo">
-      <input type="text" class="search-input" id="typewriter" readonly placeholder="Try: What can I build at 123 Main St, Melbourne?">
+      <input type="text" class="search-input" id="typewriter" readonly placeholder="Ask about any Florida address…" style="text-overflow:ellipsis;min-height:44px">
       <span class="search-hint">AI</span>
     </div>
   </div>
@@ -146,11 +146,11 @@ footer a{color:var(--orange);text-decoration:none}
     <div class="stat-label">Florida Counties</div>
   </div>
   <div class="stat-card reveal">
-    <div class="stat-num"><span data-target="5395">0</span></div>
-    <div class="stat-label">Zoning Districts</div>
+    <div class="stat-num"><span data-target="7531">0</span></div>
+    <div class="stat-label">Zoning Codes</div>
   </div>
   <div class="stat-card reveal">
-    <div class="stat-num"><span data-target="24243">0</span><span class="accent">+</span></div>
+    <div class="stat-num"><span data-target="10514611">0</span><span class="accent">+</span></div>
     <div class="stat-label">Parcels Indexed</div>
   </div>
   <div class="stat-card reveal">
@@ -322,6 +322,8 @@ const observer = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
 },{threshold:0.15});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+/* B1 audit fix: never leave content invisible if the observer misses (print, no-IO, fast scroll) */
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),1500);
 
 /* === Counter Animation === */
 const counterObs = new IntersectionObserver((entries)=>{
@@ -346,3 +348,8 @@ document.querySelectorAll('[data-target]').forEach(el=>counterObs.observe(el));
 </script>
 </body>
 </html>
+<style>
+/* A1/A2 audit fixes (2026-09-13): focus-visible ring + 44px tap targets */
+a:focus-visible,button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px;border-radius:4px}
+.btn-outline,.cta-btn,nav a{min-height:44px;display:inline-flex;align-items:center}
+</style>
