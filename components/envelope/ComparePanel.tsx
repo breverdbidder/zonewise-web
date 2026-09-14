@@ -3,9 +3,9 @@
 import { computeEnvelope, calculateHBU } from '@/lib/development-analysis/hbu-engine'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const ORANGE = '#F59E0B'
+const ORANGE = '#1A90FF'
 const CARD_BG = '#1e293b'
-const SLATE = '#020617'
+const SLATE = '#0B1119'
 const GREEN = '#22c55e'
 
 function fmt$(n: number) {
