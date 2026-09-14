@@ -32,8 +32,8 @@ export function HeroCornerCard({ parcel, biddeed, zonewise }: HeroCornerCardProp
   return (
     <div className="hidden sm:block absolute bottom-6 right-6 z-40 w-72 space-y-3 pointer-events-auto">
       {/* Parcel Details */}
-      <div className="bg-[#020617]/90 backdrop-blur-md border border-[#1E3A5F]/60 rounded-lg p-4 shadow-2xl">
-        <h2 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase mb-2">
+      <div className="bg-[#0B1119]/90 backdrop-blur-md border border-[#1B2737]/60 rounded-lg p-4 shadow-2xl">
+        <h2 className="text-xs font-semibold text-[#1A90FF] tracking-wider uppercase mb-2">
           Featured Parcel
         </h2>
         <p className="text-white text-sm font-mono leading-tight mb-1">
@@ -47,16 +47,16 @@ export function HeroCornerCard({ parcel, biddeed, zonewise }: HeroCornerCardProp
         </p>
         {parcel.just_value && (
           <p className="text-white text-sm font-semibold mt-2">
-            Just Value: <span className="text-[#F59E0B]">${parcel.just_value.toLocaleString()}</span>
+            Just Value: <span className="text-[#1A90FF]">${parcel.just_value.toLocaleString()}</span>
           </p>
         )}
       </div>
 
       {/* BidDeed.AI — Foreclosure Status */}
-      <div className="bg-[#020617]/90 backdrop-blur-md border border-[#1E3A5F]/60 rounded-lg p-3 shadow-2xl">
+      <div className="bg-[#0B1119]/90 backdrop-blur-md border border-[#1B2737]/60 rounded-lg p-3 shadow-2xl">
         <div className="flex items-center gap-2 mb-1.5">
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <h3 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase">
+          <h3 className="text-xs font-semibold text-[#1A90FF] tracking-wider uppercase">
             BidDeed.AI
           </h3>
         </div>
@@ -76,10 +76,10 @@ export function HeroCornerCard({ parcel, biddeed, zonewise }: HeroCornerCardProp
       </div>
 
       {/* ZoneWise.AI — Zoning Status */}
-      <div className="bg-[#020617]/90 backdrop-blur-md border border-[#1E3A5F]/60 rounded-lg p-3 shadow-2xl">
+      <div className="bg-[#0B1119]/90 backdrop-blur-md border border-[#1B2737]/60 rounded-lg p-3 shadow-2xl">
         <div className="flex items-center gap-2 mb-1.5">
-          <div className="w-2 h-2 rounded-full bg-[#F59E0B]" />
-          <h3 className="text-xs font-semibold text-[#F59E0B] tracking-wider uppercase">
+          <div className="w-2 h-2 rounded-full bg-[#1A90FF]" />
+          <h3 className="text-xs font-semibold text-[#1A90FF] tracking-wider uppercase">
             ZoneWise.AI
           </h3>
         </div>
