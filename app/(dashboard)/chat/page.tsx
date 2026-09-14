@@ -16,18 +16,18 @@ export const metadata: Metadata = {
 
 export default function ZoningChatPage() {
   return (
-    <div className="flex h-full flex-col bg-[#020617] overflow-y-auto">
+    <div className="flex h-full flex-col bg-[#0B1119] overflow-y-auto">
       {/* Bold voice assistant banner -- the primary entry point */}
       <VoiceZoningAssistant />
 
       {/* Dify migration notice */}
-      <Card className="mx-4 mt-3 border-[#F59E0B]/20 bg-[#F59E0B]/5 p-3">
-        <div className="flex items-center gap-2 text-xs text-[#F59E0B]">
+      <Card className="mx-4 mt-3 border-[#1A90FF]/20 bg-[#1A90FF]/5 p-3">
+        <div className="flex items-center gap-2 text-xs text-[#1A90FF]">
           <Sparkles className="h-3.5 w-3.5 shrink-0" />
           <span>
             <strong>Coming soon:</strong> Advanced multi-agent chat powered by Dify.AI — with memory, tool use, and multi-county context.
           </span>
-          <Badge variant="outline" className="ml-auto border-[#F59E0B]/30 text-[#F59E0B] text-[10px]">
+          <Badge variant="outline" className="ml-auto border-[#1A90FF]/30 text-[#1A90FF] text-[10px]">
             Dify
           </Badge>
         </div>
