@@ -69,16 +69,16 @@ const TIERS = [
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#020617] text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-[#0B1119] text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       <PricingTracker source="direct" />
       {/* Nav */}
       <nav className="h-14 flex items-center px-6 border-b border-slate-800">
         <Link href="/" className="flex items-center gap-2 min-h-11">
-          <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1E3A5F] to-[#2d5a8f] flex items-center justify-center">
+          <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1B2737] to-[#2d5a8f] flex items-center justify-center">
             <span className="text-white text-xs font-bold">Z</span>
           </div>
           <span className="text-sm font-semibold text-white">
-            ZoneWise<span className="text-[#F59E0B]">.AI</span>
+            ZoneWise<span className="text-[#1A90FF]">.AI</span>
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-4">
@@ -87,7 +87,7 @@ export default function PricingPage() {
           </Link>
           <Link
             href="/sign-up"
-            className="text-sm bg-[#F59E0B] text-slate-950 px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all"
+            className="text-sm bg-[#1A90FF] text-slate-950 px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all"
           >
             Get Started
           </Link>
@@ -96,8 +96,8 @@ export default function PricingPage() {
 
       {/* Hero */}
       <section className="pt-20 pb-12 text-center px-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#1E3A5F]/40 border border-[#1E3A5F]/60 rounded-full text-xs text-slate-400 mb-6">
-          <span className="w-1.5 h-1.5 bg-[#F59E0B] rounded-full animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#1B2737]/40 border border-[#1B2737]/60 rounded-full text-xs text-slate-400 mb-6">
+          <span className="w-1.5 h-1.5 bg-[#1A90FF] rounded-full animate-pulse" />
           Early access — lock in founder pricing
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
@@ -105,7 +105,7 @@ export default function PricingPage() {
         </h1>
         <p className="text-slate-400 text-lg max-w-xl mx-auto">
           Start free. The choropleth heatmap is{' '}
-          <span className="text-[#F59E0B] font-semibold">always free</span>
+          <span className="text-[#1A90FF] font-semibold">always free</span>
           {' '}— no login required.
         </p>
       </section>
@@ -114,7 +114,7 @@ export default function PricingPage() {
       <div className="text-center mb-10">
         <span className="inline-flex items-center gap-2 text-sm text-slate-500">
           <span className="line-through">Monthly pricing shown</span>
-          <span className="bg-[#1E3A5F]/60 border border-[#1E3A5F] text-[#F59E0B] text-xs px-2 py-0.5 rounded font-semibold">
+          <span className="bg-[#1B2737]/60 border border-[#1B2737] text-[#1A90FF] text-xs px-2 py-0.5 rounded font-semibold">
             Annual billing saves 2 months
           </span>
         </span>
@@ -128,13 +128,13 @@ export default function PricingPage() {
               key={tier.name}
               className={`relative rounded-2xl p-8 flex flex-col ${
                 tier.badge
-                  ? 'bg-[#1E3A5F]/30 border-2 border-[#1E3A5F] shadow-xl shadow-[#1E3A5F]/20'
+                  ? 'bg-[#1B2737]/30 border-2 border-[#1B2737] shadow-xl shadow-[#1B2737]/20'
                   : 'bg-slate-900/50 border border-slate-800'
               }`}
             >
               {/* Badge */}
               {tier.badge && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-slate-950 text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
+                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#1A90FF] text-slate-950 text-xs px-4 py-1 rounded-full font-bold whitespace-nowrap">
                   {tier.badge}
                 </span>
               )}
@@ -163,7 +163,7 @@ export default function PricingPage() {
                 {tier.features.map(f => (
                   <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
                     <svg
-                      className="w-4 h-4 text-[#F59E0B] mt-0.5 flex-shrink-0"
+                      className="w-4 h-4 text-[#1A90FF] mt-0.5 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -180,10 +180,10 @@ export default function PricingPage() {
                 href={tier.ctaHref}
                 className={`block text-center py-3.5 rounded-xl font-bold text-sm transition-all ${
                   tier.ctaStyle === 'orange'
-                    ? 'bg-[#F59E0B] text-slate-950 hover:brightness-110'
+                    ? 'bg-[#1A90FF] text-slate-950 hover:brightness-110'
                     : tier.monthlyPrice === 0
-                    ? 'bg-[#1E3A5F] text-white hover:bg-[#2d5a8f]'
-                    : 'border border-[#1E3A5F] text-[#F59E0B] hover:bg-[#1E3A5F]/30'
+                    ? 'bg-[#1B2737] text-white hover:bg-[#2d5a8f]'
+                    : 'border border-[#1B2737] text-[#1A90FF] hover:bg-[#1B2737]/30'
                 }`}
               >
                 {tier.cta}
