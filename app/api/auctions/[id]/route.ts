@@ -222,7 +222,7 @@ export async function GET(
         recommendationColor = '#22C55E'
       } else if (bidRatio >= 60) {
         recommendation = 'REVIEW'
-        recommendationColor = '#F59E0B'
+        recommendationColor = '#1A90FF'
       } else {
         recommendation = 'SKIP'
         recommendationColor = '#EF4444'
