@@ -250,7 +250,7 @@ function AssistantMessage() {
 function UserMessage() {
   return (
     <div className="flex justify-end">
-      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-br-sm bg-[#1E3A5F]/70 border border-[#1E3A5F] px-3 py-2.5 text-slate-100">
+      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-br-sm bg-[#1B2737]/70 border border-[#1B2737] px-3 py-2.5 text-slate-100">
         <MessagePrimitive.Parts components={{ Text: UserPlainText }} />
       </MessagePrimitive.Root>
     </div>
