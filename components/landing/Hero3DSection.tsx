@@ -118,7 +118,7 @@ export function Hero3DSection() {
   }, [])
 
   return (
-    <section className="relative overflow-hidden bg-[#020617]">
+    <section className="relative overflow-hidden bg-[#0B1119]">
       {/* 3D Viewer — full-bleed hero background */}
       <div className="relative min-h-[85vh]">
         {/* Static gradient placeholder always rendered at z-0; 3D viewer overlays
@@ -129,7 +129,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-0"
           style={{
             background:
-              'radial-gradient(ellipse at 50% 60%, #1E3A5F 0%, #0d2040 35%, #020617 100%)',
+              'radial-gradient(ellipse at 50% 60%, #1B2737 0%, #0d2040 35%, #0B1119 100%)',
           }}
         />
 
@@ -160,7 +160,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-10 pointer-events-none opacity-[0.02]"
           style={{
             backgroundImage:
-              'linear-gradient(#1E3A5F 1px, transparent 1px), linear-gradient(to right, #1E3A5F 1px, transparent 1px)',
+              'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
             backgroundSize: '64px 64px',
           }}
         />
@@ -170,7 +170,7 @@ export function Hero3DSection() {
           <div className="mx-auto max-w-5xl px-4 text-center">
             <Badge
               variant="outline"
-              className="mb-6 border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
+              className="mb-6 border-[#1A90FF]/30 bg-[#1A90FF]/10 text-[#1A90FF]"
             >
               <Sparkles className="mr-1.5 h-3 w-3" />
               Powering Everest Capital USA — 10 years Brevard foreclosure investing
@@ -179,7 +179,7 @@ export function Hero3DSection() {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.05] tracking-tight">
               AI-Powered Auction Intelligence
               <br />
-              <span className="text-[#F59E0B]">Nationwide</span>
+              <span className="text-[#1A90FF]">Nationwide</span>
             </h1>
 
             <div className="mb-4 flex justify-center">
@@ -200,7 +200,7 @@ export function Hero3DSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <ParticleButton
                 particleType="confetti"
-                particleColor="#F59E0B"
+                particleColor="#1A90FF"
                 variant="primary"
                 className="px-8 py-3 text-base font-semibold"
                 onClick={() => {
@@ -232,7 +232,7 @@ export function Hero3DSection() {
       </div>
 
       {/* Kinetic marquee band below hero */}
-      <div className="border-y border-[#1E3A5F]/40 bg-[#020617]">
+      <div className="border-y border-[#1B2737]/40 bg-[#0B1119]">
         <KineticMarquee
           items={HERO_MARQUEE_ITEMS}
           speed={0.45}
