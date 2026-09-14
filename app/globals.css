@@ -7,26 +7,29 @@
 @tailwind utilities;
 
 :root {
-  /* Navy accent colors */
-  --navy-50: #E8F4FD;
-  --navy-100: #C5DFEF;
-  --navy-200: #9DC6E0;
-  --navy-300: #7099C0;
-  --navy-400: #4A6F9A;
-  --navy-500: #2A4F7A;
-  --navy-600: #1E3A5F;
-  --navy-700: #162D4A;
-  --navy-800: #0F2035;
-  --navy-900: #07111C;
+  /* TWIN 2026-09-13: one house brand = biddeed.ai palette (PR #44 canon).
+     Navy family = biddeed dark-theme family; brand blue replaces the retired
+     Grok amber (variable names kept so existing classes keep working). */
+  --navy-50: #E6F0FA;
+  --navy-100: #D7E3F1;
+  --navy-200: #9EB2C7;
+  --navy-300: #24344C;
+  --navy-400: #1B2737;
+  --navy-500: #111B27;
+  --navy-600: #0A2540;
+  --navy-700: #0B1119;
+  --navy-800: #0B1119;
+  --navy-900: #0B1119;
 
-  /* Orange accent colors */
-  --orange-50: #FEF3C7;
-  --orange-100: #FDE68A;
-  --orange-200: #FCD34D;
-  --orange-300: #FBBF24;
-  --orange-400: #F59E0B;
-  --orange-500: #D97706;
-  --orange-600: #B45309;
+  /* Brand blue family (was amber). 300/400 = dark-theme brand #1A90FF,
+     500/600 = light-theme brand #005EB8 / hover #004A92. */
+  --orange-50: #E6F0FA;
+  --orange-100: #D7E3F1;
+  --orange-200: #4DA6FF;
+  --orange-300: #1A90FF;
+  --orange-400: #1A90FF;
+  --orange-500: #005EB8;
+  --orange-600: #004A92;
 
   /* Slate colors for dark theme */
   --slate-50: #f8fafc;
@@ -42,23 +45,25 @@
   --slate-950: #020617;
 
   /* shadcn semantic colors (HSL values — no hsl() wrapper) */
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 96%;
-  --card: 222.2 47.4% 11.2%;
-  --card-foreground: 210 40% 96%;
-  --popover: 222.2 47.4% 11.2%;
-  --popover-foreground: 210 40% 96%;
-  --primary: 213 54% 24%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 96%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 38 92% 50%;
-  --accent-foreground: 0 0% 100%;
+  /* TWIN: biddeed.ai DARK canon (#0B1119 bg, #111B27 card, #1B2737 tint,
+     #EDEDED ink, #24344C border, brand #1A90FF, hover #4DA6FF) */
+  --background: 213 39% 7%;
+  --foreground: 0 0% 93%;
+  --card: 214 39% 11%;
+  --card-foreground: 0 0% 93%;
+  --popover: 214 39% 11%;
+  --popover-foreground: 0 0% 93%;
+  --primary: 209 100% 55%;
+  --primary-foreground: 213 39% 7%;
+  --secondary: 214 35% 16%;
+  --secondary-foreground: 0 0% 93%;
+  --muted: 214 35% 16%;
+  --muted-foreground: 213 20% 63%;
+  --accent: 209 100% 55%;
+  --accent-foreground: 213 39% 7%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 96%;
-  --border: 217.2 32.6% 17.5%;
+  --border: 216 35% 22%;
   /* Control-boundary fix (issue #20109 pattern, zonewise-web instance):
      --input was identical to --border (217.2 32.6% 17.5%), a low-contrast
      container-edge token that resolves to ~1.37:1 against --background
@@ -76,12 +81,12 @@
      to this token in tailwind.config.ts, so components/ui/input.tsx and
      components/ui/select.tsx inherit the fix with no further changes. */
   --input: 217.2 20% 45%;
-  --ring: 213 54% 34%;
+  --ring: 209 100% 55%;
   --radius: 0.5rem;
 
   /* Chart colors */
   --chart-1: 213 54% 24%;
-  --chart-2: 38 92% 50%;
+  --chart-2: 209 100% 55%;
   --chart-3: 142 76% 36%;
   --chart-4: 221 83% 53%;
   --chart-5: 262 83% 58%;
@@ -508,25 +513,24 @@ html:not(.hydrated) [style*="opacity:0"] {
 
 @layer base {
   :root {
-    /* Sidebar brand vars — navy/orange theme required by components/ui/sidebar.tsx */
-    --sidebar-background: 222.2 47.4% 8%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 213 54% 24%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 38 92% 50%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 38 92% 50%;
+    /* TWIN: biddeed.ai sidebar tokens (dark canon; this app is dark-first) */
+    --sidebar-background: 213 39% 7%;
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-primary: 209 100% 55%;
+    --sidebar-primary-foreground: 213 39% 7%;
+    --sidebar-accent: 214 35% 16%;
+    --sidebar-accent-foreground: 0 0% 93%;
+    --sidebar-border: 216 35% 22%;
+    --sidebar-ring: 209 100% 55%;
   }
   .dark {
-    /* Sidebar brand vars — dark mode mirrors dark bg we already use */
-    --sidebar-background: 222.2 47.4% 8%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 213 54% 24%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 38 92% 50%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 38 92% 50%;
+    --sidebar-background: 213 39% 7%;
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-primary: 209 100% 55%;
+    --sidebar-primary-foreground: 213 39% 7%;
+    --sidebar-accent: 214 35% 16%;
+    --sidebar-accent-foreground: 0 0% 93%;
+    --sidebar-border: 216 35% 22%;
+    --sidebar-ring: 209 100% 55%;
   }
 }
