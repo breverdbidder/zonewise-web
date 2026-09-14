@@ -16,7 +16,7 @@ export default function Footer() {
         gap: 16,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 24, height: 24, background: '#1E3A5F', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 24, height: 24, background: '#1B2737', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 13 }}>Z</span>
           </div>
           <span style={{ color: '#F1F5F9', fontWeight: 600, fontSize: 15 }}>ZoneWise.AI</span>
