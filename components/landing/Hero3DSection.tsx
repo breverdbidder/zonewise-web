@@ -150,7 +150,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(2,6,23,0.5) 55%, rgba(2,6,23,0.92) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(11,17,25,0.5) 55%, rgba(11,17,25,0.92) 100%)',
           }}
         />
 
@@ -187,7 +187,7 @@ export function Hero3DSection() {
                 text="188K AUCTIONS · 10.5M PARCELS · 67 COUNTIES"
                 trigger="scroll"
                 className="text-xs sm:text-sm tracking-widest"
-                color="rgba(245,158,11,0.7)"
+                color="rgba(26,144,255,0.7)"
                 scramblingColor="rgba(255,255,255,0.15)"
               />
             </div>
