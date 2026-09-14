@@ -89,8 +89,8 @@ function FloatingUI({ show }: BadgesProps) {
         }}
       >
         <div style={{
-          background: 'rgba(2,6,23,0.88)',
-          border: '1px solid rgba(245,158,11,0.45)',
+          background: 'rgba(11,17,25,0.88)',
+          border: '1px solid rgba(26,144,255,0.45)',
           borderRadius: '10px',
           padding: '10px 18px',
           fontFamily: 'Inter, system-ui, sans-serif',
@@ -157,7 +157,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
       <div
         className={cn('relative overflow-hidden', className)}
         style={{
-          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgba(30,58,95,0.92) 0%, rgba(2,6,23,1) 65%)',
+          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgba(27,39,55,0.92) 0%, rgba(11,17,25,1) 65%)',
         }}
       >
         {children && <div className="relative z-10">{children}</div>}
@@ -184,7 +184,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(2,6,23,0.45) 65%, rgba(2,6,23,0.88) 100%)',
+          background: 'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(11,17,25,0.45) 65%, rgba(11,17,25,0.88) 100%)',
           zIndex: 5,
           pointerEvents: 'none',
         }}
