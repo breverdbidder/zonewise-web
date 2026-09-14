@@ -37,9 +37,9 @@ const SECTIONS = [
 
 export default function AccountSettingsPage() {
   return (
-    <div className="min-h-full bg-[#020617] px-4 py-10 sm:px-8">
+    <div className="min-h-full bg-[#0B1119] px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]">
+        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
           <SettingsIcon className="h-3.5 w-3.5" /> Settings
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Account</h1>
@@ -54,14 +54,14 @@ export default function AccountSettingsPage() {
               className="flex flex-col rounded-lg border p-5"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
             >
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1E3A5F]">
-                <s.icon className="h-4 w-4 text-[#F59E0B]" />
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1B2737]">
+                <s.icon className="h-4 w-4 text-[#1A90FF]" />
               </div>
               <h2 className="text-sm font-semibold text-white">{s.title}</h2>
               <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-slate-400">{s.body}</p>
               <Link
                 href={s.href}
-                className="mt-4 inline-flex w-fit items-center rounded-md border px-4 py-2 text-[12.5px] font-semibold text-slate-200 transition-colors hover:border-[#F59E0B]/50 hover:text-white"
+                className="mt-4 inline-flex w-fit items-center rounded-md border px-4 py-2 text-[12.5px] font-semibold text-slate-200 transition-colors hover:border-[#1A90FF]/50 hover:text-white"
                 style={{ borderColor: '#1E293B' }}
               >
                 {s.cta}
@@ -77,10 +77,10 @@ export default function AccountSettingsPage() {
             in beta and some values are sample data while coverage expands.
           </p>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] text-slate-500">
-            <Link href="/terms" className="hover:text-[#F59E0B]">Terms</Link>
-            <Link href="/privacy" className="hover:text-[#F59E0B]">Privacy</Link>
-            <Link href="/disclaimer" className="hover:text-[#F59E0B]">Disclaimer</Link>
-            <Link href="/help" className="hover:text-[#F59E0B]">Help</Link>
+            <Link href="/terms" className="hover:text-[#1A90FF]">Terms</Link>
+            <Link href="/privacy" className="hover:text-[#1A90FF]">Privacy</Link>
+            <Link href="/disclaimer" className="hover:text-[#1A90FF]">Disclaimer</Link>
+            <Link href="/help" className="hover:text-[#1A90FF]">Help</Link>
           </div>
         </div>
       </div>
