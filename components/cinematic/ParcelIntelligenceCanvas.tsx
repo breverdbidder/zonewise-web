@@ -7,9 +7,9 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 // ── Brand palette (DESIGN.md — do not deviate) ────────────────────
-const VOID = '#020617'
-const NAVY = '#1E3A5F'
-const AMBER = '#F59E0B'
+const VOID = '#0B1119'
+const NAVY = '#1B2737'
+const AMBER = '#1A90FF'
 const SUCCESS = '#10B981'
 const SLATE_800 = '#1E293B'
 
