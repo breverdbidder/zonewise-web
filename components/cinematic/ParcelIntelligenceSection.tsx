@@ -38,7 +38,7 @@ export function ParcelIntelligenceSection() {
         className="relative py-24 px-4"
         style={{
           background:
-            'radial-gradient(ellipse 90% 70% at 50% 30%, rgba(30,58,95,0.55) 0%, #0B1119 70%)',
+            'radial-gradient(ellipse 90% 70% at 50% 30%, rgba(27,39,55,0.55) 0%, #0B1119 70%)',
         }}
       >
         <div className="mx-auto max-w-xl space-y-8">
@@ -46,7 +46,7 @@ export function ParcelIntelligenceSection() {
             <div
               key={b.title}
               className="rounded-2xl p-8 border"
-              style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.5)' }}
+              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.5)' }}
             >
               <div
                 className="text-xs uppercase tracking-widest mb-3 font-medium"
@@ -74,7 +74,7 @@ export function ParcelIntelligenceSection() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 50%, transparent 20%, rgba(2,6,23,0.55) 70%, rgba(2,6,23,0.92) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 50%, transparent 20%, rgba(11,17,25,0.55) 70%, rgba(11,17,25,0.92) 100%)',
             zIndex: 5,
           }}
         />
@@ -83,7 +83,7 @@ export function ParcelIntelligenceSection() {
         <div className="absolute z-20 left-6 sm:left-16 top-1/3 -translate-y-1/2 max-w-md pointer-events-none">
           <div
             className="rounded-2xl p-8 border backdrop-blur-md"
-            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(245,158,11,0.2)' }}
+            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(26,144,255,0.2)' }}
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
@@ -102,7 +102,7 @@ export function ParcelIntelligenceSection() {
         <div className="absolute z-20 right-6 sm:right-16 bottom-1/4 max-w-md pointer-events-none">
           <div
             className="rounded-2xl p-8 border backdrop-blur-md"
-            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(245,158,11,0.2)' }}
+            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(26,144,255,0.2)' }}
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
