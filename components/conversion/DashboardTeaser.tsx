@@ -88,7 +88,7 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
           className="w-full font-semibold rounded-lg py-3 text-sm"
           style={{
             background: 'rgb(var(--zw-brand))',
-            color: 'rgb(var(--zw-brand-ink)))',
+            color: 'rgb(var(--zw-brand-ink))',
             border: 'none',
             cursor: 'pointer',
             transition: 'opacity 0.15s',

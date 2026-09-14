@@ -95,7 +95,7 @@ export function FeaturesSection() {
           {features.slice(4).map((f) => (
             <div
               key={f.title}
-              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[rgb(var(--zw-brand)/0.4)] hover:shadow-[0_0_28px_rgb(var(--zw-brand) / 0.1)]"
+              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[rgb(var(--zw-brand)/0.4)] hover:shadow-[0_0_28px_rgb(var(--zw-brand)/0.1)]"
               style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-border2) / 0.5)' }}
             >
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[rgb(var(--zw-elev))] transition-colors group-hover:bg-[rgb(var(--zw-brand)/0.1)]">

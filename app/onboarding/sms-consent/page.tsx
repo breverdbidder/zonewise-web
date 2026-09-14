@@ -56,7 +56,7 @@ export default function SmsConsentOnboardingPage() {
         <h1 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
           Stay in the loop
         </h1>
-        <p style={{ color: 'rgb(var(--zw-ink2)))', fontSize: '14px', marginBottom: '24px' }}>
+        <p style={{ color: 'rgb(var(--zw-ink2))', fontSize: '14px', marginBottom: '24px' }}>
           Welcome{user?.firstName ? `, ${user.firstName}` : ''}. Want text alerts for matching deals?
           Totally optional — you can also do this later from account settings.
         </p>
@@ -115,7 +115,7 @@ export default function SmsConsentOnboardingPage() {
               style={{
                 padding: '10px 16px', borderRadius: '8px',
                 border: '1px solid rgb(var(--zw-elev))', backgroundColor: 'transparent',
-                color: 'rgb(var(--zw-ink2)))', fontSize: '14px', cursor: 'pointer',
+                color: 'rgb(var(--zw-ink2))', fontSize: '14px', cursor: 'pointer',
               }}
             >
               Skip

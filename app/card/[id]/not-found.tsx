@@ -15,12 +15,12 @@ export default function ParcelNotFound() {
         <h1 style={{ fontSize: 32, fontWeight: 700, margin: '0 0 12px', color: '#F8FAFC', letterSpacing: '-0.02em' }}>
           This parcel card doesn&rsquo;t exist
         </h1>
-        <p style={{ fontSize: 16, lineHeight: 1.55, color: 'rgb(var(--zw-ink2)))', margin: '0 0 28px' }}>
+        <p style={{ fontSize: 16, lineHeight: 1.55, color: 'rgb(var(--zw-ink2))', margin: '0 0 28px' }}>
           The link may have expired, been removed by its owner, or never existed. Start a new analysis from scratch — first 2 queries are free.
         </p>
         <a href="https://chat.zonewise.ai"
            style={{
-             display: 'inline-block', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))',
+             display: 'inline-block', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink))',
              fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 8,
              textDecoration: 'none', letterSpacing: '0.02em',
            }}>

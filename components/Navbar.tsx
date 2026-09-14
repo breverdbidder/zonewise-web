@@ -38,14 +38,14 @@ export default function Navbar() {
           <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 18 }}>ZoneWise.AI</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link href="/#how" style={{ color: 'rgb(var(--zw-ink2)))', textDecoration: 'none', fontSize: 14 }}>How It Works</Link>
-          <Link href="/kpis" style={{ color: 'rgb(var(--zw-ink2)))', textDecoration: 'none', fontSize: 14 }}>298 KPIs</Link>
-          <Link href="/demo" style={{ color: 'rgb(var(--zw-ink2)))', textDecoration: 'none', fontSize: 14 }}>Live Demo</Link>
-          <Link href="/#pricing" style={{ color: 'rgb(var(--zw-ink2)))', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
-          <Link href="/sign-in" style={{ color: 'rgb(var(--zw-ink2)))', textDecoration: 'none', fontSize: 14 }}>Sign In</Link>
+          <Link href="/#how" style={{ color: 'rgb(var(--zw-ink2))', textDecoration: 'none', fontSize: 14 }}>How It Works</Link>
+          <Link href="/kpis" style={{ color: 'rgb(var(--zw-ink2))', textDecoration: 'none', fontSize: 14 }}>298 KPIs</Link>
+          <Link href="/demo" style={{ color: 'rgb(var(--zw-ink2))', textDecoration: 'none', fontSize: 14 }}>Live Demo</Link>
+          <Link href="/#pricing" style={{ color: 'rgb(var(--zw-ink2))', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
+          <Link href="/sign-in" style={{ color: 'rgb(var(--zw-ink2))', textDecoration: 'none', fontSize: 14 }}>Sign In</Link>
           <Link href="/#beta-signup" style={{
             background: 'rgb(var(--zw-brand))',
-            color: 'rgb(var(--zw-brand-ink)))',
+            color: 'rgb(var(--zw-brand-ink))',
             padding: '8px 18px',
             borderRadius: 8,
             fontWeight: 600,

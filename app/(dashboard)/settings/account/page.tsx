@@ -62,7 +62,7 @@ export default function AccountSettingsPage() {
               <Link
                 href={s.href}
                 className="mt-4 inline-flex w-fit items-center rounded-md border px-4 py-2 text-[12.5px] font-semibold text-[rgb(var(--zw-ink2))] transition-colors hover:border-[rgb(var(--zw-brand)/0.5)] hover:text-[rgb(var(--zw-ink))]"
-                style={{ borderColor: 'rgb(var(--zw-border2)))' }}
+                style={{ borderColor: 'rgb(var(--zw-border2))' }}
               >
                 {s.cta}
               </Link>

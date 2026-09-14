@@ -76,7 +76,7 @@ export function OperatorSection() {
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold text-[rgb(var(--zw-ink2))] transition-colors hover:border-[rgb(var(--zw-brand)/0.5)] hover:text-[rgb(var(--zw-ink))]"
-              style={{ borderColor: 'rgb(var(--zw-border2)))' }}
+              style={{ borderColor: 'rgb(var(--zw-border2))' }}
             >
               See the track record
               <span aria-hidden="true">→</span>

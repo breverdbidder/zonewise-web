@@ -88,7 +88,7 @@ export default function BillingPage() {
           </p>
           <Link
             href="/api/stripe/portal"
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[rgb(var(--zw-brand))] px-5 py-2.5 text-sm font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgb(var(--zw-brand) / 0.45)]"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[rgb(var(--zw-brand))] px-5 py-2.5 text-sm font-bold text-[rgb(var(--zw-brand-ink))] transition-shadow hover:shadow-[0_0_24px_rgb(var(--zw-brand)/0.45)]"
           >
             Open billing portal <ExternalLink className="h-4 w-4" />
           </Link>
@@ -121,7 +121,7 @@ export default function BillingPage() {
                   type="button"
                   disabled={loadingTier !== null}
                   onClick={() => handleSubscribe(t.id, t.priceId!)}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[rgb(var(--zw-brand))] px-4 py-2 text-[13px] font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgb(var(--zw-brand) / 0.45)] disabled:opacity-60"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[rgb(var(--zw-brand))] px-4 py-2 text-[13px] font-bold text-[rgb(var(--zw-brand-ink))] transition-shadow hover:shadow-[0_0_24px_rgb(var(--zw-brand)/0.45)] disabled:opacity-60"
                 >
                   {loadingTier === t.id ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -143,7 +143,7 @@ export default function BillingPage() {
           <a
             href="mailto:ariel@everestcapitalusa.com?subject=ZoneWise%20Enterprise"
             className="mt-4 inline-flex items-center gap-2 rounded-md border px-4 py-2 text-[13px] font-semibold text-[rgb(var(--zw-ink2))] transition-colors hover:border-[rgb(var(--zw-brand)/0.5)] hover:text-[rgb(var(--zw-ink))]"
-            style={{ borderColor: 'rgb(var(--zw-border2)))' }}
+            style={{ borderColor: 'rgb(var(--zw-border2))' }}
           >
             Contact sales <Check className="h-3.5 w-3.5" />
           </a>

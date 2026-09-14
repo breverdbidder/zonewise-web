@@ -325,7 +325,7 @@ export default function BuyBoxForm() {
           <button
             onClick={() => setStep((s) => s + 1)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold"
-            style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))', border: 'none', cursor: 'pointer' }}
+            style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink))', border: 'none', cursor: 'pointer' }}
           >
             Next
           </button>
@@ -336,7 +336,7 @@ export default function BuyBoxForm() {
             className="flex-1 py-2 rounded-lg text-sm font-semibold"
             style={{
               background: loading ? 'rgba(245, 158, 11, 0.5)' : 'rgb(var(--zw-brand))',
-              color: 'rgb(var(--zw-brand-ink)))',
+              color: 'rgb(var(--zw-brand-ink))',
               border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
             }}

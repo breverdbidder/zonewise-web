@@ -143,7 +143,7 @@ export function OnboardingTour() {
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: 'rgb(var(--zw-ink2)))',
+                color: 'rgb(var(--zw-ink2))',
                 letterSpacing: '0.08em',
               }}
             >
@@ -155,7 +155,7 @@ export function OnboardingTour() {
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: 'rgb(var(--zw-ink2)))',
+                color: 'rgb(var(--zw-ink2))',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -189,7 +189,7 @@ export function OnboardingTour() {
             style={{
               fontSize: '20px',
               fontWeight: 700,
-              color: '#f1f5f9',
+              color: 'rgb(var(--zw-ink))',
               marginBottom: '10px',
               textAlign: 'center',
               lineHeight: 1.3,
@@ -202,7 +202,7 @@ export function OnboardingTour() {
           <p
             style={{
               fontSize: '14px',
-              color: 'rgb(var(--zw-ink2)))',
+              color: 'rgb(var(--zw-ink2))',
               lineHeight: 1.6,
               textAlign: 'center',
               marginBottom: '24px',
@@ -250,7 +250,7 @@ export function OnboardingTour() {
                   borderRadius: '8px',
                   border: '1px solid rgb(var(--zw-elev))',
                   background: 'transparent',
-                  color: 'rgb(var(--zw-ink2)))',
+                  color: 'rgb(var(--zw-ink2))',
                   fontSize: '14px',
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -278,7 +278,7 @@ export function OnboardingTour() {
                 borderRadius: '8px',
                 border: 'none',
                 background: 'rgb(var(--zw-brand))',
-                color: 'rgb(var(--zw-brand-ink)))',
+                color: 'rgb(var(--zw-brand-ink))',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: 'pointer',

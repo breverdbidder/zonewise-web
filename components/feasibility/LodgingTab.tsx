@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<LodgingPermitStatus, { label: string; bg: string; te
   unknown: {
     label: 'Verify with Municipality',
     bg: '#F8FAFC',
-    text: 'rgb(var(--zw-ink2)))',
+    text: 'rgb(var(--zw-ink2))',
     border: '#CBD5E1',
     icon: '?',
   },

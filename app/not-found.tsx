@@ -44,7 +44,7 @@ export default function NotFound() {
           fontSize: '8rem',
           fontWeight: 900,
           lineHeight: 1,
-          color: 'rgb(var(--zw-ink2)))',
+          color: 'rgb(var(--zw-ink2))',
           marginBottom: '1.5rem',
           letterSpacing: '-0.04em',
         }}
@@ -70,7 +70,7 @@ export default function NotFound() {
       <p
         style={{
           fontSize: '1rem',
-          color: 'rgb(var(--zw-ink2)))',
+          color: 'rgb(var(--zw-ink2))',
           maxWidth: '400px',
           textAlign: 'center',
           lineHeight: 1.6,
@@ -90,7 +90,7 @@ export default function NotFound() {
             alignItems: 'center',
             padding: '0.75rem 1.75rem',
             background: 'rgb(var(--zw-brand))',
-            color: 'rgb(var(--zw-brand-ink)))',
+            color: 'rgb(var(--zw-brand-ink))',
             fontWeight: 700,
             fontSize: '0.95rem',
             borderRadius: '0.5rem',

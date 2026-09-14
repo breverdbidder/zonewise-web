@@ -35,7 +35,7 @@ export default function GlobalError({
           alignItems: 'center',
           justifyContent: 'center',
           background: 'rgb(var(--zw-page))',
-          color: '#e2e8f0',
+          color: 'rgb(var(--zw-ink))',
           fontFamily: 'Inter, system-ui, sans-serif',
           padding: '2rem',
         }}
@@ -44,7 +44,7 @@ export default function GlobalError({
           <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: 'rgb(var(--zw-brand))' }}>
             ZoneWise.AI
           </h1>
-          <p style={{ color: 'rgb(var(--zw-ink2)))', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'rgb(var(--zw-ink2))', marginBottom: '1.5rem', lineHeight: 1.6 }}>
             Something didn&apos;t load correctly. Refresh to try again.
           </p>
           <button

@@ -79,7 +79,7 @@ export function PricingSection() {
               key={plan.name}
               className={`relative border transition-shadow duration-500 ${
                 plan.highlighted
-                  ? 'border-[rgb(var(--zw-brand)/0.5)] bg-[rgb(var(--zw-page))] shadow-[0_0_40px_rgb(var(--zw-brand) / 0.12)] hover:shadow-[0_0_64px_rgb(var(--zw-brand) / 0.22)]'
+                  ? 'border-[rgb(var(--zw-brand)/0.5)] bg-[rgb(var(--zw-page))] shadow-[0_0_40px_rgb(var(--zw-brand)/0.12)] hover:shadow-[0_0_64px_rgb(var(--zw-brand)/0.22)]'
                   : 'border-[rgb(var(--zw-border2)/0.6)] bg-[rgb(var(--zw-page)/0.5)]'
               }`}
             >

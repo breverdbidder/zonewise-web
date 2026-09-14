@@ -157,7 +157,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
       <div
         className={cn('relative overflow-hidden', className)}
         style={{
-          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgb(var(--zw-border2) / 0.92) 0%, rgb(var(--zw-page) / 1) 65%)',
+          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgb(var(--zw-border2) / 0.92) 0%, 0.01) 65%)',
         }}
       >
         {children && <div className="relative z-10">{children}</div>}

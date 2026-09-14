@@ -49,7 +49,7 @@ export default function DemoDataBadge({
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 z-50 w-48 rounded-lg px-3 py-2 text-[11px] leading-relaxed shadow-lg pointer-events-none"
           style={{
             background: 'rgb(var(--zw-elev))',
-            color: '#fff',
+            color: 'rgb(var(--zw-ink))',
             border: '1px solid rgb(var(--zw-brand)/0.2)',
           }}
         >

@@ -372,7 +372,7 @@ function popupHtml(a: ParcelAttributes): string {
     ${r('Building', formatCurrency(a.BLDG_VALUE))}${r('Land', formatCurrency(a.LAND_VALUE))}
     ${r('Use', (a.USE_CODE_DESCRIPTION || '—').trim())}
     <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid rgb(var(--zw-card));padding-top:6px">
-      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgb(var(--zw-brand) / 12);color:rgb(var(--zw-brand));border:1px solid rgb(var(--zw-brand) / 3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
+      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:0.12);color:rgb(var(--zw-brand));border:1px solid 0.03);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
       <a href="https://www.bcpao.us/PropertySearch/#/account/${a.PROPERTY_ID}" target="_blank" style="display:block;text-align:center;padding:5px;background:rgba(59,130,246,.1);color:#3B82F6;border:1px solid rgba(59,130,246,.2);border-radius:4px;font-size:10px;font-weight:600;text-decoration:none">📋 BCPAO Property Search</a>
     </div></div>`
 }

@@ -89,7 +89,7 @@ export default function DashboardContainer() {
         <StatsDisplay
           id="dashboard-kpis"
           stats={kpiStats}
-          className="max-w-full min-w-0 [&_.card]:!bg-[rgb(var(--zw-elev))] [&_.card]:!border-[rgb(var(--zw-brand) / 0.15)]"
+          className="max-w-full min-w-0 [&_.card]:!bg-[rgb(var(--zw-elev))] [&_.card]:!border-[rgb(var(--zw-brand)/0.15)]"
         />
       </div>
 
@@ -107,7 +107,7 @@ export default function DashboardContainer() {
         </div>
         <button
           className="rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap"
-          style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+          style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink))', border: 'none', cursor: 'pointer', flexShrink: 0 }}
           onClick={(e) => { e.stopPropagation(); trackClick() }}
         >
           Upgrade — $99/mo

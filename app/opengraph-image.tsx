@@ -92,7 +92,7 @@ export default function OGImage() {
         {/* Tagline */}
         <p
           style={{
-            color: 'rgb(var(--zw-ink2)))',
+            color: 'rgb(var(--zw-ink2))',
             fontSize: '28px',
             textAlign: 'center',
             maxWidth: '800px',
@@ -130,7 +130,7 @@ export default function OGImage() {
               >
                 {stat.value}
               </span>
-              <span style={{ color: 'rgb(var(--zw-ink2)))', fontSize: '16px' }}>
+              <span style={{ color: 'rgb(var(--zw-ink2))', fontSize: '16px' }}>
                 {stat.label}
               </span>
             </div>

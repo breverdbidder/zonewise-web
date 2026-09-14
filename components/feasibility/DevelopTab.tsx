@@ -358,7 +358,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
                 onClick={handleDownloadReport}
                 disabled={downloadingReport}
                 className="w-full text-xs font-bold py-2.5 rounded-lg cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ background: COLORS.brand, color: '#fff' }}
+                style={{ background: COLORS.brand, color: 'rgb(var(--zw-brand-ink))' }}
               >
                 {downloadingReport ? 'Generating…' : 'Download Outcome Report (PDF)'}
               </button>
