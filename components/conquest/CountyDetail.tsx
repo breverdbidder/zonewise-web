@@ -23,7 +23,7 @@ function ConqueredView({ detail }: CountyDetailProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 flex flex-col gap-1">
           <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Coverage</span>
-          <span className="text-3xl font-bold text-emerald-400">100%</span>
+          <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">100%</span>
           <span className="text-xs text-[rgb(var(--zw-ink2))]">Fully conquered</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
@@ -77,9 +77,9 @@ function PendingView({ detail }: CountyDetailProps) {
       {/* CLI command */}
       <div className="w-full max-w-lg rounded-xl border border-amber-500/30 bg-amber-950/10 p-4">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-medium text-amber-400 uppercase tracking-wider">CLI Command</span>
+          <span className="text-xs font-medium text-amber-700 dark:text-amber-400 uppercase tracking-wider">CLI Command</span>
         </div>
-        <code className="text-sm font-mono text-amber-300/90 break-all">{cliCommand}</code>
+        <code className="text-sm font-mono text-amber-700 dark:text-amber-300/90 break-all">{cliCommand}</code>
       </div>
 
       {/* County stats */}
@@ -131,7 +131,7 @@ export default function CountyDetailComponent({ detail }: CountyDetailProps) {
           </p>
         </div>
         {isConquered ? (
-          <span className="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-sm">
+          <span className="px-4 py-2 rounded-xl bg-emerald-100 text-emerald-700 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30 font-bold text-sm">
             ✓ CONQUERED
           </span>
         ) : (

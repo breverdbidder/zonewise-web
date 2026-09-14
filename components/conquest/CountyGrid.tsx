@@ -13,10 +13,10 @@ const REGION_LABELS: Record<FlRegion, string> = {
 }
 
 const REGION_COLORS: Record<FlRegion, string> = {
-  panhandle: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  north: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  central: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
-  south: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+  panhandle: 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-500/20 dark:text-purple-300 dark:border-purple-500/30',
+  north: 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30',
+  central: 'bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-500/30',
+  south: 'bg-rose-100 text-rose-700 border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/30',
 }
 
 type SortKey = 'alpha' | 'population' | 'dor'
@@ -47,7 +47,7 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
             {REGION_LABELS[county.region]}
           </span>
           {isConquered && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30">
               CONQUERED
             </span>
           )}
@@ -60,7 +60,7 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
           <span className="text-xs text-[rgb(var(--zw-ink2))]">Coverage</span>
           <span
             className={`text-xs font-bold tabular-nums ${
-              isConquered ? 'text-emerald-400' : 'text-[rgb(var(--zw-ink2))]'
+              isConquered ? 'text-emerald-700 dark:text-emerald-400' : 'text-[rgb(var(--zw-ink2))]'
             }`}
           >
             {county.coverage_pct.toFixed(0)}%
@@ -78,7 +78,7 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
 
       {/* Parcel count if conquered */}
       {isConquered && (
-        <div className="text-xs text-emerald-400/80 font-mono">
+        <div className="text-xs text-emerald-700 dark:text-emerald-400/80 font-mono">
           {county.zoned_parcels.toLocaleString()} parcels zoned
         </div>
       )}
@@ -203,7 +203,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
       <div className="text-xs text-[rgb(var(--zw-ink2))]">
         Showing {filtered.length} of {counties.length} counties
         {conqueredCount > 0 && (
-          <span className="text-emerald-400 ml-2">
+          <span className="text-emerald-700 dark:text-emerald-400 ml-2">
             · {conqueredCount} conquered
           </span>
         )}

@@ -17,7 +17,7 @@ function StatCard({ label, value, sub, highlight }: StatCardProps) {
       <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">{label}</span>
       <span
         className={`text-3xl font-bold tabular-nums ${
-          highlight ? 'text-amber-400' : 'text-[rgb(var(--zw-ink))]'
+          highlight ? 'text-amber-700 dark:text-amber-400' : 'text-[rgb(var(--zw-ink))]'
         }`}
       >
         {value}

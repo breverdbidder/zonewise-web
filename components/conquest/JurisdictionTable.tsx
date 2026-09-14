@@ -18,20 +18,20 @@ function QualityBadge({ count, total }: { count: number; total: number }) {
   const pct = total > 0 ? count / total : 0
   if (pct >= 0.95) {
     return (
-      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30">
         PASS
       </span>
     )
   }
   if (pct >= 0.7) {
     return (
-      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30">
         REVIEW
       </span>
     )
   }
   return (
-    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-500/20 dark:text-rose-300 dark:border-rose-500/30">
       REJECT
     </span>
   )
@@ -108,7 +108,7 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
         <tfoot>
           <tr className="border-t border-white/20">
             <td className="py-3 px-2 font-bold text-[rgb(var(--zw-ink))]">Total</td>
-            <td className="py-3 px-2 text-right font-bold text-amber-400 tabular-nums font-mono text-xs">
+            <td className="py-3 px-2 text-right font-bold text-amber-700 dark:text-amber-400 tabular-nums font-mono text-xs">
               {totalZoned.toLocaleString()}
             </td>
             <td className="py-3 px-2 text-right text-[rgb(var(--zw-ink2))] text-xs hidden sm:table-cell">100%</td>
