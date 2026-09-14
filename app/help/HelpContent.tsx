@@ -93,9 +93,9 @@ export default function HelpContent() {
   }, [search, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200">
+    <div className="min-h-screen bg-[#0B1119] text-slate-200">
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="mb-2 text-3xl font-bold text-[#F59E0B]">Help Center</h1>
+        <h1 className="mb-2 text-3xl font-bold text-[#1A90FF]">Help Center</h1>
         <p className="mb-8 text-sm text-slate-400">
           Find answers to common questions about ZoneWise.AI
         </p>
@@ -106,7 +106,7 @@ export default function HelpContent() {
           placeholder="Search questions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="mb-6 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]"
+          className="mb-6 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 outline-none focus:border-[#1A90FF] focus:ring-1 focus:ring-[#1A90FF]"
           aria-label="Search FAQ questions"
         />
 
@@ -116,7 +116,7 @@ export default function HelpContent() {
             onClick={() => setActiveCategory(null)}
             className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
               !activeCategory
-                ? 'bg-[#F59E0B] text-[#020617]'
+                ? 'bg-[#1A90FF] text-[#0B1119]'
                 : 'bg-slate-800 text-slate-400 hover:text-slate-200'
             }`}
             aria-pressed={!activeCategory}
@@ -129,7 +129,7 @@ export default function HelpContent() {
               onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
               className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                 activeCategory === cat
-                  ? 'bg-[#F59E0B] text-[#020617]'
+                  ? 'bg-[#1A90FF] text-[#0B1119]'
                   : 'bg-slate-800 text-slate-400 hover:text-slate-200'
               }`}
               aria-pressed={activeCategory === cat}
@@ -189,14 +189,14 @@ export default function HelpContent() {
         </div>
 
         {/* API Docs Link */}
-        <div className="mt-8 rounded-xl border border-[#1E3A5F]/40 bg-[#1E3A5F]/10 p-5 flex items-center justify-between gap-4">
+        <div className="mt-8 rounded-xl border border-[#1B2737]/40 bg-[#1B2737]/10 p-5 flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-slate-200">Building on ZoneWise?</p>
             <p className="text-xs text-slate-500 mt-0.5">REST API, authentication, rate limits, and code examples</p>
           </div>
           <a
             href="/docs"
-            className="shrink-0 inline-block rounded-lg border border-[#1E3A5F] px-4 py-2 text-xs font-semibold text-[#F59E0B] hover:bg-[#1E3A5F]/30 transition"
+            className="shrink-0 inline-block rounded-lg border border-[#1B2737] px-4 py-2 text-xs font-semibold text-[#1A90FF] hover:bg-[#1B2737]/30 transition"
           >
             API Docs →
           </a>
@@ -210,7 +210,7 @@ export default function HelpContent() {
           </p>
           <a
             href="mailto:support@zonewise.ai"
-            className="inline-block rounded-lg bg-[#F59E0B] px-6 py-2.5 text-sm font-semibold text-[#020617] transition hover:bg-[#d97706]"
+            className="inline-block rounded-lg bg-[#1A90FF] px-6 py-2.5 text-sm font-semibold text-[#0B1119] transition hover:bg-[#005EB8]"
           >
             Contact Support
           </a>
