@@ -8,14 +8,14 @@ const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 const clerkAppearance = {
   baseTheme: dark,
   variables: {
-    colorPrimary: '#1E3A5F',
+    colorPrimary: '#1B2737',
     colorDanger: '#dc2626',
     colorSuccess: '#16a34a',
-    colorWarning: '#F59E0B',
+    colorWarning: '#1A90FF',
     fontFamily: 'Inter, system-ui, sans-serif',
   },
   elements: {
-    formButtonPrimary: 'bg-[#1E3A5F] hover:bg-[#2a5280] text-white',
+    formButtonPrimary: 'bg-[#1B2737] hover:bg-[#2a5280] text-white',
     card: 'shadow-lg border border-slate-700',
     headerTitle: 'text-white',
     headerSubtitle: 'text-slate-400',
@@ -24,7 +24,7 @@ const clerkAppearance = {
     // theme despite baseTheme:dark, and the dark input's default placeholder
     // was near-invisible on it (dark-on-dark, flagged in the 2026-08-20 audit).
     formFieldInput: 'bg-slate-800 border-slate-600 text-white placeholder:text-slate-400',
-    footerActionLink: 'text-[#F59E0B] hover:text-[#fbbf24]',
+    footerActionLink: 'text-[#1A90FF] hover:text-[#fbbf24]',
     userButtonAvatarBox: 'w-7 h-7',
   },
 }
