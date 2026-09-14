@@ -78,16 +78,16 @@ export function ZoomParallax({
         <div
           ref={bgRef}
           className="absolute inset-[-20%] z-[1]"
-          style={{ background: "radial-gradient(ellipse at 50% 40%, #1a2a4a 0%, #020617 70%)" }}
+          style={{ background: "radial-gradient(ellipse at 50% 40%, #1a2a4a 0%, #0B1119 70%)" }}
         />
         {/* Mid shapes */}
         <div ref={midRef} className="absolute inset-0 z-[2]">
           <div className="absolute w-72 h-72 rounded-full opacity-15 top-[15%] left-[10%]"
-            style={{ background: "radial-gradient(circle, #F59E0B 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, #1A90FF 0%, transparent 70%)" }} />
           <div className="absolute w-48 h-48 rounded-full opacity-10 top-[60%] right-[15%]"
-            style={{ background: "radial-gradient(circle, #1E3A5F 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, #1B2737 0%, transparent 70%)" }} />
           <div className="absolute w-96 h-96 rounded-full opacity-10 bottom-[10%] left-[40%]"
-            style={{ background: "radial-gradient(circle, #F59E0B 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, #1A90FF 0%, transparent 70%)" }} />
         </div>
         {/* Foreground headline */}
         <div ref={fgRef} className="absolute inset-0 z-[3] flex items-center justify-center">
@@ -97,7 +97,7 @@ export function ZoomParallax({
           >
             {accentWord
               ? headline.split(accentWord).map((part, i, arr) => (
-                  <span key={i}>{part}{i < arr.length - 1 && <span style={{ color: "#F59E0B" }}>{accentWord}</span>}</span>
+                  <span key={i}>{part}{i < arr.length - 1 && <span style={{ color: "#1A90FF" }}>{accentWord}</span>}</span>
                 ))
               : headline}
           </h2>
