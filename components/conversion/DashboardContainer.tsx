@@ -89,7 +89,7 @@ export default function DashboardContainer() {
         <StatsDisplay
           id="dashboard-kpis"
           stats={kpiStats}
-          className="max-w-full min-w-0 [&_.card]:!bg-[#1B2737] [&_.card]:!border-[rgba(245,158,11,0.15)]"
+          className="max-w-full min-w-0 [&_.card]:!bg-[#1B2737] [&_.card]:!border-[rgba(26,144,255,0.15)]"
         />
       </div>
 
