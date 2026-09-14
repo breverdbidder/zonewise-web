@@ -263,7 +263,7 @@ async function main() {
     await landingCtx2.close();
 
     // ── CHECK 8: Brand colors ──────────────────────────────────────────
-    console.log('\n=== CHECK 8: Brand colors Navy #1E3A5F + Orange #F59E0B ===');
+    console.log('\n=== CHECK 8: Brand colors Navy #1B2737 + Orange #1A90FF ===');
 
     const brandCheck = await dashPage.evaluate(() => {
       // Check CSS variables and computed styles
@@ -327,9 +327,9 @@ async function main() {
       return relevantVars;
     }).catch(() => ({}));
 
-    log('Navy #1E3A5F in styles', (brandCheck.navyElements > 0 || brandCheck.cssVarsWithBrand > 0) ? 'PASS' : 'FAIL',
+    log('Navy #1B2737 in styles', (brandCheck.navyElements > 0 || brandCheck.cssVarsWithBrand > 0) ? 'PASS' : 'FAIL',
       `navy elements: ${brandCheck.navyElements}, css vars: ${brandCheck.cssVarsWithBrand}, body bg: ${brandCheck.bodyBg}`);
-    log('Orange #F59E0B in styles', brandCheck.orangeElements > 0 ? 'PASS' : 'FAIL',
+    log('Orange #1A90FF in styles', brandCheck.orangeElements > 0 ? 'PASS' : 'FAIL',
       `orange elements: ${brandCheck.orangeElements}`);
     console.log('CSS vars:', JSON.stringify(cssVarCheck));
 
