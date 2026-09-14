@@ -22,6 +22,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sl300);-w
 
 /* Nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(215,227,241,.8)}
+.nav-left{display:flex;align-items:center;gap:.75rem}
 .logo{display:flex;align-items:center;gap:.6rem;font-family:'DM Serif Display',serif;font-size:1.3rem;color:#0A2540;text-decoration:none}
 .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--orange),#005EB8);border-radius:8px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;color:var(--bg)}
 .nav-links{display:flex;gap:1.5rem;align-items:center}
@@ -54,7 +55,8 @@ h1 em{color:var(--orange);font-style:italic}
 /* Stats */
 .stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;max-width:900px;margin:0 auto;padding:0 2rem 4rem}
 .stat-card{background:rgba(230,240,250,.6);backdrop-filter:blur(10px);border:1px solid rgba(215,227,241,.8);border-radius:12px;padding:1.5rem;text-align:center}
-.stat-num{font-family:'DM Serif Display',serif;font-size:2.5rem;color:#0A2540;line-height:1}
+.stat-num{font-family:'DM Serif Display',serif;font-size:clamp(1.75rem,7vw,2.5rem);color:#0A2540;line-height:1;font-variant-numeric:tabular-nums;min-height:2.5rem;white-space:nowrap}
+.stat-num [data-target]{display:inline-block}
 .stat-num .accent{color:var(--orange)}
 .stat-label{font-size:.8rem;color:var(--sl400);margin-top:.4rem;font-weight:500}
 
@@ -120,17 +122,19 @@ footer a{color:var(--orange);text-decoration:none}
 <body>
 
 <nav>
-  <a href="/" class="logo">
-    <div class="logo-mark">ZW</div>
-    ZoneWise<span style="color:var(--orange)">.AI</span>
-  </a>
+  <div class="nav-left">
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+    <a href="/" class="logo">
+      <div class="logo-mark">ZW</div>
+      ZoneWise<span style="color:var(--orange)">.AI</span>
+    </a>
+  </div>
   <div class="nav-links">
     <a href="#features">Features</a>
     <a href="#how">How It Works</a>
     <a href="/app" class="cta-btn">Launch App</a>
-    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="#features">Features</a>
@@ -318,7 +322,18 @@ const counterObs = new IntersectionObserver((entries)=>{
     counterObs.unobserve(el);
   });
 },{threshold:0.5});
-document.querySelectorAll('[data-target]').forEach(el=>counterObs.observe(el));
+/* Reserve the FINAL formatted width up front (on the whole .stat-num line,
+   so the count-up never re-flows the grid - the "jumping" Ariel reported) */
+document.querySelectorAll('[data-target]').forEach(el=>{
+  const t = parseInt(el.dataset.target);
+  const box = el.classList.contains('stat-num') ? el : el.closest('.stat-num');
+  if(t && box){
+    const suffix = box.textContent.replace(/[\d,]/g, '').trim();
+    box.style.minWidth = (t.toLocaleString().length + suffix.length + 0.3) + 'ch';
+    box.style.marginLeft = 'auto'; box.style.marginRight = 'auto';
+  }
+  counterObs.observe(el);
+});
 /* fallback: never leave counters at 0 if the observer misses */
 setTimeout(()=>document.querySelectorAll('[data-target]').forEach(el=>{const t=parseInt(el.dataset.target);if(t&&(el.textContent==='0'||el.textContent===''))el.textContent=t.toLocaleString();}),2500);
 </script>
