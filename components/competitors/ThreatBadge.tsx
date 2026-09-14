@@ -11,7 +11,7 @@ interface Props {
 
 const THREAT_STYLES: Record<ThreatLevel, { bg: string; border: string; text: string }> = {
   CRITICAL: { bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.4)',  text: '#F87171' },
-  HIGH:     { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.4)', text: '#1A90FF' },
+  HIGH:     { bg: 'rgba(26,144,255,0.15)', border: 'rgba(26,144,255,0.4)', text: '#1A90FF' },
   MEDIUM:   { bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', text: '#FBBF24' },
   LOW:      { bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)', text: '#94A3B8' },
 }
