@@ -22,7 +22,7 @@ export default function Navbar() {
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{
             width: 32, height: 32,
-            background: '#1E3A5F',
+            background: '#1B2737',
             borderRadius: 8,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             position: 'relative',
@@ -31,7 +31,7 @@ export default function Navbar() {
             <div style={{
               position: 'absolute', top: -2, right: -2,
               width: 8, height: 8,
-              background: '#F59E0B',
+              background: '#1A90FF',
               borderRadius: '50%',
             }} />
           </div>
@@ -44,8 +44,8 @@ export default function Navbar() {
           <Link href="/#pricing" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
           <Link href="/sign-in" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>Sign In</Link>
           <Link href="/#beta-signup" style={{
-            background: '#F59E0B',
-            color: '#020617',
+            background: '#1A90FF',
+            color: '#0B1119',
             padding: '8px 18px',
             borderRadius: 8,
             fontWeight: 600,
