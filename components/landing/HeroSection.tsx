@@ -47,7 +47,7 @@ export function HeroSection() {
               text="188K AUCTIONS · 10.5M PARCELS · 67 COUNTIES"
               trigger="scroll"
               className="text-xs sm:text-sm tracking-widest"
-              color="rgba(245,158,11,0.7)"
+              color="rgba(26,144,255,0.7)"
               scramblingColor="rgba(255,255,255,0.15)"
             />
           </div>
