@@ -56,7 +56,7 @@ export default async function FeasibilityPage({ searchParams }: FeasibilityPageP
           Bar brightened + highlighted per Ariel request Aug 16 2026: amber
           accent border/glow so it reads as the primary action, brighter
           placeholder/helper text so nothing on the dark bg goes dim. */}
-      <div className="border-b-2 px-4 py-4 sm:px-6" style={{ borderColor: 'rgba(245,158,11,0.35)', background: '#020617', boxShadow: 'inset 0 -12px 24px -20px rgba(245,158,11,0.25)' }}>
+      <div className="border-b-2 px-4 py-4 sm:px-6" style={{ borderColor: 'rgba(26,144,255,0.35)', background: '#020617', boxShadow: 'inset 0 -12px 24px -20px rgba(26,144,255,0.25)' }}>
         <div className="mx-auto max-w-3xl">
           <ParcelSearchBar currentAddress={live ? site.address : undefined} />
           {!live && (
