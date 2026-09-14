@@ -5,7 +5,7 @@
 
 # === GLOBAL NOISE ===
 
-# GHA workflows: ${{ }} is standard GHA syntax, not injection
+# GHA workflows: expression syntax is standard GHA, not injection
 .github/workflows/*.yml
 .github/workflows/*.md
 .github/workflows/*.lock.yml
@@ -53,6 +53,12 @@ CLAUDE_PROTOCOLS.md
 # Tests and eval fixtures
 tests/*
 eval/*
+
+# Component test fixtures (prompt-injection test strings etc.), any depth
+*__tests__/*
+
+# Audit/report archives (documented past findings; markdown, not executable)
+reports/*
 
 # SQL migrations
 migrations/*
