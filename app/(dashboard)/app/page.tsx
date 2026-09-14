@@ -262,8 +262,8 @@ export default function AppShellPage() {
               className="absolute inset-0"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(30,58,95,0.5) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(30,58,95,0.5) 1px, transparent 1px)
+                  linear-gradient(rgba(27,39,55,0.5) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(27,39,55,0.5) 1px, transparent 1px)
                 `,
                 backgroundSize: '40px 40px',
               }}
@@ -305,7 +305,7 @@ export default function AppShellPage() {
                     width: `${dot.r * 6}px`,
                     height: `${dot.r * 6}px`,
                     animationDelay: `${i * 200}ms`,
-                    boxShadow: dot.h ? '0 0 12px rgba(245,158,11,0.4)' : 'none',
+                    boxShadow: dot.h ? '0 0 12px rgba(26,144,255,0.4)' : 'none',
                   }}
                 />
               ))}
