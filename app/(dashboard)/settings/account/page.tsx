@@ -52,7 +52,7 @@ export default function AccountSettingsPage() {
             <div
               key={s.title}
               className="flex flex-col rounded-lg border p-5"
-              style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
+              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}
             >
               <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1B2737]">
                 <s.icon className="h-4 w-4 text-[#1A90FF]" />
@@ -70,7 +70,7 @@ export default function AccountSettingsPage() {
           ))}
         </div>
 
-        <div className="mt-10 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}>
+        <div className="mt-10 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}>
           <h2 className="text-sm font-semibold text-white">Data &amp; coverage</h2>
           <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
             ZoneWise.AI covers all 67 Florida counties across 10.5M+ parcels. Feasibility tools are
