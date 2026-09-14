@@ -34,7 +34,7 @@ interface Props {
 const CLASSIFICATION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   DISTRESSED_HOMEOWNER: { bg: 'bg-red-500/15 border-red-500/30', text: 'text-red-400', label: 'Distressed Homeowner' },
   INVESTOR:             { bg: 'bg-amber-500/15 border-amber-500/30', text: 'text-amber-400', label: 'Investor' },
-  CORPORATE:            { bg: 'bg-[#1E3A5F]/30 border-[#1E3A5F]/50', text: 'text-blue-300', label: 'Corporate' },
+  CORPORATE:            { bg: 'bg-[#1B2737]/30 border-[#1B2737]/50', text: 'text-blue-300', label: 'Corporate' },
   ESTATE:               { bg: 'bg-purple-500/15 border-purple-500/30', text: 'text-purple-400', label: 'Estate' },
   UNKNOWN:              { bg: 'bg-slate-500/15 border-slate-500/30', text: 'text-slate-400', label: 'Unknown' },
 }
@@ -118,7 +118,7 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
         </div>
         <div className="w-full bg-slate-800 rounded-full h-1.5">
           <div
-            className="bg-[#F59E0B] h-1.5 rounded-full transition-all"
+            className="bg-[#1A90FF] h-1.5 rounded-full transition-all"
             style={{ width: `${confidencePct}%` }}
           />
         </div>
@@ -132,9 +132,9 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
           { label: 'Out-of-State', value: data.is_out_of_state ? '✓ Yes' : '✗ No', accent: false },
           { label: 'Homestead', value: data.is_homestead ? '✓ Yes' : '✗ No', accent: false },
         ].map(s => (
-          <div key={s.label} className={`rounded-md p-3 border ${s.accent ? 'bg-[#F59E0B]/10 border-[#F59E0B]/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
+          <div key={s.label} className={`rounded-md p-3 border ${s.accent ? 'bg-[#1A90FF]/10 border-[#1A90FF]/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
             <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">{s.label}</div>
-            <div className={`text-sm font-bold font-mono ${s.accent ? 'text-[#F59E0B]' : 'text-white'}`}>{s.value}</div>
+            <div className={`text-sm font-bold font-mono ${s.accent ? 'text-[#1A90FF]' : 'text-white'}`}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -180,7 +180,7 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
                     <td className="py-1.5 pr-2">
                       <Link
                         href={`/parcel/${encodeURIComponent(p.pin)}`}
-                        className="text-[#F59E0B] hover:underline font-mono"
+                        className="text-[#1A90FF] hover:underline font-mono"
                       >
                         {p.pin}
                       </Link>
