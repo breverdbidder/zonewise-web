@@ -133,7 +133,7 @@ export function OnboardingTour() {
             background: '#0f172a',
             border: '1px solid #1B2737',
             borderRadius: '16px',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(30,58,95,0.4)',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(27,39,55,0.4)',
             padding: '28px 24px 20px',
           }}
         >

@@ -53,7 +53,7 @@ export function CaseStudySection() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 20% 0%, rgba(30,58,95,0.55) 0%, transparent 65%)',
+            'radial-gradient(ellipse 70% 60% at 20% 0%, rgba(27,39,55,0.55) 0%, transparent 65%)',
         }}
       />
 
@@ -95,10 +95,10 @@ export function CaseStudySection() {
               className="flex flex-col rounded-lg border p-6"
               style={{
                 background: '#0d1829',
-                borderColor: i === 3 ? 'rgba(245,158,11,0.35)' : 'rgba(30,58,95,0.5)',
+                borderColor: i === 3 ? 'rgba(26,144,255,0.35)' : 'rgba(27,39,55,0.5)',
                 boxShadow:
                   i === 3
-                    ? 'rgba(245,158,11,0.06) 0px 0px 30px, rgba(0,0,0,0.3) 0px 10px 30px -10px'
+                    ? 'rgba(26,144,255,0.06) 0px 0px 30px, rgba(0,0,0,0.3) 0px 10px 30px -10px'
                     : 'rgba(0,0,0,0.3) 0px 10px 30px -10px',
               }}
             >

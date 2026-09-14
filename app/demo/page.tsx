@@ -100,7 +100,7 @@ const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', curren
 
 const TAG: Record<string, { bg: string; bd: string; tx: string }> = {
   BID:    { bg: 'rgba(34,197,94,.08)',  bd: 'rgba(34,197,94,.5)',  tx: '#22C55E' },
-  REVIEW: { bg: 'rgba(245,158,11,.08)', bd: 'rgba(245,158,11,.5)', tx: '#1A90FF' },
+  REVIEW: { bg: 'rgba(26,144,255,.08)', bd: 'rgba(26,144,255,.5)', tx: '#1A90FF' },
   SKIP:   { bg: 'rgba(239,68,68,.08)',  bd: 'rgba(239,68,68,.5)',  tx: '#EF4444' },
 }
 
@@ -116,9 +116,9 @@ const CSS = `
 @keyframes slide-up     { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fade-in      { from{opacity:0} to{opacity:1} }
 @keyframes data-in      { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-@keyframes glow         { 0%,100%{box-shadow:0 0 10px rgba(245,158,11,.12)} 50%{box-shadow:0 0 32px rgba(245,158,11,.45)} }
+@keyframes glow         { 0%,100%{box-shadow:0 0 10px rgba(26,144,255,.12)} 50%{box-shadow:0 0 32px rgba(26,144,255,.45)} }
 @keyframes spin         { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-@keyframes border-pulse { 0%,100%{border-color:rgba(245,158,11,.3)} 50%{border-color:rgba(245,158,11,.85)} }
+@keyframes border-pulse { 0%,100%{border-color:rgba(26,144,255,.3)} 50%{border-color:rgba(26,144,255,.85)} }
 @keyframes scanline     { 0%{top:0%;opacity:.6} 100%{top:110%;opacity:0} }
 @keyframes cursor-blink { 0%,100%,49%{opacity:1} 50%,99%{opacity:0} }
 `
@@ -130,8 +130,8 @@ function AgentNode({ agent, status }: { agent: typeof AGENTS[0]; status: string 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 14, padding: '11px 15px',
-      background: status === 'active' ? 'rgba(245,158,11,.05)' : 'transparent',
-      border: `1px solid ${status === 'active' ? 'rgba(245,158,11,.3)' : '#1E293B'}`,
+      background: status === 'active' ? 'rgba(26,144,255,.05)' : 'transparent',
+      border: `1px solid ${status === 'active' ? 'rgba(26,144,255,.3)' : '#1E293B'}`,
       borderRadius: 9, transition: 'all .35s',
       animation: status === 'active' ? 'glow 2s ease infinite, border-pulse 2s ease infinite' : 'none',
     }}>
@@ -145,7 +145,7 @@ function AgentNode({ agent, status }: { agent: typeof AGENTS[0]; status: string 
         <div style={{
           width: 30, height: 30, borderRadius: '50%', border: `2px solid ${c}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: status === 'done' ? 'rgba(34,197,94,.1)' : status === 'active' ? 'rgba(245,158,11,.08)' : 'transparent',
+          background: status === 'done' ? 'rgba(34,197,94,.1)' : status === 'active' ? 'rgba(26,144,255,.08)' : 'transparent',
           fontSize: 12, color: c, transition: 'all .35s',
           animation: status === 'active' ? 'spin 2.5s linear infinite' : 'none',
           fontFamily: 'monospace',
@@ -173,8 +173,8 @@ function KpiRow({ kpi, vis, delay }: { kpi: KpiDef; vis: boolean; delay: number 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px',
-      background: kpi.hi ? 'rgba(245,158,11,.04)' : 'rgba(255,255,255,.01)',
-      border: `1px solid ${kpi.hi ? 'rgba(245,158,11,.18)' : '#1E293B'}`, borderRadius: 6,
+      background: kpi.hi ? 'rgba(26,144,255,.04)' : 'rgba(255,255,255,.01)',
+      border: `1px solid ${kpi.hi ? 'rgba(26,144,255,.18)' : '#1E293B'}`, borderRadius: 6,
       opacity: vis ? 1 : 0, transform: vis ? 'translateX(0)' : 'translateX(-14px)',
       transition: 'opacity .3s,transform .3s', transitionDelay: `${delay}s`,
     }}>
@@ -235,8 +235,8 @@ function OverallScore({ vis }: { vis: boolean }) {
   const c = 2 * Math.PI * 54
   return (
     <div style={{
-      padding: 20, border: '1px solid rgba(245,158,11,.3)', borderRadius: 11,
-      background: 'linear-gradient(135deg,rgba(245,158,11,.06) 0%,transparent 60%)',
+      padding: 20, border: '1px solid rgba(26,144,255,.3)', borderRadius: 11,
+      background: 'linear-gradient(135deg,rgba(26,144,255,.06) 0%,transparent 60%)',
       display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
       opacity: vis ? 1 : 0, transform: vis ? 'scale(1)' : 'scale(.92)',
       transition: 'opacity .6s,transform .6s cubic-bezier(.34,1.56,.64,1)',
@@ -248,7 +248,7 @@ function OverallScore({ vis }: { vis: boolean }) {
           <circle cx="60" cy="60" r="54" fill="none" stroke="#1A90FF" strokeWidth="7"
             strokeDasharray={c} strokeDashoffset={vis ? c - (c * .84) : c}
             strokeLinecap="round" transform="rotate(-90 60 60)"
-            style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)', transitionDelay: '.2s', filter: 'drop-shadow(0 0 8px rgba(245,158,11,.6))' }} />
+            style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)', transitionDelay: '.2s', filter: 'drop-shadow(0 0 8px rgba(26,144,255,.6))' }} />
         </svg>
         <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ fontSize: 30, fontWeight: 800, color: '#1A90FF', lineHeight: 1 }}>84</div>
@@ -263,7 +263,7 @@ function OverallScore({ vis }: { vis: boolean }) {
         </div>
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
           {[{ l: '298', d: 'KPIs Analyzed' }, { l: '4', d: 'Risk Flags' }, { l: '94%', d: 'Confidence' }, { l: '#1', d: 'Priority Bid' }].map(x => (
-            <div key={x.l} style={{ padding: '5px 10px', background: 'rgba(245,158,11,.08)', border: '1px solid rgba(245,158,11,.2)', borderRadius: 6, textAlign: 'center' }}>
+            <div key={x.l} style={{ padding: '5px 10px', background: 'rgba(26,144,255,.08)', border: '1px solid rgba(26,144,255,.2)', borderRadius: 6, textAlign: 'center' }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#1A90FF' }}>{x.l}</div>
               <div style={{ fontFamily: 'monospace', fontSize: 8, color: '#64748B', marginTop: 1 }}>{x.d}</div>
             </div>
@@ -281,9 +281,9 @@ function PropCard({ prop, highlightReport, index }: { prop: Prop; highlightRepor
   const sc = prop.score >= 75 ? '#22C55E' : prop.score >= 60 ? '#1A90FF' : '#EF4444'
   return (
     <div style={{
-      background: '#0F172A', border: `1px solid ${highlightReport ? 'rgba(245,158,11,.4)' : '#1E293B'}`,
+      background: '#0F172A', border: `1px solid ${highlightReport ? 'rgba(26,144,255,.4)' : '#1E293B'}`,
       borderRadius: 9, padding: 13, animation: 'slide-up .4s ease both', animationDelay: `${index * .1}s`,
-      boxShadow: highlightReport ? '0 0 18px rgba(245,158,11,.07)' : 'none', transition: 'all .3s',
+      boxShadow: highlightReport ? '0 0 18px rgba(26,144,255,.07)' : 'none', transition: 'all .3s',
     }}>
       {highlightReport && (
         <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#1A90FF', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -317,7 +317,7 @@ function Terminal({ lines, active }: { lines: string[]; active: boolean }) {
   useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight }, [lines])
   return (
     <div ref={ref} style={{ background: '#0B1119', border: '1px solid #1E293B', borderRadius: 9, padding: 14, height: 180, overflowY: 'hidden', position: 'relative' }}>
-      {active && <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(transparent,rgba(245,158,11,.15),transparent)', animation: 'scanline 2s linear infinite', pointerEvents: 'none' }} />}
+      {active && <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(transparent,rgba(26,144,255,.15),transparent)', animation: 'scanline 2s linear infinite', pointerEvents: 'none' }} />}
       {lines.map((line, i) => {
         const tag = line.match(/^\[(\w+)\]/)?.[1] ?? ''
         return (
@@ -338,8 +338,8 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
   return (
     <div style={{ animation: 'fade-in .4s ease' }}>
       <div style={{
-        padding: '14px 18px', background: 'linear-gradient(135deg,rgba(245,158,11,.08) 0%,transparent 100%)',
-        border: '1px solid rgba(245,158,11,.25)', borderRadius: 10, marginBottom: 14,
+        padding: '14px 18px', background: 'linear-gradient(135deg,rgba(26,144,255,.08) 0%,transparent 100%)',
+        border: '1px solid rgba(26,144,255,.25)', borderRadius: 10, marginBottom: 14,
         display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: 'wrap',
       }}>
         <div style={{ flex: 1, minWidth: 180 }}>
@@ -350,7 +350,7 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
         </div>
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: t.bg, border: `1px solid ${t.bd}`, color: t.tx, fontSize: 11, fontWeight: 800, letterSpacing: '.08em' }}>{prop.tag}</div>
-          <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(245,158,11,.1)', border: '1px solid rgba(245,158,11,.3)' }}>
+          <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(26,144,255,.1)', border: '1px solid rgba(26,144,255,.3)' }}>
             <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#1A90FF', fontWeight: 700 }}>MAX BID: $213,000</span>
           </div>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.3)' }}>
@@ -515,9 +515,9 @@ export default function DemoPage() {
             <div style={{ maxWidth: 520, margin: '0 auto', marginBottom: 20 }}>
               <div style={{
                 display: 'flex', alignItems: 'center', background: '#0F172A',
-                border: `1px solid ${phase !== 'idle' ? 'rgba(245,158,11,.7)' : '#334155'}`,
+                border: `1px solid ${phase !== 'idle' ? 'rgba(26,144,255,.7)' : '#334155'}`,
                 borderRadius: 10, overflow: 'hidden', transition: 'border-color .4s,box-shadow .4s',
-                boxShadow: phase !== 'idle' ? '0 0 28px rgba(245,158,11,.10)' : 'none',
+                boxShadow: phase !== 'idle' ? '0 0 28px rgba(26,144,255,.10)' : 'none',
               }}>
                 <div style={{ padding: '0 13px', color: '#64748B', display: 'flex' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>

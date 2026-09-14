@@ -79,7 +79,7 @@ export function PricingSection() {
               key={plan.name}
               className={`relative border transition-shadow duration-500 ${
                 plan.highlighted
-                  ? 'border-[#1A90FF]/50 bg-slate-900 shadow-[0_0_40px_rgba(245,158,11,0.12)] hover:shadow-[0_0_64px_rgba(245,158,11,0.22)]'
+                  ? 'border-[#1A90FF]/50 bg-slate-900 shadow-[0_0_40px_rgba(26,144,255,0.12)] hover:shadow-[0_0_64px_rgba(26,144,255,0.22)]'
                   : 'border-[#1B2737]/60 bg-slate-900/50'
               }`}
             >
@@ -97,7 +97,7 @@ export function PricingSection() {
                     trigger="scroll"
                     duration={900}
                     color="white"
-                    scramblingColor="rgba(245,158,11,0.6)"
+                    scramblingColor="rgba(26,144,255,0.6)"
                     className="text-4xl font-bold font-sans"
                   />
                   {plan.name !== 'Free' && <span className="text-slate-400 text-sm ml-0.5">/month</span>}

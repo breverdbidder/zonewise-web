@@ -99,7 +99,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
 
       <main style={{ background: '#0B1119', color: '#F1F5F9', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 80px' }}>
-          <header style={{ borderBottom: '1px solid rgba(30,58,95,0.4)', paddingBottom: 20, marginBottom: 32 }}>
+          <header style={{ borderBottom: '1px solid rgba(27,39,55,0.4)', paddingBottom: 20, marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
               <Logo app={card.app} />
               <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1A90FF' }}>
@@ -119,8 +119,8 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             <p style={{ fontSize: 19, lineHeight: 1.5, color: '#CBD5E1', margin: '0 0 28px' }}>{card.question}</p>
 
             <div style={{
-              background: 'linear-gradient(180deg, rgba(30,58,95,0.25) 0%, rgba(30,58,95,0.08) 100%)',
-              border: '1px solid rgba(30,58,95,0.5)', borderRadius: 12, padding: '24px 28px',
+              background: 'linear-gradient(180deg, rgba(27,39,55,0.25) 0%, rgba(27,39,55,0.08) 100%)',
+              border: '1px solid rgba(27,39,55,0.5)', borderRadius: 12, padding: '24px 28px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -143,7 +143,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
               </div>
               <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {card.citations.map((c, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(30,58,95,0.3)' }}>
+                  <li key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(27,39,55,0.3)' }}>
                     <span style={{ fontSize: 11, fontWeight: 700, color: '#1A90FF', minWidth: 20 }}>[{i + 1}]</span>
                     <div style={{ flex: 1, fontSize: 14, color: '#CBD5E1' }}>
                       <strong style={{ color: '#F1F5F9' }}>{c.source}</strong>
@@ -179,7 +179,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </a>
           </section>
 
-          <footer style={{ fontSize: 12, color: '#475569', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgba(30,58,95,0.3)' }}>
+          <footer style={{ fontSize: 12, color: '#475569', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgba(27,39,55,0.3)' }}>
             <span>Viewed {card.view_count.toLocaleString()} times · Shared {card.shared_count}</span>
             <span>Generated {new Date(card.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </footer>

@@ -26,7 +26,7 @@ const SLIDES = [
   {
     // Wide Florida peninsula — warm clusters in SE
     gradient:
-      'radial-gradient(ellipse 60% 50% at 65% 55%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #0B1119 80%)',
+      'radial-gradient(ellipse 60% 50% at 65% 55%, rgba(26,144,255,0.35) 0%, rgba(27,39,55,0.6) 40%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.15,
     xFrom: '0%',
@@ -37,7 +37,7 @@ const SLIDES = [
   {
     // Central FL hotspot — orange glow radiating from center
     gradient:
-      'radial-gradient(ellipse 45% 45% at 50% 45%, rgba(245,158,11,0.4) 0%, rgba(245,158,11,0.1) 25%, rgba(30,58,95,0.5) 50%, #0B1119 85%)',
+      'radial-gradient(ellipse 45% 45% at 50% 45%, rgba(26,144,255,0.4) 0%, rgba(26,144,255,0.1) 25%, rgba(27,39,55,0.5) 50%, #0B1119 85%)',
     scaleFrom: 1.05,
     scaleTo: 1.2,
     xFrom: '2%',
@@ -48,7 +48,7 @@ const SLIDES = [
   {
     // Brevard County focus — tight cluster on east coast
     gradient:
-      'radial-gradient(ellipse 35% 40% at 70% 40%, rgba(245,158,11,0.45) 0%, rgba(30,58,95,0.7) 35%, #0B1119 75%)',
+      'radial-gradient(ellipse 35% 40% at 70% 40%, rgba(26,144,255,0.45) 0%, rgba(27,39,55,0.7) 35%, #0B1119 75%)',
     scaleFrom: 1.1,
     scaleTo: 1.25,
     xFrom: '-2%',
@@ -59,7 +59,7 @@ const SLIDES = [
   {
     // South Florida spread — Miami-Dade corridor
     gradient:
-      'radial-gradient(ellipse 50% 55% at 55% 65%, rgba(245,158,11,0.3) 0%, rgba(245,158,11,0.15) 20%, rgba(30,58,95,0.55) 45%, #0B1119 80%)',
+      'radial-gradient(ellipse 50% 55% at 55% 65%, rgba(26,144,255,0.3) 0%, rgba(26,144,255,0.15) 20%, rgba(27,39,55,0.55) 45%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.18,
     xFrom: '1%',
@@ -70,7 +70,7 @@ const SLIDES = [
   {
     // Panhandle sweep — northwest FL
     gradient:
-      'radial-gradient(ellipse 55% 35% at 35% 35%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #0B1119 80%)',
+      'radial-gradient(ellipse 55% 35% at 35% 35%, rgba(26,144,255,0.35) 0%, rgba(27,39,55,0.6) 40%, #0B1119 80%)',
     scaleFrom: 1.05,
     scaleTo: 1.15,
     xFrom: '-1%',
@@ -81,7 +81,7 @@ const SLIDES = [
   {
     // Multi-cluster — Tampa + Orlando dual glow
     gradient:
-      'radial-gradient(ellipse 30% 30% at 40% 45%, rgba(245,158,11,0.4) 0%, transparent 60%), radial-gradient(ellipse 30% 30% at 60% 50%, rgba(245,158,11,0.3) 0%, transparent 60%), radial-gradient(ellipse 80% 80% at 50% 50%, rgba(30,58,95,0.5) 0%, #0B1119 80%)',
+      'radial-gradient(ellipse 30% 30% at 40% 45%, rgba(26,144,255,0.4) 0%, transparent 60%), radial-gradient(ellipse 30% 30% at 60% 50%, rgba(26,144,255,0.3) 0%, transparent 60%), radial-gradient(ellipse 80% 80% at 50% 50%, rgba(27,39,55,0.5) 0%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.12,
     xFrom: '0%',
@@ -92,7 +92,7 @@ const SLIDES = [
   {
     // Northeast FL — Jacksonville area glow
     gradient:
-      'radial-gradient(ellipse 40% 40% at 65% 30%, rgba(245,158,11,0.38) 0%, rgba(30,58,95,0.65) 40%, #0B1119 78%)',
+      'radial-gradient(ellipse 40% 40% at 65% 30%, rgba(26,144,255,0.38) 0%, rgba(27,39,55,0.65) 40%, #0B1119 78%)',
     scaleFrom: 1.08,
     scaleTo: 1.22,
     xFrom: '2%',
@@ -103,7 +103,7 @@ const SLIDES = [
   {
     // Full state wide view — scattered heat
     gradient:
-      'radial-gradient(ellipse 25% 20% at 60% 40%, rgba(245,158,11,0.3) 0%, transparent 50%), radial-gradient(ellipse 20% 25% at 40% 60%, rgba(245,158,11,0.25) 0%, transparent 50%), radial-gradient(ellipse 20% 15% at 55% 70%, rgba(245,158,11,0.2) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, rgba(30,58,95,0.45) 0%, #0B1119 85%)',
+      'radial-gradient(ellipse 25% 20% at 60% 40%, rgba(26,144,255,0.3) 0%, transparent 50%), radial-gradient(ellipse 20% 25% at 40% 60%, rgba(26,144,255,0.25) 0%, transparent 50%), radial-gradient(ellipse 20% 15% at 55% 70%, rgba(26,144,255,0.2) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, rgba(27,39,55,0.45) 0%, #0B1119 85%)',
     scaleFrom: 1,
     scaleTo: 1.1,
     xFrom: '-1%',
@@ -250,7 +250,7 @@ export function HeroCinematicSection() {
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(2,6,23,0.5) 55%, rgba(2,6,23,0.92) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(11,17,25,0.5) 55%, rgba(11,17,25,0.92) 100%)',
           }}
         />
 
@@ -303,7 +303,7 @@ export function HeroCinematicSection() {
             >
               <span
                 className="font-mono text-xs sm:text-sm tracking-widest tabular-nums"
-                style={{ color: 'rgba(245,158,11,0.7)' }}
+                style={{ color: 'rgba(26,144,255,0.7)' }}
               >
                 <PlatformParcels /> PARCELS · <PlatformCounties /> COUNTIES · 50-STATE ARCHITECTURE
               </span>

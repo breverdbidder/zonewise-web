@@ -100,7 +100,7 @@ export function KineticMarquee({
               className="mx-6"
               style={{
                 fontSize: "0.4em",
-                color: "rgba(245,158,11,0.6)",
+                color: "rgba(26,144,255,0.6)",
                 verticalAlign: "middle",
               }}
             >

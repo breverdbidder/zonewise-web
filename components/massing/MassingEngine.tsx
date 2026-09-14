@@ -767,7 +767,7 @@ export default function MassingEngine() {
       const overlay = overlayRef.current
       if (overlay) {
         overlay.innerHTML = ''
-        const labelStyle = 'position:absolute;background:#1B2737;color:white;font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgba(245,158,11,0.5)'
+        const labelStyle = 'position:absolute;background:#1B2737;color:white;font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgba(26,144,255,0.5)'
 
         // Building height label (top center)
         const htLabel = document.createElement('div')

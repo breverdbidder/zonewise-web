@@ -41,7 +41,7 @@ export function StickyCards({ cards, className }: StickyCardsProps) {
               zIndex: i + 1,
               background: bg,
               color,
-              border: "1px solid rgba(245,158,11,0.08)",
+              border: "1px solid rgba(26,144,255,0.08)",
             }}
           >
             <div

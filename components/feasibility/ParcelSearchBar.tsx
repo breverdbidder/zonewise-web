@@ -35,7 +35,7 @@ interface Result {
 
 const TRUST: Record<string, { label: string; color: string; bg: string }> = {
   verified:   { label: 'Verified',   color: '#10B981', bg: 'rgba(16,185,129,.12)' },
-  estimated:  { label: 'Estimated',  color: '#1A90FF', bg: 'rgba(245,158,11,.12)' },
+  estimated:  { label: 'Estimated',  color: '#1A90FF', bg: 'rgba(26,144,255,.12)' },
   unverified: { label: 'Unverified', color: '#94A3B8', bg: 'rgba(100,116,139,.15)' },
   none:       { label: 'No zoning',  color: '#64748B', bg: 'rgba(100,116,139,.12)' },
 }
@@ -98,7 +98,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
           onFocus={() => results.length && setOpen(true)}
           placeholder={currentAddress ? `Analyze another address…` : 'Enter a Florida address, e.g. 1390 KANAB AVE'}
           className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-white placeholder:text-slate-300 outline-none transition-all focus:border-[#1A90FF] focus:ring-2 focus:ring-[#1A90FF]/40"
-          style={{ background: 'rgba(15,23,42,.65)', borderColor: 'rgba(245,158,11,.55)', boxShadow: '0 0 0 1px rgba(245,158,11,.12), 0 2px 12px rgba(245,158,11,.08)' }}
+          style={{ background: 'rgba(15,23,42,.65)', borderColor: 'rgba(26,144,255,.55)', boxShadow: '0 0 0 1px rgba(26,144,255,.12), 0 2px 12px rgba(26,144,255,.08)' }}
           aria-label="Search Florida parcels by address"
         />
         {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#1A90FF]" />}
@@ -113,7 +113,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
 
       {open && (results.length > 0 || hint) && (
         <div className="absolute z-[60] mt-2 w-full overflow-hidden rounded-lg border shadow-2xl"
-             style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,.35)' }}>
+             style={{ background: '#0d1829', borderColor: 'rgba(26,144,255,.35)' }}>
           {results.map((r) => {
             const t = TRUST[r.trust_level] ?? TRUST.none
             return (

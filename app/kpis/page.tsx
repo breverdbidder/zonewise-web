@@ -8,7 +8,7 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   'Property':      { bg: 'rgba(59,130,246,.15)',  text: '#60A5FA' },
   'Zoning':        { bg: 'rgba(34,197,94,.15)',   text: '#4ADE80' },
   'Auction':       { bg: 'rgba(239,68,68,.15)',   text: '#F87171' },
-  'Financial':     { bg: 'rgba(245,158,11,.15)',  text: '#FCD34D' },
+  'Financial':     { bg: 'rgba(26,144,255,.15)',  text: '#FCD34D' },
   'Liens':         { bg: 'rgba(239,68,68,.15)',   text: '#F87171' },
   'ML':            { bg: 'rgba(167,139,250,.15)', text: '#A78BFA' },
   'Physical':      { bg: 'rgba(100,116,139,.15)', text: '#94A3B8' },
@@ -69,7 +69,7 @@ export default function KPIsPage() {
     <div style={{ minHeight: '100vh', background: '#0B1119', color: '#F1F5F9' }}>
 
       {/* Header */}
-      <header style={{ borderBottom: '1px solid #1E293B', position: 'sticky', top: 0, background: 'rgba(2,6,23,.97)', backdropFilter: 'blur(8px)', zIndex: 50 }}>
+      <header style={{ borderBottom: '1px solid #1E293B', position: 'sticky', top: 0, background: 'rgba(11,17,25,.97)', backdropFilter: 'blur(8px)', zIndex: 50 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px 24px', minHeight: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <div style={{ width: 32, height: 32, background: '#1B2737', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
@@ -125,7 +125,7 @@ export default function KPIsPage() {
 
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 0' }}>
-              <div style={{ width: 48, height: 48, border: '4px solid rgba(245,158,11,.2)', borderTopColor: '#1A90FF', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }} />
+              <div style={{ width: 48, height: 48, border: '4px solid rgba(26,144,255,.2)', borderTopColor: '#1A90FF', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }} />
               <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
               <p style={{ fontSize: 16, color: '#64748B' }}>Loading {totalKPIs || 298} KPIs...</p>
             </div>
@@ -218,7 +218,7 @@ export default function KPIsPage() {
                             <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap' }}>{kpi.data_source ?? '—'}</td>
                             <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                               {kpi.is_exclusive ? (
-                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(245,158,11,.12)', color: '#1A90FF', border: '1px solid rgba(245,158,11,.2)' }}>ZW Exclusive</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(26,144,255,.12)', color: '#1A90FF', border: '1px solid rgba(26,144,255,.2)' }}>ZW Exclusive</span>
                               ) : (
                                 <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 500, background: '#1E293B', color: '#64748B' }}>Shared</span>
                               )}
