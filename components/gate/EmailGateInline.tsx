@@ -41,14 +41,14 @@ export default function EmailGateInline({ onSubmit, ctaLabel = 'Unlock', message
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submit()}
             placeholder="your@email.com"
-            className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#F59E0B]"
+            className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1A90FF]"
           />
           {err && <p className="text-xs text-red-400 mt-1">Enter a valid email to continue.</p>}
         </div>
         <button
           onClick={submit}
           disabled={submitting}
-          className="px-4 py-2 rounded bg-[#F59E0B] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold disabled:opacity-50 shrink-0"
+          className="px-4 py-2 rounded bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold disabled:opacity-50 shrink-0"
         >
           {submitting ? '…' : ctaLabel}
         </button>
