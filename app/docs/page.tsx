@@ -61,7 +61,7 @@ export default function DocsPage() {
           <Link href="/explorer" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Explorer</Link>
           <Link href="/pricing" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Pricing</Link>
           <Link href="/help" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Help</Link>
-          <Link href="/sign-up" className="bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] px-3 sm:px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
+          <Link href="/sign-up" className="bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] px-3 sm:px-4 min-h-11 inline-flex items-center rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
             Get API Key
           </Link>
         </div>
@@ -376,9 +376,9 @@ console.log(answer.content)`} />
       <footer className="border-t border-[rgb(var(--zw-border2))] py-8 text-center">
         <p className="text-xs text-[rgb(var(--zw-ink2))]">
           © 2026 ZoneWise.AI · Everest Capital USA ·{' '}
-          <Link href="/privacy" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Privacy</Link> ·{' '}
-          <Link href="/terms" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Terms</Link> ·{' '}
-          <Link href="/help" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Help</Link>
+          <Link href="/privacy" className="inline-flex items-center min-h-11 px-1 hover:text-[rgb(var(--zw-ink2))] transition-colors">Privacy</Link> ·{' '}
+          <Link href="/terms" className="inline-flex items-center min-h-11 px-1 hover:text-[rgb(var(--zw-ink2))] transition-colors">Terms</Link> ·{' '}
+          <Link href="/help" className="inline-flex items-center min-h-11 px-1 hover:text-[rgb(var(--zw-ink2))] transition-colors">Help</Link>
         </p>
       </footer>
     </div>
