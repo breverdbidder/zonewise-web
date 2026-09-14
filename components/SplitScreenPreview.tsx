@@ -42,7 +42,7 @@ export default function SplitScreenPreview() {
   return (
     <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-200 shadow-lg bg-white">
       {/* Left Panel — AI Chatbot */}
-      <div className="w-full md:w-[40%] bg-[#1E3A5F] text-white flex flex-col min-h-[480px]">
+      <div className="w-full md:w-[40%] bg-[#1B2737] text-white flex flex-col min-h-[480px]">
         {/* Chat Header */}
         <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export default function SplitScreenPreview() {
                 onClick={() => setActiveLang(lang.code)}
                 className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
                   activeLang === lang.code
-                    ? 'bg-[#F59E0B] text-[#1E3A5F]'
+                    ? 'bg-[#1A90FF] text-[#1B2737]'
                     : 'bg-white/10 text-white/70 hover:bg-white/20'
                 }`}
               >
@@ -110,7 +110,7 @@ export default function SplitScreenPreview() {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 px-4 py-3 text-sm font-medium capitalize transition-colors ${
                 activeTab === tab
-                  ? 'text-[#1E3A5F] border-b-2 border-[#F59E0B]'
+                  ? 'text-[#1B2737] border-b-2 border-[#1A90FF]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -187,8 +187,8 @@ function CalendarTab() {
         <h3 className="font-semibold text-gray-800">February 2026</h3>
         <div className="flex gap-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-500 rounded-full" /> Foreclosure</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#F59E0B] rounded-full" /> Tax Deed</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#1E3A5F] rounded-full" /> Surplus</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#1A90FF] rounded-full" /> Tax Deed</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#1B2737] rounded-full" /> Surplus</span>
         </div>
       </div>
       {/* Day headers */}
@@ -207,7 +207,7 @@ function CalendarTab() {
             } ${
               type === 'foreclosure' ? 'bg-red-50 text-red-700 border border-red-200' :
               type === 'tax-deed' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-              type === 'surplus' ? 'bg-[#E8F4FD] text-[#1E3A5F] border border-[#C5DFEF]' :
+              type === 'surplus' ? 'bg-[#E8F4FD] text-[#1B2737] border border-[#C5DFEF]' :
               'hover:bg-gray-50'
             }`}
           >
@@ -215,8 +215,8 @@ function CalendarTab() {
             {type && (
               <span className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${
                 type === 'foreclosure' ? 'bg-red-500' :
-                type === 'tax-deed' ? 'bg-[#F59E0B]' :
-                'bg-[#1E3A5F]'
+                type === 'tax-deed' ? 'bg-[#1A90FF]' :
+                'bg-[#1B2737]'
               }`} />
             )}
           </div>
@@ -233,7 +233,7 @@ function AnalyticsTab() {
         {kpiCards.map((kpi) => (
           <div key={kpi.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500 mb-1">{kpi.label}</p>
-            <p className="text-2xl font-bold text-[#1E3A5F]">{kpi.value}</p>
+            <p className="text-2xl font-bold text-[#1B2737]">{kpi.value}</p>
             <div className="flex items-center gap-1 mt-1">
               <span className={`text-xs font-medium ${kpi.up ? 'text-green-600' : 'text-red-500'}`}>
                 {kpi.change}
@@ -247,7 +247,7 @@ function AnalyticsTab() {
               {[40, 55, 35, 60, 45, 70, 50, 65, 80, 60, 75, 85].map((h, i) => (
                 <div
                   key={i}
-                  className="flex-1 bg-[#1E3A5F]/20 rounded-t-sm"
+                  className="flex-1 bg-[#1B2737]/20 rounded-t-sm"
                   style={{ height: `${h}%` }}
                 />
               ))}
