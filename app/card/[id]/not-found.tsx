@@ -4,12 +4,12 @@
 export default function ParcelNotFound() {
   return (
     <main style={{
-      background: '#020617', color: '#F1F5F9', minHeight: '100vh',
+      background: '#0B1119', color: '#F1F5F9', minHeight: '100vh',
       fontFamily: 'Inter, system-ui, sans-serif',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <div style={{ maxWidth: 520, padding: '48px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#F59E0B', marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1A90FF', marginBottom: 16 }}>
           404 · Card not found
         </div>
         <h1 style={{ fontSize: 32, fontWeight: 700, margin: '0 0 12px', color: '#F8FAFC', letterSpacing: '-0.02em' }}>
@@ -20,7 +20,7 @@ export default function ParcelNotFound() {
         </p>
         <a href="https://chat.zonewise.ai"
            style={{
-             display: 'inline-block', background: '#F59E0B', color: '#020617',
+             display: 'inline-block', background: '#1A90FF', color: '#0B1119',
              fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 8,
              textDecoration: 'none', letterSpacing: '0.02em',
            }}>
