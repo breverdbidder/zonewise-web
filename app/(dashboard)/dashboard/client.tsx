@@ -97,12 +97,12 @@ export default function DashboardClient() {
           h-full fills the SidebarInset remaining space after SiteHeader.
           No h-dvh — container height is owned by the layout shell.
         */}
-        <div className="flex h-full min-h-0 bg-[#020617] md:flex-row flex-col overflow-y-auto md:overflow-hidden">
+        <div className="flex h-full min-h-0 bg-[#0B1119] md:flex-row flex-col overflow-y-auto md:overflow-hidden">
           {/* Left: Dashboard KPIs / artifact panel */}
           <div
             className="
               relative min-h-0 overflow-auto shrink-0
-              border-b border-[#1E3A5F]/30
+              border-b border-[#1B2737]/30
               h-auto
               md:h-full md:w-[60%] md:flex-none
               md:border-b-0 md:border-r
