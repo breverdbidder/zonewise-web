@@ -340,12 +340,12 @@ export default function VoiceZoningAssistant() {
   const isLive = status === 'listening' || status === 'connecting' || status === 'requesting-mic'
 
   return (
-    <div className="mx-4 mt-3 rounded-2xl border-2 border-[#F59E0B] bg-gradient-to-br from-[#1E3A5F] via-[#0f2340] to-[#020617] p-6 shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+    <div className="mx-4 mt-3 rounded-2xl border-2 border-[#1A90FF] bg-gradient-to-br from-[#1B2737] via-[#0f2340] to-[#0B1119] p-6 shadow-[0_0_40px_rgba(245,158,11,0.15)]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#F59E0B]">Voice Assistant</span>
+            <span className="inline-block h-2 w-2 rounded-full bg-[#1A90FF] animate-pulse" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A90FF]">Voice Assistant</span>
           </div>
           <h2 className="text-xl md:text-2xl font-bold text-white">Just ask it out loud.</h2>
           <p className="text-sm text-slate-300 mt-1 max-w-xl">
@@ -359,7 +359,7 @@ export default function VoiceZoningAssistant() {
             className={`flex items-center gap-3 rounded-full px-6 py-4 text-base font-bold shadow-lg transition-all shrink-0 ${
               isLive
                 ? 'bg-red-600 hover:bg-red-500 text-white'
-                : 'bg-[#F59E0B] hover:bg-[#fbbf24] text-slate-950 hover:scale-105'
+                : 'bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 hover:scale-105'
             }`}
           >
             {isLive ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -384,13 +384,13 @@ export default function VoiceZoningAssistant() {
               onChange={(e) => setGateEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submitGateEmail()}
               placeholder="your@email.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#F59E0B]"
+              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1A90FF]"
             />
             {gateErr && <p className="text-xs text-red-400 mt-1">Enter a valid email to start.</p>}
           </div>
           <button
             onClick={submitGateEmail}
-            className="px-4 py-2 rounded bg-[#F59E0B] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold"
+            className="px-4 py-2 rounded bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold"
           >
             Start
           </button>
@@ -401,7 +401,7 @@ export default function VoiceZoningAssistant() {
 
       {transcript && (
         <div dir={isRTL ? 'rtl' : 'ltr'} className="mt-3 rounded-lg bg-slate-950/60 border border-slate-800 px-4 py-3 text-sm text-slate-200 max-w-2xl">
-          <span className="font-semibold text-[#F59E0B]">{transcript.who === 'user' ? 'You: ' : 'ZoneWise: '}</span>
+          <span className="font-semibold text-[#1A90FF]">{transcript.who === 'user' ? 'You: ' : 'ZoneWise: '}</span>
           {transcript.text}
         </div>
       )}
