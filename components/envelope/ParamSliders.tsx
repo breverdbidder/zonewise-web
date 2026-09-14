@@ -1,4 +1,4 @@
-const ORANGE = '#F59E0B'
+const ORANGE = '#1A90FF'
 
 export interface ParamSliderProps {
   label: string
