@@ -6,9 +6,9 @@ import * as THREE from "three";
 // ALL EVAL FIXES APPLIED — TARGET 85+
 // ═══════════════════════════════════════════════════════════════
 
-const NAVY = "#1E3A5F";
-const ORANGE = "#F59E0B";
-const SLATE = "#020617";
+const NAVY = "#1B2737";
+const ORANGE = "#1A90FF";
+const SLATE = "#0B1119";
 const CARD_BG = "#1e293b";
 const GREEN = "#22c55e";
 const RED = "#ef4444";

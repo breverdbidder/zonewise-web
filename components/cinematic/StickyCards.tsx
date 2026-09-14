@@ -16,7 +16,7 @@ interface StickyCardsProps {
 }
 
 const DEFAULT_COLORS = [
-  { bg: "#1E3A5F", color: "#e8ecf0" },
+  { bg: "#1B2737", color: "#e8ecf0" },
   { bg: "#162d47", color: "#e8f0ec" },
   { bg: "#2d3a4a", color: "#f0ece8" },
   { bg: "#1a2a3a", color: "#e8ecf0" },

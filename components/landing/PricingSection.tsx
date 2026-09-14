@@ -67,7 +67,7 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section className="bg-[#020617] py-20 sm:py-28" id="pricing">
+    <section className="bg-[#0B1119] py-20 sm:py-28" id="pricing">
       <div className="mx-auto max-w-5xl px-4">
         <div className="mb-12 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Simple pricing</h2>
@@ -79,13 +79,13 @@ export function PricingSection() {
               key={plan.name}
               className={`relative border transition-shadow duration-500 ${
                 plan.highlighted
-                  ? 'border-[#F59E0B]/50 bg-slate-900 shadow-[0_0_40px_rgba(245,158,11,0.12)] hover:shadow-[0_0_64px_rgba(245,158,11,0.22)]'
-                  : 'border-[#1E3A5F]/60 bg-slate-900/50'
+                  ? 'border-[#1A90FF]/50 bg-slate-900 shadow-[0_0_40px_rgba(245,158,11,0.12)] hover:shadow-[0_0_64px_rgba(245,158,11,0.22)]'
+                  : 'border-[#1B2737]/60 bg-slate-900/50'
               }`}
             >
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-[#F59E0B] text-slate-900 font-semibold">{plan.badge}</Badge>
+                  <Badge className="bg-[#1A90FF] text-slate-900 font-semibold">{plan.badge}</Badge>
                 </div>
               )}
               <CardHeader className="pb-4">
@@ -108,7 +108,7 @@ export function PricingSection() {
                 {plan.highlighted ? (
                   <ParticleButton
                     particleType="confetti"
-                    particleColor="#F59E0B"
+                    particleColor="#1A90FF"
                     variant="primary"
                     className="w-full px-4 py-2.5 text-sm font-semibold rounded-lg"
                     onClick={() => { window.location.href = plan.href }}
@@ -118,7 +118,7 @@ export function PricingSection() {
                 ) : (
                   <Link
                     href={plan.href}
-                    className="inline-flex w-full items-center justify-center rounded-lg border border-[#1E3A5F]/70 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-[#1E3A5F]/30"
+                    className="inline-flex w-full items-center justify-center rounded-lg border border-[#1B2737]/70 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-[#1B2737]/30"
                   >
                     {plan.cta}
                   </Link>
@@ -126,7 +126,7 @@ export function PricingSection() {
                 <ul className="space-y-2">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-slate-300">
-                      <Check className="h-4 w-4 text-[#F59E0B] shrink-0" />
+                      <Check className="h-4 w-4 text-[#1A90FF] shrink-0" />
                       {f}
                     </li>
                   ))}

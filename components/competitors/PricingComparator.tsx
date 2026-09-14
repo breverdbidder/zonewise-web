@@ -28,7 +28,7 @@ export function PricingComparator({ competitorName, tiers }: Props) {
         Sources: {competitorName} published pricing and ZoneWise.AI plans (
         <a
           href="/pricing"
-          className="text-[#F59E0B] underline decoration-[#F59E0B]/40 hover:decoration-[#F59E0B]"
+          className="text-[#1A90FF] underline decoration-[#1A90FF]/40 hover:decoration-[#1A90FF]"
         >
           /pricing
         </a>
@@ -45,7 +45,7 @@ export function PricingComparator({ competitorName, tiers }: Props) {
               <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {competitorName}
               </th>
-              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[#F59E0B]">
+              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[#1A90FF]">
                 ZoneWise.AI
               </th>
               <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
@@ -61,7 +61,7 @@ export function PricingComparator({ competitorName, tiers }: Props) {
               >
                 <td className="px-4 py-3 font-semibold text-white">{tier.label}</td>
                 <td className="px-4 py-3 text-right font-mono text-slate-300">{tier.competitor_price}</td>
-                <td className="px-4 py-3 text-right font-mono font-bold text-[#F59E0B]">
+                <td className="px-4 py-3 text-right font-mono font-bold text-[#1A90FF]">
                   {tier.zonewise_price}
                 </td>
                 <td className="px-4 py-3 text-right font-bold text-emerald-400">

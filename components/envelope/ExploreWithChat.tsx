@@ -48,7 +48,7 @@ export function ExploreWithChat({ className = '' }: ExploreWithChatProps) {
         <button
           onClick={() => setShowChat(v => !v)}
           className="w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-lg transition-all"
-          style={{ background: '#1E3A5F', color: '#F59E0B' }}
+          style={{ background: '#1B2737', color: '#1A90FF' }}
           aria-label={showChat ? 'Close chat' : 'Open chat'}
         >
           {showChat ? '✕' : '💬'}

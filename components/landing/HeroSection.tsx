@@ -17,13 +17,13 @@ const HERO_MARQUEE_ITEMS = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-[#020617]">
+    <section className="relative overflow-hidden bg-[#0B1119]">
       <HeroProperty3D className="min-h-[85vh] flex items-center justify-center py-24 sm:py-32">
         {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{
-            backgroundImage: 'linear-gradient(#1E3A5F 1px, transparent 1px), linear-gradient(to right, #1E3A5F 1px, transparent 1px)',
+            backgroundImage: 'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
             backgroundSize: '64px 64px',
           }}
         />
@@ -31,7 +31,7 @@ export function HeroSection() {
         <div className="relative mx-auto max-w-5xl px-4 text-center">
           <Badge
             variant="outline"
-            className="mb-6 border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
+            className="mb-6 border-[#1A90FF]/30 bg-[#1A90FF]/10 text-[#1A90FF]"
           >
             <Sparkles className="mr-1.5 h-3 w-3" />
             Powering Everest Capital USA — 10 years Brevard foreclosure investing
@@ -39,7 +39,7 @@ export function HeroSection() {
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.05] tracking-tight">
             AI-Powered Auction Intelligence<br />
-            <span className="text-[#F59E0B]">Nationwide</span>
+            <span className="text-[#1A90FF]">Nationwide</span>
           </h1>
 
           <div className="mb-4 flex justify-center">
@@ -60,7 +60,7 @@ export function HeroSection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <ParticleButton
               particleType="confetti"
-              particleColor="#F59E0B"
+              particleColor="#1A90FF"
               variant="primary"
               className="px-8 py-3 text-base font-semibold"
               onClick={() => { window.location.href = '/sign-up' }}
@@ -79,7 +79,7 @@ export function HeroSection() {
       </HeroProperty3D>
 
       {/* Kinetic marquee band below hero */}
-      <div className="border-y border-[#1E3A5F]/40 bg-[#020617]">
+      <div className="border-y border-[#1B2737]/40 bg-[#0B1119]">
         <KineticMarquee
           items={HERO_MARQUEE_ITEMS}
           speed={0.45}

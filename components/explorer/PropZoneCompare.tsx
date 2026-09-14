@@ -171,7 +171,7 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
           <thead>
             <tr className="border-b border-slate-800">
               <th className="text-left px-3 py-2 text-slate-500 font-semibold w-[35%]">Field</th>
-              <th className="text-center px-2 py-2 text-[#F59E0B] font-bold w-[25%]">ZoneWise</th>
+              <th className="text-center px-2 py-2 text-[#1A90FF] font-bold w-[25%]">ZoneWise</th>
               <th className="text-center px-2 py-2 text-slate-400 font-semibold w-[25%]">PropZone</th>
               <th className="text-center px-2 py-2 text-slate-500 font-semibold w-[15%]">Edge</th>
             </tr>

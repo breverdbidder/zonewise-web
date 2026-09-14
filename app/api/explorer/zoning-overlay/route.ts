@@ -9,7 +9,7 @@ const ZONE_CATEGORY_MAP: Record<string, string> = {
   BU: '#3B82F6',
   TU: '#8B5CF6',
   IU: '#EF4444',
-  PU: '#F59E0B', // PUD prefix
+  PU: '#1A90FF', // PUD prefix
   AU: '#A3E635',
   PA: '#06B6D4',
   GM: '#FB923C', // GML prefix

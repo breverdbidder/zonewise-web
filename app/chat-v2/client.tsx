@@ -160,7 +160,7 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <Loader2 className="mx-auto mb-3 size-10 animate-spin text-[#F59E0B]" />
+          <Loader2 className="mx-auto mb-3 size-10 animate-spin text-[#1A90FF]" />
           <p className="text-sm text-[#94A3B8]">Looking up property data…</p>
         </div>
       </div>
@@ -171,7 +171,7 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="text-center">
-          <Search className="mx-auto mb-3 size-12 text-[#F59E0B] opacity-40" />
+          <Search className="mx-auto mb-3 size-12 text-[#1A90FF] opacity-40" />
           <p className="text-lg font-semibold text-white">Ask about any address</p>
           <p className="mt-1 text-sm text-[#64748B]">
             Property details and zoning regulations will appear here
@@ -185,9 +185,9 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     <div className="h-full overflow-y-auto p-4 space-y-4">
       {/* Property Details card */}
       {artifact.parcel && (
-        <div className="rounded-lg border border-[#1E3A5F]/40 bg-[#0D1B2E] p-4">
+        <div className="rounded-lg border border-[#1B2737]/40 bg-[#0D1B2E] p-4">
           <div className="mb-3 flex items-center gap-2">
-            <MapPin className="size-4 text-[#F59E0B]" />
+            <MapPin className="size-4 text-[#1A90FF]" />
             <h3 className="font-semibold text-white">Property Details</h3>
           </div>
           <dl className="space-y-2 text-sm">
@@ -227,13 +227,13 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
 
       {/* Zoning card */}
       {artifact.zoning && (
-        <div className="rounded-lg border border-[#1E3A5F]/40 bg-[#0D1B2E] p-4">
+        <div className="rounded-lg border border-[#1B2737]/40 bg-[#0D1B2E] p-4">
           <div className="mb-3 flex items-center gap-2">
-            <Building2 className="size-4 text-[#F59E0B]" />
+            <Building2 className="size-4 text-[#1A90FF]" />
             <h3 className="font-semibold text-white">Zoning</h3>
           </div>
-          <div className="mb-4 rounded-md bg-[#1E3A5F]/30 p-3 text-center">
-            <span className="font-mono text-2xl font-bold text-[#F59E0B]">
+          <div className="mb-4 rounded-md bg-[#1B2737]/30 p-3 text-center">
+            <span className="font-mono text-2xl font-bold text-[#1A90FF]">
               {artifact.zoning.zone_code}
             </span>
             {artifact.zoning.zone_name && (
@@ -320,12 +320,12 @@ export default function ChatV2Client() {
           - Mobile (default): flex-col — chat top (60vh), artifact bottom (40vh)
           - Desktop (md+): flex-row — chat left 40%, artifact right 60%
         */}
-        <main className="flex h-dvh flex-col bg-[#020617] md:flex-row">
+        <main className="flex h-dvh flex-col bg-[#0B1119] md:flex-row">
           {/* Chat panel */}
           <div
             className="
               flex min-h-0 flex-col
-              border-b border-[#1E3A5F]/30
+              border-b border-[#1B2737]/30
               [height:60vh]
               md:h-full md:w-[40%] md:flex-none
               md:border-b-0 md:border-r

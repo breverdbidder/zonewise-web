@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 export function CTASection() {
   return (
-    <section className="bg-[#1E3A5F]/20 border-t border-[#1E3A5F]/40 py-20">
+    <section className="bg-[#1B2737]/20 border-t border-[#1B2737]/40 py-20">
       <div className="mx-auto max-w-3xl px-4 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
           Ready to find your next deal?
@@ -13,7 +13,7 @@ export function CTASection() {
         </p>
         <Button
           size="lg"
-          className="bg-[#F59E0B] text-slate-900 hover:bg-[#D97706] font-semibold px-10"
+          className="bg-[#1A90FF] text-slate-900 hover:bg-[#005EB8] font-semibold px-10"
           asChild
         >
           <Link href="/sign-up">Get started free</Link>

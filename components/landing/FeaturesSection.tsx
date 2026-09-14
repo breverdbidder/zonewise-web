@@ -55,9 +55,9 @@ const MARQUEE_ITEMS = [
 
 export function FeaturesSection() {
   return (
-    <section className="bg-[#020617] py-0 sm:py-0 overflow-hidden">
+    <section className="bg-[#0B1119] py-0 sm:py-0 overflow-hidden">
       {/* Kinetic marquee band */}
-      <div className="border-y border-[#1E3A5F]/30 py-2 mb-16">
+      <div className="border-y border-[#1B2737]/30 py-2 mb-16">
         <KineticMarquee
           items={MARQUEE_ITEMS}
           speed={0.4}
@@ -95,11 +95,11 @@ export function FeaturesSection() {
           {features.slice(4).map((f) => (
             <div
               key={f.title}
-              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[#F59E0B]/40 hover:shadow-[0_0_28px_rgba(245,158,11,0.1)]"
+              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[#1A90FF]/40 hover:shadow-[0_0_28px_rgba(245,158,11,0.1)]"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.5)' }}
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1E3A5F] transition-colors group-hover:bg-[#F59E0B]/10">
-                <f.icon className="h-5 w-5 text-[#F59E0B]" />
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B2737] transition-colors group-hover:bg-[#1A90FF]/10">
+                <f.icon className="h-5 w-5 text-[#1A90FF]" />
               </div>
               <h3 className="text-white font-semibold text-base mb-2">{f.title}</h3>
               <p className="text-sm text-slate-400">{f.description}</p>

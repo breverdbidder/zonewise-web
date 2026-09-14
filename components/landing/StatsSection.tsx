@@ -49,7 +49,7 @@ export function StatsSection() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {items.map((s) => (
             <div key={s.label}>
-              <div className="font-mono text-3xl sm:text-4xl font-bold tabular-nums text-[#F59E0B] mb-1">
+              <div className="font-mono text-3xl sm:text-4xl font-bold tabular-nums text-[#1A90FF] mb-1">
                 {s.value}
               </div>
               <div className="text-sm text-slate-400">{s.label}</div>

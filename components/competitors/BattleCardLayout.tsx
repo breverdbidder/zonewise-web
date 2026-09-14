@@ -19,19 +19,19 @@ export function BattleCardLayout({ competitor }: Props) {
   const isStub = competitor.parity_kpi_codes.length === 0 && competitor.advantage_kpi_codes.length === 0
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#020617] text-slate-100">
+    <main id="main-content" className="min-h-screen bg-[#0B1119] text-slate-100">
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <header
         className="border-b border-slate-800"
         style={{
           background:
-            'linear-gradient(135deg, #1E3A5F 0%, #0d2040 60%, #020617 100%)',
+            'linear-gradient(135deg, #1B2737 0%, #0d2040 60%, #0B1119 100%)',
         }}
       >
         <div className="mx-auto max-w-6xl px-6 py-16">
           <Link
             href="/competitors"
-            className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#F59E0B] hover:text-[#FBBF24]"
+            className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#1A90FF] hover:text-[#FBBF24]"
           >
             ← All competitors
           </Link>
@@ -45,7 +45,7 @@ export function BattleCardLayout({ competitor }: Props) {
                 </span>
               </div>
               <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
-                ZoneWise.AI <span className="text-[#F59E0B]">vs</span> {competitor.name}
+                ZoneWise.AI <span className="text-[#1A90FF]">vs</span> {competitor.name}
               </h1>
               <p className="mt-4 max-w-2xl text-lg text-slate-300">
                 {competitor.tagline}
@@ -58,7 +58,7 @@ export function BattleCardLayout({ competitor }: Props) {
                   Head-to-Head
                 </div>
                 <div className="mt-2 flex items-baseline justify-center gap-2">
-                  <span className="text-3xl font-bold text-[#F59E0B]">
+                  <span className="text-3xl font-bold text-[#1A90FF]">
                     {competitor.zonewise_wins}
                   </span>
                   <span className="text-slate-600">/</span>
@@ -98,15 +98,15 @@ export function BattleCardLayout({ competitor }: Props) {
             {/* ── VERDICT BANNER ─────────────────────────────────────── */}
             <section
               aria-labelledby="verdict-heading"
-              className="rounded-xl border border-[#F59E0B]/30 bg-gradient-to-br from-[#F59E0B]/10 to-transparent p-6"
+              className="rounded-xl border border-[#1A90FF]/30 bg-gradient-to-br from-[#1A90FF]/10 to-transparent p-6"
             >
               <h2 id="verdict-heading" className="sr-only">
                 Verdict
               </h2>
               <p className="text-lg leading-relaxed text-slate-200">
-                <span aria-hidden="true" className="mr-2 text-[#F59E0B]">“</span>
+                <span aria-hidden="true" className="mr-2 text-[#1A90FF]">“</span>
                 {competitor.verdict_line}
-                <span aria-hidden="true" className="ml-1 text-[#F59E0B]">”</span>
+                <span aria-hidden="true" className="ml-1 text-[#1A90FF]">”</span>
               </p>
               <p className="mt-3 text-xs text-slate-500">
                 — ZoneWise.AI • BidDeed.AI • Everest Capital USA
@@ -154,14 +154,14 @@ export function BattleCardLayout({ competitor }: Props) {
                 </ul>
               </div>
 
-              <div className="rounded-xl border border-[#F59E0B]/30 bg-[#F59E0B]/5 p-6">
-                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#F59E0B]">
+              <div className="rounded-xl border border-[#1A90FF]/30 bg-[#1A90FF]/5 p-6">
+                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#1A90FF]">
                   Our Edge
                 </h3>
                 <ul className="space-y-2 text-sm text-slate-200">
                   {competitor.our_edge.map((e, i) => (
                     <li key={i} className="flex gap-2">
-                      <span aria-hidden="true" className="text-[#F59E0B]">
+                      <span aria-hidden="true" className="text-[#1A90FF]">
                         ★
                       </span>
                       <span>{e}</span>
@@ -182,14 +182,14 @@ export function BattleCardLayout({ competitor }: Props) {
 
             {/* ── CTA BANNER ─────────────────────────────────────────── */}
             <section
-              className="rounded-xl border border-slate-800 bg-gradient-to-br from-[#1E3A5F] to-[#020617] p-8 text-center"
+              className="rounded-xl border border-slate-800 bg-gradient-to-br from-[#1B2737] to-[#0B1119] p-8 text-center"
               aria-labelledby="cta-heading"
             >
               <h2
                 id="cta-heading"
                 className="text-2xl font-bold text-white sm:text-3xl"
               >
-                See how ZoneWise wins on <em className="not-italic text-[#F59E0B]">your</em> parcel
+                See how ZoneWise wins on <em className="not-italic text-[#1A90FF]">your</em> parcel
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400">
                 BidDeed.AI foreclosure intelligence + ZoneWise.AI zoning analysis — together
@@ -198,7 +198,7 @@ export function BattleCardLayout({ competitor }: Props) {
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/sign-up"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#F59E0B] px-6 py-3 text-sm font-bold text-[#020617] shadow-lg transition hover:bg-[#FBBF24]"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#1A90FF] px-6 py-3 text-sm font-bold text-[#0B1119] shadow-lg transition hover:bg-[#FBBF24]"
                 >
                   Start for free →
                 </Link>
@@ -232,7 +232,7 @@ export function BattleCardLayout({ competitor }: Props) {
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#F59E0B] underline decoration-[#F59E0B]/30 hover:decoration-[#F59E0B]"
+                          className="text-[#1A90FF] underline decoration-[#1A90FF]/30 hover:decoration-[#1A90FF]"
                         >
                           {s.label}
                         </a>

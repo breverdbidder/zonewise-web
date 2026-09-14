@@ -82,7 +82,7 @@ type: 'heatmap',
         paint: {
           'heatmap-weight': ['interpolate', ['linear'], ['get', 'value'], 0, 0, 500000, 1],
           'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 18, 3],
-          'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#2563EB', 0.4, '#22C55E', 0.6, '#F59E0B', 0.8, '#EF4444', 1, '#DC2626'],
+          'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#2563EB', 0.4, '#22C55E', 0.6, '#1A90FF', 0.8, '#EF4444', 1, '#DC2626'],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 15, 18, 30],
           'heatmap-opacity': 0.65
         }
@@ -229,7 +229,7 @@ type: 'heatmap',
         <div className="p-3 border-b border-slate-800">
           <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Map Layers</h4>
           {([
-            { key: 'parcels' as const, label: 'All Brevard Parcels', color: '#F59E0B' },
+            { key: 'parcels' as const, label: 'All Brevard Parcels', color: '#1A90FF' },
             { key: 'zoning' as const, label: 'Zoning Districts', color: '#3B82F6' },
             { key: 'flu' as const, label: 'Future Land Use', color: '#A855F7' },
             { key: 'heatmap' as const, label: 'Value Heatmap', color: '#EF4444' },
@@ -364,7 +364,7 @@ function popupHtml(a: ParcelAttributes): string {
   const pid = a.PARCEL_ID || ''
   const pidEnc = encodeURIComponent(pid)
   const r = (k: string, v: string) =>
-    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:#64748B">${k}</span><span style="color:#F59E0B;font-weight:600;font-family:monospace">${v}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:#64748B">${k}</span><span style="color:#1A90FF;font-weight:600;font-family:monospace">${v}</span></div>`
 
   return `<div style="font-family:system-ui,sans-serif">
     <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;border-bottom:1px solid #1E293B;padding-bottom:5px">${addr || 'Parcel'}</div>
@@ -372,7 +372,7 @@ function popupHtml(a: ParcelAttributes): string {
     ${r('Building', formatCurrency(a.BLDG_VALUE))}${r('Land', formatCurrency(a.LAND_VALUE))}
     ${r('Use', (a.USE_CODE_DESCRIPTION || '—').trim())}
     <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid #1E293B;padding-top:6px">
-      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgba(245,158,11,.12);color:#F59E0B;border:1px solid rgba(245,158,11,.3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
+      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgba(245,158,11,.12);color:#1A90FF;border:1px solid rgba(245,158,11,.3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
       <a href="https://www.bcpao.us/PropertySearch/#/account/${a.PROPERTY_ID}" target="_blank" style="display:block;text-align:center;padding:5px;background:rgba(59,130,246,.1);color:#3B82F6;border:1px solid rgba(59,130,246,.2);border-radius:4px;font-size:10px;font-weight:600;text-decoration:none">📋 BCPAO Property Search</a>
     </div></div>`
 }

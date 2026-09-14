@@ -37,7 +37,7 @@ function spawnParticles(x: number, y: number, color: string) {
 }
 
 function spawnConfetti(x: number, y: number, color: string) {
-  const colors = [color, "#F59E0B", "#ffffff", "#1E3A5F"];
+  const colors = [color, "#1A90FF", "#ffffff", "#1B2737"];
   for (let i = 0; i < 20; i++) {
     const el = document.createElement("div");
     const c = colors[i % colors.length];
@@ -84,7 +84,7 @@ export function ParticleButton({
   className,
   onClick,
   particleType = "particles",
-  particleColor = "#F59E0B",
+  particleColor = "#1A90FF",
   variant = "primary",
   ...props
 }: ParticleButtonProps) {
@@ -104,7 +104,7 @@ export function ParticleButton({
   );
 
   const variantStyles: Record<string, string> = {
-    primary: "bg-[#F59E0B] text-[#020617] hover:bg-[#d97706]",
+    primary: "bg-[#1A90FF] text-[#0B1119] hover:bg-[#005EB8]",
     outline: "bg-transparent border border-white/20 text-white hover:bg-white/10",
     danger: "bg-red-600 text-white hover:bg-red-700",
     success: "bg-green-600 text-white hover:bg-green-700",

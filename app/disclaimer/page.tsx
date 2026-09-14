@@ -11,7 +11,7 @@ export default function DisclaimerPage() {
   return (
     <div className="min-h-screen bg-white text-slate-800">
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <Link href="/" className="text-[#1E3A5F] hover:underline">← Back to home</Link>
+        <Link href="/" className="text-[#1B2737] hover:underline">← Back to home</Link>
         <h1 className="text-3xl font-bold mt-6 mb-8 text-slate-900">Zoning Information Disclaimer</h1>
         <div className="bg-amber-50 border border-amber-200 p-6 rounded-xl mb-8">
           <h2 className="text-xl font-bold text-amber-800 mb-4">⚠️ Important Notice</h2>

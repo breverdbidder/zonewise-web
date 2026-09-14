@@ -131,7 +131,7 @@ export function OnboardingTour() {
         <div
           style={{
             background: '#0f172a',
-            border: '1px solid #1e3a5f',
+            border: '1px solid #1B2737',
             borderRadius: '16px',
             boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(30,58,95,0.4)',
             padding: '28px 24px 20px',
@@ -229,7 +229,7 @@ export function OnboardingTour() {
                   width: i === step ? '20px' : '8px',
                   height: '8px',
                   borderRadius: '4px',
-                  background: i === step ? '#f59e0b' : '#1e3a5f',
+                  background: i === step ? '#1A90FF' : '#1B2737',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -248,7 +248,7 @@ export function OnboardingTour() {
                   flex: 1,
                   padding: '10px 0',
                   borderRadius: '8px',
-                  border: '1px solid #1e3a5f',
+                  border: '1px solid #1B2737',
                   background: 'transparent',
                   color: '#94a3b8',
                   fontSize: '14px',
@@ -263,7 +263,7 @@ export function OnboardingTour() {
                 }}
                 onMouseLeave={e => {
                   const el = e.target as HTMLElement
-                  el.style.borderColor = '#1e3a5f'
+                  el.style.borderColor = '#1B2737'
                   el.style.color = '#94a3b8'
                 }}
               >
@@ -277,8 +277,8 @@ export function OnboardingTour() {
                 padding: '10px 0',
                 borderRadius: '8px',
                 border: 'none',
-                background: '#f59e0b',
-                color: '#020617',
+                background: '#1A90FF',
+                color: '#0B1119',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: 'pointer',

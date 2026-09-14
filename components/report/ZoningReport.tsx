@@ -111,8 +111,8 @@ function Section({
 }) {
   return (
     <section id={id} className="rounded-2xl border border-slate-700/60 overflow-hidden print:border-slate-300">
-      <div className="flex items-center gap-2.5 px-5 py-3 bg-[#1E3A5F]/80 border-b border-slate-700/60 print:bg-blue-950">
-        <span className="text-[#F59E0B]">{icon}</span>
+      <div className="flex items-center gap-2.5 px-5 py-3 bg-[#1B2737]/80 border-b border-slate-700/60 print:bg-blue-950">
+        <span className="text-[#1A90FF]">{icon}</span>
         <h2 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h2>
       </div>
       <div className="px-5 py-4">{children}</div>
@@ -134,7 +134,7 @@ function HighlightRow({ label, value, sub }: { label: string; value: string; sub
     <div className="flex justify-between gap-4 py-1.5 border-b border-slate-800/50 last:border-0 print:border-slate-200">
       <span className="text-slate-400 text-sm shrink-0 print:text-slate-600">{label}</span>
       <div className="text-right">
-        <span className="text-[#F59E0B] font-semibold text-sm">{value}</span>
+        <span className="text-[#1A90FF] font-semibold text-sm">{value}</span>
         {sub && <span className="block text-xs text-slate-500 print:text-slate-500">{sub}</span>}
       </div>
     </div>
@@ -176,7 +176,7 @@ export function ZoningReportSkeleton() {
       <div className="h-6 bg-slate-800 rounded w-1/3" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="rounded-2xl border border-slate-700/60 overflow-hidden">
-          <div className="h-11 bg-[#1E3A5F]/80" />
+          <div className="h-11 bg-[#1B2737]/80" />
           <div className="px-5 py-4 space-y-3">
             {[1, 2, 3].map((j) => (
               <div key={j} className="h-4 bg-slate-800 rounded w-full" />
@@ -194,7 +194,7 @@ export function ZoningReportError({ parcelId, message }: { parcelId: string; mes
     <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
       <div className="text-red-400 text-4xl mb-3">!</div>
       <h2 className="text-white font-semibold text-lg mb-1">Report Failed</h2>
-      <p className="text-slate-400 text-sm mb-2">Could not generate zoning report for parcel <code className="text-[#F59E0B]">{parcelId}</code>.</p>
+      <p className="text-slate-400 text-sm mb-2">Could not generate zoning report for parcel <code className="text-[#1A90FF]">{parcelId}</code>.</p>
       <p className="text-slate-500 text-xs">{message}</p>
     </div>
   )
@@ -230,18 +230,18 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
   return (
     <div
       className="min-h-screen font-[Inter,sans-serif] print:bg-white"
-      style={{ background: '#020617', color: '#f8fafc' }}
+      style={{ background: '#0B1119', color: '#f8fafc' }}
     >
       {/* ── Header bar ── */}
-      <div className="sticky top-0 z-30 border-b border-slate-700/60 bg-[#020617]/90 backdrop-blur-sm print:hidden">
+      <div className="sticky top-0 z-30 border-b border-slate-700/60 bg-[#0B1119]/90 backdrop-blur-sm print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
-            <Link href="/explorer" className="text-[#F59E0B] hover:text-amber-300 shrink-0">
+            <Link href="/explorer" className="text-[#1A90FF] hover:text-amber-300 shrink-0">
               <ChevronRight className="w-4 h-4 rotate-180" />
             </Link>
             <span className="text-slate-400 text-sm truncate">
               Zoning Report —{' '}
-              <code className="text-[#F59E0B] font-mono text-xs">{parcelId}</code>
+              <code className="text-[#1A90FF] font-mono text-xs">{parcelId}</code>
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -254,7 +254,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             </button>
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F59E0B] hover:bg-amber-500 text-white text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1A90FF] hover:bg-amber-500 text-white text-xs font-medium transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               PDF
@@ -273,7 +273,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
           </h1>
           <p className="text-slate-400 text-sm mt-1 print:text-slate-600">
             Parcel ID:{' '}
-            <code className="text-[#F59E0B] font-mono">{parcelId}</code>
+            <code className="text-[#1A90FF] font-mono">{parcelId}</code>
             {data.jurisdiction && (
               <> &mdash; {data.jurisdiction}</>
             )}
@@ -327,7 +327,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
                 href={data.municipal_code_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[#F59E0B] hover:text-amber-300 text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 text-[#1A90FF] hover:text-amber-300 text-sm font-medium transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View Municipal Code
@@ -450,7 +450,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
                   <span>Map not available</span>
                   <Link
                     href={`/explorer?parcel=${encodeURIComponent(parcelId)}`}
-                    className="text-[#F59E0B] hover:text-amber-300 text-xs underline underline-offset-2"
+                    className="text-[#1A90FF] hover:text-amber-300 text-xs underline underline-offset-2"
                   >
                     Open in Explorer
                   </Link>
@@ -489,7 +489,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             </div>
             <Link
               href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-              className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#F59E0B] hover:bg-amber-500 text-white text-sm font-semibold transition-colors print:hidden"
+              className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A90FF] hover:bg-amber-500 text-white text-sm font-semibold transition-colors print:hidden"
             >
               <Box className="w-4 h-4" />
               Open 3D View
@@ -527,7 +527,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
         <div className="flex items-center gap-3 pt-2 pb-8 print:hidden">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#F59E0B] hover:bg-amber-500 text-white font-semibold text-sm transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A90FF] hover:bg-amber-500 text-white font-semibold text-sm transition-colors"
           >
             <Download className="w-4 h-4" />
             Download PDF
@@ -541,7 +541,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
           </button>
           <Link
             href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white font-semibold text-sm transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1B2737] hover:bg-[#1B2737]/80 text-white font-semibold text-sm transition-colors"
           >
             <Box className="w-4 h-4" />
             3D Massing

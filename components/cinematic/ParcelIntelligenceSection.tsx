@@ -38,7 +38,7 @@ export function ParcelIntelligenceSection() {
         className="relative py-24 px-4"
         style={{
           background:
-            'radial-gradient(ellipse 90% 70% at 50% 30%, rgba(30,58,95,0.55) 0%, #020617 70%)',
+            'radial-gradient(ellipse 90% 70% at 50% 30%, rgba(30,58,95,0.55) 0%, #0B1119 70%)',
         }}
       >
         <div className="mx-auto max-w-xl space-y-8">
@@ -50,7 +50,7 @@ export function ParcelIntelligenceSection() {
             >
               <div
                 className="text-xs uppercase tracking-widest mb-3 font-medium"
-                style={{ color: '#F59E0B', letterSpacing: '0.1em' }}
+                style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
               >
                 {b.eyebrow}
               </div>
@@ -64,7 +64,7 @@ export function ParcelIntelligenceSection() {
   }
 
   return (
-    <section ref={wrapperRef} className="relative h-[280vh] bg-[#020617]">
+    <section ref={wrapperRef} className="relative h-[280vh] bg-[#0B1119]">
       <div className="sticky top-0 h-screen overflow-hidden">
         <ParcelIntelligenceCanvas scrollTriggerEl={wrapperRef.current} />
 
@@ -87,7 +87,7 @@ export function ParcelIntelligenceSection() {
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
-              style={{ color: '#F59E0B', letterSpacing: '0.1em' }}
+              style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
             >
               {BEATS[0].eyebrow}
             </div>
@@ -106,7 +106,7 @@ export function ParcelIntelligenceSection() {
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
-              style={{ color: '#F59E0B', letterSpacing: '0.1em' }}
+              style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
             >
               {BEATS[1].eyebrow}
             </div>

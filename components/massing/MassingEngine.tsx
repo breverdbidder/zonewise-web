@@ -275,8 +275,8 @@ export default function MassingEngine() {
 
     // ── Scene ──
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color('#020617')
-    scene.fog = new THREE.FogExp2('#020617', 0.0015)
+    scene.background = new THREE.Color('#0B1119')
+    scene.fog = new THREE.FogExp2('#0B1119', 0.0015)
 
     // ── Camera (fov 35, architectural) ──
     const camera = new THREE.PerspectiveCamera(35, W / H, 0.5, 3000)
@@ -767,7 +767,7 @@ export default function MassingEngine() {
       const overlay = overlayRef.current
       if (overlay) {
         overlay.innerHTML = ''
-        const labelStyle = 'position:absolute;background:#1E3A5F;color:white;font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgba(245,158,11,0.5)'
+        const labelStyle = 'position:absolute;background:#1B2737;color:white;font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgba(245,158,11,0.5)'
 
         // Building height label (top center)
         const htLabel = document.createElement('div')
@@ -778,7 +778,7 @@ export default function MassingEngine() {
         // Units badge
         if (m.units > 1) {
           const unitLabel = document.createElement('div')
-          unitLabel.style.cssText = labelStyle + ';top:44px;right:12px;background:#F59E0B;color:#020617;font-weight:700'
+          unitLabel.style.cssText = labelStyle + ';top:44px;right:12px;background:#1A90FF;color:#0B1119;font-weight:700'
           unitLabel.textContent = `${m.units} units`
           overlay.appendChild(unitLabel)
         }
@@ -1059,7 +1059,7 @@ export default function MassingEngine() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#020617] text-white">
+    <div className="min-h-screen bg-[#0B1119] text-white">
       {/* Page header */}
       <div className="border-b border-slate-800 px-6 py-4">
         <div className="flex items-center gap-3">
@@ -1274,12 +1274,12 @@ export default function MassingEngine() {
                 )}
                 <div style={{ position: 'relative', width: '100%', height: 420 }}>
                   {webglLost ? (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#020617] text-center">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#0B1119] text-center">
                       <span className="text-2xl">⚠️</span>
                       <p className="text-sm font-medium text-slate-300">3D rendering unavailable — try refreshing</p>
                       <button
                         onClick={() => { setWebglLost(false) }}
-                        className="rounded-lg bg-[#F59E0B] px-4 py-1.5 text-xs font-semibold text-slate-900 hover:bg-[#F59E0B]/90"
+                        className="rounded-lg bg-[#1A90FF] px-4 py-1.5 text-xs font-semibold text-slate-900 hover:bg-[#1A90FF]/90"
                       >
                         Refresh
                       </button>
@@ -1300,7 +1300,7 @@ export default function MassingEngine() {
                 {/* Legend */}
                 <div className="px-4 py-2.5 border-t border-slate-800 flex items-center gap-4 flex-wrap">
                   {[
-                    { color: '#F59E0B', label: 'Lot boundary'  },
+                    { color: '#1A90FF', label: 'Lot boundary'  },
                     { color: '#22C55E', label: 'Setback zone'  },
                     { color: '#88BBDD', label: 'Glass facade'  },
                     { color: '#D4D0C8', label: 'Concrete'      },

@@ -76,8 +76,8 @@ function str(val: unknown): string {
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div className="border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-[#1E3A5F]/60 border-b border-gray-200 dark:border-slate-700">
-        <span className="text-[#F59E0B]">{icon}</span>
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-[#1B2737]/60 border-b border-gray-200 dark:border-slate-700">
+        <span className="text-[#1A90FF]">{icon}</span>
         <span className="text-xs font-semibold text-gray-700 dark:text-slate-200 uppercase tracking-wider">{title}</span>
       </div>
       <div className="px-4 py-3 space-y-2">{children}</div>
@@ -98,7 +98,7 @@ function ValueRow({ label, value, highlight }: { label: string; value: string; h
   return (
     <div className="flex justify-between gap-3 text-sm">
       <span className="text-gray-500 dark:text-slate-400 shrink-0">{label}</span>
-      <span className={highlight ? 'text-[#F59E0B] font-semibold' : 'text-gray-800 dark:text-slate-100'}>{value}</span>
+      <span className={highlight ? 'text-[#1A90FF] font-semibold' : 'text-gray-800 dark:text-slate-100'}>{value}</span>
     </div>
   )
 }
@@ -189,8 +189,8 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
             </div>
           ) : (
-            <div className="w-full h-28 rounded-t-2xl bg-gradient-to-br from-[#1E3A5F] to-gray-300 dark:to-slate-800 flex items-center justify-center">
-              <Home className="w-12 h-12 text-[#F59E0B]/40" />
+            <div className="w-full h-28 rounded-t-2xl bg-gradient-to-br from-[#1B2737] to-gray-300 dark:to-slate-800 flex items-center justify-center">
+              <Home className="w-12 h-12 text-[#1A90FF]/40" />
             </div>
           )}
 
@@ -205,7 +205,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
                   <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{cityLine}</p>
                 )}
               </div>
-              <span className="shrink-0 mt-0.5 px-2 py-0.5 rounded-md bg-[#1E3A5F] text-[#F59E0B] text-xs font-mono font-semibold whitespace-nowrap">
+              <span className="shrink-0 mt-0.5 px-2 py-0.5 rounded-md bg-[#1B2737] text-[#1A90FF] text-xs font-mono font-semibold whitespace-nowrap">
                 {displayParcelId}
               </span>
             </div>
@@ -283,7 +283,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
                 href={`https://www.bcpao.us/PropertySearch/#/parcel/${taxAcct}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white text-xs font-medium transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1B2737] hover:bg-[#1B2737]/80 text-white text-xs font-medium transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View on BCPAO
@@ -291,7 +291,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
             )}
             <a
               href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white text-xs font-medium transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1B2737] hover:bg-[#1B2737]/80 text-white text-xs font-medium transition-colors"
             >
               <MapPin className="w-3.5 h-3.5" />
               View 3D Massing
@@ -301,7 +301,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
           <div className="pb-2">
             <Link
               href={`/report/${encodeURIComponent(parcelId)}`}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#F59E0B] hover:bg-amber-500 text-white text-xs font-semibold transition-colors"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#1A90FF] hover:bg-amber-500 text-white text-xs font-semibold transition-colors"
             >
               <ClipboardList className="w-3.5 h-3.5" />
               View Full Zoning Report

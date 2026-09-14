@@ -77,7 +77,7 @@ export default function ExplorerMobileSheet({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 bg-[#020617] border-t border-slate-800 rounded-t-2xl shadow-2xl transition-all duration-300 ease-out overflow-hidden flex flex-col"
+      className="fixed bottom-0 left-0 right-0 z-30 bg-[#0B1119] border-t border-slate-800 rounded-t-2xl shadow-2xl transition-all duration-300 ease-out overflow-hidden flex flex-col"
       style={{ height: SHEET_HEIGHTS[sheetState] }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -104,7 +104,7 @@ export default function ExplorerMobileSheet({
           </button>
           <button
             onClick={() => { setSheetState('half'); setActiveTab('chat') }}
-            className="w-11 h-11 bg-[#F59E0B] rounded-xl flex items-center justify-center text-slate-950 font-bold text-base min-h-[44px]"
+            className="w-11 h-11 bg-[#1A90FF] rounded-xl flex items-center justify-center text-slate-950 font-bold text-base min-h-[44px]"
             aria-label="Open AI chat"
           >
             🤖
@@ -121,7 +121,7 @@ export default function ExplorerMobileSheet({
               onClick={() => setActiveTab('chat')}
               className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                 activeTab === 'chat'
-                  ? 'border-[#F59E0B] text-[#F59E0B]'
+                  ? 'border-[#1A90FF] text-[#1A90FF]'
                   : 'border-transparent text-slate-400 hover:text-slate-300'
               }`}
             >
@@ -132,7 +132,7 @@ export default function ExplorerMobileSheet({
                 onClick={() => setActiveTab('parcel')}
                 className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                   activeTab === 'parcel'
-                    ? 'border-[#F59E0B] text-[#F59E0B]'
+                    ? 'border-[#1A90FF] text-[#1A90FF]'
                     : 'border-transparent text-slate-400 hover:text-slate-300'
                 }`}
               >

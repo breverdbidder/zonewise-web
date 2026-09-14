@@ -46,7 +46,7 @@ const TIMELINE = [
 
 export function CaseStudySection() {
   return (
-    <section className="relative overflow-hidden border-y border-[#1E3A5F]/40 bg-[#020617] pt-20 pb-14 sm:pt-28 sm:pb-16">
+    <section className="relative overflow-hidden border-y border-[#1B2737]/40 bg-[#0B1119] pt-20 pb-14 sm:pt-28 sm:pb-16">
       {/* Ambient navy wash — CSS only, no WebGL */}
       <div
         aria-hidden="true"
@@ -65,7 +65,7 @@ export function CaseStudySection() {
           transition={{ duration: 0.6 }}
         >
           <div
-            className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]"
+            className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]"
           >
             Case study · Palm Bay, Florida
           </div>
@@ -73,7 +73,7 @@ export function CaseStudySection() {
           <h2 className="max-w-3xl text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl">
             $20,100 of vacant dirt.
             <br />
-            <span className="text-[#F59E0B]">A 16-unit entitlement nobody else read.</span>
+            <span className="text-[#1A90FF]">A 16-unit entitlement nobody else read.</span>
           </h2>
 
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-400 sm:text-lg">
@@ -111,7 +111,7 @@ export function CaseStudySection() {
               </p>
               <div
                 className="font-mono text-2xl font-semibold tabular-nums"
-                style={{ color: i === 3 ? '#10B981' : '#F59E0B' }}
+                style={{ color: i === 3 ? '#10B981' : '#1A90FF' }}
               >
                 {t.figure}
               </div>
@@ -140,7 +140,7 @@ export function CaseStudySection() {
             href="https://everestcapitalusa.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block py-2 text-[#F59E0B] transition-colors hover:text-[#FBBF24]"
+            className="inline-block py-2 text-[#1A90FF] transition-colors hover:text-[#FBBF24]"
           >
             Full track record →
           </a>

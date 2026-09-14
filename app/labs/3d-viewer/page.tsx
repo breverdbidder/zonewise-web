@@ -98,14 +98,14 @@ export default async function Labs3DViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white">
+    <div className="min-h-screen bg-[#0B1119] text-white">
       {/* Header */}
       <header className="border-b border-slate-800 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold text-white">
               ZoneWise Labs
-              <span className="ml-2 text-xs bg-[#F59E0B]/20 text-[#F59E0B] px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-[#1A90FF]/20 text-[#1A90FF] px-2 py-0.5 rounded-full">
                 POC
               </span>
             </h1>
@@ -135,7 +135,7 @@ export default async function Labs3DViewerPage() {
           <div className="space-y-4">
             {/* Parcel Info Card */}
             <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#F59E0B] mb-3">Parcel Details</h2>
+              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">Parcel Details</h2>
               <dl className="space-y-2 text-sm">
                 <div>
                   <dt className="text-slate-500 text-xs">Parcel ID</dt>
@@ -168,7 +168,7 @@ export default async function Labs3DViewerPage() {
 
             {/* BidDeed Auction Status */}
             <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#F59E0B] mb-3">
+              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">
                 BidDeed.AI — Foreclosure
               </h2>
               <p className="text-sm text-slate-300">
@@ -178,7 +178,7 @@ export default async function Labs3DViewerPage() {
 
             {/* ZoneWise Tax Deed Status */}
             <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#F59E0B] mb-3">
+              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">
                 ZoneWise.AI — Zoning
               </h2>
               <p className="text-sm text-slate-300">
@@ -187,7 +187,7 @@ export default async function Labs3DViewerPage() {
             </div>
 
             {/* POC Info */}
-            <div className="bg-[#1E3A5F]/20 border border-[#1E3A5F]/40 rounded-lg p-4">
+            <div className="bg-[#1B2737]/20 border border-[#1B2737]/40 rounded-lg p-4">
               <h2 className="text-xs font-semibold text-slate-400 mb-2">POC Status</h2>
               <ul className="text-xs text-slate-500 space-y-1">
                 <li>CesiumJS 1.115 (MIT)</li>

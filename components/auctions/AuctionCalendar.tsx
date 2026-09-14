@@ -48,7 +48,7 @@ interface Props {
 
 const TYPE_STYLE: Record<string, { bg: string; border: string; label: string }> = {
   foreclosure: { bg: '#EF4444', border: '#DC2626', label: 'Foreclosures' },
-  tax_deed: { bg: '#F59E0B', border: '#D97706', label: 'Tax Deeds' },
+  tax_deed: { bg: '#1A90FF', border: '#005EB8', label: 'Tax Deeds' },
   other: { bg: '#3B82F6', border: '#2563EB', label: 'Other' },
 }
 

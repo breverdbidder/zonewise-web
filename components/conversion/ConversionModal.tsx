@@ -35,8 +35,8 @@ export default function ConversionModal() {
       <div
         className="relative w-full max-w-5xl mx-4 rounded-xl overflow-hidden"
         style={{
-          background: '#020617',
-          border: '1px solid #F59E0B',
+          background: '#0B1119',
+          border: '1px solid #1A90FF',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',

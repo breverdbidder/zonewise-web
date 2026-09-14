@@ -1,7 +1,7 @@
 // app/parcel/[id]/page.tsx
 // SUMMIT 77c39794 — Public parcel card renderer (ZoneWise + BidDeed)
 // SSR for SEO, CSP-compliant via nonce from middleware
-// Brand: Navy #1E3A5F, Orange #F59E0B, Inter, bg #020617
+// Brand: Navy #1B2737, Orange #1A90FF, Inter, bg #0B1119
 
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
@@ -78,7 +78,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
     : 'https://chat.zonewise.ai/signup';
 
   const confidence = card.ai_answer_jsonb.confidence ?? 'INFERRED';
-  const confColor = confidence === 'VERIFIED' ? '#10B981' : confidence === 'UNTESTED' ? '#F59E0B' : '#64748B';
+  const confColor = confidence === 'VERIFIED' ? '#10B981' : confidence === 'UNTESTED' ? '#1A90FF' : '#64748B';
   const addrLine = card.site_addr
     ? `${card.site_addr}${card.site_city ? ', ' + card.site_city : ''}`
     : `PIN ${card.pin}`;
@@ -97,12 +97,12 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
       <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <ViewPixel cardId={card.id} supabaseUrl={SUPABASE_URL} anonKey={SUPABASE_ANON} />
 
-      <main style={{ background: '#020617', color: '#F1F5F9', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <main style={{ background: '#0B1119', color: '#F1F5F9', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 80px' }}>
           <header style={{ borderBottom: '1px solid rgba(30,58,95,0.4)', paddingBottom: 20, marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
               <Logo app={card.app} />
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#F59E0B' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1A90FF' }}>
                 {card.app === 'zonewise' ? 'Zoning Intelligence' : 'Auction Intelligence'}
               </span>
             </div>
@@ -126,7 +126,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   AI Analysis
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: '#020617' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: '#0B1119' }}>
                   {confidence}
                 </span>
               </div>
@@ -144,12 +144,12 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
               <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {card.citations.map((c, i) => (
                   <li key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(30,58,95,0.3)' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 20 }}>[{i + 1}]</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#1A90FF', minWidth: 20 }}>[{i + 1}]</span>
                     <div style={{ flex: 1, fontSize: 14, color: '#CBD5E1' }}>
                       <strong style={{ color: '#F1F5F9' }}>{c.source}</strong>
                       {c.section && <span style={{ color: '#94A3B8' }}> — {c.section}</span>}
                       {c.url && (
-                        <a href={c.url} target="_blank" rel="noopener nofollow" style={{ color: '#F59E0B', textDecoration: 'none', marginLeft: 8, fontSize: 13 }}>
+                        <a href={c.url} target="_blank" rel="noopener nofollow" style={{ color: '#1A90FF', textDecoration: 'none', marginLeft: 8, fontSize: 13 }}>
                           view →
                         </a>
                       )}
@@ -161,7 +161,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
           )}
 
           <section style={{
-            background: '#1E3A5F', borderRadius: 12, padding: '32px 28px', textAlign: 'center', marginBottom: 32,
+            background: '#1B2737', borderRadius: 12, padding: '32px 28px', textAlign: 'center', marginBottom: 32,
           }}>
             <h2 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 8px', color: '#F8FAFC' }}>
               Ask your own question about any FL parcel
@@ -171,7 +171,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </p>
             <a href={signupHref}
                style={{
-                 display: 'inline-block', background: '#F59E0B', color: '#020617',
+                 display: 'inline-block', background: '#1A90FF', color: '#0B1119',
                  fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 8,
                  textDecoration: 'none', letterSpacing: '0.02em',
                }}>
@@ -193,8 +193,8 @@ function Logo({ app }: { app: 'zonewise' | 'biddeed' }) {
   const label = app === 'zonewise' ? 'ZoneWise.AI' : 'BidDeed.AI';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 24, height: 24, background: '#F59E0B', borderRadius: 6, position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 4, background: '#1E3A5F', borderRadius: 3 }} />
+      <div style={{ width: 24, height: 24, background: '#1A90FF', borderRadius: 6, position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: 4, background: '#1B2737', borderRadius: 3 }} />
       </div>
       <span style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC', letterSpacing: '-0.01em' }}>{label}</span>
     </div>

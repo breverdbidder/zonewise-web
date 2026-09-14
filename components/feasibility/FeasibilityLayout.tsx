@@ -115,7 +115,7 @@ export default function FeasibilityLayout({
       {!betaBannerDismissed && (
         <div
           className="flex items-center justify-between px-6 py-2.5 text-[12px]"
-          style={{ background: '#F59E0B1A', borderBottom: '1px solid #F59E0B33' }}
+          style={{ background: '#1A90FF1A', borderBottom: '1px solid #1A90FF33' }}
         >
           <div className="flex items-center gap-2">
             <DemoDataBadge label="Beta" />

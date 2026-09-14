@@ -77,8 +77,8 @@ export default function ParcelDetail({ parcelId }: Props) {
             map.on('load', () => {
               // Add parcel boundary
               map.addSource('target-parcel', { type: 'geojson', data: feat })
-              map.addLayer({ id: 'target-fill', type: 'fill', source: 'target-parcel', paint: { 'fill-color': '#F59E0B', 'fill-opacity': 0.3 } })
-              map.addLayer({ id: 'target-line', type: 'line', source: 'target-parcel', paint: { 'line-color': '#F59E0B', 'line-width': 3 } })
+              map.addLayer({ id: 'target-fill', type: 'fill', source: 'target-parcel', paint: { 'fill-color': '#1A90FF', 'fill-opacity': 0.3 } })
+              map.addLayer({ id: 'target-line', type: 'line', source: 'target-parcel', paint: { 'line-color': '#1A90FF', 'line-width': 3 } })
 
               // BCPAO parcel overlay
               map.addSource('bcpao-parcels', {
@@ -105,7 +105,7 @@ export default function ParcelDetail({ parcelId }: Props) {
               }
             })
 
-            new mapboxgl.Marker({ color: '#F59E0B' }).setLngLat([cLng, cLat]).addTo(map)
+            new mapboxgl.Marker({ color: '#1A90FF' }).setLngLat([cLng, cLat]).addTo(map)
             mapRef.current = map
           }
         }
@@ -165,7 +165,7 @@ export default function ParcelDetail({ parcelId }: Props) {
             onClick={() => setActiveTab('overview')}
             className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
               activeTab === 'overview'
-                ? 'border-[#F59E0B] text-[#F59E0B]'
+                ? 'border-[#1A90FF] text-[#1A90FF]'
                 : 'border-transparent text-slate-400 hover:text-slate-300'
             }`}
           >
@@ -175,7 +175,7 @@ export default function ParcelDetail({ parcelId }: Props) {
             onClick={() => setActiveTab('competitor')}
             className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
               activeTab === 'competitor'
-                ? 'border-[#F59E0B] text-[#F59E0B]'
+                ? 'border-[#1A90FF] text-[#1A90FF]'
                 : 'border-transparent text-slate-400 hover:text-slate-300'
             }`}
           >
@@ -250,7 +250,7 @@ export default function ParcelDetail({ parcelId }: Props) {
             href={`/report?parcel=${encodeURIComponent(parcel.PARCEL_ID)}&print=1`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#1E3A5F]/60 border border-[#1E3A5F] text-white rounded-md text-sm font-semibold hover:bg-[#1E3A5F] transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#1B2737]/60 border border-[#1B2737] text-white rounded-md text-sm font-semibold hover:bg-[#1B2737] transition-colors"
             title="Opens printable report — use browser Print → Save as PDF"
           >
             <span>⬇</span> Download Report

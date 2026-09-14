@@ -67,14 +67,14 @@ export function HBUSourceBadge({ source, className = '' }: HBUSourceBadgeProps) 
         letterSpacing: '0.03em',
         background: 'rgba(245, 158, 11, 0.10)',
         border: '1px solid rgba(245, 158, 11, 0.30)',
-        color: '#F59E0B',
+        color: '#1A90FF',
         userSelect: 'none',
         whiteSpace: 'nowrap',
       }}
     >
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <rect x="1" y="1" width="8" height="8" rx="1" stroke="#F59E0B" strokeWidth="1.2" fill="none" />
-        <path d="M3 3.5h4M3 5h4M3 6.5h2.5" stroke="#F59E0B" strokeWidth="1" strokeLinecap="round" />
+        <rect x="1" y="1" width="8" height="8" rx="1" stroke="#1A90FF" strokeWidth="1.2" fill="none" />
+        <path d="M3 3.5h4M3 5h4M3 6.5h2.5" stroke="#1A90FF" strokeWidth="1" strokeLinecap="round" />
       </svg>
       Estimated
     </span>

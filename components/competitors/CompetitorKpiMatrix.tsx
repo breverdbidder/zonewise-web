@@ -92,7 +92,7 @@ function OutcomeTag({ outcome }: { outcome: RowOutcome }) {
   }
   if (outcome === 'ADVANTAGE') {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md border border-[#F59E0B]/40 bg-[#F59E0B]/10 px-2 py-0.5 text-[10px] font-bold text-[#F59E0B]">
+      <span className="inline-flex items-center gap-1 rounded-md border border-[#1A90FF]/40 bg-[#1A90FF]/10 px-2 py-0.5 text-[10px] font-bold text-[#1A90FF]">
         <span aria-hidden="true">★</span> ZONEWISE ONLY
       </span>
     )
@@ -149,7 +149,7 @@ export function CompetitorKpiMatrix({ competitor }: Props) {
             <span className="font-bold text-slate-300">{parity}</span> parity
           </span>
           <span className="text-slate-500">
-            <span className="font-bold text-[#F59E0B]">{advantage}</span> ZoneWise only
+            <span className="font-bold text-[#1A90FF]">{advantage}</span> ZoneWise only
           </span>
           {gap > 0 && (
             <span className="text-slate-500">

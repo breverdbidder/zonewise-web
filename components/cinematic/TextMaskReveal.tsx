@@ -12,7 +12,7 @@ interface TextMaskRevealProps {
 export function TextMaskReveal({
   text,
   className,
-  color = "#F59E0B",
+  color = "#1A90FF",
 }: TextMaskRevealProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const revealRef = useRef<HTMLDivElement>(null);

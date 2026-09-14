@@ -18,7 +18,7 @@ interface Props {
 }
 
 const LAYER_ITEMS = [
-  { key: 'parcels' as const, id: 'parcels-layer', label: 'Parcels', color: '#F59E0B' },
+  { key: 'parcels' as const, id: 'parcels-layer', label: 'Parcels', color: '#1A90FF' },
   { key: 'zoning'  as const, id: 'zoning-layer',  label: 'Zoning',  color: '#3B82F6' },
   { key: 'flu'     as const, id: 'flu-layer',      label: 'FLU',     color: '#8B5CF6' },
 ]

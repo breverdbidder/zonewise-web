@@ -19,7 +19,7 @@ export default function OGImage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #1E3A5F 0%, #152B47 100%)',
+          background: 'linear-gradient(135deg, #1B2737 0%, #152B47 100%)',
           fontFamily: 'system-ui, sans-serif',
           position: 'relative',
         }}

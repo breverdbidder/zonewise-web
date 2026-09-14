@@ -36,9 +36,9 @@ export interface OutcomeReportInput {
   generatedAt: string
 }
 
-const NAVY: [number, number, number] = [30, 58, 95] // #1E3A5F
-const AMBER: [number, number, number] = [245, 158, 11] // #F59E0B
-const VOID: [number, number, number] = [2, 6, 23] // #020617
+const NAVY: [number, number, number] = [30, 58, 95] // #1B2737
+const AMBER: [number, number, number] = [245, 158, 11] // #1A90FF
+const VOID: [number, number, number] = [2, 6, 23] // #0B1119
 const SLATE: [number, number, number] = [100, 116, 139]
 
 const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US')

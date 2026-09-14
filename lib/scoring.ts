@@ -46,7 +46,7 @@ export function getRecommendation(
     return { recommendation: 'BID', color: '#22C55E', ratio, maxBid }
   }
   if (ratio >= 60) {
-    return { recommendation: 'REVIEW', color: '#F59E0B', ratio, maxBid }
+    return { recommendation: 'REVIEW', color: '#1A90FF', ratio, maxBid }
   }
   return { recommendation: 'SKIP', color: '#EF4444', ratio, maxBid }
 }

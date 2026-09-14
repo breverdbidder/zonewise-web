@@ -51,7 +51,7 @@ export default function SmsConsentOnboardingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#0B1119', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div style={{ width: '100%', maxWidth: '480px', backgroundColor: '#0f172a', borderRadius: '12px', padding: '32px', border: '1px solid #1e293b' }}>
         <h1 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
           Stay in the loop
@@ -101,8 +101,8 @@ export default function SmsConsentOnboardingPage() {
               disabled={submitting || !consent}
               style={{
                 flex: 1, padding: '10px 16px', borderRadius: '8px', border: 'none',
-                backgroundColor: consent ? '#F59E0B' : '#334155',
-                color: consent ? '#020617' : '#64748b',
+                backgroundColor: consent ? '#1A90FF' : '#334155',
+                color: consent ? '#0B1119' : '#64748b',
                 fontWeight: 600, fontSize: '14px',
                 cursor: consent && !submitting ? 'pointer' : 'not-allowed',
               }}

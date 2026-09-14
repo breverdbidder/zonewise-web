@@ -72,7 +72,7 @@ export default function AppShellPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#020617] overflow-hidden">
+    <div className="flex h-screen bg-[#0B1119] overflow-hidden">
 
       {/* Mobile tab switcher */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[#162D4A] border-t border-slate-700/50">
@@ -104,7 +104,7 @@ export default function AppShellPage() {
         `}
       >
         {/* Chat header */}
-        <div className="shrink-0 px-4 py-3 border-b border-slate-700/50 bg-[#1E3A5F]/50">
+        <div className="shrink-0 px-4 py-3 border-b border-slate-700/50 bg-[#1B2737]/50">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-sm font-bold text-white">AI Analyst</h1>

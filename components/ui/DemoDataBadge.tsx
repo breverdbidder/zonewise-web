@@ -18,9 +18,9 @@ export default function DemoDataBadge({
       <span
         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold uppercase tracking-wider"
         style={{
-          background: '#F59E0B1A',
-          borderColor: '#F59E0B4D',
-          color: '#F59E0B',
+          background: '#1A90FF1A',
+          borderColor: '#1A90FF4D',
+          color: '#1A90FF',
           fontFamily: 'monospace',
         }}
       >
@@ -30,9 +30,9 @@ export default function DemoDataBadge({
             type="button"
             className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border text-[9px] font-bold leading-none cursor-pointer"
             style={{
-              background: '#F59E0B33',
-              borderColor: '#F59E0B66',
-              color: '#F59E0B',
+              background: '#1A90FF33',
+              borderColor: '#1A90FF66',
+              color: '#1A90FF',
             }}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
@@ -48,9 +48,9 @@ export default function DemoDataBadge({
         <span
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 z-50 w-48 rounded-lg px-3 py-2 text-[11px] leading-relaxed shadow-lg pointer-events-none"
           style={{
-            background: '#1E3A5F',
+            background: '#1B2737',
             color: '#fff',
-            border: '1px solid #F59E0B33',
+            border: '1px solid #1A90FF33',
           }}
         >
           {tooltip}
@@ -59,7 +59,7 @@ export default function DemoDataBadge({
             style={{
               borderLeft: '5px solid transparent',
               borderRight: '5px solid transparent',
-              borderTop: '5px solid #1E3A5F',
+              borderTop: '5px solid #1B2737',
             }}
           />
         </span>

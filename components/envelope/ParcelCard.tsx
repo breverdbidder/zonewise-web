@@ -3,9 +3,9 @@
 import { computeEnvelope, calculateHBU } from '@/lib/development-analysis/hbu-engine'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const NAVY = '#1E3A5F'
-const ORANGE = '#F59E0B'
-const SLATE = '#020617'
+const NAVY = '#1B2737'
+const ORANGE = '#1A90FF'
+const SLATE = '#0B1119'
 const CARD_BG = '#1e293b'
 const GREEN = '#22c55e'
 
