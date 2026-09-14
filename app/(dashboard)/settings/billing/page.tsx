@@ -67,9 +67,9 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="min-h-full bg-[#020617] px-4 py-10 sm:px-8">
+    <div className="min-h-full bg-[#0B1119] px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]">
+        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
           <CreditCard className="h-3.5 w-3.5" /> Billing
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -88,7 +88,7 @@ export default function BillingPage() {
           </p>
           <Link
             href="/api/stripe/portal"
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#F59E0B] px-5 py-2.5 text-sm font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)]"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#1A90FF] px-5 py-2.5 text-sm font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)]"
           >
             Open billing portal <ExternalLink className="h-4 w-4" />
           </Link>
@@ -108,7 +108,7 @@ export default function BillingPage() {
               className="rounded-lg border p-5"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
             >
-              <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#F59E0B]">
+              <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#1A90FF]">
                 {t.name}
               </div>
               <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-white">
@@ -121,7 +121,7 @@ export default function BillingPage() {
                   type="button"
                   disabled={loadingTier !== null}
                   onClick={() => handleSubscribe(t.id, t.priceId!)}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#F59E0B] px-4 py-2 text-[13px] font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)] disabled:opacity-60"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#1A90FF] px-4 py-2 text-[13px] font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)] disabled:opacity-60"
                 >
                   {loadingTier === t.id ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -135,14 +135,14 @@ export default function BillingPage() {
         </div>
 
         <div className="mt-4 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,0.28)' }}>
-          <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#F59E0B]">Enterprise</div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#1A90FF]">Enterprise</div>
           <div className="mt-1 text-lg font-bold text-white">Custom</div>
           <p className="mt-2 text-[13px] text-slate-400">
             Org-wide access with volume county coverage and founder-led support.
           </p>
           <a
             href="mailto:ariel@everestcapitalusa.com?subject=ZoneWise%20Enterprise"
-            className="mt-4 inline-flex items-center gap-2 rounded-md border px-4 py-2 text-[13px] font-semibold text-slate-200 transition-colors hover:border-[#F59E0B]/50 hover:text-white"
+            className="mt-4 inline-flex items-center gap-2 rounded-md border px-4 py-2 text-[13px] font-semibold text-slate-200 transition-colors hover:border-[#1A90FF]/50 hover:text-white"
             style={{ borderColor: '#1E293B' }}
           >
             Contact sales <Check className="h-3.5 w-3.5" />
@@ -150,7 +150,7 @@ export default function BillingPage() {
         </div>
 
         <p className="mt-10 font-mono text-[11px] text-slate-600">
-          Questions about an invoice? <Link href="/help" className="text-[#F59E0B]">Visit help</Link>
+          Questions about an invoice? <Link href="/help" className="text-[#1A90FF]">Visit help</Link>
         </p>
       </div>
     </div>
