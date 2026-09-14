@@ -105,7 +105,7 @@ export function ZoomParallax({
         {/* Product reveal */}
         <div ref={productRef} className="absolute inset-0 z-[4] flex items-center justify-center opacity-0">
           <div className="rounded-3xl p-14 text-center max-w-md shadow-2xl"
-            style={{ background: "#0d1829", border: "1px solid rgba(30,58,95,0.6)" }}>
+            style={{ background: "#0d1829", border: "1px solid rgba(27,39,55,0.6)" }}>
             <h3 className="text-3xl font-semibold text-white mb-3" style={{ letterSpacing: "-0.025em" }}>
               {headline}
             </h3>
