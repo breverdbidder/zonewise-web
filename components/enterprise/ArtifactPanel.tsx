@@ -98,7 +98,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
       const el = document.createElement('div')
       el.innerHTML = `<div style="
         width: 32px; height: 32px;
-        background: linear-gradient(135deg, #2A4F7A, rgb(var(--zw-elev)));
+        background: linear-gradient(135deg, #2A4F7A, rgb(var(--zw-elev));
         border: 3px solid white;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);

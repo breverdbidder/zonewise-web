@@ -35,9 +35,9 @@ interface Result {
 
 const TRUST: Record<string, { label: string; color: string; bg: string }> = {
   verified:   { label: 'Verified',   color: '#10B981', bg: 'rgba(16,185,129,.12)' },
-  estimated:  { label: 'Estimated',  color: 'rgb(var(--zw-brand))', bg: 'rgb(var(--zw-brand) / 12)' },
-  unverified: { label: 'Unverified', color: 'rgb(var(--zw-ink2)))', bg: 'rgba(100,116,139,.15)' },
-  none:       { label: 'No zoning',  color: 'rgb(var(--zw-ink2)))', bg: 'rgba(100,116,139,.12)' },
+  estimated:  { label: 'Estimated',  color: 'rgb(var(--zw-brand))', bg: '0.12)' },
+  unverified: { label: 'Unverified', color: 'rgb(var(--zw-ink2))', bg: 'rgba(100,116,139,.15)' },
+  none:       { label: 'No zoning',  color: 'rgb(var(--zw-ink2))', bg: 'rgba(100,116,139,.12)' },
 }
 
 export function ParcelSearchBar({ currentAddress }: { currentAddress?: string }) {
@@ -98,7 +98,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
           onFocus={() => results.length && setOpen(true)}
           placeholder={currentAddress ? `Analyze another address…` : 'Enter a Florida address, e.g. 1390 KANAB AVE'}
           className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] outline-none transition-all focus:border-[rgb(var(--zw-brand))] focus:ring-2 focus:ring-[rgb(var(--zw-brand)/0.4)]"
-          style={{ background: 'rgb(var(--zw-card) / 65)', borderColor: 'rgb(var(--zw-brand) / 55)', boxShadow: '0 0 0 1px rgb(var(--zw-brand) / 12), 0 2px 12px rgb(var(--zw-brand) / 08)' }}
+          style={{ background: '0.65)', borderColor: '0.55)', boxShadow: '0 0 0 1px 0.12), 0 2px 12px 0.08)' }}
           aria-label="Search Florida parcels by address"
         />
         {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[rgb(var(--zw-brand))]" />}
@@ -113,7 +113,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
 
       {open && (results.length > 0 || hint) && (
         <div className="absolute z-[60] mt-2 w-full overflow-hidden rounded-lg border shadow-2xl"
-             style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-brand) / 35)' }}>
+             style={{ background: 'rgb(var(--zw-card))', borderColor: '0.35)' }}>
           {results.map((r) => {
             const t = TRUST[r.trust_level] ?? TRUST.none
             return (

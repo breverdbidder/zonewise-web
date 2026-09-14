@@ -32,12 +32,12 @@ export function getRecommendation(
 ): ScoringResult {
   const maxBid = calculateMaxBid(justValue)
   if (maxBid === null) {
-    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2)))', ratio: null, maxBid: null }
+    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2))', ratio: null, maxBid: null }
   }
 
   const bid = openingBid || justValue || 0
   if (bid <= 0) {
-    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2)))', ratio: null, maxBid }
+    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2))', ratio: null, maxBid }
   }
 
   const ratio = Math.round((maxBid / bid) * 100)

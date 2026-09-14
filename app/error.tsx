@@ -39,7 +39,7 @@ export default function Error({
         alignItems: 'center',
         justifyContent: 'center',
         background: 'rgb(var(--zw-page))',
-        color: '#e2e8f0',
+        color: 'rgb(var(--zw-ink))',
         fontFamily: 'Inter, system-ui, sans-serif',
         padding: '2rem',
       }}
@@ -48,14 +48,14 @@ export default function Error({
         <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: 'rgb(var(--zw-brand))' }}>
           ZoneWise.AI
         </h1>
-        <p style={{ color: 'rgb(var(--zw-ink2)))', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+        <p style={{ color: 'rgb(var(--zw-ink2))', marginBottom: '1.5rem', lineHeight: 1.6 }}>
           Something didn&apos;t load correctly. Refresh to try again.
         </p>
         <button
           onClick={() => reset()}
           style={{
-            background: 'rgb(var(--zw-elev))',
-            color: '#ffffff',
+            background: 'rgb(var(--zw-brand))',
+            color: 'rgb(var(--zw-brand-ink))',
             border: 'none',
             padding: '0.625rem 1.25rem',
             borderRadius: '0.5rem',

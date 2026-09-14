@@ -13,7 +13,7 @@ const THREAT_STYLES: Record<ThreatLevel, { bg: string; border: string; text: str
   CRITICAL: { bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.4)',  text: '#F87171' },
   HIGH:     { bg: 'rgb(var(--zw-brand) / 0.15)', border: 'rgb(var(--zw-brand) / 0.4)', text: 'rgb(var(--zw-brand))' },
   MEDIUM:   { bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', text: '#FBBF24' },
-  LOW:      { bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)', text: 'rgb(var(--zw-ink2)))' },
+  LOW:      { bg: 'rgba(148,163,184,0.12)', border: 'rgba(148,163,184,0.3)', text: 'rgb(var(--zw-ink2))' },
 }
 
 export function ThreatBadge({ threat, className = '' }: Props) {

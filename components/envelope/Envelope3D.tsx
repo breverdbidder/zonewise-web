@@ -4,8 +4,8 @@ import { useEffect, useRef, useMemo } from 'react'
 import * as THREE from 'three'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
 
-const SLATE = 'rgb(var(--zw-page))'
-const ORANGE = 'rgb(var(--zw-brand))'
+// THREE.Color cannot parse CSS var() - resolve the theme var to rgb() first.
+const zwPageTriplet = () => getComputedStyle(document.documentElement).getPropertyValue('--zw-page').trim().split(/\s+/).join(',')
 
 export interface Envelope3DProps {
   lotW: number
@@ -47,8 +47,9 @@ export function Envelope3D({ lotW, lotD, front, side, rear, maxH, maxCov, far, w
     if (!canvas || width < 10) return
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color(SLATE)
-    scene.fog = new THREE.FogExp2(SLATE, 0.003)
+    const pageColor = `rgb(${zwPageTriplet()})`
+    scene.background = new THREE.Color(pageColor)
+    scene.fog = new THREE.FogExp2(pageColor, 0.003)
     const camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000)
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
     renderer.setSize(width, height)

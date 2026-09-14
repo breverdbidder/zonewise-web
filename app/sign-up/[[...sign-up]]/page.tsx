@@ -10,7 +10,7 @@ export default function SignUpCatchAllPage() {
             <div style={{ width: '40px', height: '40px', backgroundColor: 'rgb(var(--zw-elev))', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '20px' }}>Z</span>
             </div>
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#f8fafc' }}>ZoneWise<span style={{ color: 'rgb(var(--zw-brand))' }}>.AI</span></span>
+            <span style={{ fontSize: '24px', fontWeight: 'bold', color: 'rgb(var(--zw-ink))' }}>ZoneWise<span style={{ color: 'rgb(var(--zw-brand))' }}>.AI</span></span>
           </Link>
         </div>
         <SignUp fallbackRedirectUrl="/onboarding/sms-consent" signInUrl="/sign-in" />

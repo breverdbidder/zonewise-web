@@ -59,7 +59,7 @@ export function CurtainReveal({
       <div className="sticky top-0 min-h-dvh overflow-hidden flex items-center justify-center">
         {/* Content behind curtain */}
         <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center text-center p-10"
-          style={{ background: "linear-gradient(135deg, rgb(var(--zw-card)), rgb(var(--zw-page)))" }}>
+          style={{ background: "linear-gradient(135deg, rgb(var(--zw-card)), rgb(var(--zw-page))" }}>
           {children ?? (
             <>
               <h3 className="text-3xl md:text-5xl font-semibold text-[rgb(var(--zw-ink))] mb-3" style={{ letterSpacing: "-0.02em" }}>

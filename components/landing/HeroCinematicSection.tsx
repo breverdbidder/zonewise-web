@@ -26,7 +26,7 @@ const SLIDES = [
   {
     // Wide Florida peninsula — warm clusters in SE
     gradient:
-      'radial-gradient(ellipse 60% 50% at 65% 55%, rgb(var(--zw-brand) / 0.35) 0%, rgb(var(--zw-border2) / 0.6) 40%, rgb(var(--zw-page)) 80%)',
+      'radial-gradient(ellipse 60% 50% at 65% 55%, rgb(var(--zw-brand)/0.35) 0%, rgb(var(--zw-border2) / 0.6) 40%, rgb(var(--zw-page)) 80%)',
     scaleFrom: 1,
     scaleTo: 1.15,
     xFrom: '0%',

@@ -107,13 +107,13 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
               </span>
             </div>
             <h1 style={{ fontSize: 34, fontWeight: 700, lineHeight: 1.15, margin: 0, color: '#F8FAFC' }}>{addrLine}</h1>
-            <div style={{ fontSize: 14, color: 'rgb(var(--zw-ink2)))', marginTop: 8 }}>
+            <div style={{ fontSize: 14, color: 'rgb(var(--zw-ink2))', marginTop: 8 }}>
               {card.county} County, FL · PIN {card.pin}
             </div>
           </header>
 
           <section style={{ marginBottom: 32 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
               Question
             </div>
             <p style={{ fontSize: 19, lineHeight: 1.5, color: '#CBD5E1', margin: '0 0 28px' }}>{card.question}</p>
@@ -123,10 +123,10 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
               border: '1px solid rgb(var(--zw-border2) / 0.5)', borderRadius: 12, padding: '24px 28px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2))', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   AI Analysis
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: 'rgb(var(--zw-brand-ink)))' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: 'rgb(var(--zw-brand-ink))' }}>
                   {confidence}
                 </span>
               </div>
@@ -138,7 +138,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
 
           {card.citations.length > 0 && (
             <section style={{ marginBottom: 40 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
                 Sources
               </div>
               <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -147,7 +147,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
                     <span style={{ fontSize: 11, fontWeight: 700, color: 'rgb(var(--zw-brand))', minWidth: 20 }}>[{i + 1}]</span>
                     <div style={{ flex: 1, fontSize: 14, color: '#CBD5E1' }}>
                       <strong style={{ color: '#F1F5F9' }}>{c.source}</strong>
-                      {c.section && <span style={{ color: 'rgb(var(--zw-ink2)))' }}> — {c.section}</span>}
+                      {c.section && <span style={{ color: 'rgb(var(--zw-ink2))' }}> — {c.section}</span>}
                       {c.url && (
                         <a href={c.url} target="_blank" rel="noopener nofollow" style={{ color: 'rgb(var(--zw-brand))', textDecoration: 'none', marginLeft: 8, fontSize: 13 }}>
                           view →
@@ -171,7 +171,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </p>
             <a href={signupHref}
                style={{
-                 display: 'inline-block', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))',
+                 display: 'inline-block', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink))',
                  fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 8,
                  textDecoration: 'none', letterSpacing: '0.02em',
                }}>
@@ -179,7 +179,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </a>
           </section>
 
-          <footer style={{ fontSize: 12, color: 'rgb(var(--zw-ink2)))', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgb(var(--zw-border2) / 0.3)' }}>
+          <footer style={{ fontSize: 12, color: 'rgb(var(--zw-ink2))', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgb(var(--zw-border2) / 0.3)' }}>
             <span>Viewed {card.view_count.toLocaleString()} times · Shared {card.shared_count}</span>
             <span>Generated {new Date(card.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </footer>

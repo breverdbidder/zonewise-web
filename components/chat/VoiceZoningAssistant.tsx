@@ -340,7 +340,7 @@ export default function VoiceZoningAssistant() {
   const isLive = status === 'listening' || status === 'connecting' || status === 'requesting-mic'
 
   return (
-    <div className="mx-4 mt-3 rounded-2xl border-2 border-[rgb(var(--zw-brand))] bg-gradient-to-br from-[rgb(var(--zw-elev))] via-[rgb(var(--zw-elev))] to-[rgb(var(--zw-page))] p-6 shadow-[0_0_40px_rgb(var(--zw-brand) / 0.15)]">
+    <div className="mx-4 mt-3 rounded-2xl border-2 border-[rgb(var(--zw-brand))] bg-gradient-to-br from-[rgb(var(--zw-elev))] via-[rgb(var(--zw-elev))] to-[rgb(var(--zw-page))] p-6 shadow-[0_0_40px_rgb(var(--zw-brand)/0.15)]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">

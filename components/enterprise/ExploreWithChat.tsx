@@ -136,7 +136,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: ORANGE }} />
           <span className="text-sm font-semibold text-[rgb(var(--zw-ink))]">ZoneWise Chat</span>
           {selectedParcel && (
-            <span className="ml-auto text-[10px] px-2 py-0.5 rounded truncate max-w-[140px]" style={{ background: `${NAVY}cc`, color: ORANGE }}>
+            <span className="ml-auto text-[10px] px-2 py-0.5 rounded truncate max-w-[140px]" style={{ background: 'rgb(var(--zw-elev) / 0.8)', color: ORANGE }}>
               {selectedParcel.address}
             </span>
           )}
@@ -169,8 +169,8 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
               <div
                 className="max-w-[90%] px-3 py-2 rounded-xl text-xs leading-relaxed"
                 style={{
-                  background: m.role === 'user' ? NAVY : 'rgb(var(--zw-card))',
-                  color: '#f8fafc',
+                  background: m.role === 'user' ? 'rgb(var(--zw-brand))' : 'rgb(var(--zw-card))',
+                  color: m.role === 'user' ? '#ffffff' : 'rgb(var(--zw-ink))',
                   borderRadius: m.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                 }}
               >

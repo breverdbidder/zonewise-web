@@ -36,7 +36,7 @@ export default function BetaOverlay({
               type="button"
               onClick={() => setDismissed(true)}
               className="text-[11px] font-medium px-4 py-1.5 rounded-full transition-colors cursor-pointer border-none"
-              style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))' }}
+              style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink))' }}
             >
               Show data anyway
             </button>
