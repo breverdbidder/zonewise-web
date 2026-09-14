@@ -161,7 +161,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
           placeholder="Search county..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-[180px] max-w-xs bg-white/5 border border-input rounded-lg px-3 py-2 text-sm text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-colors"
+          className="flex-1 min-w-[180px] max-w-xs min-h-11 bg-white/5 border border-input rounded-lg px-3 py-2 text-sm text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-colors"
         />
 
         {/* Region filter */}
@@ -170,7 +170,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
             <button
               key={r}
               onClick={() => setRegion(r)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize ${
+              className={`px-3 min-h-11 inline-flex items-center rounded-lg text-xs font-medium transition-colors capitalize ${
                 region === r
                   ? 'bg-amber-500 text-[rgb(var(--zw-ink))]'
                   : 'bg-white/5 text-[rgb(var(--zw-ink2))] hover:bg-white/10 hover:text-[rgb(var(--zw-ink))] border border-input'
@@ -185,7 +185,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
         <select
           value={sort}
           onChange={e => setSort(e.target.value as SortKey)}
-          className="bg-white/5 border border-input rounded-lg px-3 py-2 text-xs text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 cursor-pointer"
+          className="min-h-11 bg-white/5 border border-input rounded-lg px-3 py-2 text-xs text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 cursor-pointer"
         >
           <option value="alpha">A–Z</option>
           <option value="population">Population</option>
