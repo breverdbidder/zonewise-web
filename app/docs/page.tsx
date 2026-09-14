@@ -32,9 +32,9 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 function EndpointBadge({ method }: { method: 'GET' | 'POST' | 'DELETE' }) {
   const colors = {
-    GET: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    POST: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-    DELETE: 'bg-red-500/15 text-red-400 border-red-500/30',
+    GET: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-400',
+    POST: 'bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-400',
+    DELETE: 'bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-400',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-mono font-bold border ${colors[method]}`}>
@@ -61,7 +61,7 @@ export default function DocsPage() {
           <Link href="/explorer" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Explorer</Link>
           <Link href="/pricing" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Pricing</Link>
           <Link href="/help" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Help</Link>
-          <Link href="/sign-up" className="bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] px-3 sm:px-4 min-h-11 inline-flex items-center rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
+          <Link href="/sign-up" className="bg-[rgb(var(--zw-brand))] text-white dark:text-[#0A2540] px-3 sm:px-4 min-h-11 inline-flex items-center rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
             Get API Key
           </Link>
         </div>
@@ -120,7 +120,7 @@ export default function DocsPage() {
               ))}
             </div>
             <p className="text-[rgb(var(--zw-ink2))] text-sm leading-relaxed">
-              All API responses include standard HTTP status codes. Successful responses return <code className="text-[rgb(var(--zw-brand))] bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">200 OK</code> with a JSON body. Errors return <code className="text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">4xx</code> or <code className="text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">5xx</code> codes with a structured error body.
+              All API responses include standard HTTP status codes. Successful responses return <code className="text-[rgb(var(--zw-brand))] bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">200 OK</code> with a JSON body. Errors return <code className="text-red-600 dark:text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">4xx</code> or <code className="text-red-600 dark:text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">5xx</code> codes with a structured error body.
             </p>
           </Section>
 
@@ -131,7 +131,7 @@ export default function DocsPage() {
               <Link href="/sign-up" className="text-[rgb(var(--zw-brand))] hover:underline">account dashboard</Link>.
             </p>
             <CodeBlock lang="http" code={`Authorization: Bearer zw_live_xxxxxxxxxxxxxxxxxxxx`} />
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-200">
               <strong>Keep your API key secret.</strong> Never expose it in client-side code or public repositories. Use environment variables on your server.
             </div>
           </Section>
@@ -249,7 +249,7 @@ export default function DocsPage() {
               </table>
             </div>
             <p className="text-[rgb(var(--zw-ink2))] text-xs mt-4">
-              When rate limited, the API returns <code className="text-red-400">429 Too Many Requests</code> with a <code className="text-[rgb(var(--zw-ink2))]">Retry-After</code> header.
+              When rate limited, the API returns <code className="text-red-600 dark:text-red-400">429 Too Many Requests</code> with a <code className="text-[rgb(var(--zw-ink2))]">Retry-After</code> header.
             </p>
           </Section>
 
@@ -347,7 +347,7 @@ console.log(answer.content)`} />
               ].map(err => (
                 <div key={err.code} className="flex items-start gap-4 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
                   <code className={`text-sm font-mono font-bold shrink-0 ${
-                    err.code.startsWith('4') ? 'text-amber-400' : 'text-red-400'
+                    err.code.startsWith('4') ? 'text-amber-700 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
                   }`}>{err.code}</code>
                   <div>
                     <div className="text-sm font-semibold text-[rgb(var(--zw-ink))] mb-0.5">{err.label}</div>
