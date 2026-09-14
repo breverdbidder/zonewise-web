@@ -66,35 +66,35 @@ export default function KPIsPage() {
   const categoryCount = new Set(kpis.map(k => k.category)).size
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020617', color: '#F1F5F9' }}>
+    <div style={{ minHeight: '100vh', background: '#0B1119', color: '#F1F5F9' }}>
 
       {/* Header */}
       <header style={{ borderBottom: '1px solid #1E293B', position: 'sticky', top: 0, background: 'rgba(2,6,23,.97)', backdropFilter: 'blur(8px)', zIndex: 50 }}>
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px 24px', minHeight: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-            <div style={{ width: 32, height: 32, background: '#1E3A5F', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+            <div style={{ width: 32, height: 32, background: '#1B2737', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16 }}>Z</span>
-              <div style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, background: '#F59E0B', borderRadius: '50%' }} />
+              <div style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, background: '#1A90FF', borderRadius: '50%' }} />
             </div>
             <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 18 }}>ZoneWise.AI</span>
           </Link>
           <nav style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
             <Link href="/#how" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>How It Works</Link>
-            <span style={{ color: '#F59E0B', fontWeight: 600, fontSize: 14 }}>298 KPIs</span>
+            <span style={{ color: '#1A90FF', fontWeight: 600, fontSize: 14 }}>298 KPIs</span>
             <Link href="/#pricing" style={{ color: '#94A3B8', textDecoration: 'none', fontSize: 14 }}>Pricing</Link>
-            <a href="/#beta-signup" style={{ background: '#F59E0B', color: '#020617', padding: '8px 18px', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>Join the Beta</a>
+            <a href="/#beta-signup" style={{ background: '#1A90FF', color: '#0B1119', padding: '8px 18px', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>Join the Beta</a>
           </nav>
         </div>
       </header>
 
       {/* Hero */}
-      <section style={{ padding: '64px 24px 48px', background: 'linear-gradient(180deg, #0F172A 0%, #020617 100%)' }}>
+      <section style={{ padding: '64px 24px 48px', background: 'linear-gradient(180deg, #0F172A 0%, #0B1119 100%)' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#F59E0B', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 12 }}>The ZoneWise Advantage</p>
+          <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#1A90FF', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 12 }}>The ZoneWise Advantage</p>
           <h1 style={{ fontSize: 'clamp(32px,5vw,56px)', fontWeight: 800, lineHeight: 1.06, letterSpacing: '-.03em', marginBottom: 20, color: '#F1F5F9' }}>
             {totalKPIs || 298} KPIs.<br />
-            <span style={{ color: '#1E3A5F' }}>{categoryCount || 17} Categories.</span><br />
-            <span style={{ color: '#F59E0B' }}>3x PropertyOnion.</span>
+            <span style={{ color: '#1B2737' }}>{categoryCount || 17} Categories.</span><br />
+            <span style={{ color: '#1A90FF' }}>3x PropertyOnion.</span>
           </h1>
           <p style={{ fontSize: 17, color: '#94A3B8', maxWidth: 560, margin: '0 auto', lineHeight: 1.72 }}>
             The most comprehensive real estate intelligence framework in Florida. Every metric an investor needs — from zoning setbacks to ML predictions.
@@ -103,7 +103,7 @@ export default function KPIsPage() {
       </section>
 
       {/* Stats Bar */}
-      <section style={{ background: '#1E3A5F', padding: '20px 24px' }}>
+      <section style={{ background: '#1B2737', padding: '20px 24px' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 24, textAlign: 'center' }}>
           {[
             { v: totalKPIs || 298,         label: 'Total KPIs' },
@@ -112,7 +112,7 @@ export default function KPIsPage() {
             { v: '3x',                       label: 'vs PropertyOnion' },
           ].map(s => (
             <div key={s.label}>
-              <p style={{ fontSize: 36, fontWeight: 800, color: '#F59E0B', margin: 0 }}>{s.v}</p>
+              <p style={{ fontSize: 36, fontWeight: 800, color: '#1A90FF', margin: 0 }}>{s.v}</p>
               <p style={{ color: '#94A3B8', fontSize: 13, margin: '4px 0 0' }}>{s.label}</p>
             </div>
           ))}
@@ -125,7 +125,7 @@ export default function KPIsPage() {
 
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '96px 0' }}>
-              <div style={{ width: 48, height: 48, border: '4px solid rgba(245,158,11,.2)', borderTopColor: '#F59E0B', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }} />
+              <div style={{ width: 48, height: 48, border: '4px solid rgba(245,158,11,.2)', borderTopColor: '#1A90FF', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }} />
               <style>{`@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
               <p style={{ fontSize: 16, color: '#64748B' }}>Loading {totalKPIs || 298} KPIs...</p>
             </div>
@@ -142,7 +142,7 @@ export default function KPIsPage() {
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         style={{
-                          width: '100%', padding: '10px 14px', background: '#020617',
+                          width: '100%', padding: '10px 14px', background: '#0B1119',
                           border: '1px solid #1E293B', borderRadius: 8, color: '#F1F5F9',
                           fontSize: 14, outline: 'none', boxSizing: 'border-box',
                         }}
@@ -153,7 +153,7 @@ export default function KPIsPage() {
                         type="checkbox"
                         checked={showExclusiveOnly}
                         onChange={e => setShowExclusiveOnly(e.target.checked)}
-                        style={{ width: 16, height: 16, accentColor: '#F59E0B' }}
+                        style={{ width: 16, height: 16, accentColor: '#1A90FF' }}
                       />
                       <span style={{ fontSize: 14, color: '#94A3B8' }}>Exclusive only</span>
                     </label>
@@ -166,8 +166,8 @@ export default function KPIsPage() {
                         style={{
                           padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                           cursor: 'pointer', transition: 'all .2s',
-                          background: selectedCategory === cat ? '#F59E0B' : '#1E293B',
-                          color: selectedCategory === cat ? '#020617' : '#94A3B8',
+                          background: selectedCategory === cat ? '#1A90FF' : '#1E293B',
+                          color: selectedCategory === cat ? '#0B1119' : '#94A3B8',
                           border: selectedCategory === cat ? 'none' : '1px solid #334155',
                         }}
                       >
@@ -208,7 +208,7 @@ export default function KPIsPage() {
                         return (
                           <tr key={kpi.kpi_code} style={{ borderTop: '1px solid #1E293B', background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.015)' }}>
                             <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                              <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>{kpi.kpi_code}</span>
+                              <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: '#1A90FF' }}>{kpi.kpi_code}</span>
                             </td>
                             <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, color: '#F1F5F9' }}>{kpi.kpi_name}</td>
                             <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
@@ -218,7 +218,7 @@ export default function KPIsPage() {
                             <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748B', whiteSpace: 'nowrap' }}>{kpi.data_source ?? '—'}</td>
                             <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                               {kpi.is_exclusive ? (
-                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(245,158,11,.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,.2)' }}>ZW Exclusive</span>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, background: 'rgba(245,158,11,.12)', color: '#1A90FF', border: '1px solid rgba(245,158,11,.2)' }}>ZW Exclusive</span>
                               ) : (
                                 <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 500, background: '#1E293B', color: '#64748B' }}>Shared</span>
                               )}
@@ -236,7 +236,7 @@ export default function KPIsPage() {
                   <p style={{ fontSize: 16, marginBottom: 8 }}>No KPIs match your filters</p>
                   <button
                     onClick={() => { setSearchTerm(''); setSelectedCategory('All'); setShowExclusiveOnly(false) }}
-                    style={{ color: '#F59E0B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}
+                    style={{ color: '#1A90FF', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}
                   >
                     Clear all filters
                   </button>
@@ -248,7 +248,7 @@ export default function KPIsPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '64px 24px', background: '#1E3A5F' }}>
+      <section style={{ padding: '64px 24px', background: '#1B2737' }}>
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 28, fontWeight: 800, color: '#F1F5F9', marginBottom: 12 }}>
             Get access to all {totalKPIs || 298} KPIs
@@ -256,18 +256,18 @@ export default function KPIsPage() {
           <p style={{ color: '#94A3B8', marginBottom: 32, lineHeight: 1.6, maxWidth: 480, margin: '0 auto 32px' }}>
             Join the beta and start making data-driven real estate decisions with the most comprehensive KPI framework in Florida.
           </p>
-          <a href="/#beta-signup" style={{ display: 'inline-block', background: '#F59E0B', color: '#020617', padding: '14px 32px', borderRadius: 10, fontWeight: 700, fontSize: 16, textDecoration: 'none' }}>
+          <a href="/#beta-signup" style={{ display: 'inline-block', background: '#1A90FF', color: '#0B1119', padding: '14px 32px', borderRadius: 10, fontWeight: 700, fontSize: 16, textDecoration: 'none' }}>
             Join the Beta
           </a>
         </div>
       </section>
 
       {/* Footer */}
-      <footer style={{ background: '#020617', borderTop: '1px solid #1E293B', padding: '32px 24px' }}>
+      <footer style={{ background: '#0B1119', borderTop: '1px solid #1E293B', padding: '32px 24px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 24, height: 24, background: '#1E3A5F', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 24, height: 24, background: '#1B2737', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 13 }}>Z</span>
               </div>
               <span style={{ color: '#F1F5F9', fontWeight: 600, fontSize: 14 }}>ZoneWise.AI</span>
