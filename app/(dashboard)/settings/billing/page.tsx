@@ -80,7 +80,7 @@ export default function BillingPage() {
           we never store card details.
         </p>
 
-        <div className="mt-8 rounded-lg border p-6" style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}>
+        <div className="mt-8 rounded-lg border p-6" style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}>
           <h2 className="text-sm font-semibold text-white">Manage subscription</h2>
           <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
             Update your card, change plan, download invoices, or cancel — all from the Stripe
@@ -88,7 +88,7 @@ export default function BillingPage() {
           </p>
           <Link
             href="/api/stripe/portal"
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#1A90FF] px-5 py-2.5 text-sm font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)]"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-[#1A90FF] px-5 py-2.5 text-sm font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(26,144,255,0.45)]"
           >
             Open billing portal <ExternalLink className="h-4 w-4" />
           </Link>
@@ -106,7 +106,7 @@ export default function BillingPage() {
             <div
               key={t.id}
               className="rounded-lg border p-5"
-              style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
+              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}
             >
               <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#1A90FF]">
                 {t.name}
@@ -121,7 +121,7 @@ export default function BillingPage() {
                   type="button"
                   disabled={loadingTier !== null}
                   onClick={() => handleSubscribe(t.id, t.priceId!)}
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#1A90FF] px-4 py-2 text-[13px] font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(245,158,11,0.45)] disabled:opacity-60"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#1A90FF] px-4 py-2 text-[13px] font-bold text-[#160900] transition-shadow hover:shadow-[0_0_24px_rgba(26,144,255,0.45)] disabled:opacity-60"
                 >
                   {loadingTier === t.id ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -134,7 +134,7 @@ export default function BillingPage() {
           ))}
         </div>
 
-        <div className="mt-4 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,0.28)' }}>
+        <div className="mt-4 rounded-lg border p-5" style={{ background: '#0d1829', borderColor: 'rgba(26,144,255,0.28)' }}>
           <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#1A90FF]">Enterprise</div>
           <div className="mt-1 text-lg font-bold text-white">Custom</div>
           <p className="mt-2 text-[13px] text-slate-400">
