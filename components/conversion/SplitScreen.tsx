@@ -29,7 +29,7 @@ function SplitScreenInner({ left, right }: SplitScreenInnerProps) {
         </ResizablePanel>
         <ResizableHandle
           withHandle
-          className="bg-[rgba(245,158,11,0.15)] hover:bg-[#F59E0B] data-[resize-handle-active]:bg-[#F59E0B] transition-colors w-[4px]"
+          className="bg-[rgba(245,158,11,0.15)] hover:bg-[#1A90FF] data-[resize-handle-active]:bg-[#1A90FF] transition-colors w-[4px]"
         />
         <ResizablePanel defaultSize={40} minSize={30} maxSize={70}>
           <div className="h-full overflow-auto">{right}</div>
