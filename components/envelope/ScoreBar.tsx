@@ -1,5 +1,5 @@
 const GREEN = '#22c55e'
-const ORANGE = '#F59E0B'
+const ORANGE = '#1A90FF'
 const RED = '#ef4444'
 
 export interface ScoreBarProps {
