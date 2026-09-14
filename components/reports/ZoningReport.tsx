@@ -187,12 +187,12 @@ function Section({
         aria-expanded={open}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#1E3A5F]/10 dark:bg-[#1E3A5F]/20 flex items-center justify-center flex-shrink-0">
-            <Icon className="w-4 h-4 text-[#1E3A5F] dark:text-[#F59E0B]" />
+          <div className="w-8 h-8 rounded-lg bg-[#1B2737]/10 dark:bg-[#1B2737]/20 flex items-center justify-center flex-shrink-0">
+            <Icon className="w-4 h-4 text-[#1B2737] dark:text-[#1A90FF]" />
           </div>
           <span className="font-semibold text-gray-900 dark:text-white text-sm">{title}</span>
           {badge && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#F59E0B]/15 text-[#F59E0B] font-medium">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#1A90FF]/15 text-[#1A90FF] font-medium">
               {badge}
             </span>
           )}
@@ -279,7 +279,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
       {/* ── Print header ─────────────────────────────────────────────────── */}
       <div className="hidden print:flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
         <div>
-          <p className="text-lg font-bold text-[#1E3A5F]">ZoneWise.AI</p>
+          <p className="text-lg font-bold text-[#1B2737]">ZoneWise.AI</p>
           <p className="text-xs text-gray-500">Property Zoning Report</p>
         </div>
         <p className="text-xs text-gray-400">Report Prepared On: {fmtDate(data.generated_at)}</p>
@@ -317,7 +317,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
             <div className="flex gap-2 print:hidden flex-shrink-0">
               <button
                 onClick={handleDownloadPdf}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1E3A5F] text-[#1E3A5F] dark:border-[#F59E0B] dark:text-[#F59E0B] text-xs font-medium hover:bg-[#1E3A5F]/5 dark:hover:bg-[#F59E0B]/5 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1B2737] text-[#1B2737] dark:border-[#1A90FF] dark:text-[#1A90FF] text-xs font-medium hover:bg-[#1B2737]/5 dark:hover:bg-[#1A90FF]/5 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download PDF
@@ -333,7 +333,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#1E3A5F]/10 dark:bg-[#1E3A5F]/20 text-[#1E3A5F] dark:text-blue-300 font-medium">
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[#1B2737]/10 dark:bg-[#1B2737]/20 text-[#1B2737] dark:text-blue-300 font-medium">
               <MapPin className="w-3 h-3" />
               {zi.zone_code}
             </span>
@@ -362,7 +362,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
       {/* ── Section 8: AI Analysis (first — most valuable) ────────────────── */}
       <Section id="ai-analysis" icon={Brain} title="AI Zoning Analysis" badge="ZoneWise Advantage" defaultOpen={true}>
         <div className="space-y-3">
-          <div className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap bg-[#1E3A5F]/3 dark:bg-slate-800/60 rounded-lg p-4">
+          <div className="text-sm text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap bg-[#1B2737]/3 dark:bg-slate-800/60 rounded-lg p-4">
             {ai.summary}
           </div>
           <p className="text-xs text-gray-400 dark:text-slate-500 flex items-center gap-1">
@@ -432,7 +432,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
                 href={zi.code_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-[#F59E0B] hover:underline flex items-center gap-1"
+                className="text-sm text-[#1A90FF] hover:underline flex items-center gap-1"
               >
                 View Code <ExternalLink className="w-3 h-3" />
               </a>
@@ -567,7 +567,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
             <p className="text-sm text-gray-600 dark:text-slate-300 mb-3">{mp.description}</p>
             <a
               href={mp.interactive_url}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white text-sm font-medium transition-colors print:hidden"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B2737] hover:bg-[#1B2737]/80 text-white text-sm font-medium transition-colors print:hidden"
             >
               <Box className="w-4 h-4" />
               Open Interactive 3D Model
@@ -580,8 +580,8 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
               <img src={mp.static_preview_url} alt="3D massing preview" className="w-full h-full object-cover" />
             </div>
           ) : (
-            <div className="w-full sm:w-48 h-36 rounded-lg bg-[#1E3A5F]/10 dark:bg-slate-800 flex flex-col items-center justify-center gap-2">
-              <Box className="w-10 h-10 text-[#1E3A5F]/40 dark:text-slate-500" />
+            <div className="w-full sm:w-48 h-36 rounded-lg bg-[#1B2737]/10 dark:bg-slate-800 flex flex-col items-center justify-center gap-2">
+              <Box className="w-10 h-10 text-[#1B2737]/40 dark:text-slate-500" />
               <span className="text-xs text-gray-400 dark:text-slate-500 text-center px-2">
                 3D preview available in interactive mode
               </span>
@@ -593,7 +593,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
       {/* ── Section 11: ML Risk Score ─────────────────────────────────────── */}
       <Section id="ml-risk-score" icon={BarChart3} title="ML Risk Score" badge="Coming Soon" defaultOpen={false}>
         <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-800/60 rounded-lg p-4">
-          <AlertCircle className="w-5 h-5 text-[#F59E0B] flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-[#1A90FF] flex-shrink-0" />
           <div>
             <p className="font-medium text-gray-700 dark:text-slate-300">BidDeed.AI Integration</p>
             <p className="text-xs mt-0.5">Purchase probability, foreclosure risk indicators, and market trend analysis coming soon.</p>
@@ -631,7 +631,7 @@ export default function ZoningReport({ data }: { data: ZoningReportData }) {
                 href={`https://maps.brevardfl.gov/?parcel=${encodeURIComponent(lot.parcel_id)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#F59E0B] hover:underline flex items-center gap-1"
+                className="text-xs text-[#1A90FF] hover:underline flex items-center gap-1"
               >
                 View on Brevard GIS <ExternalLink className="w-3 h-3" />
               </a>
