@@ -26,7 +26,7 @@ const SLIDES = [
   {
     // Wide Florida peninsula — warm clusters in SE
     gradient:
-      'radial-gradient(ellipse 60% 50% at 65% 55%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #020617 80%)',
+      'radial-gradient(ellipse 60% 50% at 65% 55%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.15,
     xFrom: '0%',
@@ -37,7 +37,7 @@ const SLIDES = [
   {
     // Central FL hotspot — orange glow radiating from center
     gradient:
-      'radial-gradient(ellipse 45% 45% at 50% 45%, rgba(245,158,11,0.4) 0%, rgba(245,158,11,0.1) 25%, rgba(30,58,95,0.5) 50%, #020617 85%)',
+      'radial-gradient(ellipse 45% 45% at 50% 45%, rgba(245,158,11,0.4) 0%, rgba(245,158,11,0.1) 25%, rgba(30,58,95,0.5) 50%, #0B1119 85%)',
     scaleFrom: 1.05,
     scaleTo: 1.2,
     xFrom: '2%',
@@ -48,7 +48,7 @@ const SLIDES = [
   {
     // Brevard County focus — tight cluster on east coast
     gradient:
-      'radial-gradient(ellipse 35% 40% at 70% 40%, rgba(245,158,11,0.45) 0%, rgba(30,58,95,0.7) 35%, #020617 75%)',
+      'radial-gradient(ellipse 35% 40% at 70% 40%, rgba(245,158,11,0.45) 0%, rgba(30,58,95,0.7) 35%, #0B1119 75%)',
     scaleFrom: 1.1,
     scaleTo: 1.25,
     xFrom: '-2%',
@@ -59,7 +59,7 @@ const SLIDES = [
   {
     // South Florida spread — Miami-Dade corridor
     gradient:
-      'radial-gradient(ellipse 50% 55% at 55% 65%, rgba(245,158,11,0.3) 0%, rgba(245,158,11,0.15) 20%, rgba(30,58,95,0.55) 45%, #020617 80%)',
+      'radial-gradient(ellipse 50% 55% at 55% 65%, rgba(245,158,11,0.3) 0%, rgba(245,158,11,0.15) 20%, rgba(30,58,95,0.55) 45%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.18,
     xFrom: '1%',
@@ -70,7 +70,7 @@ const SLIDES = [
   {
     // Panhandle sweep — northwest FL
     gradient:
-      'radial-gradient(ellipse 55% 35% at 35% 35%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #020617 80%)',
+      'radial-gradient(ellipse 55% 35% at 35% 35%, rgba(245,158,11,0.35) 0%, rgba(30,58,95,0.6) 40%, #0B1119 80%)',
     scaleFrom: 1.05,
     scaleTo: 1.15,
     xFrom: '-1%',
@@ -81,7 +81,7 @@ const SLIDES = [
   {
     // Multi-cluster — Tampa + Orlando dual glow
     gradient:
-      'radial-gradient(ellipse 30% 30% at 40% 45%, rgba(245,158,11,0.4) 0%, transparent 60%), radial-gradient(ellipse 30% 30% at 60% 50%, rgba(245,158,11,0.3) 0%, transparent 60%), radial-gradient(ellipse 80% 80% at 50% 50%, rgba(30,58,95,0.5) 0%, #020617 80%)',
+      'radial-gradient(ellipse 30% 30% at 40% 45%, rgba(245,158,11,0.4) 0%, transparent 60%), radial-gradient(ellipse 30% 30% at 60% 50%, rgba(245,158,11,0.3) 0%, transparent 60%), radial-gradient(ellipse 80% 80% at 50% 50%, rgba(30,58,95,0.5) 0%, #0B1119 80%)',
     scaleFrom: 1,
     scaleTo: 1.12,
     xFrom: '0%',
@@ -92,7 +92,7 @@ const SLIDES = [
   {
     // Northeast FL — Jacksonville area glow
     gradient:
-      'radial-gradient(ellipse 40% 40% at 65% 30%, rgba(245,158,11,0.38) 0%, rgba(30,58,95,0.65) 40%, #020617 78%)',
+      'radial-gradient(ellipse 40% 40% at 65% 30%, rgba(245,158,11,0.38) 0%, rgba(30,58,95,0.65) 40%, #0B1119 78%)',
     scaleFrom: 1.08,
     scaleTo: 1.22,
     xFrom: '2%',
@@ -103,7 +103,7 @@ const SLIDES = [
   {
     // Full state wide view — scattered heat
     gradient:
-      'radial-gradient(ellipse 25% 20% at 60% 40%, rgba(245,158,11,0.3) 0%, transparent 50%), radial-gradient(ellipse 20% 25% at 40% 60%, rgba(245,158,11,0.25) 0%, transparent 50%), radial-gradient(ellipse 20% 15% at 55% 70%, rgba(245,158,11,0.2) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, rgba(30,58,95,0.45) 0%, #020617 85%)',
+      'radial-gradient(ellipse 25% 20% at 60% 40%, rgba(245,158,11,0.3) 0%, transparent 50%), radial-gradient(ellipse 20% 25% at 40% 60%, rgba(245,158,11,0.25) 0%, transparent 50%), radial-gradient(ellipse 20% 15% at 55% 70%, rgba(245,158,11,0.2) 0%, transparent 50%), radial-gradient(ellipse 90% 90% at 50% 50%, rgba(30,58,95,0.45) 0%, #0B1119 85%)',
     scaleFrom: 1,
     scaleTo: 1.1,
     xFrom: '-1%',
@@ -190,7 +190,7 @@ export function HeroCinematicSection() {
   const slide = SLIDES[current]
 
   return (
-    <section className="relative overflow-x-hidden bg-[#020617]">
+    <section className="relative overflow-x-hidden bg-[#0B1119]">
       <div className="relative min-h-[85vh]">
         {/* Ken Burns animated background layers */}
         <AnimatePresence mode="sync">
@@ -226,7 +226,7 @@ export function HeroCinematicSection() {
           className="absolute inset-0 z-[1] pointer-events-none opacity-[0.06]"
           style={{
             backgroundImage:
-              'radial-gradient(circle, #F59E0B 0.8px, transparent 0.8px)',
+              'radial-gradient(circle, #1A90FF 0.8px, transparent 0.8px)',
             backgroundSize: '24px 24px',
           }}
         />
@@ -260,7 +260,7 @@ export function HeroCinematicSection() {
           className="absolute inset-0 z-10 pointer-events-none opacity-[0.02]"
           style={{
             backgroundImage:
-              'linear-gradient(#1E3A5F 1px, transparent 1px), linear-gradient(to right, #1E3A5F 1px, transparent 1px)',
+              'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
             backgroundSize: '64px 64px',
           }}
         />
@@ -275,7 +275,7 @@ export function HeroCinematicSection() {
             >
               <Badge
                 variant="outline"
-                className="mb-6 border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
+                className="mb-6 border-[#1A90FF]/30 bg-[#1A90FF]/10 text-[#1A90FF]"
               >
                 <Sparkles className="mr-1.5 h-3 w-3" />
                 Built by a developer with 20 years and hundreds of closings — not by a software company
@@ -292,7 +292,7 @@ export function HeroCinematicSection() {
               <br />
               Every zoning rule.
               <br />
-              <span className="text-[#F59E0B]">Feasibility in one search.</span>
+              <span className="text-[#1A90FF]">Feasibility in one search.</span>
             </motion.h1>
 
             <motion.div
@@ -326,7 +326,7 @@ export function HeroCinematicSection() {
             >
               <ParticleButton
                 particleType="confetti"
-                particleColor="#F59E0B"
+                particleColor="#1A90FF"
                 variant="primary"
                 className="px-8 py-3 text-base font-semibold"
                 onClick={() => {
@@ -361,7 +361,7 @@ export function HeroCinematicSection() {
               <span
                 className="block h-1.5 rounded-full transition-all duration-500"
                 style={{
-                  background: i === current ? '#F59E0B' : 'rgba(255,255,255,0.2)',
+                  background: i === current ? '#1A90FF' : 'rgba(255,255,255,0.2)',
                   width: i === current ? '24px' : '6px',
                 }}
               />
@@ -372,7 +372,7 @@ export function HeroCinematicSection() {
       </div>
 
       {/* Kinetic marquee band below hero */}
-      <div className="border-y border-[#1E3A5F]/40 bg-[#020617]">
+      <div className="border-y border-[#1B2737]/40 bg-[#0B1119]">
         <KineticMarquee
           items={HERO_MARQUEE_ITEMS}
           speed={0.45}
