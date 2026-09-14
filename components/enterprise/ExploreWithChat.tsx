@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import { DevIntelTab } from '@/components/envelope/DevIntelTab'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const NAVY = '#1E3A5F'
-const ORANGE = '#F59E0B'
-const SLATE = '#020617'
+const NAVY = '#1B2737'
+const ORANGE = '#1A90FF'
+const SLATE = '#0B1119'
 
 interface ChatMessage {
   id: string
