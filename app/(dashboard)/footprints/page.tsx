@@ -52,7 +52,7 @@ export default function FootprintsPage() {
             <div
               key={c.title}
               className="rounded-lg border p-5"
-              style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
+              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}
             >
               <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1B2737]">
                 <c.icon className="h-4 w-4 text-[#1A90FF]" />
@@ -65,7 +65,7 @@ export default function FootprintsPage() {
 
         <div
           className="mt-8 rounded-lg border p-5"
-          style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,0.28)' }}
+          style={{ background: '#0d1829', borderColor: 'rgba(26,144,255,0.28)' }}
         >
           <div className="mb-2 flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-[#1A90FF]" />
