@@ -44,7 +44,7 @@ export const DEFAULT_MAP_CENTER = MIAMI_DADE_CENTER
 
 export const ZONING_COLORS: Record<string, string> = {
   RU: '#22C55E', BU: '#3B82F6', TU: '#8B5CF6', IU: '#EF4444',
-  PUD: '#F59E0B', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
+  PUD: '#1A90FF', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
   ARR: '#84CC16', SP: '#F472B6',
 }
 
