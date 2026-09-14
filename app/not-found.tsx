@@ -12,7 +12,7 @@ export default function NotFound() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#020617',
+        background: '#0B1119',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -28,7 +28,7 @@ export default function NotFound() {
           style={{
             fontSize: '1rem',
             fontWeight: 700,
-            color: '#F59E0B',
+            color: '#1A90FF',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
             marginBottom: '0.5rem',
@@ -44,7 +44,7 @@ export default function NotFound() {
           fontSize: '8rem',
           fontWeight: 900,
           lineHeight: 1,
-          color: '#1E3A5F',
+          color: '#1B2737',
           marginBottom: '1.5rem',
           letterSpacing: '-0.04em',
         }}
@@ -89,8 +89,8 @@ export default function NotFound() {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '0.75rem 1.75rem',
-            background: '#F59E0B',
-            color: '#020617',
+            background: '#1A90FF',
+            color: '#0B1119',
             fontWeight: 700,
             fontSize: '0.95rem',
             borderRadius: '0.5rem',
@@ -105,7 +105,7 @@ export default function NotFound() {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '0.75rem 1.75rem',
-            background: '#1E3A5F',
+            background: '#1B2737',
             color: '#f1f5f9',
             fontWeight: 600,
             fontSize: '0.95rem',
