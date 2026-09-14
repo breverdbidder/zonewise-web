@@ -31,7 +31,7 @@ const CREDENTIALS = [
 
 export function OperatorSection() {
   return (
-    <section className="bg-[#020617] py-20 sm:py-28">
+    <section className="bg-[#0B1119] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
           {/* Argument */}
@@ -41,7 +41,7 @@ export function OperatorSection() {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6 }}
           >
-            <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]">
+            <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
               Why this exists
             </div>
 
@@ -75,7 +75,7 @@ export function OperatorSection() {
               href="https://everestcapitalusa.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-[#F59E0B]/50 hover:text-white"
+              className="mt-8 inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-[#1A90FF]/50 hover:text-white"
               style={{ borderColor: '#1E293B' }}
             >
               See the track record
@@ -94,7 +94,7 @@ export function OperatorSection() {
           >
             {CREDENTIALS.map((c) => (
               <div key={c.k} className="p-6" style={{ background: '#0d1829' }}>
-                <div className="font-mono text-xl font-semibold tabular-nums text-[#F59E0B]">
+                <div className="font-mono text-xl font-semibold tabular-nums text-[#1A90FF]">
                   {c.k}
                 </div>
                 <p className="mt-2 text-[13px] leading-relaxed text-slate-400">{c.v}</p>
