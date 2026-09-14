@@ -78,7 +78,7 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backdropFilter: 'blur(6px)', background: 'rgba(2,6,23,0.80)' }}
+      style={{ backdropFilter: 'blur(6px)', background: 'rgba(11,17,25,0.80)' }}
       onClick={onClose}
     >
       <div
@@ -840,7 +840,7 @@ export default function ZoningChatbot() {
       {propertyCardLoading && (
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-          style={{ backdropFilter: 'blur(6px)', background: 'rgba(2,6,23,0.75)' }}
+          style={{ backdropFilter: 'blur(6px)', background: 'rgba(11,17,25,0.75)' }}
         >
           <div className="w-full sm:w-[560px] max-h-[85dvh] bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-t-2xl sm:rounded-2xl p-6 space-y-4 animate-pulse">
             <div className="h-44 bg-gray-100 dark:bg-slate-800 rounded-xl" />
