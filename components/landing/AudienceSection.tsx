@@ -33,7 +33,7 @@ const AUDIENCES = [
 
 export function AudienceSection() {
   return (
-    <section className="border-t border-slate-800 bg-[#020617] py-20 sm:py-28">
+    <section className="border-t border-slate-800 bg-[#0B1119] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -42,7 +42,7 @@ export function AudienceSection() {
           transition={{ duration: 0.6 }}
           className="mb-14 max-w-2xl"
         >
-          <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]">
+          <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
             One platform, two questions
           </div>
           <h2 className="text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl">
@@ -75,7 +75,7 @@ export function AudienceSection() {
               <ul className="space-y-4">
                 {a.points.map((p) => (
                   <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-slate-400">
-                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[#F59E0B]" />
+                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[#1A90FF]" />
                     <span>{p}</span>
                   </li>
                 ))}
