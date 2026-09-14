@@ -194,6 +194,14 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
           flex-wrap: wrap;
           gap: 0.25rem;
         }
+
+        /* A2 tap targets: FullCalendar's toolbar buttons render 39px tall;
+           WCAG 2.5.8 / 44px touch size on narrow viewports. */
+        @media (max-width: 767px) {
+          .zw-auction-calendar :global(.fc .fc-button) {
+            min-height: 44px;
+          }
+        }
         .zw-auction-calendar :global(.fc .fc-toolbar-title) {
           font-size: 1.05rem;
           line-height: 1.3;
