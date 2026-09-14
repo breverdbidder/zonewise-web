@@ -4,10 +4,10 @@
   "deployment": "Vercel → zonewise.ai",
   "last_updated": "2026-08-16",
   "brand": {
-    "primary": "#1E3A5F",
-    "accent": "#F59E0B",
+    "primary": "#1B2737",
+    "accent": "#1A90FF",
     "font": "Inter",
-    "background": "#020617"
+    "background": "#0B1119"
   },
   "workflows_active": 11,
   "workflows_dead_estimate": 0,
