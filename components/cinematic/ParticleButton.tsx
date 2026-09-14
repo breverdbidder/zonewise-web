@@ -104,8 +104,8 @@ export function ParticleButton({
   );
 
   const variantStyles: Record<string, string> = {
-    primary: "bg-[#1A90FF] text-[#0B1119] hover:bg-[#005EB8]",
-    outline: "bg-transparent border border-white/20 text-white hover:bg-white/10",
+    primary: "bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand-ink))] hover:bg-[#005EB8]",
+    outline: "bg-transparent border border-white/20 text-[rgb(var(--zw-ink))] hover:bg-white/10",
     danger: "bg-red-600 text-white hover:bg-red-700",
     success: "bg-green-600 text-white hover:bg-green-700",
   };

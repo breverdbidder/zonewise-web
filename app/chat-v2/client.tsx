@@ -160,8 +160,8 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <Loader2 className="mx-auto mb-3 size-10 animate-spin text-[#1A90FF]" />
-          <p className="text-sm text-[#94A3B8]">Looking up property data…</p>
+          <Loader2 className="mx-auto mb-3 size-10 animate-spin text-[rgb(var(--zw-brand))]" />
+          <p className="text-sm text-[rgb(var(--zw-ink2))]">Looking up property data…</p>
         </div>
       </div>
     );
@@ -171,9 +171,9 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="text-center">
-          <Search className="mx-auto mb-3 size-12 text-[#1A90FF] opacity-40" />
-          <p className="text-lg font-semibold text-white">Ask about any address</p>
-          <p className="mt-1 text-sm text-[#64748B]">
+          <Search className="mx-auto mb-3 size-12 text-[rgb(var(--zw-brand))] opacity-40" />
+          <p className="text-lg font-semibold text-[rgb(var(--zw-ink))]">Ask about any address</p>
+          <p className="mt-1 text-sm text-[rgb(var(--zw-ink2))]">
             Property details and zoning regulations will appear here
           </p>
         </div>
@@ -185,38 +185,38 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
     <div className="h-full overflow-y-auto p-4 space-y-4">
       {/* Property Details card */}
       {artifact.parcel && (
-        <div className="rounded-lg border border-[#1B2737]/40 bg-[#0D1B2E] p-4">
+        <div className="rounded-lg border border-[rgb(var(--zw-border2)/0.4)] bg-[#0D1B2E] p-4">
           <div className="mb-3 flex items-center gap-2">
-            <MapPin className="size-4 text-[#1A90FF]" />
-            <h3 className="font-semibold text-white">Property Details</h3>
+            <MapPin className="size-4 text-[rgb(var(--zw-brand))]" />
+            <h3 className="font-semibold text-[rgb(var(--zw-ink))]">Property Details</h3>
           </div>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="shrink-0 text-[#64748B]">Parcel ID</dt>
-              <dd className="truncate font-mono text-white">
+              <dt className="shrink-0 text-[rgb(var(--zw-ink2))]">Parcel ID</dt>
+              <dd className="truncate font-mono text-[rgb(var(--zw-ink))]">
                 {artifact.parcel.parcel_id}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="shrink-0 text-[#64748B]">Address</dt>
-              <dd className="text-right text-white">{artifact.parcel.address}</dd>
+              <dt className="shrink-0 text-[rgb(var(--zw-ink2))]">Address</dt>
+              <dd className="text-right text-[rgb(var(--zw-ink))]">{artifact.parcel.address}</dd>
             </div>
             {artifact.parcel.city && (
               <div className="flex justify-between gap-4">
-                <dt className="shrink-0 text-[#64748B]">City</dt>
-                <dd className="text-white">{artifact.parcel.city.trim()}</dd>
+                <dt className="shrink-0 text-[rgb(var(--zw-ink2))]">City</dt>
+                <dd className="text-[rgb(var(--zw-ink))]">{artifact.parcel.city.trim()}</dd>
               </div>
             )}
             {artifact.parcel.acres != null && (
               <div className="flex justify-between gap-4">
-                <dt className="shrink-0 text-[#64748B]">Acreage</dt>
-                <dd className="text-white">{artifact.parcel.acres} ac</dd>
+                <dt className="shrink-0 text-[rgb(var(--zw-ink2))]">Acreage</dt>
+                <dd className="text-[rgb(var(--zw-ink))]">{artifact.parcel.acres} ac</dd>
               </div>
             )}
             {artifact.parcel.use_description && (
               <div className="flex justify-between gap-4">
-                <dt className="shrink-0 text-[#64748B]">Use</dt>
-                <dd className="text-right text-white">
+                <dt className="shrink-0 text-[rgb(var(--zw-ink2))]">Use</dt>
+                <dd className="text-right text-[rgb(var(--zw-ink))]">
                   {artifact.parcel.use_description.trim()}
                 </dd>
               </div>
@@ -227,17 +227,17 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
 
       {/* Zoning card */}
       {artifact.zoning && (
-        <div className="rounded-lg border border-[#1B2737]/40 bg-[#0D1B2E] p-4">
+        <div className="rounded-lg border border-[rgb(var(--zw-border2)/0.4)] bg-[#0D1B2E] p-4">
           <div className="mb-3 flex items-center gap-2">
-            <Building2 className="size-4 text-[#1A90FF]" />
-            <h3 className="font-semibold text-white">Zoning</h3>
+            <Building2 className="size-4 text-[rgb(var(--zw-brand))]" />
+            <h3 className="font-semibold text-[rgb(var(--zw-ink))]">Zoning</h3>
           </div>
-          <div className="mb-4 rounded-md bg-[#1B2737]/30 p-3 text-center">
-            <span className="font-mono text-2xl font-bold text-[#1A90FF]">
+          <div className="mb-4 rounded-md bg-[rgb(var(--zw-elev)/0.3)] p-3 text-center">
+            <span className="font-mono text-2xl font-bold text-[rgb(var(--zw-brand))]">
               {artifact.zoning.zone_code}
             </span>
             {artifact.zoning.zone_name && (
-              <p className="mt-1 text-sm text-[#94A3B8]">
+              <p className="mt-1 text-sm text-[rgb(var(--zw-ink2))]">
                 {artifact.zoning.zone_name}
               </p>
             )}
@@ -246,46 +246,46 @@ function ArtifactPanel({ artifact }: { artifact: ArtifactState }) {
           {artifact.zoning.standards && (
             <>
               <div className="mb-2 flex items-center gap-2">
-                <Ruler className="size-3 text-[#64748B]" />
-                <span className="text-xs font-medium uppercase tracking-wide text-[#64748B]">
+                <Ruler className="size-3 text-[rgb(var(--zw-ink2))]" />
+                <span className="text-xs font-medium uppercase tracking-wide text-[rgb(var(--zw-ink2))]">
                   Development Standards
                 </span>
               </div>
               <dl className="space-y-2 text-sm">
                 {artifact.zoning.standards.max_height_ft != null && (
                   <div className="flex justify-between">
-                    <dt className="text-[#64748B]">Max Height</dt>
-                    <dd className="text-white">
+                    <dt className="text-[rgb(var(--zw-ink2))]">Max Height</dt>
+                    <dd className="text-[rgb(var(--zw-ink))]">
                       {artifact.zoning.standards.max_height_ft} ft
                     </dd>
                   </div>
                 )}
                 {artifact.zoning.standards.front_setback_ft != null && (
                   <div className="flex justify-between">
-                    <dt className="text-[#64748B]">Front Setback</dt>
-                    <dd className="text-white">
+                    <dt className="text-[rgb(var(--zw-ink2))]">Front Setback</dt>
+                    <dd className="text-[rgb(var(--zw-ink))]">
                       {artifact.zoning.standards.front_setback_ft} ft
                     </dd>
                   </div>
                 )}
                 {artifact.zoning.standards.max_lot_coverage_pct != null && (
                   <div className="flex justify-between">
-                    <dt className="text-[#64748B]">Max Lot Coverage</dt>
-                    <dd className="text-white">
+                    <dt className="text-[rgb(var(--zw-ink2))]">Max Lot Coverage</dt>
+                    <dd className="text-[rgb(var(--zw-ink))]">
                       {artifact.zoning.standards.max_lot_coverage_pct}%
                     </dd>
                   </div>
                 )}
                 {artifact.zoning.standards.max_far != null && (
                   <div className="flex justify-between">
-                    <dt className="text-[#64748B]">Max FAR</dt>
-                    <dd className="text-white">{artifact.zoning.standards.max_far}</dd>
+                    <dt className="text-[rgb(var(--zw-ink2))]">Max FAR</dt>
+                    <dd className="text-[rgb(var(--zw-ink))]">{artifact.zoning.standards.max_far}</dd>
                   </div>
                 )}
                 {artifact.zoning.standards.max_density_du_acre != null && (
                   <div className="flex justify-between">
-                    <dt className="text-[#64748B]">Max Density</dt>
-                    <dd className="text-white">
+                    <dt className="text-[rgb(var(--zw-ink2))]">Max Density</dt>
+                    <dd className="text-[rgb(var(--zw-ink))]">
                       {artifact.zoning.standards.max_density_du_acre} du/ac
                     </dd>
                   </div>
@@ -320,12 +320,12 @@ export default function ChatV2Client() {
           - Mobile (default): flex-col — chat top (60vh), artifact bottom (40vh)
           - Desktop (md+): flex-row — chat left 40%, artifact right 60%
         */}
-        <main className="flex h-dvh flex-col bg-[#0B1119] md:flex-row">
+        <main className="flex h-dvh flex-col bg-[rgb(var(--zw-page))] md:flex-row">
           {/* Chat panel */}
           <div
             className="
               flex min-h-0 flex-col
-              border-b border-[#1B2737]/30
+              border-b border-[rgb(var(--zw-border2)/0.3)]
               [height:60vh]
               md:h-full md:w-[40%] md:flex-none
               md:border-b-0 md:border-r

@@ -10,12 +10,12 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: 'light',
   toggleTheme: () => {}
 })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark')
+  const [theme, setTheme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -24,8 +24,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (saved === 'light' || saved === 'dark') {
       setTheme(saved)
       document.documentElement.classList.toggle('dark', saved === 'dark')
+      document.documentElement.dataset.theme = saved
     } else {
-      document.documentElement.classList.add('dark')
+      document.documentElement.classList.remove('dark')
+      document.documentElement.dataset.theme = 'light'
     }
   }, [])
 
@@ -34,6 +36,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(next)
     localStorage.setItem('zw-theme', next)
     document.documentElement.classList.toggle('dark', next === 'dark')
+    document.documentElement.dataset.theme = next
   }
 
   if (!mounted) return <>{children}</>

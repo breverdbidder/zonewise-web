@@ -64,7 +64,7 @@ function InfoRow({ label, value, mono, link }: { label: string; value: string | 
       <span className="text-sm text-gray-500 dark:text-slate-400 shrink-0 w-36">{label}</span>
       {link && display !== '—' ? (
         <a href={link} target="_blank" rel="noopener noreferrer"
-          className={`text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline text-right ${mono ? 'font-mono text-xs' : ''}`}>
+          className={`text-sm text-[rgb(var(--zw-ink2))] dark:text-zw-orange-400 hover:underline text-right ${mono ? 'font-mono text-xs' : ''}`}>
           {display} ↗
         </a>
       ) : (
@@ -118,7 +118,7 @@ export default function AuctionDetail({ auctionId }: Props) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-slate-400 text-sm">Loading auction...</p>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function AuctionDetail({ auctionId }: Props) {
           <p className="text-red-500 text-sm">{error || 'Auction not found'}</p>
           <button
             onClick={() => router.push('/auctions')}
-            className="text-sm text-zw-navy-500 hover:text-zw-navy-700 dark:text-zw-orange-400 dark:hover:text-zw-orange-300 underline"
+            className="text-sm text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] dark:text-zw-orange-400 dark:hover:text-[rgb(var(--zw-brand))] underline"
           >
             ← Back to Auctions
           </button>
@@ -159,7 +159,7 @@ export default function AuctionDetail({ auctionId }: Props) {
         <div>
           <button
             onClick={() => router.push('/auctions')}
-            className="text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 mb-3 flex items-center gap-1"
+            className="text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-[rgb(var(--zw-ink2))] mb-3 flex items-center gap-1"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -183,7 +183,7 @@ export default function AuctionDetail({ auctionId }: Props) {
 
             {auction.recommendation && auction.recommendation !== 'UNKNOWN' && (
               <span
-                className="px-2.5 py-1 text-xs font-bold rounded-full text-white shrink-0"
+                className="px-2.5 py-1 text-xs font-bold rounded-full text-[rgb(var(--zw-ink))] shrink-0"
                 style={{ backgroundColor: auction.recommendation_color }}
               >
                 {auction.recommendation}
@@ -343,7 +343,7 @@ export default function AuctionDetail({ auctionId }: Props) {
                 <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-3">Investment Score</p>
                 <div className="text-center mb-3">
                   <span
-                    className="inline-block px-4 py-2 rounded-lg text-xl font-bold text-white"
+                    className="inline-block px-4 py-2 rounded-lg text-xl font-bold text-[rgb(var(--zw-ink))]"
                     style={{ backgroundColor: auction.recommendation_color }}
                   >
                     {auction.recommendation}
@@ -392,7 +392,7 @@ export default function AuctionDetail({ auctionId }: Props) {
                   href={`https://www.google.com/maps?q=${auction.centroid_lat},${auction.centroid_lng}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-zw-navy-500 dark:text-zw-orange-400 hover:underline mt-1 inline-block"
+                  className="text-xs text-[rgb(var(--zw-ink2))] dark:text-zw-orange-400 hover:underline mt-1 inline-block"
                 >
                   Open in Google Maps ↗
                 </a>
@@ -414,20 +414,20 @@ export default function AuctionDetail({ auctionId }: Props) {
               <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-2">External Links</p>
               {bcpaoLink && (
                 <a href={bcpaoLink} target="_blank" rel="noopener noreferrer"
-                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  className="block text-sm text-[rgb(var(--zw-ink2))] dark:text-zw-orange-400 hover:underline">
                   BCPAO Property Page ↗
                 </a>
               )}
               {auction.source_url && (
                 <a href={auction.source_url} target="_blank" rel="noopener noreferrer"
-                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  className="block text-sm text-[rgb(var(--zw-ink2))] dark:text-zw-orange-400 hover:underline">
                   Auction Source ↗
                 </a>
               )}
               {hasCoords && (
                 <a href={`https://www.google.com/maps/@${auction.centroid_lat},${auction.centroid_lng},17z/data=!3m1!1e3`}
                   target="_blank" rel="noopener noreferrer"
-                  className="block text-sm text-zw-navy-500 dark:text-zw-orange-400 hover:underline">
+                  className="block text-sm text-[rgb(var(--zw-ink2))] dark:text-zw-orange-400 hover:underline">
                   Google Maps Satellite ↗
                 </a>
               )}

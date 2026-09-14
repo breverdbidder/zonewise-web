@@ -98,7 +98,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
       const el = document.createElement('div')
       el.innerHTML = `<div style="
         width: 32px; height: 32px;
-        background: linear-gradient(135deg, #2A4F7A, #1B2737);
+        background: linear-gradient(135deg, #2A4F7A, rgb(var(--zw-elev)));
         border: 3px solid white;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);
@@ -115,7 +115,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
           .setHTML(`
             <div style="padding: 8px; font-family: Arial, sans-serif;">
-              <strong style="color: #1B2737; font-size: 14px;">${artifact.data.zoneCode}</strong>
+              <strong style="color: rgb(var(--zw-elev)); font-size: 14px;">${artifact.data.zoneCode}</strong>
               <div style="color: #666; font-size: 12px;">${artifact.data.zoneName || ''}</div>
               <div style="color: #888; font-size: 11px;">${artifact.data.jurisdiction || ''}</div>
             </div>
@@ -182,13 +182,13 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
             {(['map', 'data', 'report'] as const).map(mode => (
               <button key={mode} onClick={() => setViewMode(mode)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  viewMode === mode ? 'bg-zw-navy-600 text-white' : `${mutedText} hover:text-gray-700 dark:hover:text-slate-200`
+                  viewMode === mode ? 'bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))]' : `${mutedText} hover:text-gray-700 dark:hover:text-[rgb(var(--zw-ink2))]`
                 }`}>
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
               </button>
             ))}
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-[rgb(var(--zw-card))] rounded-lg transition-colors">
             <svg className={`w-4 h-4 ${mutedText}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -210,7 +210,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
             {/* Info overlay */}
             {artifact?.data?.zoneCode && (
               <div className={`absolute top-3 left-3 ${overlayBg} backdrop-blur px-4 py-3 rounded-xl border ${cardBorder} max-w-[240px]`}>
-                <p className="text-xs text-zw-navy-500 font-semibold uppercase tracking-wide">Zone</p>
+                <p className="text-xs text-[rgb(var(--zw-ink2))] font-semibold uppercase tracking-wide">Zone</p>
                 <p className={`text-lg font-bold ${headingText}`}>{artifact.data.zoneCode}</p>
                 {artifact.data.zoneName && <p className={`text-sm ${bodyText}`}>{artifact.data.zoneName}</p>}
                 {artifact.metadata?.jurisdiction && <p className={`text-xs ${mutedText} mt-1`}>{artifact.metadata.jurisdiction}, {artifact.data.county || 'FL'}</p>}
@@ -222,19 +222,19 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
                 <div className="grid grid-cols-4 gap-3 text-center">
                   <div>
                     <p className={`text-xs ${mutedText}`}>Front</p>
-                    <p className={`text-sm font-bold text-zw-navy-600 dark:text-zw-navy-400`}>{artifact.data.setbacks.front || '—'}ft</p>
+                    <p className={`text-sm font-bold text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400`}>{artifact.data.setbacks.front || '—'}ft</p>
                   </div>
                   <div>
                     <p className={`text-xs ${mutedText}`}>Side</p>
-                    <p className={`text-sm font-bold text-zw-navy-600 dark:text-zw-navy-400`}>{artifact.data.setbacks.side || '—'}ft</p>
+                    <p className={`text-sm font-bold text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400`}>{artifact.data.setbacks.side || '—'}ft</p>
                   </div>
                   <div>
                     <p className={`text-xs ${mutedText}`}>Rear</p>
-                    <p className={`text-sm font-bold text-zw-navy-600 dark:text-zw-navy-400`}>{artifact.data.setbacks.rear || '—'}ft</p>
+                    <p className={`text-sm font-bold text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400`}>{artifact.data.setbacks.rear || '—'}ft</p>
                   </div>
                   <div>
                     <p className={`text-xs ${mutedText}`}>Height</p>
-                    <p className={`text-sm font-bold text-zw-navy-600 dark:text-zw-navy-400`}>{artifact.data.maxHeight || '—'}ft</p>
+                    <p className={`text-sm font-bold text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400`}>{artifact.data.maxHeight || '—'}ft</p>
                   </div>
                 </div>
               </div>
@@ -264,8 +264,8 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
               <button key={a.id} onClick={() => onSelectArtifact(a)}
                 className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
                   artifact?.id === a.id
-                    ? 'bg-zw-navy-50 dark:bg-zw-navy-600/20 border-zw-navy-200 dark:border-zw-navy-500/50 text-zw-navy-700 dark:text-slate-100'
-                    : `${cardBg} ${cardBorder} ${bodyText} hover:border-gray-300 dark:hover:border-slate-600`
+                    ? 'bg-zw-navy-50 dark:bg-zw-navy-600/20 border-[rgb(var(--zw-border2))] dark:border-zw-navy-500/50 text-[rgb(var(--zw-ink))] dark:text-slate-100'
+                    : `${cardBg} ${cardBorder} ${bodyText} hover:border-gray-300 dark:hover:border-[rgb(var(--zw-border2))]`
                 }`}>
                 <TypeIcon type={a.type} />
                 <span className="text-xs font-medium truncate max-w-[100px]">{a.title}</span>
@@ -277,13 +277,13 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 
       {/* Action bar */}
       <div className={`p-3 border-t ${borderColor} flex items-center gap-2`}>
-        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-zw-navy-600 hover:bg-zw-navy-700 text-white rounded-lg text-sm font-medium transition-colors">
+        <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[rgb(var(--zw-elev))] hover:bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))] rounded-lg text-sm font-medium transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           Export PDF
         </button>
-        <button className={`p-2 ${cardBg} hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors border ${cardBorder}`}>
+        <button className={`p-2 ${cardBg} hover:bg-gray-200 dark:hover:bg-[rgb(var(--zw-elev))] rounded-lg transition-colors border ${cardBorder}`}>
           <svg className={`w-5 h-5 ${bodyText}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
@@ -294,7 +294,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
 }
 
 function TypeIcon({ type }: { type: string }) {
-  const cls = "w-4 h-4 text-zw-navy-500"
+  const cls = "w-4 h-4 text-[rgb(var(--zw-ink2))]"
   if (type === 'map') return <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
   if (type === 'table') return <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
   return <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -351,7 +351,7 @@ function DataView({ artifact }: { artifact: Artifact }) {
           <h4 className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-3">Permitted Uses ({data.permittedUses.length})</h4>
           <div className="flex flex-wrap gap-2">
             {data.permittedUses.map((use: string, i: number) => (
-              <span key={i} className="px-2 py-1 bg-zw-navy-50 dark:bg-zw-navy-600/20 text-zw-navy-700 dark:text-zw-navy-300 text-xs rounded-md border border-zw-navy-200 dark:border-zw-navy-500/20">
+              <span key={i} className="px-2 py-1 bg-zw-navy-50 dark:bg-zw-navy-600/20 text-[rgb(var(--zw-ink))] dark:text-zw-navy-300 text-xs rounded-md border border-[rgb(var(--zw-border2))] dark:border-zw-navy-500/20">
                 {use}
               </span>
             ))}
@@ -366,7 +366,7 @@ function InfoItem({ label, value, highlight = false }: { label: string; value: s
   return (
     <div>
       <p className="text-xs text-gray-400 dark:text-slate-500 mb-0.5">{label}</p>
-      <p className={`text-sm font-medium ${highlight ? 'text-zw-navy-600 dark:text-zw-navy-400' : 'text-gray-800 dark:text-slate-200'}`}>{value}</p>
+      <p className={`text-sm font-medium ${highlight ? 'text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400' : 'text-gray-800 dark:text-slate-200'}`}>{value}</p>
     </div>
   )
 }

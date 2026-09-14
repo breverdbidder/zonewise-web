@@ -17,12 +17,12 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
         {!isSignedIn && (
           <>
             <SignInButton mode="modal">
-              <button className="text-gray-600 hover:text-slate-800 text-sm font-medium cursor-pointer">
+              <button className="text-gray-600 hover:text-[rgb(var(--zw-ink))] text-sm font-medium cursor-pointer">
                 Sign In
               </button>
             </SignInButton>
             <SignUpButton mode="modal">
-              <button className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors cursor-pointer">
+              <button className="bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] px-4 py-2 rounded-lg hover:bg-[rgb(var(--zw-page))] text-sm font-medium transition-colors cursor-pointer">
                 Get Started Free
               </button>
             </SignUpButton>
@@ -32,7 +32,7 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
           <>
             <a
               href="/dashboard"
-              className="bg-zw-navy text-white px-4 py-2 rounded-lg hover:bg-zw-navy-700 text-sm font-medium transition-colors"
+              className="bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] px-4 py-2 rounded-lg hover:bg-[rgb(var(--zw-page))] text-sm font-medium transition-colors"
             >
               Dashboard
             </a>
@@ -48,7 +48,7 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
       <>
         {!isSignedIn && (
           <SignUpButton mode="modal">
-            <button className="bg-zw-navy text-white px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
+            <button className="bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer">
               Get Started
             </button>
           </SignUpButton>
@@ -63,13 +63,13 @@ function ClerkAuthButtons({ variant }: { variant: 'desktop' | 'mobile-cta' | 'mo
     <>
       {!isSignedIn && (
         <SignInButton mode="modal">
-          <button className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium text-left cursor-pointer">
+          <button className="py-2.5 text-sm text-gray-700 hover:text-[rgb(var(--zw-ink2))] font-medium text-left cursor-pointer">
             Sign In
           </button>
         </SignInButton>
       )}
       {isSignedIn && (
-        <a href="/dashboard" className="py-2.5 text-sm text-zw-navy font-medium">
+        <a href="/dashboard" className="py-2.5 text-sm text-[rgb(var(--zw-ink2))] font-medium">
           Dashboard
         </a>
       )}
@@ -92,11 +92,11 @@ export default function NavHeader() {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-zw-navy rounded-lg flex items-center justify-center relative">
-            <span className="text-white font-bold">Z</span>
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-zw-orange rounded-full" />
+          <div className="w-8 h-8 bg-[rgb(var(--zw-elev))] rounded-lg flex items-center justify-center relative">
+            <span className="text-[rgb(var(--zw-ink))] font-bold">Z</span>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[rgb(var(--zw-brand))] rounded-full" />
           </div>
-          <span className="text-xl font-bold text-slate-800">ZoneWise.AI</span>
+          <span className="text-xl font-bold text-[rgb(var(--zw-ink))]">ZoneWise.AI</span>
         </div>
 
         {/* Desktop nav */}
@@ -107,8 +107,8 @@ export default function NavHeader() {
               href={l.href}
               className={
                 l.label === '\u25B6 Live Demo'
-                  ? 'text-zw-navy font-semibold hover:text-zw-navy-700 text-sm border border-zw-navy/30 px-3 py-1 rounded-lg hover:bg-zw-navy/5 transition-all'
-                  : 'text-gray-600 hover:text-slate-800 text-sm'
+                  ? 'text-[rgb(var(--zw-ink2))] font-semibold hover:text-[rgb(var(--zw-ink))] text-sm border border-[rgb(var(--zw-border2)/0.3)] px-3 py-1 rounded-lg hover:bg-[rgb(var(--zw-elev)/0.05)] transition-all'
+                  : 'text-gray-600 hover:text-[rgb(var(--zw-ink))] text-sm'
               }
             >
               {l.label}
@@ -148,7 +148,7 @@ export default function NavHeader() {
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="py-2.5 text-sm text-gray-700 hover:text-zw-navy font-medium border-b border-gray-100 last:border-0"
+              className="py-2.5 text-sm text-gray-700 hover:text-[rgb(var(--zw-ink2))] font-medium border-b border-gray-100 last:border-0"
             >
               {l.label}
             </a>

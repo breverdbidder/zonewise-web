@@ -84,9 +84,9 @@ export default async function ReportPage({ params }: Props) {
         </Suspense>
 
         <Suspense fallback={
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 animate-pulse">
-            <div className="h-4 bg-slate-800 rounded w-40 mb-3" />
-            <div className="h-8 bg-slate-800 rounded w-60" />
+          <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5 animate-pulse">
+            <div className="h-4 bg-[rgb(var(--zw-card))] rounded w-40 mb-3" />
+            <div className="h-8 bg-[rgb(var(--zw-card))] rounded w-60" />
           </div>
         }>
           <OwnerIntelPanel identifier={parcelId} />

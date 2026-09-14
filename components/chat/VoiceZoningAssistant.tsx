@@ -340,15 +340,15 @@ export default function VoiceZoningAssistant() {
   const isLive = status === 'listening' || status === 'connecting' || status === 'requesting-mic'
 
   return (
-    <div className="mx-4 mt-3 rounded-2xl border-2 border-[#1A90FF] bg-gradient-to-br from-[#1B2737] via-[#0f2340] to-[#0B1119] p-6 shadow-[0_0_40px_rgba(26,144,255,0.15)]">
+    <div className="mx-4 mt-3 rounded-2xl border-2 border-[rgb(var(--zw-brand))] bg-gradient-to-br from-[rgb(var(--zw-elev))] via-[rgb(var(--zw-elev))] to-[rgb(var(--zw-page))] p-6 shadow-[0_0_40px_rgb(var(--zw-brand) / 0.15)]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="inline-block h-2 w-2 rounded-full bg-[#1A90FF] animate-pulse" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#1A90FF]">Voice Assistant</span>
+            <span className="inline-block h-2 w-2 rounded-full bg-[rgb(var(--zw-brand))] animate-pulse" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-brand))]">Voice Assistant</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold text-white">Just ask it out loud.</h2>
-          <p className="text-sm text-slate-300 mt-1 max-w-xl">
+          <h2 className="text-xl md:text-2xl font-bold text-[rgb(var(--zw-ink))]">Just ask it out loud.</h2>
+          <p className="text-sm text-[rgb(var(--zw-ink2))] mt-1 max-w-xl">
             Real zoning and parcel answers pulled live from our database — setbacks, height limits, permitted uses, any address or zone code. It can draft a floor plan for you too.
           </p>
         </div>
@@ -359,7 +359,7 @@ export default function VoiceZoningAssistant() {
             className={`flex items-center gap-3 rounded-full px-6 py-4 text-base font-bold shadow-lg transition-all shrink-0 ${
               isLive
                 ? 'bg-red-600 hover:bg-red-500 text-white'
-                : 'bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 hover:scale-105'
+                : 'bg-[rgb(var(--zw-brand))] hover:bg-[#fbbf24] text-[rgb(var(--zw-ink))] hover:scale-105'
             }`}
           >
             {isLive ? <Square className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -384,24 +384,24 @@ export default function VoiceZoningAssistant() {
               onChange={(e) => setGateEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submitGateEmail()}
               placeholder="your@email.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1A90FF]"
+              className="w-full bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-2 text-sm text-[rgb(var(--zw-ink2))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--zw-brand))]"
             />
             {gateErr && <p className="text-xs text-red-400 mt-1">Enter a valid email to start.</p>}
           </div>
           <button
             onClick={submitGateEmail}
-            className="px-4 py-2 rounded bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold"
+            className="px-4 py-2 rounded bg-[rgb(var(--zw-brand))] hover:bg-[#fbbf24] text-[rgb(var(--zw-ink))] text-sm font-bold"
           >
             Start
           </button>
         </div>
       )}
 
-      {statusMsg && <p className="mt-3 text-xs text-slate-400">{statusMsg}</p>}
+      {statusMsg && <p className="mt-3 text-xs text-[rgb(var(--zw-ink2))]">{statusMsg}</p>}
 
       {transcript && (
-        <div dir={isRTL ? 'rtl' : 'ltr'} className="mt-3 rounded-lg bg-slate-950/60 border border-slate-800 px-4 py-3 text-sm text-slate-200 max-w-2xl">
-          <span className="font-semibold text-[#1A90FF]">{transcript.who === 'user' ? 'You: ' : 'ZoneWise: '}</span>
+        <div dir={isRTL ? 'rtl' : 'ltr'} className="mt-3 rounded-lg bg-[rgb(var(--zw-page)/0.6)] border border-[rgb(var(--zw-border2))] px-4 py-3 text-sm text-[rgb(var(--zw-ink2))] max-w-2xl">
+          <span className="font-semibold text-[rgb(var(--zw-brand))]">{transcript.who === 'user' ? 'You: ' : 'ZoneWise: '}</span>
           {transcript.text}
         </div>
       )}
@@ -417,7 +417,7 @@ export default function VoiceZoningAssistant() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="text-xs px-2 py-1 rounded border border-slate-700 text-slate-400 hover:text-slate-200"
+            className="text-xs px-2 py-1 rounded border border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]"
           >
             📎 Attach a photo or PDF
           </button>
@@ -426,14 +426,14 @@ export default function VoiceZoningAssistant() {
             value={attachCaption}
             onChange={(e) => setAttachCaption(e.target.value)}
             placeholder="optional note about this file"
-            className="flex-1 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-300 placeholder:text-slate-600"
+            className="flex-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-2 py-1 text-xs text-[rgb(var(--zw-ink2))] placeholder:text-[rgb(var(--zw-ink2))]"
           />
         </div>
       )}
       {attachProgress && (
         <p
           className={`mt-2 text-xs ${
-            attachProgress.state === 'err' ? 'text-red-400' : attachProgress.state === 'ok' ? 'text-emerald-400' : 'text-slate-400'
+            attachProgress.state === 'err' ? 'text-red-400' : attachProgress.state === 'ok' ? 'text-emerald-400' : 'text-[rgb(var(--zw-ink2))]'
           }`}
         >
           {attachProgress.msg}

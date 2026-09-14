@@ -17,7 +17,7 @@ export default function DashboardGroupLayout({
       } as React.CSSProperties}
     >
       <AppSidebar />
-      <SidebarInset className="bg-[#020617] h-screen overflow-hidden flex flex-col">
+      <SidebarInset className="bg-[rgb(var(--zw-page))] h-screen overflow-hidden flex flex-col">
         <SiteHeader />
         {/* overflow-y-auto (not hidden): on mobile no child pane supplies its own
             scroll, so content taller than the shell was clipped and unreachable —

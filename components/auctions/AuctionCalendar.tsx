@@ -48,7 +48,7 @@ interface Props {
 
 const TYPE_STYLE: Record<string, { bg: string; border: string; label: string }> = {
   foreclosure: { bg: '#EF4444', border: '#DC2626', label: 'Foreclosures' },
-  tax_deed: { bg: '#1A90FF', border: '#005EB8', label: 'Tax Deeds' },
+  tax_deed: { bg: 'rgb(var(--zw-brand))', border: '#005EB8', label: 'Tax Deeds' },
   other: { bg: '#3B82F6', border: '#2563EB', label: 'Other' },
 }
 
@@ -222,7 +222,7 @@ export default function AuctionCalendar({ county, saleType, onSelectDay }: Props
         <div className="ml-auto flex items-center gap-3 text-xs">
           {loading && (
             <span className="flex items-center gap-2 text-gray-500 dark:text-slate-400">
-              <span className="w-3 h-3 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+              <span className="w-3 h-3 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
               Loading counts...
             </span>
           )}

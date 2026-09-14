@@ -34,9 +34,9 @@ interface Props {
 const CLASSIFICATION_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   DISTRESSED_HOMEOWNER: { bg: 'bg-red-500/15 border-red-500/30', text: 'text-red-400', label: 'Distressed Homeowner' },
   INVESTOR:             { bg: 'bg-amber-500/15 border-amber-500/30', text: 'text-amber-400', label: 'Investor' },
-  CORPORATE:            { bg: 'bg-[#1B2737]/30 border-[#1B2737]/50', text: 'text-blue-300', label: 'Corporate' },
+  CORPORATE:            { bg: 'bg-[rgb(var(--zw-elev)/0.3)] border-[rgb(var(--zw-border2)/0.5)]', text: 'text-blue-300', label: 'Corporate' },
   ESTATE:               { bg: 'bg-purple-500/15 border-purple-500/30', text: 'text-purple-400', label: 'Estate' },
-  UNKNOWN:              { bg: 'bg-slate-500/15 border-slate-500/30', text: 'text-slate-400', label: 'Unknown' },
+  UNKNOWN:              { bg: 'bg-[rgb(var(--zw-elev)/0.15)] border-[rgb(var(--zw-border2)/0.3)]', text: 'text-[rgb(var(--zw-ink2))]', label: 'Unknown' },
 }
 
 function fmt(n: number): string {
@@ -75,11 +75,11 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
 
   if (!data) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
-        <h2 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+      <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5">
+        <h2 className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-2 flex items-center gap-2">
           🔍 Owner Intelligence
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-[rgb(var(--zw-ink2))]">
           No OSINT match found for this parcel/case. Owner intelligence is available for
           auction defendants with matches in the FL property database.
         </p>
@@ -91,13 +91,13 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
   const confidencePct = Math.round(data.confidence_score * 100)
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
+    <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+        <h2 className="text-sm font-bold text-[rgb(var(--zw-ink))] flex items-center gap-2">
           🔍 Owner Intelligence
         </h2>
-        <span className="text-[10px] text-slate-500 font-mono">{data.case_number}</span>
+        <span className="text-[10px] text-[rgb(var(--zw-ink2))] font-mono">{data.case_number}</span>
       </div>
 
       {/* Classification Badge */}
@@ -105,7 +105,7 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
         <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold border ${style.bg} ${style.text}`}>
           {style.label}
         </span>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-[rgb(var(--zw-ink2))]">
           {data.defendant}
         </span>
       </div>
@@ -113,12 +113,12 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
       {/* Confidence Score */}
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs mb-1">
-          <span className="text-slate-500">Confidence</span>
-          <span className="text-slate-300 font-mono">{confidencePct}%</span>
+          <span className="text-[rgb(var(--zw-ink2))]">Confidence</span>
+          <span className="text-[rgb(var(--zw-ink2))] font-mono">{confidencePct}%</span>
         </div>
-        <div className="w-full bg-slate-800 rounded-full h-1.5">
+        <div className="w-full bg-[rgb(var(--zw-card))] rounded-full h-1.5">
           <div
-            className="bg-[#1A90FF] h-1.5 rounded-full transition-all"
+            className="bg-[rgb(var(--zw-brand))] h-1.5 rounded-full transition-all"
             style={{ width: `${confidencePct}%` }}
           />
         </div>
@@ -132,39 +132,39 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
           { label: 'Out-of-State', value: data.is_out_of_state ? '✓ Yes' : '✗ No', accent: false },
           { label: 'Homestead', value: data.is_homestead ? '✓ Yes' : '✗ No', accent: false },
         ].map(s => (
-          <div key={s.label} className={`rounded-md p-3 border ${s.accent ? 'bg-[#1A90FF]/10 border-[#1A90FF]/30' : 'bg-slate-800/50 border-slate-700/50'}`}>
-            <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-0.5">{s.label}</div>
-            <div className={`text-sm font-bold font-mono ${s.accent ? 'text-[#1A90FF]' : 'text-white'}`}>{s.value}</div>
+          <div key={s.label} className={`rounded-md p-3 border ${s.accent ? 'bg-[rgb(var(--zw-brand)/0.1)] border-[rgb(var(--zw-brand)/0.3)]' : 'bg-[rgb(var(--zw-card)/0.5)] border-[rgb(var(--zw-border2)/0.5)]'}`}>
+            <div className="text-[9px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-0.5">{s.label}</div>
+            <div className={`text-sm font-bold font-mono ${s.accent ? 'text-[rgb(var(--zw-brand))]' : 'text-[rgb(var(--zw-ink))]'}`}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Context Row */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400 mb-4 border-t border-slate-800 pt-3">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[rgb(var(--zw-ink2))] mb-4 border-t border-[rgb(var(--zw-border2))] pt-3">
         {data.auction_date && (
-          <span>Auction: <span className="text-slate-300 font-mono">{data.auction_date}</span></span>
+          <span>Auction: <span className="text-[rgb(var(--zw-ink2))] font-mono">{data.auction_date}</span></span>
         )}
         {data.plaintiff && (
-          <span>Plaintiff: <span className="text-slate-300">{data.plaintiff}</span></span>
+          <span>Plaintiff: <span className="text-[rgb(var(--zw-ink2))]">{data.plaintiff}</span></span>
         )}
         {data.days_since_last_sale != null && (
-          <span>Last Sale: <span className="text-slate-300 font-mono">{data.days_since_last_sale}d ago</span></span>
+          <span>Last Sale: <span className="text-[rgb(var(--zw-ink2))] font-mono">{data.days_since_last_sale}d ago</span></span>
         )}
         {data.owner_state && (
-          <span>State: <span className="text-slate-300 font-mono">{data.owner_state}</span></span>
+          <span>State: <span className="text-[rgb(var(--zw-ink2))] font-mono">{data.owner_state}</span></span>
         )}
       </div>
 
       {/* Portfolio Table */}
       {data.parcels_owned.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-[rgb(var(--zw-ink2))] mb-2 uppercase tracking-wider">
             Portfolio ({data.parcels_owned.length} parcels)
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-slate-500 border-b border-slate-800">
+                <tr className="text-[rgb(var(--zw-ink2))] border-b border-[rgb(var(--zw-border2))]">
                   <th className="text-left py-1.5 pr-2 font-medium">PIN</th>
                   <th className="text-left py-1.5 pr-2 font-medium">Address</th>
                   <th className="text-left py-1.5 pr-2 font-medium">City</th>
@@ -176,21 +176,21 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
               </thead>
               <tbody>
                 {data.parcels_owned.map((p, i) => (
-                  <tr key={`${p.pin}-${i}`} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                  <tr key={`${p.pin}-${i}`} className="border-b border-[rgb(var(--zw-border2)/0.5)] hover:bg-[rgb(var(--zw-card)/0.3)]">
                     <td className="py-1.5 pr-2">
                       <Link
                         href={`/parcel/${encodeURIComponent(p.pin)}`}
-                        className="text-[#1A90FF] hover:underline font-mono"
+                        className="text-[rgb(var(--zw-brand))] hover:underline font-mono"
                       >
                         {p.pin}
                       </Link>
                     </td>
-                    <td className="py-1.5 pr-2 text-slate-300">{p.addr || '—'}</td>
-                    <td className="py-1.5 pr-2 text-slate-400">{p.city || '—'}</td>
-                    <td className="py-1.5 pr-2 text-right text-slate-300 font-mono">{p.val ? fmt(p.val) : '—'}</td>
-                    <td className="py-1.5 pr-2 text-slate-400 font-mono">{p.luse || '—'}</td>
-                    <td className="py-1.5 pr-2 text-right text-slate-400 font-mono">{fmtN(p.sqft)}</td>
-                    <td className="py-1.5 text-right text-slate-400 font-mono">{p.year ?? '—'}</td>
+                    <td className="py-1.5 pr-2 text-[rgb(var(--zw-ink2))]">{p.addr || '—'}</td>
+                    <td className="py-1.5 pr-2 text-[rgb(var(--zw-ink2))]">{p.city || '—'}</td>
+                    <td className="py-1.5 pr-2 text-right text-[rgb(var(--zw-ink2))] font-mono">{p.val ? fmt(p.val) : '—'}</td>
+                    <td className="py-1.5 pr-2 text-[rgb(var(--zw-ink2))] font-mono">{p.luse || '—'}</td>
+                    <td className="py-1.5 pr-2 text-right text-[rgb(var(--zw-ink2))] font-mono">{fmtN(p.sqft)}</td>
+                    <td className="py-1.5 text-right text-[rgb(var(--zw-ink2))] font-mono">{p.year ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -200,7 +200,7 @@ export default async function OwnerIntelPanel({ identifier }: Props) {
       )}
 
       {/* Honesty Footer */}
-      <p className="text-[10px] text-slate-600 leading-relaxed border-t border-slate-800 pt-3">
+      <p className="text-[10px] text-[rgb(var(--zw-ink2))] leading-relaxed border-t border-[rgb(var(--zw-border2))] pt-3">
         Classified via owner_osint.py from auction_owner_intel table. Confidence reflects
         name-match strength + owner state agreement. Not a substitute for professional due diligence.
       </p>

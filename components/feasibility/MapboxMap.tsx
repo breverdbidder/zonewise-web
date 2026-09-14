@@ -181,13 +181,13 @@ export default function MapboxMap({
       <div ref={containerRef} className="w-full h-full" />
 
       {!loaded && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-          <div className="text-slate-400 text-sm animate-pulse">Loading satellite imagery...</div>
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgb(var(--zw-page))]">
+          <div className="text-[rgb(var(--zw-ink2))] text-sm animate-pulse">Loading satellite imagery...</div>
         </div>
       )}
 
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgb(var(--zw-card))]">
           <div className="text-red-400 text-xs">Map error: {error}</div>
         </div>
       )}

@@ -9,7 +9,7 @@ const ZONE_CATEGORY_MAP: Record<string, string> = {
   BU: '#3B82F6',
   TU: '#8B5CF6',
   IU: '#EF4444',
-  PU: '#1A90FF', // PUD prefix
+  PU: 'rgb(var(--zw-brand))', // PUD prefix
   AU: '#A3E635',
   PA: '#06B6D4',
   GM: '#FB923C', // GML prefix
@@ -26,7 +26,7 @@ function zoneCategory(code: string): string {
 }
 
 function zoneColor(category: string): string {
-  return ZONE_CATEGORY_MAP[category] ?? '#94A3B8'
+  return ZONE_CATEGORY_MAP[category] ?? 'rgb(var(--zw-elev))'
 }
 
 const BCPAO_ZONING_QUERY =

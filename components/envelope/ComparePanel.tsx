@@ -3,9 +3,9 @@
 import { computeEnvelope, calculateHBU } from '@/lib/development-analysis/hbu-engine'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const ORANGE = '#1A90FF'
-const CARD_BG = '#1e293b'
-const SLATE = '#0B1119'
+const ORANGE = 'rgb(var(--zw-brand))'
+const CARD_BG = 'rgb(var(--zw-card))'
+const SLATE = 'rgb(var(--zw-page))'
 const GREEN = '#22c55e'
 
 function fmt$(n: number) {
@@ -39,7 +39,7 @@ export function ComparePanel({ parcels, onClose }: ComparePanelProps) {
         <span className="text-xs font-bold" style={{ color: ORANGE }}>
           Comparing {data.length} Parcels
         </span>
-        <button onClick={onClose} className="text-xs text-gray-400 hover:text-white">✕ Close</button>
+        <button onClick={onClose} className="text-xs text-gray-400 hover:text-[rgb(var(--zw-ink))]">✕ Close</button>
       </div>
       <div
         className="grid gap-3 max-w-4xl mx-auto"
@@ -47,7 +47,7 @@ export function ComparePanel({ parcels, onClose }: ComparePanelProps) {
       >
         {data.map(d => (
           <div key={d.id} className="rounded-lg p-2.5 border border-gray-600/50" style={{ background: `${SLATE}cc` }}>
-            <div className="text-xs font-bold text-white truncate">{d.address}</div>
+            <div className="text-xs font-bold text-[rgb(var(--zw-ink))] truncate">{d.address}</div>
             <div className="text-[9px] text-gray-400 mb-2">{d.zone} · {d.city}</div>
             <div className="space-y-1 text-[10px]">
               {([

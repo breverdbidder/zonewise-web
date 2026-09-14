@@ -3,10 +3,10 @@
 import { computeEnvelope, calculateHBU } from '@/lib/development-analysis/hbu-engine'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const NAVY = '#1B2737'
-const ORANGE = '#1A90FF'
-const SLATE = '#0B1119'
-const CARD_BG = '#1e293b'
+const NAVY = 'rgb(var(--zw-elev))'
+const ORANGE = 'rgb(var(--zw-brand))'
+const SLATE = 'rgb(var(--zw-page))'
+const CARD_BG = 'rgb(var(--zw-card))'
 const GREEN = '#22c55e'
 
 function fmt$(n: number) {
@@ -79,16 +79,16 @@ export function ParcelCard({ parcel, onClick, selected, onToggleCompare }: Parce
 
       {/* Card body */}
       <div className="p-2" onClick={onClick}>
-        <h3 className="text-xs font-bold text-white mb-0.5 truncate">{parcel.address}</h3>
+        <h3 className="text-xs font-bold text-[rgb(var(--zw-ink))] mb-0.5 truncate">{parcel.address}</h3>
         <p className="text-[9px] text-gray-400 mb-1.5">{parcel.city} · {fmt$(best.maxBid)} max bid</p>
         <div className="grid grid-cols-3 gap-1 text-center mb-1">
           <div className="bg-gray-800/60 rounded px-1 py-0.5">
             <div className="text-[8px] text-gray-500">GFA</div>
-            <div className="text-[10px] font-bold text-white">{(env.actualGFA / 1000).toFixed(1)}K</div>
+            <div className="text-[10px] font-bold text-[rgb(var(--zw-ink))]">{(env.actualGFA / 1000).toFixed(1)}K</div>
           </div>
           <div className="bg-gray-800/60 rounded px-1 py-0.5">
             <div className="text-[8px] text-gray-500">Floors</div>
-            <div className="text-[10px] font-bold text-white">{env.floors}</div>
+            <div className="text-[10px] font-bold text-[rgb(var(--zw-ink))]">{env.floors}</div>
           </div>
           <div className="bg-gray-800/60 rounded px-1 py-0.5">
             <div className="text-[8px] text-gray-500">ROI</div>

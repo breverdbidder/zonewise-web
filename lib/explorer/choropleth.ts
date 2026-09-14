@@ -14,7 +14,7 @@ export function classifyYoy(yoy: number): YoyTier {
 /** CSS color for a YoY value (red → yellow → green) */
 export function yoyToColor(yoy: number): string {
   if (yoy <= -0.05) return '#EF4444'  // deep red
-  if (yoy <= -0.02) return '#F97316'  // orange-red
+  if (yoy <= -0.02) return 'rgb(var(--zw-brand))'  // orange-red
   if (yoy <= 0.01)  return '#EAB308'  // yellow
   if (yoy <= 0.04)  return '#84CC16'  // lime
   if (yoy <= 0.07)  return '#22C55E'  // green
@@ -24,7 +24,7 @@ export function yoyToColor(yoy: number): string {
 /** Mapbox expression stops for YoY color scale */
 export const YOY_COLOR_STOPS: [number, string][] = [
   [-0.05, '#EF4444'],
-  [-0.02, '#F97316'],
+  [-0.02, 'rgb(var(--zw-brand))'],
   [0.01,  '#EAB308'],
   [0.04,  '#84CC16'],
   [0.07,  '#22C55E'],
@@ -36,7 +36,7 @@ export const ZHVI_COLOR_STOPS: [number, string][] = [
   [150000, '#2563EB'],
   [230000, '#22C55E'],
   [310000, '#EAB308'],
-  [400000, '#F97316'],
+  [400000, 'rgb(var(--zw-brand))'],
   [500000, '#EF4444'],
   [700000, '#DC2626'],
 ]
@@ -46,7 +46,7 @@ export const ZORI_COLOR_STOPS: [number, string][] = [
   [1000,  '#2563EB'],
   [1600,  '#22C55E'],
   [2000,  '#EAB308'],
-  [2400,  '#F97316'],
+  [2400,  'rgb(var(--zw-brand))'],
   [3000,  '#EF4444'],
   [4000,  '#DC2626'],
 ]
@@ -63,14 +63,14 @@ export const CHOROPLETH_LEGENDS = {
     { label: '<$230K', color: '#2563EB' },
     { label: '$230K–$310K', color: '#22C55E' },
     { label: '$310K–$400K', color: '#EAB308' },
-    { label: '$400K–$500K', color: '#F97316' },
+    { label: '$400K–$500K', color: 'rgb(var(--zw-brand))' },
     { label: '>$500K', color: '#EF4444' },
   ],
   zori: [
     { label: '<$1.6K/mo', color: '#2563EB' },
     { label: '$1.6K–$2K', color: '#22C55E' },
     { label: '$2K–$2.4K', color: '#EAB308' },
-    { label: '$2.4K–$3K', color: '#F97316' },
+    { label: '$2.4K–$3K', color: 'rgb(var(--zw-brand))' },
     { label: '>$3K/mo', color: '#EF4444' },
   ],
   yoy: [

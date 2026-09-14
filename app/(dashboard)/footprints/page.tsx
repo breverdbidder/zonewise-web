@@ -33,15 +33,15 @@ const CAPABILITIES = [
 
 export default function FootprintsPage() {
   return (
-    <div className="min-h-full bg-[#0B1119] px-4 py-10 sm:px-8">
+    <div className="min-h-full bg-[rgb(var(--zw-page))] px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
+        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[rgb(var(--zw-brand))]">
           <Building2 className="h-3.5 w-3.5" /> Building intelligence
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-[rgb(var(--zw-ink))] sm:text-3xl">
           Building footprints &amp; heights
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[rgb(var(--zw-ink2))]">
           AI-detected building outlines with height estimates, joined to Florida parcels. This is
           what turns a zoning envelope into a real feasibility answer — you cannot size an
           opportunity without knowing what is already standing on the site.
@@ -52,32 +52,32 @@ export default function FootprintsPage() {
             <div
               key={c.title}
               className="rounded-lg border p-5"
-              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.6)' }}
+              style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-border2) / 0.6)' }}
             >
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1B2737]">
-                <c.icon className="h-4 w-4 text-[#1A90FF]" />
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[rgb(var(--zw-elev))]">
+                <c.icon className="h-4 w-4 text-[rgb(var(--zw-brand))]" />
               </div>
-              <h2 className="text-sm font-semibold text-white">{c.title}</h2>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">{c.body}</p>
+              <h2 className="text-sm font-semibold text-[rgb(var(--zw-ink))]">{c.title}</h2>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[rgb(var(--zw-ink2))]">{c.body}</p>
             </div>
           ))}
         </div>
 
         <div
           className="mt-8 rounded-lg border p-5"
-          style={{ background: '#0d1829', borderColor: 'rgba(26,144,255,0.28)' }}
+          style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-brand) / 0.28)' }}
         >
           <div className="mb-2 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-[#1A90FF]" />
-            <h2 className="text-sm font-semibold text-white">Ingestion in progress</h2>
+            <AlertTriangle className="h-4 w-4 text-[rgb(var(--zw-brand))]" />
+            <h2 className="text-sm font-semibold text-[rgb(var(--zw-ink))]">Ingestion in progress</h2>
           </div>
-          <p className="text-[13px] leading-relaxed text-slate-400">
+          <p className="text-[13px] leading-relaxed text-[rgb(var(--zw-ink2))]">
             61 imagery tiles covering Florida are being processed. Until a county reports coverage
             here, feasibility analysis continues to work from lot geometry and zoning controls
             alone — footprints are additive, never a silent substitute.
           </p>
-          <p className="mt-3 text-[13px] leading-relaxed text-slate-400">
-            <span className="font-semibold text-slate-200">On accuracy:</span> these footprints are
+          <p className="mt-3 text-[13px] leading-relaxed text-[rgb(var(--zw-ink2))]">
+            <span className="font-semibold text-[rgb(var(--zw-ink2))]">On accuracy:</span> these footprints are
             machine-detected from aerial and satellite imagery. Recall is strong in low-density
             areas and weaker in dense urban blocks, and some records carry no confidence score. We
             surface them as a measured input, not as a survey. Verify against the county appraiser

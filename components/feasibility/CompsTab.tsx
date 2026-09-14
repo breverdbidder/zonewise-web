@@ -10,8 +10,8 @@ import dynamic from 'next/dynamic'
 const MapboxMap = dynamic(() => import('./MapboxMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center bg-slate-900 rounded-xl w-full h-full" style={{ minHeight: 180 }}>
-      <span className="text-slate-400 text-sm animate-pulse">Loading map…</span>
+    <div className="flex items-center justify-center bg-[rgb(var(--zw-page))] rounded-xl w-full h-full" style={{ minHeight: 180 }}>
+      <span className="text-[rgb(var(--zw-ink2))] text-sm animate-pulse">Loading map…</span>
     </div>
   ),
 })
@@ -41,7 +41,7 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
               className={`px-5 py-2 rounded-full text-[13px] font-medium border transition-all ${
                 view === t
                   ? 'bg-teal-600 text-white border-teal-600'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-teal-300'
+                  : 'bg-white text-[rgb(var(--zw-ink2))] border-slate-200 hover:border-teal-300'
               }`}
             >
               {t}
@@ -59,7 +59,7 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
               <thead>
                 <tr className="bg-slate-50">
                   {['Property', 'Address', 'Units', 'Year', 'Occ', '1BR', '2BR'].map((h) => (
-                    <th key={h} className="px-2.5 py-2.5 text-left font-semibold text-slate-500 border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
+                    <th key={h} className="px-2.5 py-2.5 text-left font-semibold text-[rgb(var(--zw-ink2))] border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
                       {h}
                     </th>
                   ))}
@@ -68,10 +68,10 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
               <tbody>
                 {comps.map((c, i) => (
                   <tr key={c.name} className={`border-b border-slate-50 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
-                    <td className="px-2.5 py-2.5 font-semibold text-slate-900">{c.name}</td>
-                    <td className="px-2.5 py-2.5 text-slate-500">{c.addr}</td>
+                    <td className="px-2.5 py-2.5 font-semibold text-[rgb(var(--zw-ink))]">{c.name}</td>
+                    <td className="px-2.5 py-2.5 text-[rgb(var(--zw-ink2))]">{c.addr}</td>
                     <td className="px-2.5 py-2.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{c.units}</td>
-                    <td className="px-2.5 py-2.5 text-slate-500">{c.year}</td>
+                    <td className="px-2.5 py-2.5 text-[rgb(var(--zw-ink2))]">{c.year}</td>
                     <td className="px-2.5 py-2.5 font-semibold" style={{ color: COLORS.success }}>{c.occ}%</td>
                     <td className="px-2.5 py-2.5 font-semibold" style={{ color: COLORS.brand, fontFamily: "'JetBrains Mono', monospace" }}>{c.one ? fmtD(c.one) : '—'}</td>
                     <td className="px-2.5 py-2.5 font-semibold" style={{ color: COLORS.brand, fontFamily: "'JetBrains Mono', monospace" }}>{c.two ? fmtD(c.two) : '—'}</td>
@@ -85,19 +85,19 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
         {/* Rent Summary */}
         <Card className="p-4 mt-4">
           <div className="flex items-center mb-2.5">
-            <span className="text-sm font-bold text-slate-900">Rent Summary</span>
+            <span className="text-sm font-bold text-[rgb(var(--zw-ink))]">Rent Summary</span>
             <Badge text={`${comps.length} Comps · 3mi Radius`} color={COLORS.brand} />
           </div>
-          <div className="flex gap-5 mb-2.5 text-xs text-slate-400">
-            <span>Avg Units: <strong className="text-slate-900">{avgUnits}</strong></span>
-            <span>Avg Year: <strong className="text-slate-900">{avgYear}</strong></span>
-            <span>Avg Occ: <strong className="text-slate-900">{avgOcc}%</strong></span>
+          <div className="flex gap-5 mb-2.5 text-xs text-[rgb(var(--zw-ink2))]">
+            <span>Avg Units: <strong className="text-[rgb(var(--zw-ink))]">{avgUnits}</strong></span>
+            <span>Avg Year: <strong className="text-[rgb(var(--zw-ink))]">{avgYear}</strong></span>
+            <span>Avg Occ: <strong className="text-[rgb(var(--zw-ink))]">{avgOcc}%</strong></span>
           </div>
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b-2 border-slate-200">
                 {['Unit Type', 'Avg Rent', 'Avg SF', '$/SF/Mo'].map((h) => (
-                  <th key={h} className="px-2.5 py-2 text-right font-semibold text-slate-500 text-[10px] uppercase">{h}</th>
+                  <th key={h} className="px-2.5 py-2 text-right font-semibold text-[rgb(var(--zw-ink2))] text-[10px] uppercase">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -106,8 +106,8 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
                 <tr key={u.type} className="border-b border-slate-50">
                   <td className="px-2.5 py-2 font-semibold text-right">{u.type}</td>
                   <td className="px-2.5 py-2 text-right font-bold" style={{ color: COLORS.brand, fontFamily: "'JetBrains Mono', monospace" }}>{fmtD(u.rent)}</td>
-                  <td className="px-2.5 py-2 text-right text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmt(u.sf)}</td>
-                  <td className="px-2.5 py-2 text-right text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>${u.psf.toFixed(2)}</td>
+                  <td className="px-2.5 py-2 text-right text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmt(u.sf)}</td>
+                  <td className="px-2.5 py-2 text-right text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>${u.psf.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -126,7 +126,7 @@ export default function CompsTab({ site, comps, unitRents }: CompsTabProps) {
             ['Class', 'B+, A'],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between py-1.5 text-xs border-b border-slate-50">
-              <span className="text-slate-500">{k}</span>
+              <span className="text-[rgb(var(--zw-ink2))]">{k}</span>
               <span className="font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v}</span>
             </div>
           ))}

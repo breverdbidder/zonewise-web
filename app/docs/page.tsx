@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 // ── Code block helper ─────────────────────────────────────────────────────────
 function CodeBlock({ lang, code }: { lang: string; code: string }) {
   return (
-    <div className="rounded-xl overflow-hidden border border-slate-700 my-4">
-      <div className="flex items-center gap-2 px-4 py-2 bg-slate-800 border-b border-slate-700">
-        <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">{lang}</span>
+    <div className="rounded-xl overflow-hidden border border-[rgb(var(--zw-border2))] my-4">
+      <div className="flex items-center gap-2 px-4 py-2 bg-[rgb(var(--zw-card))] border-b border-[rgb(var(--zw-border2))]">
+        <span className="text-[11px] font-mono text-[rgb(var(--zw-ink2))] uppercase tracking-wider">{lang}</span>
       </div>
-      <pre className="p-4 overflow-x-auto text-sm bg-slate-950">
-        <code className="text-slate-200 font-mono whitespace-pre">{code.trim()}</code>
+      <pre className="p-4 overflow-x-auto text-sm bg-[rgb(var(--zw-page))]">
+        <code className="text-[rgb(var(--zw-ink2))] font-mono whitespace-pre">{code.trim()}</code>
       </pre>
     </div>
   )
@@ -24,7 +24,7 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="mb-16 scroll-mt-20">
-      <h2 className="text-2xl font-bold text-white mb-6 pb-3 border-b border-slate-800">{title}</h2>
+      <h2 className="text-2xl font-bold text-[rgb(var(--zw-ink))] mb-6 pb-3 border-b border-[rgb(var(--zw-border2))]">{title}</h2>
       {children}
     </section>
   )
@@ -46,22 +46,22 @@ function EndpointBadge({ method }: { method: 'GET' | 'POST' | 'DELETE' }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-[#020617] text-white" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Nav */}
-      <nav className="h-14 flex items-center px-4 sm:px-6 border-b border-slate-800 sticky top-0 bg-[#020617]/95 backdrop-blur-sm z-20">
+      <nav className="h-14 flex items-center px-4 sm:px-6 border-b border-[rgb(var(--zw-border2))] sticky top-0 bg-[rgb(var(--zw-page)/0.95)] backdrop-blur-sm z-20">
         <Link href="/" className="flex items-center gap-2 min-h-11">
-          <div className="w-6 h-6 rounded bg-gradient-to-br from-[#1E3A5F] to-[#2d5a8f] flex items-center justify-center">
-            <span className="text-white text-xs font-bold">Z</span>
+          <div className="w-6 h-6 rounded bg-gradient-to-br from-[rgb(var(--zw-elev))] to-[rgb(var(--zw-elev))] flex items-center justify-center">
+            <span className="text-[rgb(var(--zw-ink))] text-xs font-bold">Z</span>
           </div>
-          <span className="text-sm font-semibold text-white">
-            ZoneWise<span className="text-[#F59E0B]">.AI</span>
+          <span className="text-sm font-semibold text-[rgb(var(--zw-ink))]">
+            ZoneWise<span className="text-[rgb(var(--zw-brand))]">.AI</span>
           </span>
         </Link>
-        <div className="ml-auto flex items-center gap-3 sm:gap-6 text-sm text-slate-400">
-          <Link href="/explorer" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Explorer</Link>
-          <Link href="/pricing" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Pricing</Link>
-          <Link href="/help" className="hidden sm:flex hover:text-white transition-colors items-center min-h-11">Help</Link>
-          <Link href="/sign-up" className="bg-[#F59E0B] text-slate-950 px-3 sm:px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
+        <div className="ml-auto flex items-center gap-3 sm:gap-6 text-sm text-[rgb(var(--zw-ink2))]">
+          <Link href="/explorer" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Explorer</Link>
+          <Link href="/pricing" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Pricing</Link>
+          <Link href="/help" className="hidden sm:flex hover:text-[rgb(var(--zw-ink))] transition-colors items-center min-h-11">Help</Link>
+          <Link href="/sign-up" className="bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] px-3 sm:px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 transition-all">
             Get API Key
           </Link>
         </div>
@@ -82,7 +82,7 @@ export default function DocsPage() {
               <a
                 key={item.href}
                 href={item.href}
-                className="block px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors"
+                className="block px-3 py-2 text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] hover:bg-[rgb(var(--zw-card)/0.5)] rounded-lg transition-colors"
               >
                 {item.label}
               </a>
@@ -94,12 +94,12 @@ export default function DocsPage() {
         <main className="flex-1 min-w-0">
           {/* Header */}
           <div className="mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#1E3A5F]/40 border border-[#1E3A5F]/60 rounded-full text-xs text-slate-400 mb-4">
-              <span className="w-1.5 h-1.5 bg-[#F59E0B] rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[rgb(var(--zw-elev)/0.4)] border border-[rgb(var(--zw-border2)/0.6)] rounded-full text-xs text-[rgb(var(--zw-ink2))] mb-4">
+              <span className="w-1.5 h-1.5 bg-[rgb(var(--zw-brand))] rounded-full animate-pulse" />
               API v1 · REST · JSON
             </div>
-            <h1 className="text-4xl font-bold text-white mb-4">API Reference</h1>
-            <p className="text-lg text-slate-400 leading-relaxed max-w-2xl">
+            <h1 className="text-4xl font-bold text-[rgb(var(--zw-ink))] mb-4">API Reference</h1>
+            <p className="text-lg text-[rgb(var(--zw-ink2))] leading-relaxed max-w-2xl">
               ZoneWise.AI gives you programmatic access to Florida parcel data, zoning intelligence, and AI-powered property analysis. Available on Pro and Enterprise plans.
             </p>
           </div>
@@ -112,23 +112,23 @@ export default function DocsPage() {
                 { icon: '📦', title: 'Format', value: 'JSON (application/json)' },
                 { icon: '🔐', title: 'Auth', value: 'Bearer token (API key)' },
               ].map(item => (
-                <div key={item.title} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <div key={item.title} className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
                   <div className="text-xl mb-2">{item.icon}</div>
-                  <div className="text-xs text-slate-500 mb-1">{item.title}</div>
-                  <div className="text-sm font-mono text-slate-200">{item.value}</div>
+                  <div className="text-xs text-[rgb(var(--zw-ink2))] mb-1">{item.title}</div>
+                  <div className="text-sm font-mono text-[rgb(var(--zw-ink2))]">{item.value}</div>
                 </div>
               ))}
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed">
-              All API responses include standard HTTP status codes. Successful responses return <code className="text-[#F59E0B] bg-slate-900 px-1.5 py-0.5 rounded text-xs">200 OK</code> with a JSON body. Errors return <code className="text-red-400 bg-slate-900 px-1.5 py-0.5 rounded text-xs">4xx</code> or <code className="text-red-400 bg-slate-900 px-1.5 py-0.5 rounded text-xs">5xx</code> codes with a structured error body.
+            <p className="text-[rgb(var(--zw-ink2))] text-sm leading-relaxed">
+              All API responses include standard HTTP status codes. Successful responses return <code className="text-[rgb(var(--zw-brand))] bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">200 OK</code> with a JSON body. Errors return <code className="text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">4xx</code> or <code className="text-red-400 bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">5xx</code> codes with a structured error body.
             </p>
           </Section>
 
           {/* Authentication */}
           <Section id="authentication" title="Authentication">
-            <p className="text-slate-400 text-sm leading-relaxed mb-4">
-              All API requests must include your API key in the <code className="text-[#F59E0B] bg-slate-900 px-1.5 py-0.5 rounded text-xs">Authorization</code> header as a Bearer token. Get your API key from the{' '}
-              <Link href="/sign-up" className="text-[#F59E0B] hover:underline">account dashboard</Link>.
+            <p className="text-[rgb(var(--zw-ink2))] text-sm leading-relaxed mb-4">
+              All API requests must include your API key in the <code className="text-[rgb(var(--zw-brand))] bg-[rgb(var(--zw-page))] px-1.5 py-0.5 rounded text-xs">Authorization</code> header as a Bearer token. Get your API key from the{' '}
+              <Link href="/sign-up" className="text-[rgb(var(--zw-brand))] hover:underline">account dashboard</Link>.
             </p>
             <CodeBlock lang="http" code={`Authorization: Bearer zw_live_xxxxxxxxxxxxxxxxxxxx`} />
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-amber-200">
@@ -143,15 +143,15 @@ export default function DocsPage() {
             <div className="mb-10">
               <div className="flex items-center gap-3 mb-3">
                 <EndpointBadge method="GET" />
-                <code className="text-slate-200 font-mono text-sm">/api/v1/parcels/{'{parcel_id}'}</code>
+                <code className="text-[rgb(var(--zw-ink2))] font-mono text-sm">/api/v1/parcels/{'{parcel_id}'}</code>
               </div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm mb-3">
                 Retrieve full parcel data for a given parcel ID. Includes zoning, owner, assessed value, and land use.
               </p>
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm mb-4">
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4 text-sm mb-4">
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs">
-                  <div className="text-slate-500">parcel_id</div><div className="text-slate-200">string · required · FL county PARCEL_ID format</div>
-                  <div className="text-slate-500">county</div><div className="text-slate-200">string · optional · defaults to &quot;brevard&quot;</div>
+                  <div className="text-[rgb(var(--zw-ink2))]">parcel_id</div><div className="text-[rgb(var(--zw-ink2))]">string · required · FL county PARCEL_ID format</div>
+                  <div className="text-[rgb(var(--zw-ink2))]">county</div><div className="text-[rgb(var(--zw-ink2))]">string · optional · defaults to &quot;brevard&quot;</div>
                 </div>
               </div>
               <CodeBlock lang="json" code={`{
@@ -171,9 +171,9 @@ export default function DocsPage() {
             <div className="mb-10">
               <div className="flex items-center gap-3 mb-3">
                 <EndpointBadge method="GET" />
-                <code className="text-slate-200 font-mono text-sm">/api/v1/zoning/{'{zone_code}'}</code>
+                <code className="text-[rgb(var(--zw-ink2))] font-mono text-sm">/api/v1/zoning/{'{zone_code}'}</code>
               </div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm mb-3">
                 Get zoning district definition: permitted uses, dimensional standards, setbacks.
               </p>
               <CodeBlock lang="json" code={`{
@@ -193,16 +193,16 @@ export default function DocsPage() {
             <div className="mb-10">
               <div className="flex items-center gap-3 mb-3">
                 <EndpointBadge method="POST" />
-                <code className="text-slate-200 font-mono text-sm">/api/v1/chat</code>
+                <code className="text-[rgb(var(--zw-ink2))] font-mono text-sm">/api/v1/chat</code>
               </div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm mb-3">
                 Send a natural language query to the ZoneWise AI. Returns a streaming or non-streaming response with property and zoning intelligence.
               </p>
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm mb-4">
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4 text-sm mb-4">
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs">
-                  <div className="text-slate-500">messages</div><div className="text-slate-200">array · required · OpenAI-format message array</div>
-                  <div className="text-slate-500">county</div><div className="text-slate-200">string · optional · defaults to &quot;brevard&quot;</div>
-                  <div className="text-slate-500">stream</div><div className="text-slate-200">boolean · optional · defaults to true</div>
+                  <div className="text-[rgb(var(--zw-ink2))]">messages</div><div className="text-[rgb(var(--zw-ink2))]">array · required · OpenAI-format message array</div>
+                  <div className="text-[rgb(var(--zw-ink2))]">county</div><div className="text-[rgb(var(--zw-ink2))]">string · optional · defaults to &quot;brevard&quot;</div>
+                  <div className="text-[rgb(var(--zw-ink2))]">stream</div><div className="text-[rgb(var(--zw-ink2))]">boolean · optional · defaults to true</div>
                 </div>
               </div>
             </div>
@@ -211,9 +211,9 @@ export default function DocsPage() {
             <div className="mb-4">
               <div className="flex items-center gap-3 mb-3">
                 <EndpointBadge method="GET" />
-                <code className="text-slate-200 font-mono text-sm">/api/v1/kpis</code>
+                <code className="text-[rgb(var(--zw-ink2))] font-mono text-sm">/api/v1/kpis</code>
               </div>
-              <p className="text-slate-400 text-sm">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm">
                 Returns all 298 property KPI definitions across 17 categories. Used to power the InsightWise report.
               </p>
             </div>
@@ -224,21 +224,21 @@ export default function DocsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800">
-                    <th className="text-left py-3 px-4 text-slate-400 font-medium">Plan</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-medium">Requests/min</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-medium">Requests/day</th>
-                    <th className="text-left py-3 px-4 text-slate-400 font-medium">Chat queries/day</th>
+                  <tr className="border-b border-[rgb(var(--zw-border2))]">
+                    <th className="text-left py-3 px-4 text-[rgb(var(--zw-ink2))] font-medium">Plan</th>
+                    <th className="text-left py-3 px-4 text-[rgb(var(--zw-ink2))] font-medium">Requests/min</th>
+                    <th className="text-left py-3 px-4 text-[rgb(var(--zw-ink2))] font-medium">Requests/day</th>
+                    <th className="text-left py-3 px-4 text-[rgb(var(--zw-ink2))] font-medium">Chat queries/day</th>
                   </tr>
                 </thead>
-                <tbody className="text-slate-300">
+                <tbody className="text-[rgb(var(--zw-ink2))]">
                   {[
                     { plan: 'Free', rpm: '—', rpd: '—', chat: '3' },
                     { plan: 'Starter ($39/mo)', rpm: '30', rpd: '1,000', chat: '20' },
                     { plan: 'Pro ($99/mo)', rpm: '120', rpd: 'Unlimited', chat: 'Unlimited' },
                     { plan: 'Enterprise', rpm: 'Custom', rpd: 'Custom', chat: 'Custom' },
                   ].map((row, i) => (
-                    <tr key={row.plan} className={`border-b border-slate-900 ${i === 2 ? 'bg-[#1E3A5F]/10' : ''}`}>
+                    <tr key={row.plan} className={`border-b border-[rgb(var(--zw-border2))] ${i === 2 ? 'bg-[rgb(var(--zw-elev)/0.1)]' : ''}`}>
                       <td className="py-3 px-4 font-medium">{row.plan}</td>
                       <td className="py-3 px-4 font-mono text-xs">{row.rpm}</td>
                       <td className="py-3 px-4 font-mono text-xs">{row.rpd}</td>
@@ -248,21 +248,21 @@ export default function DocsPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-slate-500 text-xs mt-4">
-              When rate limited, the API returns <code className="text-red-400">429 Too Many Requests</code> with a <code className="text-slate-300">Retry-After</code> header.
+            <p className="text-[rgb(var(--zw-ink2))] text-xs mt-4">
+              When rate limited, the API returns <code className="text-red-400">429 Too Many Requests</code> with a <code className="text-[rgb(var(--zw-ink2))]">Retry-After</code> header.
             </p>
           </Section>
 
           {/* Code Examples */}
           <Section id="examples" title="Code Examples">
 
-            <h3 className="text-lg font-semibold text-white mb-3">cURL</h3>
+            <h3 className="text-lg font-semibold text-[rgb(var(--zw-ink))] mb-3">cURL</h3>
             <CodeBlock lang="bash" code={`curl -X GET \\
   "https://zonewise.ai/api/v1/parcels/2412345" \\
   -H "Authorization: Bearer zw_live_xxxxxxxxxxxxxxxxxxxx" \\
   -H "Content-Type: application/json"`} />
 
-            <h3 className="text-lg font-semibold text-white mb-3 mt-8">Python</h3>
+            <h3 className="text-lg font-semibold text-[rgb(var(--zw-ink))] mb-3 mt-8">Python</h3>
             <CodeBlock lang="python" code={
 `import requests
 
@@ -294,7 +294,7 @@ chat_response = requests.post(
 print(chat_response.json()["content"])`
             } />
 
-            <h3 className="text-lg font-semibold text-white mb-3 mt-8">JavaScript / TypeScript</h3>
+            <h3 className="text-lg font-semibold text-[rgb(var(--zw-ink))] mb-3 mt-8">JavaScript / TypeScript</h3>
             <CodeBlock lang="typescript" code={`const API_KEY = process.env.ZONEWISE_API_KEY!
 const BASE_URL = 'https://zonewise.ai/api/v1'
 
@@ -345,13 +345,13 @@ console.log(answer.content)`} />
                 { code: '429', label: 'Rate Limited', desc: 'Too many requests. Check Retry-After header and back off.' },
                 { code: '500', label: 'Server Error', desc: 'Internal error. Retry after a short delay. Contact support if persistent.' },
               ].map(err => (
-                <div key={err.code} className="flex items-start gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <div key={err.code} className="flex items-start gap-4 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
                   <code className={`text-sm font-mono font-bold shrink-0 ${
                     err.code.startsWith('4') ? 'text-amber-400' : 'text-red-400'
                   }`}>{err.code}</code>
                   <div>
-                    <div className="text-sm font-semibold text-white mb-0.5">{err.label}</div>
-                    <div className="text-xs text-slate-400">{err.desc}</div>
+                    <div className="text-sm font-semibold text-[rgb(var(--zw-ink))] mb-0.5">{err.label}</div>
+                    <div className="text-xs text-[rgb(var(--zw-ink2))]">{err.desc}</div>
                   </div>
                 </div>
               ))}
@@ -359,12 +359,12 @@ console.log(answer.content)`} />
           </Section>
 
           {/* CTA */}
-          <div className="mt-12 p-8 bg-[#1E3A5F]/20 border border-[#1E3A5F]/40 rounded-2xl text-center">
-            <h3 className="text-xl font-bold text-white mb-2">Ready to integrate?</h3>
-            <p className="text-slate-400 text-sm mb-6">Get your API key on the Pro plan. Unlimited requests, full parcel database, AI chat.</p>
+          <div className="mt-12 p-8 bg-[rgb(var(--zw-elev)/0.2)] border border-[rgb(var(--zw-border2)/0.4)] rounded-2xl text-center">
+            <h3 className="text-xl font-bold text-[rgb(var(--zw-ink))] mb-2">Ready to integrate?</h3>
+            <p className="text-[rgb(var(--zw-ink2))] text-sm mb-6">Get your API key on the Pro plan. Unlimited requests, full parcel database, AI chat.</p>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#F59E0B] text-slate-950 rounded-xl font-bold text-sm hover:brightness-110 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] rounded-xl font-bold text-sm hover:brightness-110 transition-all"
             >
               View Pricing — From $39/mo
             </Link>
@@ -373,12 +373,12 @@ console.log(answer.content)`} />
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 py-8 text-center">
-        <p className="text-xs text-slate-500">
+      <footer className="border-t border-[rgb(var(--zw-border2))] py-8 text-center">
+        <p className="text-xs text-[rgb(var(--zw-ink2))]">
           © 2026 ZoneWise.AI · Everest Capital USA ·{' '}
-          <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacy</Link> ·{' '}
-          <Link href="/terms" className="hover:text-slate-300 transition-colors">Terms</Link> ·{' '}
-          <Link href="/help" className="hover:text-slate-300 transition-colors">Help</Link>
+          <Link href="/privacy" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Privacy</Link> ·{' '}
+          <Link href="/terms" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Terms</Link> ·{' '}
+          <Link href="/help" className="hover:text-[rgb(var(--zw-ink2))] transition-colors">Help</Link>
         </p>
       </footer>
     </div>

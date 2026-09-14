@@ -10,8 +10,8 @@ import dynamic from 'next/dynamic'
 const MapboxMap = dynamic(() => import('./MapboxMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center bg-slate-900 rounded-xl w-full h-full" style={{ minHeight: 180 }}>
-      <span className="text-slate-400 text-sm animate-pulse">Loading map…</span>
+    <div className="flex items-center justify-center bg-[rgb(var(--zw-page))] rounded-xl w-full h-full" style={{ minHeight: 180 }}>
+      <span className="text-[rgb(var(--zw-ink2))] text-sm animate-pulse">Loading map…</span>
     </div>
   ),
 })
@@ -38,7 +38,7 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
               className={`px-5 py-2 rounded-full text-[13px] font-medium border transition-all ${
                 subTab === t
                   ? 'bg-teal-600 text-white border-teal-600'
-                  : 'bg-white text-slate-500 border-slate-200 hover:border-teal-300'
+                  : 'bg-white text-[rgb(var(--zw-ink2))] border-slate-200 hover:border-teal-300'
               }`}
             >
               {t}
@@ -56,7 +56,7 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
       {/* Sidebar */}
       <div className="w-full lg:w-[300px] lg:flex-shrink-0">
         <SectionLabel text="Subject Property" />
-        <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
+        <div className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3 leading-snug">{site.address}</div>
         <StaticMapPreview lat={site.lat} lng={site.lng} zoom={15} width={600} height={360} style={{ height: 180, marginBottom: 16 }} />
         <Card className="p-4">
           <SectionLabel text="Quick Stats" />
@@ -70,8 +70,8 @@ export default function SiteTab({ site, zoningControls }: SiteTabProps) {
             ['Max Buildable', `${fmt(site.lotArea * site.far)} SF`],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between py-1 text-xs border-b border-slate-50">
-              <span className="text-slate-500">{k}</span>
-              <span className="font-semibold text-slate-900" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v}</span>
+              <span className="text-[rgb(var(--zw-ink2))]">{k}</span>
+              <span className="font-semibold text-[rgb(var(--zw-ink))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v}</span>
             </div>
           ))}
         </Card>
@@ -97,13 +97,13 @@ function SiteSummary({ site }: { site: SiteData }) {
           <Badge text="Claude-Powered" color={COLORS.brand} />
         </div>
         {insights.map(([title, text]) => (
-          <div key={title} className="mb-2.5 text-[13px] leading-relaxed text-slate-500">
-            <strong className="text-slate-900">{title}:</strong> {text}
+          <div key={title} className="mb-2.5 text-[13px] leading-relaxed text-[rgb(var(--zw-ink2))]">
+            <strong className="text-[rgb(var(--zw-ink))]">{title}:</strong> {text}
           </div>
         ))}
       </div>
       <div className="p-5">
-        <div className="text-sm font-bold text-slate-900 mb-3.5">Property Summary</div>
+        <div className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3.5">Property Summary</div>
         {([
           ['Parcel', [
             ['Parcel ID', site.parcelId],
@@ -125,8 +125,8 @@ function SiteSummary({ site }: { site: SiteData }) {
             <SectionLabel text={section} />
             {rows.map(([k, v]) => (
               <div key={k} className="flex justify-between py-1 text-[13px] border-b border-slate-50">
-                <span className="text-slate-500">{k}</span>
-                <span className="font-medium text-slate-900">{v}</span>
+                <span className="text-[rgb(var(--zw-ink2))]">{k}</span>
+                <span className="font-medium text-[rgb(var(--zw-ink))]">{v}</span>
               </div>
             ))}
           </div>
@@ -144,7 +144,7 @@ function ZoningReport({ site, controls }: { site: SiteData; controls: ZoningCont
           <span className="text-base font-bold" style={{ color: COLORS.brand }}>Zoning Analysis</span>
           <Badge text="Claude-Powered" color={COLORS.brand} />
         </div>
-        <div className="text-xs text-slate-400 mb-5">
+        <div className="text-xs text-[rgb(var(--zw-ink2))] mb-5">
           Data source: {site.county} County Land Development Code
         </div>
 
@@ -165,7 +165,7 @@ function ZoningReport({ site, controls }: { site: SiteData; controls: ZoningCont
             <thead>
               <tr className="bg-slate-50">
                 {['Control', 'Value', 'Basis', 'Code Reference'].map((h) => (
-                  <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
+                  <th key={h} className="px-3 py-2.5 text-left font-semibold text-[rgb(var(--zw-ink2))] border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
                     {h}
                   </th>
                 ))}
@@ -174,10 +174,10 @@ function ZoningReport({ site, controls }: { site: SiteData; controls: ZoningCont
             <tbody>
               {controls.map((r, i) => (
                 <tr key={r.control} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                  <td className="px-3 py-2.5 font-semibold text-slate-900">{r.control}</td>
+                  <td className="px-3 py-2.5 font-semibold text-[rgb(var(--zw-ink))]">{r.control}</td>
                   <td className="px-3 py-2.5 font-bold" style={{ color: COLORS.brand }}>{r.value}</td>
-                  <td className="px-3 py-2.5 text-slate-500 text-[11px]">{r.assumption}</td>
-                  <td className="px-3 py-2.5 text-slate-400" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{r.citation}</td>
+                  <td className="px-3 py-2.5 text-[rgb(var(--zw-ink2))] text-[11px]">{r.assumption}</td>
+                  <td className="px-3 py-2.5 text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{r.citation}</td>
                 </tr>
               ))}
             </tbody>
@@ -189,7 +189,7 @@ function ZoningReport({ site, controls }: { site: SiteData; controls: ZoningCont
 
         <div className="mt-5 rounded-lg p-3.5" style={{ background: COLORS.brandLight, border: `1px solid ${COLORS.brand}30` }}>
           <div className="text-xs font-semibold mb-1" style={{ color: COLORS.brandDark }}>💡 ZoneWise Insight</div>
-          <div className="text-xs text-slate-500 leading-relaxed">
+          <div className="text-xs text-[rgb(var(--zw-ink2))] leading-relaxed">
             {site.zone} zoning with {site.maxHeight}ft height and {site.far} FAR supports a 3-story garden apartment or townhome product.
             The {site.parking}/unit parking requirement is manageable with surface parking on a {fmt(site.lotArea)} SF lot.
           </div>
@@ -249,8 +249,8 @@ function WaterSetbackSection({ site }: { site: SiteData }) {
                 ['Regulation Source', site.waterSetbackSource || '—'],
               ].map(([k, v]) => (
                 <div key={k} className="text-[12px]">
-                  <span className="text-slate-400 block text-[10px] uppercase tracking-wider">{k}</span>
-                  <span className="font-semibold text-slate-900">{v}</span>
+                  <span className="text-[rgb(var(--zw-ink2))] block text-[10px] uppercase tracking-wider">{k}</span>
+                  <span className="font-semibold text-[rgb(var(--zw-ink))]">{v}</span>
                 </div>
               ))}
             </div>
@@ -259,8 +259,8 @@ function WaterSetbackSection({ site }: { site: SiteData }) {
                 className="rounded-md px-3 py-2 text-xs leading-relaxed"
                 style={{ background: '#FFF7ED', border: '1px solid #FED7AA' }}
               >
-                <span className="font-semibold text-orange-800">Impact: </span>
-                <span className="text-orange-700">
+                <span className="font-semibold text-[rgb(var(--zw-brand))]">Impact: </span>
+                <span className="text-[rgb(var(--zw-brand))]">
                   {site.waterDistanceFt >= site.setbackWater
                     ? `Parcel boundary is ${site.waterDistanceFt} ft from water — ${site.setbackWater} ft setback satisfied. Buildable envelope unaffected.`
                     : `⚠ Parcel boundary is ${site.waterDistanceFt} ft from water, inside the ${site.setbackWater} ft required setback. Development envelope is restricted — consult municipality.`}
@@ -271,7 +271,7 @@ function WaterSetbackSection({ site }: { site: SiteData }) {
         </div>
       ) : (
         <div
-          className="rounded-lg p-3.5 text-xs text-slate-500 flex items-center gap-2"
+          className="rounded-lg p-3.5 text-xs text-[rgb(var(--zw-ink2))] flex items-center gap-2"
           style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}
         >
           <span style={{ color: COLORS.success }}>✓</span>

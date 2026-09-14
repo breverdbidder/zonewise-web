@@ -34,7 +34,7 @@ export default async function CountyPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#020617] text-white">
+    <main className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <CountyDetailComponent detail={detail} />
       </div>

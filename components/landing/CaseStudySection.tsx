@@ -46,14 +46,14 @@ const TIMELINE = [
 
 export function CaseStudySection() {
   return (
-    <section className="relative overflow-hidden border-y border-[#1B2737]/40 bg-[#0B1119] pt-20 pb-14 sm:pt-28 sm:pb-16">
+    <section className="relative overflow-hidden border-y border-[rgb(var(--zw-border2)/0.4)] bg-[rgb(var(--zw-page))] pt-20 pb-14 sm:pt-28 sm:pb-16">
       {/* Ambient navy wash — CSS only, no WebGL */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 20% 0%, rgba(27,39,55,0.55) 0%, transparent 65%)',
+            'radial-gradient(ellipse 70% 60% at 20% 0%, rgb(var(--zw-border2) / 0.55) 0%, transparent 65%)',
         }}
       />
 
@@ -65,18 +65,18 @@ export function CaseStudySection() {
           transition={{ duration: 0.6 }}
         >
           <div
-            className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]"
+            className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[rgb(var(--zw-brand))]"
           >
             Case study · Palm Bay, Florida
           </div>
 
-          <h2 className="max-w-3xl text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl">
+          <h2 className="max-w-3xl text-3xl font-bold leading-[1.1] tracking-tight text-[rgb(var(--zw-ink))] sm:text-5xl">
             $20,100 of vacant dirt.
             <br />
-            <span className="text-[#1A90FF]">A 16-unit entitlement nobody else read.</span>
+            <span className="text-[rgb(var(--zw-brand))]">A 16-unit entitlement nobody else read.</span>
           </h2>
 
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-400 sm:text-lg">
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-[rgb(var(--zw-ink2))] sm:text-lg">
             Most feasibility software is sold on somebody else&apos;s project. This one was
             bought, entitled, and sold with our own capital — the same judgment the platform
             now runs automatically, on any parcel in Florida.
@@ -94,28 +94,28 @@ export function CaseStudySection() {
               transition={{ duration: 0.5, delay: i * 0.09 }}
               className="flex flex-col rounded-lg border p-6"
               style={{
-                background: '#0d1829',
-                borderColor: i === 3 ? 'rgba(26,144,255,0.35)' : 'rgba(27,39,55,0.5)',
+                background: 'rgb(var(--zw-card))',
+                borderColor: i === 3 ? 'rgb(var(--zw-brand) / 0.35)' : 'rgb(var(--zw-border2) / 0.5)',
                 boxShadow:
                   i === 3
-                    ? 'rgba(26,144,255,0.06) 0px 0px 30px, rgba(0,0,0,0.3) 0px 10px 30px -10px'
+                    ? 'rgb(var(--zw-brand) / 0.06) 0px 0px 30px, rgba(0,0,0,0.3) 0px 10px 30px -10px'
                     : 'rgba(0,0,0,0.3) 0px 10px 30px -10px',
               }}
             >
-              <div className="mb-3 font-mono text-[11px] tracking-[0.05em] text-slate-500">
+              <div className="mb-3 font-mono text-[11px] tracking-[0.05em] text-[rgb(var(--zw-ink2))]">
                 {t.step}
               </div>
-              <div className="mb-2 text-sm font-semibold text-white">{t.label}</div>
-              <p className="mb-6 flex-1 text-[13px] leading-relaxed text-slate-400">
+              <div className="mb-2 text-sm font-semibold text-[rgb(var(--zw-ink))]">{t.label}</div>
+              <p className="mb-6 flex-1 text-[13px] leading-relaxed text-[rgb(var(--zw-ink2))]">
                 {t.body}
               </p>
               <div
                 className="font-mono text-2xl font-semibold tabular-nums"
-                style={{ color: i === 3 ? '#10B981' : '#1A90FF' }}
+                style={{ color: i === 3 ? '#10B981' : 'rgb(var(--zw-brand))' }}
               >
                 {t.figure}
               </div>
-              <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.06em] text-slate-500">
+              <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.06em] text-[rgb(var(--zw-ink2))]">
                 {t.figureLabel}
               </div>
             </motion.div>
@@ -128,19 +128,19 @@ export function CaseStudySection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-slate-800 pt-6 font-mono text-xs text-slate-500"
+          className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[rgb(var(--zw-border2))] pt-6 font-mono text-xs text-[rgb(var(--zw-ink2))]"
         >
           <span>1581 &amp; 1591 Lakewood Drive NE, Palm Bay, FL</span>
-          <span className="text-slate-700">·</span>
+          <span className="text-[rgb(var(--zw-ink))]">·</span>
           <span>Parcel 28-37-22-01-5-5</span>
-          <span className="text-slate-700">·</span>
+          <span className="text-[rgb(var(--zw-ink))]">·</span>
           <span>Recorded, Brevard County Clerk</span>
-          <span className="text-slate-700">·</span>
+          <span className="text-[rgb(var(--zw-ink))]">·</span>
           <a
             href="https://everestcapitalusa.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block py-2 text-[#1A90FF] transition-colors hover:text-[#FBBF24]"
+            className="inline-block py-2 text-[rgb(var(--zw-brand))] transition-colors hover:text-[#FBBF24]"
           >
             Full track record →
           </a>

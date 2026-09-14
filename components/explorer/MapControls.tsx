@@ -26,8 +26,8 @@ export default function MapControls({ current, onChange }: Props) {
           aria-pressed={current === s.id}
           className={`min-h-11 px-3 py-1.5 md:min-h-0 md:px-2.5 rounded-md text-[11px] font-semibold backdrop-blur-sm shadow-sm transition-all border ${
             current === s.id
-              ? 'bg-amber-500 border-amber-500 text-slate-950'
-              : 'bg-white/90 border-slate-300 text-slate-700 hover:bg-amber-500/10 hover:border-amber-500/50'
+              ? 'bg-amber-500 border-amber-500 text-[rgb(var(--zw-ink))]'
+              : 'bg-white/90 border-slate-300 text-[rgb(var(--zw-ink))] hover:bg-amber-500/10 hover:border-amber-500/50'
           }`}
         >
           {s.label}

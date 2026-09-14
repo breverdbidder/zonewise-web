@@ -242,10 +242,10 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
     // Zoning data has no source on the lean map feed (no dor_use_code, no
     // zoning_category on multi_county_auctions) - grey/unknown is honest,
     // inventing a category is not.
-    if (colorMode === 'zoning') return '#6B7280'
+    if (colorMode === 'zoning') return 'rgb(var(--zw-elev))'
     if (point.sale_type === 'foreclosure') return '#EF4444'
-    if (point.sale_type === 'tax_deed') return '#1A90FF'
-    return '#6B7280'
+    if (point.sale_type === 'tax_deed') return 'rgb(var(--zw-brand))'
+    return 'rgb(var(--zw-elev))'
   }
 
   function buildGeoJSON() {
@@ -284,7 +284,7 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
   function getUnclusteredPaint(): any {
     if (colorMode === 'zoning') {
       return {
-        'circle-color': '#6B7280',
+        'circle-color': 'rgb(var(--zw-elev))',
         'circle-radius': 7,
         'circle-stroke-width': 2,
         'circle-stroke-color': '#ffffff',
@@ -295,8 +295,8 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
         'match',
         ['get', 'type_code'],
         0, '#EF4444',
-        1, '#1A90FF',
-        '#6B7280',
+        1, 'rgb(var(--zw-brand))',
+        'rgb(var(--zw-elev))',
       ],
       'circle-radius': 7,
       'circle-stroke-width': 2,
@@ -517,7 +517,7 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
       >
         {loading && (
           <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 z-10 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
           </div>
         )}
 
@@ -531,7 +531,7 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
           {/* Fullscreen toggle */}
           <button
             onClick={toggleFullscreen}
-            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-md px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-1.5"
+            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-md px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 hover:bg-white dark:hover:bg-[rgb(var(--zw-card))] transition-colors shadow-sm flex items-center gap-1.5"
             title={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen map'}
           >
             {isFullscreen ? (
@@ -554,7 +554,7 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
           {/* Satellite/Streets toggle */}
           <button
             onClick={toggleStyle}
-            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-md px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-1.5"
+            className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-md px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 hover:bg-white dark:hover:bg-[rgb(var(--zw-card))] transition-colors shadow-sm flex items-center gap-1.5"
             title={isSatellite ? 'Switch to streets' : 'Switch to satellite'}
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -569,8 +569,8 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
               onClick={() => setColorMode('type')}
               className={`px-3 py-1.5 text-xs font-medium transition-colors ${
                 colorMode === 'type'
-                  ? 'bg-zw-navy-500 text-white'
-                  : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
+                  ? 'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink))]'
+                  : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-[rgb(var(--zw-ink2))]'
               }`}
             >
               Type
@@ -579,8 +579,8 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
               onClick={() => setColorMode('zoning')}
               className={`px-3 py-1.5 text-xs font-medium transition-colors ${
                 colorMode === 'zoning'
-                  ? 'bg-zw-navy-500 text-white'
-                  : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200'
+                  ? 'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink))]'
+                  : 'text-gray-600 dark:text-slate-400 hover:text-gray-800 dark:hover:text-[rgb(var(--zw-ink2))]'
               }`}
             >
               Zoning
@@ -619,7 +619,7 @@ export default function AuctionMap({ county, saleType, dayFilter, onSelectAuctio
         {/* Fullscreen: Esc hint */}
         {isFullscreen && (
           <div className="absolute top-3 right-16 z-20 bg-black/60 backdrop-blur-sm rounded-md px-2.5 py-1.5 text-xs text-white/70">
-            Press <kbd className="bg-white/20 px-1 py-0.5 rounded text-white font-mono">Esc</kbd> to exit
+            Press <kbd className="bg-white/20 px-1 py-0.5 rounded text-[rgb(var(--zw-ink))] font-mono">Esc</kbd> to exit
           </div>
         )}
       </div>

@@ -135,7 +135,7 @@ function safeStr(val: unknown, fallback = 'Pending'): string {
 function Band({ label, title, color }: { label: string; title: string; color: string | null }) {
   return (
     <div
-      className="px-4 py-2 rounded-t-md text-white text-sm font-bold tracking-wide"
+      className="px-4 py-2 rounded-t-md text-[rgb(var(--zw-ink))] text-sm font-bold tracking-wide"
       style={{ backgroundColor: BAND_COLOR[color ?? 'navy'] ?? BAND_COLOR.navy }}
     >
       §{label} {title.toUpperCase()}
@@ -158,8 +158,8 @@ function compSaleDateText(c: any): string {
 function Row({ label, value, alt }: { label: string; value: unknown; alt?: boolean }) {
   return (
     <div className={`flex justify-between gap-4 px-4 py-2 text-sm ${alt ? 'bg-slate-50 dark:bg-slate-900' : 'bg-white dark:bg-slate-950'}`}>
-      <span className="text-slate-500 dark:text-slate-400 shrink-0">{label}</span>
-      <span className="font-semibold text-slate-900 dark:text-white text-right break-words">{safeStr(value)}</span>
+      <span className="text-[rgb(var(--zw-ink2))] dark:text-slate-400 shrink-0">{label}</span>
+      <span className="font-semibold text-[rgb(var(--zw-ink))] dark:text-white text-right break-words">{safeStr(value)}</span>
     </div>
   )
 }
@@ -169,8 +169,8 @@ function TwoCol({ pairs }: { pairs: [string, unknown][] }) {
     <div className="grid grid-cols-2 gap-px bg-slate-200 dark:bg-slate-800">
       {pairs.map(([l, v], i) => (
         <div key={l} className={`flex justify-between gap-3 px-3 py-2 text-sm ${i % 4 < 2 ? 'bg-slate-50 dark:bg-slate-900' : 'bg-white dark:bg-slate-950'}`}>
-          <span className="text-slate-500 dark:text-slate-400 shrink-0">{l}</span>
-          <span className="font-semibold text-slate-900 dark:text-white text-right break-words">{safeStr(v)}</span>
+          <span className="text-[rgb(var(--zw-ink2))] dark:text-slate-400 shrink-0">{l}</span>
+          <span className="font-semibold text-[rgb(var(--zw-ink))] dark:text-white text-right break-words">{safeStr(v)}</span>
         </div>
       ))}
     </div>
@@ -182,7 +182,7 @@ function SubHead({ children }: { children: ReactNode }) {
 }
 
 function Para({ children, muted }: { children: ReactNode; muted?: boolean }) {
-  return <p className={`px-4 py-2 text-xs ${muted ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>{children}</p>
+  return <p className={`px-4 py-2 text-xs ${muted ? 'text-[rgb(var(--zw-ink2))] dark:text-slate-400' : 'text-[rgb(var(--zw-ink))] dark:text-slate-300'}`}>{children}</p>
 }
 
 function LiabilityNote({ note }: { note?: string | null }) {
@@ -194,7 +194,7 @@ function callClass(call: unknown): string {
   return call === 'SURVIVES' ? 'text-red-700 dark:text-red-400'
     : call === 'EXTINGUISHED' ? 'text-green-700 dark:text-green-400'
     : call === 'UNRESOLVED' ? 'text-amber-700 dark:text-amber-400'
-    : 'text-slate-500'
+    : 'text-[rgb(var(--zw-ink2))]'
 }
 
 // ─── Title Search blocks (Title Tier 3) — mirrors pdf.js renderTitleSearchBlocks
@@ -290,7 +290,7 @@ function TitleSearchBlocks({ ts }: { ts: any }) {
         <div className="px-2 pb-2 overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="text-left text-slate-500 dark:text-slate-400">
+              <tr className="text-left text-[rgb(var(--zw-ink2))] dark:text-slate-400">
                 <th className="px-2 py-1">Pos</th><th className="px-2 py-1">Date</th><th className="px-2 py-1">Instrument</th><th className="px-2 py-1">Holder</th><th className="px-2 py-1">Class</th><th className="px-2 py-1">Call</th>
               </tr>
             </thead>
@@ -306,7 +306,7 @@ function TitleSearchBlocks({ ts }: { ts: any }) {
                     <td className={`px-2 py-1 align-top font-bold ${callClass(r.survival_call)}`}>{safeStr(r.survival_call)}</td>
                   </tr>
                   <tr className={i % 2 === 0 ? 'bg-slate-50 dark:bg-slate-900' : 'bg-white dark:bg-slate-950'}>
-                    <td colSpan={6} className="px-2 pb-2 text-[11px] text-slate-500 dark:text-slate-400">{safeStr(r.statutory_basis)}</td>
+                    <td colSpan={6} className="px-2 pb-2 text-[11px] text-[rgb(var(--zw-ink2))] dark:text-slate-400">{safeStr(r.statutory_basis)}</td>
                   </tr>
                 </Fragment>
               ))}
@@ -424,13 +424,13 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <div className="m-3 p-3 rounded bg-amber-50 dark:bg-amber-950/30">
           <p className="text-xs font-bold text-amber-700 dark:text-amber-400">EXPECTED CLEARING PRICE (Distressed)</p>
           <p className="text-lg font-bold text-[#0A2540] dark:text-white">{cb?.low != null ? `${money(cb.low)} – ${money(cb.high)}` : 'Pending'}</p>
-          {cb?.midpoint != null && <p className="text-xs text-slate-500">Midpoint {money(cb.midpoint)}{cb.confidence ? ` · confidence ${cb.confidence}` : ''}</p>}
+          {cb?.midpoint != null && <p className="text-xs text-[rgb(var(--zw-ink2))]">Midpoint {money(cb.midpoint)}{cb.confidence ? ` · confidence ${cb.confidence}` : ''}</p>}
         </div>
         <div className="m-3 p-3 rounded bg-green-50 dark:bg-green-950/30">
           <p className="text-xs font-bold text-green-700 dark:text-green-400">RETAIL ARV — OPEN MARKET EXIT VALUE</p>
           <p className="text-lg font-bold text-[#0A2540] dark:text-white">{mb?.low != null ? `${money(mb.low)} – ${money(mb.high)}` : 'Pending'}</p>
           {mb?.midpoint != null && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[rgb(var(--zw-ink2))]">
               Midpoint {money(mb.midpoint)} · Investment Grade {cover.investment_grade || '—'} · SIGNAL$ Max Bid {maxBidText(report, cover.shapira_max_bid)}
             </p>
           )}
@@ -443,7 +443,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         )}
         {Array.isArray(value.anchors) && value.anchors.length > 0 && (
           <div className="px-3 pb-2">
-            <p className="text-xs font-bold text-slate-500 mb-1">Value Anchors:</p>
+            <p className="text-xs font-bold text-[rgb(var(--zw-ink2))] mb-1">Value Anchors:</p>
             {value.anchors.map((a: any, i: number) => (
               <Row key={a.key} label={String(a.key).replace(/_/g, ' ')} value={a.value != null ? `${money(a.value)} · ${a.source}` : `Pending — ${a.reason || a.source}`} alt={i % 2 === 0} />
             ))}
@@ -569,7 +569,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         <div className="px-4 py-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={aerial.url} alt="Aerial view of the subject parcel" className="w-full max-w-md rounded border border-slate-200 dark:border-slate-800" loading="lazy" />
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Aerial source: {aerial.source || 'Pending'}</p>
+          <p className="text-[11px] text-[rgb(var(--zw-ink2))] dark:text-slate-400 mt-1">Aerial source: {aerial.source || 'Pending'}</p>
         </div>
       ) : (
         <Row label="Aerial" value="Pending — image not available at generation time" />
@@ -667,7 +667,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
         )}
         {fv && typeof fv === 'object' && (
           <div className="px-3 pb-2">
-            <p className="text-xs font-bold text-slate-500 mb-1">Feature Vector (exact model inputs):</p>
+            <p className="text-xs font-bold text-[rgb(var(--zw-ink2))] mb-1">Feature Vector (exact model inputs):</p>
             {Object.entries(fv).map(([k, v], i) => (
               <Row key={k} label={k.replace(/_/g, ' ')} value={safeStr(v)} alt={i % 2 === 0} />
             ))}
@@ -722,7 +722,7 @@ const SECTION_RENDERERS: Record<string, (report: Report) => ReactNode> = {
     const verdict = String(cover.verdict || opp.verdict || 'PENDING')
     return (
       <>
-        <div className="m-3 p-3 rounded text-white" style={{ backgroundColor: verdict.startsWith('BID') ? '#16A34A' : verdict === 'SKIP' ? '#DC2626' : '#D97706' }}>
+        <div className="m-3 p-3 rounded text-[rgb(var(--zw-ink))]" style={{ backgroundColor: verdict.startsWith('BID') ? '#16A34A' : verdict === 'SKIP' ? '#DC2626' : '#D97706' }}>
           <p className="text-2xl font-bold">{verdict}</p>
           <p className="text-sm">Investment Grade {cover.investment_grade || '—'}</p>
         </div>
@@ -855,20 +855,20 @@ export default function S5Report({ template, report: inputReport }: S5ReportProp
   const cover = report.cover || {}
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="rounded-t-lg bg-[#0A2540] text-white px-5 py-4">
-        <p className="text-lg font-bold text-white">BidDeed.AI <span className="font-normal text-slate-300">+ ZoneWise.AI</span></p>
+      <div className="rounded-t-lg bg-[#0A2540] text-[rgb(var(--zw-ink))] px-5 py-4">
+        <p className="text-lg font-bold text-[rgb(var(--zw-ink))]">BidDeed.AI <span className="font-normal text-[rgb(var(--zw-ink2))]">+ ZoneWise.AI</span></p>
         <p className="text-xs mt-1">SIGNAL$ PROPERTY REPORT · 18 SECTIONS</p>
-        <p className="text-xs text-slate-300 mt-1">
+        <p className="text-xs text-[rgb(var(--zw-ink2))] mt-1">
           {(cover.county || '').toUpperCase()} County, FL · {cover.sale_type || 'Foreclosure'} Sale {cover.auction_date || ''} · {cover.property_address || ''}
         </p>
-        <p className="text-[11px] text-slate-400 mt-1">
+        <p className="text-[11px] text-[rgb(var(--zw-ink2))] mt-1">
           Case {cover.case_number || '—'} · Parcel {cover.parcel_id || '—'}
         </p>
       </div>
       {typeof report.executive_summary?.text === 'string' && report.executive_summary.text.trim() && (
         <div className="border-x border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-5 py-3">
           <p className="text-[11px] font-bold tracking-wide text-[#0A2540] dark:text-[#4DA6FF]">EXECUTIVE SUMMARY</p>
-          <p className="text-sm text-slate-800 dark:text-slate-200 mt-1">{report.executive_summary.text}</p>
+          <p className="text-sm text-[rgb(var(--zw-ink))] dark:text-slate-200 mt-1">{report.executive_summary.text}</p>
         </div>
       )}
       <div className="space-y-4 mt-4">

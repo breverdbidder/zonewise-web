@@ -1,4 +1,4 @@
-const ORANGE = '#1A90FF'
+const ORANGE = 'rgb(var(--zw-brand))'
 
 export interface ParamSliderProps {
   label: string
@@ -27,9 +27,9 @@ export function ParamSlider({ label, value, min, max, step, onChange, unit = '' 
         aria-valuemin={min}
         aria-valuemax={max}
         className="flex-1 h-1 rounded-full appearance-none cursor-pointer"
-        style={{ accentColor: ORANGE, background: '#334155' }}
+        style={{ accentColor: ORANGE, background: 'rgb(var(--zw-elev))' }}
       />
-      <span className="text-xs font-bold text-white w-12 text-right" aria-live="polite">
+      <span className="text-xs font-bold text-[rgb(var(--zw-ink))] w-12 text-right" aria-live="polite">
         {value}{unit}
       </span>
     </div>

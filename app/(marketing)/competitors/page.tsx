@@ -27,23 +27,23 @@ export default function CompetitorsIndexPage() {
   const cards = getAllCardSummaries()
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#0B1119] text-slate-100">
+    <main id="main-content" className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <header
-        className="border-b border-slate-800"
+        className="border-b border-[rgb(var(--zw-border2))]"
         style={{
           background:
-            'linear-gradient(135deg, #1B2737 0%, #0d2040 60%, #0B1119 100%)',
+            'linear-gradient(135deg, rgb(var(--zw-elev)) 0%, #0d2040 60%, rgb(var(--zw-page)) 100%)',
         }}
       >
         <div className="mx-auto max-w-6xl px-6 py-20 text-center">
-          <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[#1A90FF]/30 bg-[#1A90FF]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#1A90FF]">
+          <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[rgb(var(--zw-brand)/0.3)] bg-[rgb(var(--zw-brand)/0.1)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--zw-brand))]">
             Competitive Landscape
           </span>
-          <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            ZoneWise.AI <span className="text-[#1A90FF]">vs</span> 10 Competitors
+          <h1 className="text-4xl font-bold leading-tight tracking-tight text-[rgb(var(--zw-ink))] sm:text-5xl lg:text-6xl">
+            ZoneWise.AI <span className="text-[rgb(var(--zw-brand))]">vs</span> 10 Competitors
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-300">
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-[rgb(var(--zw-ink2))]">
             Head-to-head comparisons across zoning data, auction intelligence, ML
             predictions, lien analysis, and pricing. Every claim sourced and dated.
           </p>
@@ -57,37 +57,37 @@ export default function CompetitorsIndexPage() {
             <Link
               key={card.slug}
               href={`/competitors/${card.slug}`}
-              className="group relative flex flex-col rounded-xl border border-slate-800 bg-slate-900/40 p-6 transition hover:border-[#1A90FF]/40 hover:bg-slate-900/60"
+              className="group relative flex flex-col rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6 transition hover:border-[rgb(var(--zw-brand)/0.4)] hover:bg-[rgb(var(--zw-page)/0.6)]"
             >
               <div className="mb-4 flex items-start justify-between gap-3">
-                <h2 className="text-xl font-bold text-white group-hover:text-[#1A90FF]">
+                <h2 className="text-xl font-bold text-[rgb(var(--zw-ink))] group-hover:text-[rgb(var(--zw-brand))]">
                   {card.name}
                 </h2>
                 <ThreatBadge threat={card.threat} />
               </div>
 
-              <p className="mb-4 flex-1 text-sm text-slate-400">{card.tagline}</p>
+              <p className="mb-4 flex-1 text-sm text-[rgb(var(--zw-ink2))]">{card.tagline}</p>
 
               {card.zonewise_wins + card.competitor_wins + card.ties > 0 ? (
-                <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs">
-                  <span className="text-slate-500">
-                    <span className="font-bold text-[#1A90FF]">{card.zonewise_wins}</span>
-                    <span className="mx-1 text-slate-700">/</span>
-                    <span className="text-slate-400">{card.competitor_wins}</span>
-                    <span className="mx-1 text-slate-700">/</span>
-                    <span className="text-slate-500">{card.ties}</span>
+                <div className="flex items-center justify-between border-t border-[rgb(var(--zw-border2))] pt-4 text-xs">
+                  <span className="text-[rgb(var(--zw-ink2))]">
+                    <span className="font-bold text-[rgb(var(--zw-brand))]">{card.zonewise_wins}</span>
+                    <span className="mx-1 text-[rgb(var(--zw-ink))]">/</span>
+                    <span className="text-[rgb(var(--zw-ink2))]">{card.competitor_wins}</span>
+                    <span className="mx-1 text-[rgb(var(--zw-ink))]">/</span>
+                    <span className="text-[rgb(var(--zw-ink2))]">{card.ties}</span>
                     <span className="ml-1.5 text-[10px] uppercase tracking-wider">
                       W / L / T
                     </span>
                   </span>
-                  <span className="text-[#1A90FF] transition group-hover:translate-x-0.5">
+                  <span className="text-[rgb(var(--zw-brand))] transition group-hover:translate-x-0.5">
                     View →
                   </span>
                 </div>
               ) : (
-                <div className="flex items-center justify-between border-t border-slate-800 pt-4 text-xs">
-                  <span className="text-slate-500">Coming soon</span>
-                  <span className="text-slate-500 transition group-hover:text-slate-300">
+                <div className="flex items-center justify-between border-t border-[rgb(var(--zw-border2))] pt-4 text-xs">
+                  <span className="text-[rgb(var(--zw-ink2))]">Coming soon</span>
+                  <span className="text-[rgb(var(--zw-ink2))] transition group-hover:text-[rgb(var(--zw-ink2))]">
                     Preview →
                   </span>
                 </div>
@@ -97,14 +97,14 @@ export default function CompetitorsIndexPage() {
         </div>
 
         {/* ── FOOTER NOTE ─────────────────────────────────────────────── */}
-        <p className="mx-auto mt-12 max-w-2xl text-center text-xs text-slate-500">
+        <p className="mx-auto mt-12 max-w-2xl text-center text-xs text-[rgb(var(--zw-ink2))]">
           Every battle card is backed by dated sources under the{' '}
-          <strong className="text-slate-400">Honesty Protocol</strong>. Competitor pricing
+          <strong className="text-[rgb(var(--zw-ink2))]">Honesty Protocol</strong>. Competitor pricing
           and feature claims are verified against published materials. If you spot an
           error,{' '}
           <a
             href="mailto:ariel@everestcapitalusa.com"
-            className="text-[#1A90FF] hover:underline"
+            className="text-[rgb(var(--zw-brand))] hover:underline"
           >
             email us
           </a>{' '}

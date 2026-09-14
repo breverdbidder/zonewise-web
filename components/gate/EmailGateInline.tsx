@@ -32,7 +32,7 @@ export default function EmailGateInline({ onSubmit, ctaLabel = 'Unlock', message
 
   return (
     <div className={className ?? 'mt-3 flex flex-col gap-1.5 max-w-md'}>
-      {message && <p className="text-xs text-slate-400">{message}</p>}
+      {message && <p className="text-xs text-[rgb(var(--zw-ink2))]">{message}</p>}
       <div className="flex gap-2 items-start">
         <div className="flex-1">
           <input
@@ -41,14 +41,14 @@ export default function EmailGateInline({ onSubmit, ctaLabel = 'Unlock', message
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submit()}
             placeholder="your@email.com"
-            className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1A90FF]"
+            className="w-full bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-2 text-sm text-[rgb(var(--zw-ink2))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--zw-brand))]"
           />
           {err && <p className="text-xs text-red-400 mt-1">Enter a valid email to continue.</p>}
         </div>
         <button
           onClick={submit}
           disabled={submitting}
-          className="px-4 py-2 rounded bg-[#1A90FF] hover:bg-[#fbbf24] text-slate-950 text-sm font-bold disabled:opacity-50 shrink-0"
+          className="px-4 py-2 rounded bg-[rgb(var(--zw-brand))] hover:bg-[#fbbf24] text-[rgb(var(--zw-ink))] text-sm font-bold disabled:opacity-50 shrink-0"
         >
           {submitting ? '…' : ctaLabel}
         </button>

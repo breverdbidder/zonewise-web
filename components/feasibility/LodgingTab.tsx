@@ -9,8 +9,8 @@ import dynamic from 'next/dynamic'
 const MapboxMap = dynamic(() => import('./MapboxMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center bg-slate-900 rounded-xl w-full h-full" style={{ minHeight: 180 }}>
-      <span className="text-slate-400 text-sm animate-pulse">Loading map…</span>
+    <div className="flex items-center justify-center bg-[rgb(var(--zw-page))] rounded-xl w-full h-full" style={{ minHeight: 180 }}>
+      <span className="text-[rgb(var(--zw-ink2))] text-sm animate-pulse">Loading map…</span>
     </div>
   ),
 })
@@ -55,7 +55,7 @@ const STATUS_CONFIG: Record<LodgingPermitStatus, { label: string; bg: string; te
   unknown: {
     label: 'Verify with Municipality',
     bg: '#F8FAFC',
-    text: '#475569',
+    text: 'rgb(var(--zw-ink2)))',
     border: '#CBD5E1',
     icon: '?',
   },
@@ -92,7 +92,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
                 tooltip="Lodging permit data is available for 2 of 16 Brevard municipalities. Coverage expanding weekly."
               />
             </div>
-            <div className="text-[13px] text-slate-500">
+            <div className="text-[13px] text-[rgb(var(--zw-ink2))]">
               {site.zone} · {site.zoneCity} · {site.county} County ·{' '}
               <span style={{ color: COLORS.accent }} className="font-medium">Data available for 2 of 16 municipalities</span>
             </div>
@@ -125,8 +125,8 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
         {/* Permit Matrix */}
         <Card className="mb-4">
           <div className="px-5 py-3 border-b border-slate-100">
-            <div className="text-[13px] font-bold text-slate-900">Lodging Use Matrix</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Based on {site.zone} zoning designation in {site.zoneCity}</div>
+            <div className="text-[13px] font-bold text-[rgb(var(--zw-ink))]">Lodging Use Matrix</div>
+            <div className="text-[11px] text-[rgb(var(--zw-ink2))] mt-0.5">Based on {site.zone} zoning designation in {site.zoneCity}</div>
           </div>
           <div className="divide-y divide-slate-50">
             {LODGING_TYPES.map(({ key, label, description }) => {
@@ -139,8 +139,8 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
                   style={{ background: status === 'not_permitted' ? '#FAFAFA' : 'transparent' }}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-semibold text-slate-900 mb-0.5">{label}</div>
-                    <div className="text-[11px] text-slate-400 leading-relaxed">{description}</div>
+                    <div className="text-[13px] font-semibold text-[rgb(var(--zw-ink))] mb-0.5">{label}</div>
+                    <div className="text-[11px] text-[rgb(var(--zw-ink2))] leading-relaxed">{description}</div>
                   </div>
                   <div className="flex-shrink-0 pt-0.5">
                     <PermitBadge status={status} />
@@ -180,7 +180,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
             <div className="text-[11px] font-bold mb-1.5" style={{ color: COLORS.brandDark }}>
               💡 Conditional Use Path
             </div>
-            <div className="text-[12px] text-slate-600 leading-relaxed">
+            <div className="text-[12px] text-[rgb(var(--zw-ink2))] leading-relaxed">
               {conditionalCount} lodging type{conditionalCount > 1 ? 's' : ''} require a Conditional Use Permit (CUP).
               CUPs in {site.zoneCity} typically require: site plan review, public hearing, and 30–90 day approval timeline.
               Contact {site.zoneCity} Planning & Zoning at City Hall to initiate the application.
@@ -200,7 +200,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
                 <thead>
                   <tr className="bg-slate-50">
                     {['Address', 'Zone', 'Type', 'Distance', 'Units'].map((h) => (
-                      <th key={h} className="px-3 py-2.5 text-left font-semibold text-slate-500 border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
+                      <th key={h} className="px-3 py-2.5 text-left font-semibold text-[rgb(var(--zw-ink2))] border-b-2 border-slate-200 text-[10px] uppercase tracking-wider">
                         {h}
                       </th>
                     ))}
@@ -209,15 +209,15 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
                 <tbody>
                   {nearbyLodging.map((p, i) => (
                     <tr key={p.address} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                      <td className="px-3 py-2.5 text-slate-700 font-medium">{p.address}</td>
+                      <td className="px-3 py-2.5 text-[rgb(var(--zw-ink))] font-medium">{p.address}</td>
                       <td className="px-3 py-2.5">
                         <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded">{p.zone}</span>
                       </td>
-                      <td className="px-3 py-2.5 capitalize text-slate-600">{p.type}</td>
-                      <td className="px-3 py-2.5 text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <td className="px-3 py-2.5 capitalize text-[rgb(var(--zw-ink2))]">{p.type}</td>
+                      <td className="px-3 py-2.5 text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                         {p.distanceMi.toFixed(1)} mi
                       </td>
-                      <td className="px-3 py-2.5 text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <td className="px-3 py-2.5 text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                         {p.units ?? '—'}
                       </td>
                     </tr>
@@ -232,7 +232,7 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
       {/* Sidebar */}
       <div className="w-full lg:w-[300px] flex-shrink-0">
         <SectionLabel text="Subject Property" />
-        <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
+        <div className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3 leading-snug">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={14} pitch={0} style={{ height: 200, marginBottom: 16 }} />
 
         <Card className="p-4">
@@ -244,8 +244,8 @@ export default function LodgingTab({ site, lodging, nearbyLodging = [] }: Lodgin
             ['Flood Zone', site.flood],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between py-1 text-xs border-b border-slate-50">
-              <span className="text-slate-500">{k}</span>
-              <span className="font-semibold text-slate-900">{v}</span>
+              <span className="text-[rgb(var(--zw-ink2))]">{k}</span>
+              <span className="font-semibold text-[rgb(var(--zw-ink))]">{v}</span>
             </div>
           ))}
         </Card>

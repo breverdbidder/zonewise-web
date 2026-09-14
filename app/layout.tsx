@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1B2737',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
 }
@@ -69,7 +69,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get('x-nonce') ?? undefined
   return (
-    <html lang="en" className={`dark ${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+    <html lang="en" data-theme="light" className={`${inter.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -245,8 +245,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: `
           try {
-            if (localStorage.getItem('zw-theme') === 'light') {
-              document.documentElement.classList.remove('dark');
+            // Light is the house-brand default (biddeed.ai twin). Dark only when saved.
+            if (localStorage.getItem('zw-theme') === 'dark') {
+              document.documentElement.classList.add('dark');
+              document.documentElement.dataset.theme = 'dark';
             }
           } catch(e) {}
         `}} />
@@ -264,7 +266,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <main id="main-content">
                   {children}
                 </main>
-                <Toaster position="bottom-right" theme="dark" />
+                <Toaster position="bottom-right" theme="light" />
               </OnboardingProvider>
             </ThemeProvider>
           </PostHogProvider>

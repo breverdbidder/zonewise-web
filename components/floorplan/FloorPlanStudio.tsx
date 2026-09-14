@@ -88,7 +88,7 @@ function StatusBadge({ status }: { status: string }) {
     )
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-400 border border-slate-700">
+    <span className="inline-flex items-center gap-1 rounded-full bg-[rgb(var(--zw-card))] px-2.5 py-1 text-xs font-semibold text-[rgb(var(--zw-ink2))] border border-[rgb(var(--zw-border2))]">
       <MinusCircle className="h-3.5 w-3.5" /> SKIPPED
     </span>
   )
@@ -286,31 +286,31 @@ export default function FloorPlanStudio() {
   }, [svg, parcelId, planName])
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink2))]">
+      <header className="border-b border-[rgb(var(--zw-border2))] px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto">
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-white tracking-tight">Floor Plan Studio</h1>
-            <p className="text-xs text-slate-500 mt-0.5">ZoneWise.AI — parcel-aware floor plan compiler</p>
+            <h1 className="text-lg font-semibold text-[rgb(var(--zw-ink))] tracking-tight">Floor Plan Studio</h1>
+            <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">ZoneWise.AI — parcel-aware floor plan compiler</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <input
               value={parcelId}
               onChange={(e) => setParcelId(e.target.value)}
               placeholder="Parcel ID"
-              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[7rem] sm:flex-none sm:w-40"
+              className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[7rem] sm:flex-none sm:w-40"
             />
             <input
               value={planName}
               onChange={(e) => setPlanName(e.target.value)}
               placeholder="Plan name"
-              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[6rem] sm:flex-none sm:w-32"
+              className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-2 focus:ring-blue-600 flex-1 min-w-[6rem] sm:flex-none sm:w-32"
             />
             <button
               onClick={handleLoad}
               disabled={loadingPlan}
               title="Load a previously saved plan for this parcel ID / plan name"
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm font-medium text-[rgb(var(--zw-ink2))] disabled:opacity-50"
             >
               {loadingPlan ? <Loader2 className="h-4 w-4 animate-spin" /> : <FolderOpen className="h-4 w-4" />}
               Load
@@ -318,7 +318,7 @@ export default function FloorPlanStudio() {
             <button
               onClick={() => gate.requireGate(handleSave, 'floorplan_pdf_export', 'Enter your email to save this plan.')}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm font-medium text-[rgb(var(--zw-ink2))] disabled:opacity-50"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
@@ -327,12 +327,12 @@ export default function FloorPlanStudio() {
               onClick={() => gate.requireGate(handleDownloadPdf, 'floorplan_pdf_export', 'Enter your email to download this plan as a PDF.')}
               disabled={!svg || exportingPdf}
               title={!svg ? 'Compile a plan first' : 'Download this plan as a PDF'}
-              className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm font-medium text-[rgb(var(--zw-ink2))] disabled:opacity-50"
             >
               {exportingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
               Download PDF
             </button>
-            <button className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200">
+            <button className="inline-flex items-center gap-1.5 bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm font-medium text-[rgb(var(--zw-ink2))]">
               <History className="h-4 w-4" />
               History
             </button>
@@ -359,7 +359,7 @@ export default function FloorPlanStudio() {
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-slate-300">Plan source (.arch)</label>
+              <label className="text-sm font-medium text-[rgb(var(--zw-ink2))]">Plan source (.arch)</label>
               <button
                 onClick={handleCompile}
                 disabled={compiling}
@@ -373,17 +373,17 @@ export default function FloorPlanStudio() {
               value={source}
               onChange={(e) => setSource(e.target.value)}
               spellCheck={false}
-              className="w-full h-80 bg-slate-900 border border-slate-700 rounded p-3 text-sm font-mono text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+              className="w-full h-80 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded p-3 text-sm font-mono text-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
             />
           </div>
 
-          <div className="border border-slate-800 rounded p-4">
-            <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-3">
+          <div className="border border-[rgb(var(--zw-border2))] rounded p-4">
+            <label className="flex items-center gap-2 text-sm font-medium text-[rgb(var(--zw-ink2))] mb-3">
               <input
                 type="checkbox"
                 checked={useZoning}
                 onChange={(e) => setUseZoning(e.target.checked)}
-                className="rounded border-slate-600 bg-slate-800"
+                className="rounded border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))]"
               />
               Check against parcel zoning constraints
             </label>
@@ -426,7 +426,7 @@ export default function FloorPlanStudio() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded border border-slate-800 overflow-hidden">
+          <div className="rounded border border-[rgb(var(--zw-border2))] overflow-hidden">
             <div className="bg-blue-950 min-h-[20rem] flex items-center justify-center p-4">
               {svg ? (
                 <div className="bg-white rounded shadow-2xl p-2 w-full" dangerouslySetInnerHTML={{ __html: svg }} />
@@ -435,7 +435,7 @@ export default function FloorPlanStudio() {
               )}
             </div>
             {summary && (
-              <div className="bg-slate-900 px-4 py-2 flex items-center justify-between text-xs font-mono text-slate-400 border-t border-slate-800">
+              <div className="bg-[rgb(var(--zw-page))] px-4 py-2 flex items-center justify-between text-xs font-mono text-[rgb(var(--zw-ink2))] border-t border-[rgb(var(--zw-border2))]">
                 <span>{summary.totals?.rooms ?? summary.rooms?.length ?? 0} rooms</span>
                 <span>{summary.totals?.floor_area_m2 ?? '—'} m²</span>
                 <span>{summary.totals?.doors ?? 0} doors</span>
@@ -445,23 +445,23 @@ export default function FloorPlanStudio() {
           </div>
 
           {zoning && (
-            <div className="border border-slate-800 rounded p-4">
+            <div className="border border-[rgb(var(--zw-border2))] rounded p-4">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-slate-200">Zoning compliance</p>
+                <p className="text-sm font-semibold text-[rgb(var(--zw-ink2))]">Zoning compliance</p>
                 <StatusBadge status={zoning.ok ? 'pass' : 'fail'} />
               </div>
 
               <div className="space-y-2">
                 {(zoning.checks || []).map((c: any, i: number) => (
-                  <div key={i} className="flex items-start justify-between gap-3 py-2 border-t border-slate-800 first:border-t-0 first:pt-0">
+                  <div key={i} className="flex items-start justify-between gap-3 py-2 border-t border-[rgb(var(--zw-border2))] first:border-t-0 first:pt-0">
                     <div>
-                      <p className="text-sm text-slate-300">
+                      <p className="text-sm text-[rgb(var(--zw-ink2))]">
                         <RuleLabel rule={c.rule} />
                       </p>
                       {c.status === 'skipped' ? (
-                        <p className="text-xs text-slate-500 mt-0.5">{c.reason}</p>
+                        <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">{c.reason}</p>
                       ) : (
-                        <p className="text-xs font-mono text-slate-500 mt-0.5">{JSON.stringify(c.detail)}</p>
+                        <p className="text-xs font-mono text-[rgb(var(--zw-ink2))] mt-0.5">{JSON.stringify(c.detail)}</p>
                       )}
                     </div>
                     <StatusBadge status={c.status} />
@@ -470,7 +470,7 @@ export default function FloorPlanStudio() {
               </div>
 
               {zoning.problems && zoning.problems.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-slate-800">
+                <div className="mt-3 pt-3 border-t border-[rgb(var(--zw-border2))]">
                   <ul className="space-y-1 text-sm text-red-400">
                     {zoning.problems.map((p: string, i: number) => (
                       <li key={i}>• {p}</li>
@@ -479,7 +479,7 @@ export default function FloorPlanStudio() {
                 </div>
               )}
 
-              <p className="text-xs text-slate-600 mt-3">
+              <p className="text-xs text-[rgb(var(--zw-ink2))] mt-3">
                 Dimensional-fit and coverage check only — not a full site-plan setback check. See zoning.js for scope.
               </p>
             </div>
@@ -493,12 +493,12 @@ export default function FloorPlanStudio() {
 function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <label className="block">
-      <span className="text-xs text-slate-500">{label}</span>
+      <span className="text-xs text-[rgb(var(--zw-ink2))]">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-1 w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-sm font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+        className="mt-1 w-full bg-[rgb(var(--zw-card))] border border-[rgb(var(--zw-border2))] rounded px-2.5 py-1.5 text-sm font-mono text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-2 focus:ring-blue-600"
       />
     </label>
   )

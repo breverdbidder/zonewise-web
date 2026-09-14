@@ -15,10 +15,10 @@ import { SourceBadge } from './SourceBadge'
 
 const Envelope3D = dynamic(() => import('./Envelope3D').then(m => ({ default: m.Envelope3D })), { ssr: false })
 
-const NAVY = '#1B2737'
-const ORANGE = '#1A90FF'
-const SLATE = '#0B1119'
-const CARD_BG = '#1e293b'
+const NAVY = 'rgb(var(--zw-elev))'
+const ORANGE = 'rgb(var(--zw-brand))'
+const SLATE = 'rgb(var(--zw-page))'
+const CARD_BG = 'rgb(var(--zw-card))'
 const GREEN = '#22c55e'
 const RED = '#ef4444'
 
@@ -106,7 +106,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
   return (
     <div className="min-h-screen" style={{ background: SLATE, fontFamily: "'Inter', system-ui, sans-serif" }}>
       <div className="px-3 py-2 flex items-center gap-2 border-b border-gray-800">
-        <button onClick={onBack} className="text-gray-400 hover:text-white text-sm" aria-label="Back to list">← Back</button>
+        <button onClick={onBack} className="text-gray-400 hover:text-[rgb(var(--zw-ink))] text-sm" aria-label="Back to list">← Back</button>
         <div className="flex-1" />
         <SourceBadge source={hbuSource} />
         <button onClick={handleShare}
@@ -125,7 +125,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
 
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold text-white">{parcel.address}</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-[rgb(var(--zw-ink))]">{parcel.address}</h1>
             <p className="text-gray-400 text-[10px] sm:text-xs">{parcel.city}, FL {parcel.zip} · {parcel.id}</p>
           </div>
           <div className="text-right">
@@ -147,7 +147,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
         <div className="flex gap-1 bg-gray-800/80 rounded-lg p-1 mb-3" role="tablist">
           {([{ id: '3d', label: '3D Envelope' }, { id: 'hbu', label: 'HBU Analysis' }, { id: 'facts', label: 'Zoning Facts' }] as const).map(t => (
             <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
-              className={`flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all ${tab === t.id ? 'text-white shadow-lg' : 'text-gray-400 hover:text-gray-200'}`}
+              className={`flex-1 py-2 px-2 rounded-md text-xs font-medium transition-all ${tab === t.id ? 'text-[rgb(var(--zw-ink))] shadow-lg' : 'text-gray-400 hover:text-gray-200'}`}
               style={tab === t.id ? { background: NAVY, color: ORANGE } : {}}>
               {t.label}
             </button>
@@ -162,8 +162,8 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 maxH={maxH} maxCov={maxCov} far={far} width={cW} height={cH} onResetView={resetRef} />
             </div>
             <div className="flex gap-1 mb-2">
-              <button onClick={reset} className="text-[10px] text-gray-400 hover:text-white px-2 py-0.5 rounded border border-gray-600 hover:border-gray-400 transition-colors">Reset Params</button>
-              <button onClick={() => resetRef.current?.()} className="text-[10px] text-gray-400 hover:text-white px-2 py-0.5 rounded border border-gray-600 hover:border-gray-400 transition-colors">Reset View</button>
+              <button onClick={reset} className="text-[10px] text-gray-400 hover:text-[rgb(var(--zw-ink))] px-2 py-0.5 rounded border border-gray-600 hover:border-gray-400 transition-colors">Reset Params</button>
+              <button onClick={() => resetRef.current?.()} className="text-[10px] text-gray-400 hover:text-[rgb(var(--zw-ink))] px-2 py-0.5 rounded border border-gray-600 hover:border-gray-400 transition-colors">Reset View</button>
             </div>
 
             <div className="rounded-lg p-3 mb-3 border border-gray-700/50" style={{ background: CARD_BG }}>
@@ -192,7 +192,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                   {compareData.map(c => (
                     <button key={c.name} onClick={() => applyPreset(c.name)}
                       className="rounded-lg p-2 text-left border border-gray-600/50 hover:border-amber-500/40 transition-all" style={{ background: `${SLATE}cc` }}>
-                      <div className="text-[10px] font-bold text-white mb-1">{c.name}</div>
+                      <div className="text-[10px] font-bold text-[rgb(var(--zw-ink))] mb-1">{c.name}</div>
                       <div className="text-[9px] space-y-0.5">
                         <div className="flex justify-between"><span className="text-gray-400">GFA</span><span className="font-bold" style={{ color: ORANGE }}>{c.actualGFA.toLocaleString()}</span></div>
                         <div className="flex justify-between"><span className="text-gray-400">Floors</span><span className="text-gray-200">{c.floors}</span></div>
@@ -211,16 +211,16 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 <h3 className="text-[9px] font-bold text-gray-400 uppercase mb-1.5">Setbacks</h3>
                 <div className="space-y-0.5 text-[11px]">
                   {([['Front', front], ['Side', side], ['Rear', rear]] as [string, number][]).map(([l, v]) => (
-                    <div key={l} className="flex justify-between"><span className="text-gray-300">{l}</span><span className="text-white font-medium">{v} ft</span></div>
+                    <div key={l} className="flex justify-between"><span className="text-gray-300">{l}</span><span className="text-[rgb(var(--zw-ink))] font-medium">{v} ft</span></div>
                   ))}
                 </div>
               </div>
               <div className="bg-gray-800/60 rounded-lg p-2.5">
                 <h3 className="text-[9px] font-bold text-gray-400 uppercase mb-1.5">Buildable</h3>
                 <div className="space-y-0.5 text-[11px]">
-                  <div className="flex justify-between"><span className="text-gray-300">Footprint</span><span className="text-white font-medium">{env.effFP.toLocaleString()} sf</span></div>
-                  <div className="flex justify-between"><span className="text-gray-300">Coverage</span><span className="text-white font-medium">{env.covPct}%</span></div>
-                  <div className="flex justify-between"><span className="text-gray-300">Volume</span><span className="text-white font-medium">{env.volume.toLocaleString()} cf</span></div>
+                  <div className="flex justify-between"><span className="text-gray-300">Footprint</span><span className="text-[rgb(var(--zw-ink))] font-medium">{env.effFP.toLocaleString()} sf</span></div>
+                  <div className="flex justify-between"><span className="text-gray-300">Coverage</span><span className="text-[rgb(var(--zw-ink))] font-medium">{env.covPct}%</span></div>
+                  <div className="flex justify-between"><span className="text-gray-300">Volume</span><span className="text-[rgb(var(--zw-ink))] font-medium">{env.volume.toLocaleString()} cf</span></div>
                 </div>
               </div>
             </div>
@@ -236,7 +236,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: ORANGE }}>Recommended Highest & Best Use</div>
                 <div className="text-[9px] text-gray-400">4-Test | Parcel-Specific</div>
               </div>
-              <div className="text-base sm:text-lg font-bold text-white mb-2">{best.use}</div>
+              <div className="text-base sm:text-lg font-bold text-[rgb(var(--zw-ink))] mb-2">{best.use}</div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                 <ScoreBar score={best.legal} label="Legal" />
                 <ScoreBar score={best.physical} label="Physical" />
@@ -262,7 +262,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                     <div className="flex items-center gap-1.5">
                       {i === 0 && <span className="text-[9px] px-1.5 py-0.5 rounded font-bold" style={{ background: ORANGE, color: SLATE }}>BEST</span>}
                       {s.isConditional && <span className="text-[9px] px-1 py-0.5 rounded bg-amber-900/40 text-amber-400">CU</span>}
-                      <span className="text-xs sm:text-sm font-semibold text-white">{s.use}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-[rgb(var(--zw-ink))]">{s.use}</span>
                     </div>
                     <span className="text-base font-black" style={{ color: s.score >= 80 ? GREEN : s.score >= 60 ? ORANGE : RED }}>{s.score}</span>
                   </div>
@@ -273,11 +273,11 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                     <ScoreBar score={s.maximal} label="Max" />
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-[10px]">
-                    <div><span className="text-gray-400">ROI</span><br /><span className="text-white font-medium">{s.roi}%</span></div>
+                    <div><span className="text-gray-400">ROI</span><br /><span className="text-[rgb(var(--zw-ink))] font-medium">{s.roi}%</span></div>
                     <div><span className="text-gray-400">Risk</span><br /><span className={s.risk === 'Low' ? 'text-green-400' : s.risk === 'Medium' ? 'text-amber-400' : 'text-red-400'}>{s.risk}</span></div>
-                    <div><span className="text-gray-400">Timeline</span><br /><span className="text-white">{s.timeline}</span></div>
-                    <div><span className="text-gray-400">Invest</span><br /><span className="text-white">{fmt$(s.investReq)}</span></div>
-                    <div><span className="text-gray-400">Value</span><br /><span className="text-white">{fmt$(s.projectedValue)}</span></div>
+                    <div><span className="text-gray-400">Timeline</span><br /><span className="text-[rgb(var(--zw-ink))]">{s.timeline}</span></div>
+                    <div><span className="text-gray-400">Invest</span><br /><span className="text-[rgb(var(--zw-ink))]">{fmt$(s.investReq)}</span></div>
+                    <div><span className="text-gray-400">Value</span><br /><span className="text-[rgb(var(--zw-ink))]">{fmt$(s.projectedValue)}</span></div>
                     <div><span className="text-gray-400">Max Bid</span><br /><span style={{ color: ORANGE }}>{fmt$(s.maxBid)}</span></div>
                   </div>
                 </div>
@@ -290,7 +290,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 {Object.entries(CONSTRUCTION_COSTS).slice(0, 6).map(([k, v]) => (
                   <div key={k} className="flex justify-between border-b border-gray-700/30 pb-0.5">
                     <span className="text-gray-300">{v.label}</span>
-                    <span className="text-white">${v.low}-${v.high}</span>
+                    <span className="text-[rgb(var(--zw-ink))]">${v.low}-${v.high}</span>
                   </div>
                 ))}
               </div>
@@ -326,7 +326,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                   ['Flood Zone', parcel.floodZone], ['Year Built', `${parcel.yearBuilt}`],
                 ].map(([l, v], i) => (
                   <div key={i} className="flex justify-between text-[11px] border-b border-gray-700/30 pb-0.5">
-                    <span className="text-gray-300">{l}</span><span className="text-white font-medium">{v}</span>
+                    <span className="text-gray-300">{l}</span><span className="text-[rgb(var(--zw-ink))] font-medium">{v}</span>
                   </div>
                 ))}
               </div>
@@ -334,8 +334,8 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
             <div className="bg-gray-800/60 rounded-lg p-3">
               <h3 className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Value Analysis</h3>
               <div className="grid grid-cols-3 gap-3 text-center">
-                <div><div className="text-[9px] text-gray-400">Land</div><div className="text-sm font-bold text-white">{fmt$(parcel.landValue)}</div></div>
-                <div><div className="text-[9px] text-gray-400">Improved</div><div className="text-sm font-bold text-white">{fmt$(parcel.improvValue)}</div></div>
+                <div><div className="text-[9px] text-gray-400">Land</div><div className="text-sm font-bold text-[rgb(var(--zw-ink))]">{fmt$(parcel.landValue)}</div></div>
+                <div><div className="text-[9px] text-gray-400">Improved</div><div className="text-sm font-bold text-[rgb(var(--zw-ink))]">{fmt$(parcel.improvValue)}</div></div>
                 <div><div className="text-[9px] text-gray-400">HBU Uplift</div><div className="text-sm font-bold" style={{ color: ORANGE }}>+{best.roi}%</div></div>
               </div>
             </div>
@@ -343,7 +343,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
               <h3 className="text-[9px] font-bold uppercase tracking-wider mb-1" style={{ color: ORANGE }}>Development Potential</h3>
               <p className="text-[11px] text-gray-300 leading-relaxed">
                 This {env.lotArea.toLocaleString()} sf {parcel.zone}-zoned lot supports {env.floors} floors / {env.actualGFA.toLocaleString()} sf GFA.
-                HBU recommends <span className="text-white font-semibold">{best.use}</span> (score {best.score}/100, {best.roi}% ROI).
+                HBU recommends <span className="text-[rgb(var(--zw-ink))] font-semibold">{best.use}</span> (score {best.score}/100, {best.roi}% ROI).
                 {parcel.floodZone !== 'X' ? ` Flood zone ${parcel.floodZone} adds insurance cost and regulatory constraints.` : ''}
                 {' '}Max auction bid under 70% rule: <span style={{ color: ORANGE }} className="font-semibold">{fmt$(best.maxBid)}</span>.
               </p>
@@ -415,7 +415,7 @@ export function DevIntelTab({ onParcelSelect, externalSelectedParcel, compareMod
               <span style={{ color: ORANGE, fontSize: 13, fontWeight: 900 }}>Z</span>
             </div>
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-white leading-tight">Development Intelligence</h1>
+              <h1 className="text-base sm:text-lg font-bold text-[rgb(var(--zw-ink))] leading-tight">Development Intelligence</h1>
               <p className="text-[9px] sm:text-[10px] text-gray-400">3D Envelope · HBU Analysis · Max Bid Calculator</p>
             </div>
           </div>
@@ -428,7 +428,7 @@ export function DevIntelTab({ onParcelSelect, externalSelectedParcel, compareMod
         <div className="relative mb-2">
           <input type="text" placeholder="Search address, city, or zone..." value={search} onChange={e => setSearch(e.target.value)}
             aria-label="Search parcels"
-            className="w-full bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors" />
+            className="w-full bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-2 text-sm text-[rgb(var(--zw-ink))] placeholder-gray-500 focus:outline-none focus:border-amber-500/50 transition-colors" />
         </div>
 
         <div className="flex items-center gap-3 mb-2 text-[9px] text-gray-500">

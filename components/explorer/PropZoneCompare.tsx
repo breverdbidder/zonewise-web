@@ -74,18 +74,18 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
   if (loading) {
     return (
       <div className="p-4 text-center">
-        <div className="text-xs text-slate-500 animate-pulse">Loading competitor data...</div>
+        <div className="text-xs text-[rgb(var(--zw-ink2))] animate-pulse">Loading competitor data...</div>
       </div>
     )
   }
 
   if (empty || !intel) {
     return (
-      <div className="p-4 rounded-lg bg-slate-900 border border-slate-800 text-center">
-        <div className="text-slate-400 text-xs leading-relaxed">
+      <div className="p-4 rounded-lg bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] text-center">
+        <div className="text-[rgb(var(--zw-ink2))] text-xs leading-relaxed">
           Competitor data collection in progress for this parcel.
           <br />
-          <span className="text-slate-600 text-[10px]">
+          <span className="text-[rgb(var(--zw-ink2))] text-[10px]">
             PropZone scrape pipeline runs weekly. Check back soon.
           </span>
         </div>
@@ -148,10 +148,10 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+        <h3 className="text-[11px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider">
           ZoneWise vs PropZone
         </h3>
-        <div className="text-[10px] text-slate-500">
+        <div className="text-[10px] text-[rgb(var(--zw-ink2))]">
           Scraped {intel.scraped_at ? new Date(intel.scraped_at).toLocaleDateString() : 'unknown'}
         </div>
       </div>
@@ -166,14 +166,14 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
       )}
 
       {/* Comparison table */}
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-[rgb(var(--zw-border2))]">
         <table className="w-full text-[11px] border-collapse">
           <thead>
-            <tr className="border-b border-slate-800">
-              <th className="text-left px-3 py-2 text-slate-500 font-semibold w-[35%]">Field</th>
-              <th className="text-center px-2 py-2 text-[#1A90FF] font-bold w-[25%]">ZoneWise</th>
-              <th className="text-center px-2 py-2 text-slate-400 font-semibold w-[25%]">PropZone</th>
-              <th className="text-center px-2 py-2 text-slate-500 font-semibold w-[15%]">Edge</th>
+            <tr className="border-b border-[rgb(var(--zw-border2))]">
+              <th className="text-left px-3 py-2 text-[rgb(var(--zw-ink2))] font-semibold w-[35%]">Field</th>
+              <th className="text-center px-2 py-2 text-[rgb(var(--zw-brand))] font-bold w-[25%]">ZoneWise</th>
+              <th className="text-center px-2 py-2 text-[rgb(var(--zw-ink2))] font-semibold w-[25%]">PropZone</th>
+              <th className="text-center px-2 py-2 text-[rgb(var(--zw-ink2))] font-semibold w-[15%]">Edge</th>
             </tr>
           </thead>
           <tbody>
@@ -184,20 +184,20 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
               return (
                 <tr
                   key={row.field}
-                  className={`border-b border-slate-800/50 ${i % 2 === 0 ? 'bg-slate-900/40' : ''}`}
+                  className={`border-b border-[rgb(var(--zw-border2)/0.5)] ${i % 2 === 0 ? 'bg-[rgb(var(--zw-page)/0.4)]' : ''}`}
                 >
-                  <td className="px-3 py-2 text-slate-400">{row.field}</td>
-                  <td className={`px-2 py-2 text-center font-mono font-semibold ${zwVal ? 'text-white' : 'text-slate-700'}`}>
+                  <td className="px-3 py-2 text-[rgb(var(--zw-ink2))]">{row.field}</td>
+                  <td className={`px-2 py-2 text-center font-mono font-semibold ${zwVal ? 'text-[rgb(var(--zw-ink))]' : 'text-[rgb(var(--zw-ink))]'}`}>
                     {row.zonewise}
                   </td>
-                  <td className={`px-2 py-2 text-center font-mono ${pzVal ? 'text-slate-300' : 'text-slate-700'}`}>
+                  <td className={`px-2 py-2 text-center font-mono ${pzVal ? 'text-[rgb(var(--zw-ink2))]' : 'text-[rgb(var(--zw-ink))]'}`}>
                     {row.propzone}
                   </td>
                   <td className="px-2 py-2 text-center">
                     {adv === 'zw' && <span className="text-amber-400 font-bold">✓ ZW</span>}
-                    {adv === 'pz' && <span className="text-slate-500">PZ</span>}
-                    {adv === 'tie' && <span className="text-slate-600">—</span>}
-                    {adv === 'none' && <span className="text-slate-700">—</span>}
+                    {adv === 'pz' && <span className="text-[rgb(var(--zw-ink2))]">PZ</span>}
+                    {adv === 'tie' && <span className="text-[rgb(var(--zw-ink2))]">—</span>}
+                    {adv === 'none' && <span className="text-[rgb(var(--zw-ink))]">—</span>}
                   </td>
                 </tr>
               )
@@ -206,7 +206,7 @@ export default function PropZoneCompare({ parcelId, zonewise }: Props) {
         </table>
       </div>
 
-      <div className="text-[10px] text-slate-600 leading-relaxed">
+      <div className="text-[10px] text-[rgb(var(--zw-ink2))] leading-relaxed">
         PropZone data scraped via propzone-scrape pipeline. ZoneWise data sourced from BCPAO GIS + Supabase zoning_assignments.
       </div>
     </div>

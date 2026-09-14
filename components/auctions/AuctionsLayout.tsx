@@ -144,7 +144,7 @@ export default function AuctionsLayout() {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-slate-400 text-sm">Loading auctions...</p>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function AuctionsLayout() {
 
         {dayFilter && (
           <div className="flex items-center gap-2 text-sm">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zw-navy-500/10 text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(var(--zw-card)/0.1)] text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700">
               Showing{' '}
               {dayFilter.saleType === 'tax_deed'
                 ? 'tax deed'
@@ -211,14 +211,14 @@ export default function AuctionsLayout() {
               {viewMode !== 'map' && (
                 <button
                   onClick={() => setViewMode('map')}
-                  className="text-zw-navy-600 dark:text-zw-navy-300 underline hover:no-underline"
+                  className="text-[rgb(var(--zw-ink2))] dark:text-zw-navy-300 underline hover:no-underline"
                 >
                   View on map
                 </button>
               )}
               <button
                 onClick={() => setDayFilter(null)}
-                className="text-gray-400 hover:text-gray-700 dark:hover:text-slate-200 text-base leading-none"
+                className="text-gray-400 hover:text-gray-700 dark:hover:text-[rgb(var(--zw-ink2))] text-base leading-none"
                 aria-label="Clear day filter"
               >
                 &times;
@@ -277,7 +277,7 @@ export default function AuctionsLayout() {
                 </div>
                 <button
                   onClick={() => setSelectedAuction(null)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-300 text-xl leading-none"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-[rgb(var(--zw-ink2))] text-xl leading-none"
                 >
                   &times;
                 </button>

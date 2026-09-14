@@ -6,18 +6,18 @@ export const metadata: Metadata = pageMetadata.privacy
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-800">
+    <div className="min-h-screen bg-white text-[rgb(var(--zw-ink))]">
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <Link href="/" className="text-[#1B2737] hover:underline">← Back to home</Link>
-        <h1 className="text-3xl font-bold mt-6 mb-8 text-slate-900">Privacy Policy</h1>
+        <Link href="/" className="text-[rgb(var(--zw-ink2))] hover:underline">← Back to home</Link>
+        <h1 className="text-3xl font-bold mt-6 mb-8 text-[rgb(var(--zw-ink))]">Privacy Policy</h1>
         <div className="prose prose-slate prose-gray">
           <p className="text-gray-700">Last updated: January 27, 2026</p>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">Information We Collect</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">Information We Collect</h2>
           <p>We collect information you provide directly: email address, name (if provided), and payment information (processed securely by Stripe).</p>
           <p>We automatically collect: usage data, queries submitted, and standard web analytics.</p>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">How We Use Information</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">How We Use Information</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>To provide and improve our service</li>
             <li>To process payments</li>
@@ -25,10 +25,10 @@ export default function PrivacyPage() {
             <li>To improve our AI responses</li>
           </ul>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">Data Storage</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">Data Storage</h2>
           <p>Your data is stored securely using Supabase (PostgreSQL) with encryption at rest. Payment data is handled by Stripe and never stored on our servers.</p>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">Third-Party Services</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">Third-Party Services</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>Supabase (authentication, database)</li>
             <li>Stripe (payment processing)</li>
@@ -36,10 +36,10 @@ export default function PrivacyPage() {
             <li>Cloudflare (hosting, CDN)</li>
           </ul>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">Your Rights</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">Your Rights</h2>
           <p>You may request access to, correction of, or deletion of your personal data by contacting privacy@zonewise.ai</p>
           
-          <h2 className="text-xl font-semibold mt-8 mb-4 text-slate-800">Contact</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4 text-[rgb(var(--zw-ink))]">Contact</h2>
           <p>Privacy inquiries: privacy@zonewise.ai</p>
         </div>
         <p className="mt-12 text-sm text-gray-500">© 2026 ZoneWise.AI. All rights reserved.</p>

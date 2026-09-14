@@ -26,13 +26,13 @@ function StatItem({ label, value, formatter, suffix, loading }: StatItemProps) {
   return (
     <div className="text-center">
       {loading ? (
-        <div className="h-10 w-24 mx-auto rounded-lg bg-slate-700/60 animate-pulse mb-2" />
+        <div className="h-10 w-24 mx-auto rounded-lg bg-[rgb(var(--zw-elev)/0.6)] animate-pulse mb-2" />
       ) : (
-        <p className="text-3xl sm:text-4xl font-bold text-[#1A90FF]">
+        <p className="text-3xl sm:text-4xl font-bold text-[rgb(var(--zw-brand))]">
           {displayValue}{suffix}
         </p>
       )}
-      <p className="text-slate-300 text-sm mt-1">{label}</p>
+      <p className="text-[rgb(var(--zw-ink2))] text-sm mt-1">{label}</p>
     </div>
   )
 }

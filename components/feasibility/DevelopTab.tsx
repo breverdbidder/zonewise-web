@@ -179,7 +179,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
       <div className="flex items-center mb-4 gap-3">
         <div className="flex-1">
           <SectionLabel text="Development Pro Forma" />
-          <div className="text-[13px] text-slate-500">
+          <div className="text-[13px] text-[rgb(var(--zw-ink2))]">
             {site.zone} · {fmt(site.lotArea)} SF lot · FAR {site.far} · {site.maxHeight}ft max
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
           Median comp {fmtD(compBenchmark.medianComp)} from {compBenchmark.nComps} comps
           {compBenchmark.pctOfMarket != null && ` · sold at ${compBenchmark.pctOfMarket}% of market value`}
           {compBenchmark.soldPrice != null && ` · this parcel sold ${fmtD(compBenchmark.soldPrice)}`}.
-          <span className="text-slate-500"> Sale-price comp, not a rent comp — informational only, does not set unit rents below.</span>
+          <span className="text-[rgb(var(--zw-ink2))]"> Sale-price comp, not a rent comp — informational only, does not set unit rents below.</span>
         </div>
       )}
 
@@ -215,7 +215,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
               {i > 0 && ' · '}{bedroomLabel(b.bedrooms)} median {fmtD(b.medianRent)} (n={b.n})
             </span>
           ))}
-          <span className="text-slate-500"> Scraped Realtor.com data, not MLS/Zillow/Redfin-licensed — informational only, does not set unit rents below.</span>
+          <span className="text-[rgb(var(--zw-ink2))]"> Scraped Realtor.com data, not MLS/Zillow/Redfin-licensed — informational only, does not set unit rents below.</span>
         </div>
       )}
 
@@ -237,7 +237,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
               border: `1px solid ${hi ? COLORS.brand + '40' : COLORS.border}`,
             }}
           >
-            <div className="text-[9px] text-slate-400 uppercase tracking-wider">{l as string}</div>
+            <div className="text-[9px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider">{l as string}</div>
             <div
               className="text-base font-bold mt-0.5"
               style={{
@@ -261,8 +261,8 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
             {sliders.map((sl) => (
               <div key={sl.label} className="mb-3">
                 <div className="flex justify-between mb-0.5">
-                  <span className="text-xs text-slate-500">{sl.label}</span>
-                  <span className="text-xs font-bold text-slate-900" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span className="text-xs text-[rgb(var(--zw-ink2))]">{sl.label}</span>
+                  <span className="text-xs font-bold text-[rgb(var(--zw-ink))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                     {sl.format(sl.value)}
                   </span>
                 </div>
@@ -288,7 +288,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
               <thead>
                 <tr className="bg-slate-50">
                   {['Type', '%', 'Units', 'SF', 'Rent', 'Annual'].map((h) => (
-                    <th key={h} className="px-1.5 py-2 text-right font-semibold text-slate-500 border-b-2 border-slate-200 text-[10px] uppercase">{h}</th>
+                    <th key={h} className="px-1.5 py-2 text-right font-semibold text-[rgb(var(--zw-ink2))] border-b-2 border-slate-200 text-[10px] uppercase">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -296,11 +296,11 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
                 {mix.map((m) => (
                   <tr key={m.type} className="border-b border-slate-50">
                     <td className="px-1.5 py-2 font-semibold text-right">{m.type}</td>
-                    <td className="px-1.5 py-2 text-right text-slate-500">{m.pct}%</td>
+                    <td className="px-1.5 py-2 text-right text-[rgb(var(--zw-ink2))]">{m.pct}%</td>
                     <td className="px-1.5 py-2 text-right font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{m.count}</td>
-                    <td className="px-1.5 py-2 text-right text-slate-500">{fmt(m.sf)}</td>
+                    <td className="px-1.5 py-2 text-right text-[rgb(var(--zw-ink2))]">{fmt(m.sf)}</td>
                     <td className="px-1.5 py-2 text-right font-semibold" style={{ color: COLORS.brand, fontFamily: "'JetBrains Mono', monospace" }}>{fmtD(m.rent)}</td>
-                    <td className="px-1.5 py-2 text-right text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmtD(m.count * m.rent * 12)}</td>
+                    <td className="px-1.5 py-2 text-right text-[rgb(var(--zw-ink2))]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmtD(m.count * m.rent * 12)}</td>
                   </tr>
                 ))}
                 <tr style={{ background: COLORS.brandLight }}>
@@ -337,7 +337,7 @@ export default function DevelopTab({ site, unitMix, compBenchmark = null, rental
                       marginTop: row.bold ? 4 : 0,
                     }}
                   >
-                    <span className={`text-xs text-slate-500 ${row.bold ? 'font-semibold' : ''}`}>{row.label}</span>
+                    <span className={`text-xs text-[rgb(var(--zw-ink2))] ${row.bold ? 'font-semibold' : ''}`}>{row.label}</span>
                     <span
                       className={row.bold ? 'font-extrabold' : 'font-medium'}
                       style={{

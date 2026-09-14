@@ -42,13 +42,13 @@ export default function BetaSignupForm() {
         value={email}
         onChange={(e) => { setEmail(e.target.value); setStatus('idle') }}
         placeholder="you@example.com"
-        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-slate-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-zw-navy focus:border-transparent"
+        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-[rgb(var(--zw-ink))] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--zw-elev))] focus:border-transparent"
         disabled={status === 'loading'}
       />
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="bg-zw-orange text-white px-6 py-3 rounded-xl font-semibold hover:bg-zw-orange/90 transition-colors disabled:opacity-50 whitespace-nowrap"
+        className="bg-[rgb(var(--zw-brand))] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[rgb(var(--zw-brand)/0.9)] transition-colors disabled:opacity-50 whitespace-nowrap"
       >
         {status === 'loading' ? 'Joining...' : 'Get Beta Access'}
       </button>

@@ -7,11 +7,11 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 // ── Brand palette (DESIGN.md — do not deviate) ────────────────────
-const VOID = '#0B1119'
-const NAVY = '#1B2737'
-const AMBER = '#1A90FF'
+const VOID = 'rgb(var(--zw-page))'
+const NAVY = 'rgb(var(--zw-elev))'
+const AMBER = 'rgb(var(--zw-brand))'
 const SUCCESS = '#10B981'
-const SLATE_800 = '#1E293B'
+const SLATE_800 = 'rgb(var(--zw-card))'
 
 const GRID = 22
 const SPACING = 1.55

@@ -118,7 +118,7 @@ export function Hero3DSection() {
   }, [])
 
   return (
-    <section className="relative overflow-hidden bg-[#0B1119]">
+    <section className="relative overflow-hidden bg-[rgb(var(--zw-page))]">
       {/* 3D Viewer — full-bleed hero background */}
       <div className="relative min-h-[85vh]">
         {/* Static gradient placeholder always rendered at z-0; 3D viewer overlays
@@ -129,7 +129,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-0"
           style={{
             background:
-              'radial-gradient(ellipse at 50% 60%, #1B2737 0%, #0d2040 35%, #0B1119 100%)',
+              'radial-gradient(ellipse at 50% 60%, rgb(var(--zw-elev)) 0%, #0d2040 35%, rgb(var(--zw-page)) 100%)',
           }}
         />
 
@@ -150,7 +150,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(11,17,25,0.5) 55%, rgba(11,17,25,0.92) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgb(var(--zw-page) / 0.5) 55%, rgb(var(--zw-page) / 0.92) 100%)',
           }}
         />
 
@@ -160,7 +160,7 @@ export function Hero3DSection() {
           className="absolute inset-0 z-10 pointer-events-none opacity-[0.02]"
           style={{
             backgroundImage:
-              'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
+              'linear-gradient(rgb(var(--zw-elev)) 1px, transparent 1px), linear-gradient(to right, rgb(var(--zw-elev)) 1px, transparent 1px)',
             backgroundSize: '64px 64px',
           }}
         />
@@ -170,16 +170,16 @@ export function Hero3DSection() {
           <div className="mx-auto max-w-5xl px-4 text-center">
             <Badge
               variant="outline"
-              className="mb-6 border-[#1A90FF]/30 bg-[#1A90FF]/10 text-[#1A90FF]"
+              className="mb-6 border-[rgb(var(--zw-brand)/0.3)] bg-[rgb(var(--zw-brand)/0.1)] text-[rgb(var(--zw-brand))]"
             >
               <Sparkles className="mr-1.5 h-3 w-3" />
               Powering Everest Capital USA — 10 years Brevard foreclosure investing
             </Badge>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.05] tracking-tight">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-[rgb(var(--zw-ink))] mb-6 leading-[1.05] tracking-tight">
               AI-Powered Auction Intelligence
               <br />
-              <span className="text-[#1A90FF]">Nationwide</span>
+              <span className="text-[rgb(var(--zw-brand))]">Nationwide</span>
             </h1>
 
             <div className="mb-4 flex justify-center">
@@ -187,12 +187,12 @@ export function Hero3DSection() {
                 text="188K AUCTIONS · 10.5M PARCELS · 67 COUNTIES"
                 trigger="scroll"
                 className="text-xs sm:text-sm tracking-widest"
-                color="rgba(26,144,255,0.7)"
+                color="rgb(var(--zw-brand) / 0.7)"
                 scramblingColor="rgba(255,255,255,0.15)"
               />
             </div>
 
-            <p className="mx-auto max-w-2xl text-lg sm:text-xl text-slate-400 mb-10">
+            <p className="mx-auto max-w-2xl text-lg sm:text-xl text-[rgb(var(--zw-ink2))] mb-10">
               Live in 67 Florida counties. Expanding to all 50 states. Zoning analysis,
               development envelopes, and deal scoring — built by a Brevard County investor.
             </p>
@@ -232,7 +232,7 @@ export function Hero3DSection() {
       </div>
 
       {/* Kinetic marquee band below hero */}
-      <div className="border-y border-[#1B2737]/40 bg-[#0B1119]">
+      <div className="border-y border-[rgb(var(--zw-border2)/0.4)] bg-[rgb(var(--zw-page))]">
         <KineticMarquee
           items={HERO_MARQUEE_ITEMS}
           speed={0.45}
@@ -240,7 +240,7 @@ export function Hero3DSection() {
           variant="outline"
           separator="•"
           className="bg-transparent"
-          textClassName="text-white/30"
+          textClassName="text-[rgb(var(--zw-ink))]/30"
         />
       </div>
     </section>

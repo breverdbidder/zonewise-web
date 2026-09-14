@@ -59,10 +59,10 @@ export function CurtainReveal({
       <div className="sticky top-0 min-h-dvh overflow-hidden flex items-center justify-center">
         {/* Content behind curtain */}
         <div className="absolute inset-0 z-[1] flex flex-col items-center justify-center text-center p-10"
-          style={{ background: "linear-gradient(135deg, #0d1829, #020617)" }}>
+          style={{ background: "linear-gradient(135deg, rgb(var(--zw-card)), rgb(var(--zw-page)))" }}>
           {children ?? (
             <>
-              <h3 className="text-3xl md:text-5xl font-semibold text-white mb-3" style={{ letterSpacing: "-0.02em" }}>
+              <h3 className="text-3xl md:text-5xl font-semibold text-[rgb(var(--zw-ink))] mb-3" style={{ letterSpacing: "-0.02em" }}>
                 The intelligence lives here
               </h3>
               <p className="text-base md:text-lg max-w-[45ch] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
@@ -75,9 +75,9 @@ export function CurtainReveal({
         <div
           ref={leftRef}
           className="absolute top-0 bottom-0 left-0 w-1/2 z-[2] flex items-center justify-end pr-10"
-          style={{ background: "#020617", borderRight: "1px solid rgba(27,39,55,0.4)" }}
+          style={{ background: "#020617", borderRight: "1px solid rgb(var(--zw-border2) / 0.4)" }}
         >
-          <h2 className="font-bold text-white" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
+          <h2 className="font-bold text-[rgb(var(--zw-ink))]" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
             {leftWord}
           </h2>
         </div>
@@ -85,9 +85,9 @@ export function CurtainReveal({
         <div
           ref={rightRef}
           className="absolute top-0 bottom-0 right-0 w-1/2 z-[2] flex items-center justify-start pl-10"
-          style={{ background: "#020617", borderLeft: "1px solid rgba(27,39,55,0.4)" }}
+          style={{ background: "#020617", borderLeft: "1px solid rgb(var(--zw-border2) / 0.4)" }}
         >
-          <h2 className="font-bold text-white" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
+          <h2 className="font-bold text-[rgb(var(--zw-ink))]" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
             {rightWord}
           </h2>
         </div>

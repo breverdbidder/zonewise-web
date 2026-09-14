@@ -172,7 +172,7 @@ export default function EnterpriseLayout() {
     return (
       <div className="h-full flex items-center justify-center bg-white dark:bg-slate-950 transition-colors">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-500 dark:text-slate-400 font-medium">Loading ZoneWise.AI...</p>
         </div>
       </div>
@@ -203,30 +203,30 @@ export default function EnterpriseLayout() {
       </div>
 
       {/* Mobile header (hidden on desktop) */}
-      <div className="md:hidden absolute top-0 left-0 right-0 z-40 h-12 flex items-center px-3 gap-2 bg-slate-900 border-b border-slate-800">
-        <button onClick={() => setMobileSidebarOpen(true)} className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400">
+      <div className="md:hidden absolute top-0 left-0 right-0 z-40 h-12 flex items-center px-3 gap-2 bg-[rgb(var(--zw-page))] border-b border-[rgb(var(--zw-border2))]">
+        <button onClick={() => setMobileSidebarOpen(true)} className="p-1.5 rounded-md hover:bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))]">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         </button>
         <div className="flex-1 flex items-center gap-1.5">
-          <div className="w-5 h-5 rounded bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 flex items-center justify-center">
-            <span className="text-white text-[9px] font-bold">Z</span>
+          <div className="w-5 h-5 rounded bg-gradient-to-br from-[rgb(var(--zw-card))] to-[rgb(var(--zw-page))] flex items-center justify-center">
+            <span className="text-[rgb(var(--zw-ink))] text-[9px] font-bold">Z</span>
           </div>
-          <span className="text-xs font-semibold text-white">ZoneWise<span className="text-amber-500">.AI</span></span>
+          <span className="text-xs font-semibold text-[rgb(var(--zw-ink))]">ZoneWise<span className="text-amber-500">.AI</span></span>
         </div>
-        <button onClick={createNewSession} className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400">
+        <button onClick={createNewSession} className="p-1.5 rounded-md hover:bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))]">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
 
       {/* Mobile tab bar (hidden on desktop) */}
       {activeArtifact && (
-        <div className="md:hidden absolute top-12 left-0 right-0 z-30 flex bg-slate-900/95 border-b border-slate-800 backdrop-blur-sm">
+        <div className="md:hidden absolute top-12 left-0 right-0 z-30 flex bg-[rgb(var(--zw-page)/0.95)] border-b border-[rgb(var(--zw-border2))] backdrop-blur-sm">
           <button onClick={() => setMobileTab('chat')}
-            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'chat' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-500'}`}>
+            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'chat' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-[rgb(var(--zw-ink2))]'}`}>
             💬 Chat
           </button>
           <button onClick={() => setMobileTab('artifact')}
-            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'artifact' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-500'}`}>
+            className={`flex-1 py-2 text-xs font-semibold text-center transition-colors ${mobileTab === 'artifact' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-[rgb(var(--zw-ink2))]'}`}>
             📋 Artifact
           </button>
         </div>

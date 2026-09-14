@@ -186,23 +186,23 @@ export default function Photorealistic3DViewer({
   return (
     <div className="relative w-full h-full" style={{ minHeight: '400px' }}>
       {/* Navy branded chrome bezel */}
-      <div className="absolute inset-0 border-2 border-[#1B2737] rounded-lg overflow-hidden z-0">
+      <div className="absolute inset-0 border-2 border-[rgb(var(--zw-border2))] rounded-lg overflow-hidden z-0">
         <div ref={containerRef} className="w-full h-full" aria-hidden="true" />
       </div>
 
       {/* Loading state */}
       {loading && !error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgb(var(--zw-page)/0.8)] rounded-lg z-10">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-[#1A90FF] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-slate-300 text-sm">Loading 3D tiles...</p>
+            <div className="w-8 h-8 border-2 border-[rgb(var(--zw-brand))] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-[rgb(var(--zw-ink2))] text-sm">Loading 3D tiles...</p>
           </div>
         </div>
       )}
 
       {/* Error state */}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/90 rounded-lg z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-[rgb(var(--zw-page)/0.9)] rounded-lg z-10">
           <div className="text-center max-w-md px-6">
             <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-red-400 text-xl">!</span>
@@ -213,8 +213,8 @@ export default function Photorealistic3DViewer({
       )}
 
       {/* Parcel ID badge */}
-      <div className="absolute top-3 left-3 bg-[#1B2737]/90 backdrop-blur-sm px-3 py-1.5 rounded-md z-20">
-        <span className="text-[#1A90FF] text-xs font-mono">{parcelId}</span>
+      <div className="absolute top-3 left-3 bg-[rgb(var(--zw-elev)/0.9)] backdrop-blur-sm px-3 py-1.5 rounded-md z-20">
+        <span className="text-[rgb(var(--zw-brand))] text-xs font-mono">{parcelId}</span>
       </div>
     </div>
   )

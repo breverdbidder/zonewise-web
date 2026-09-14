@@ -92,7 +92,7 @@ export default async function CountyPage({
         <div className="mb-10">
           <Link
             href="/auctions"
-            className="text-sm text-zw-navy-500 hover:text-zw-navy-600 mb-4 inline-block"
+            className="text-sm text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))] mb-4 inline-block"
           >
             &larr; All Counties
           </Link>
@@ -125,7 +125,7 @@ export default async function CountyPage({
         </div>
 
         {/* 298 KPIs callout */}
-        <div className="bg-zw-navy-500 text-white rounded-lg p-6 mb-10">
+        <div className="bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink))] rounded-lg p-6 mb-10">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <p className="text-xl font-bold">298 KPIs Per Property</p>
@@ -135,7 +135,7 @@ export default async function CountyPage({
             </div>
             <Link
               href={`/auctions?county=${encodeURIComponent(county.name)}`}
-              className="px-4 py-2 bg-white text-zw-navy-600 font-medium rounded-md text-sm hover:bg-gray-100 transition-colors"
+              className="px-4 py-2 bg-white text-[rgb(var(--zw-ink2))] font-medium rounded-md text-sm hover:bg-gray-100 transition-colors"
             >
               View All {county.name} Auctions
             </Link>
@@ -163,9 +163,9 @@ export default async function CountyPage({
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-slate-800/50">
                   {rows.map((a) => (
-                    <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/30">
+                    <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-[rgb(var(--zw-card)/0.3)]">
                       <td className="px-3 py-2.5 font-mono text-gray-600 dark:text-slate-400 whitespace-nowrap">
-                        <Link href={`/auctions/${a.id}`} className="hover:text-zw-navy-500">
+                        <Link href={`/auctions/${a.id}`} className="hover:text-[rgb(var(--zw-ink2))]">
                           {a.case_number}
                         </Link>
                       </td>
@@ -212,14 +212,14 @@ export default async function CountyPage({
                 <Link
                   key={c.slug}
                   href={`/foreclosures/${c.slug}`}
-                  className="px-3 py-1 text-xs bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-full text-gray-600 dark:text-slate-400 hover:border-zw-navy-500 hover:text-zw-navy-500 transition-colors"
+                  className="px-3 py-1 text-xs bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-full text-gray-600 dark:text-slate-400 hover:border-[rgb(var(--zw-border2))] hover:text-[rgb(var(--zw-ink2))] transition-colors"
                 >
                   {c.name}
                 </Link>
               ))}
             <Link
               href="/auctions"
-              className="px-3 py-1 text-xs bg-zw-navy-50 dark:bg-zw-navy-900/20 border border-zw-navy-200 dark:border-zw-navy-800 rounded-full text-zw-navy-600 dark:text-zw-navy-400 font-medium"
+              className="px-3 py-1 text-xs bg-zw-navy-50 dark:bg-zw-navy-900/20 border border-[rgb(var(--zw-border2))] dark:border-zw-navy-800 rounded-full text-[rgb(var(--zw-ink2))] dark:text-zw-navy-400 font-medium"
             >
               All 67 Counties &rarr;
             </Link>

@@ -72,9 +72,9 @@ function KpiCard({ data }: { data: any }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-3">
-        <div className="text-sm font-medium text-slate-100">{p.address}</div>
-        <div className="mt-1 font-mono text-xs text-slate-400">{p.county} County · {p.parcelId}</div>
+      <div className="rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.5)] p-3">
+        <div className="text-sm font-medium text-[rgb(var(--zw-ink))]">{p.address}</div>
+        <div className="mt-1 font-mono text-xs text-[rgb(var(--zw-ink2))]">{p.county} County · {p.parcelId}</div>
       </div>
       {kpi && (
         <>
@@ -84,9 +84,9 @@ function KpiCard({ data }: { data: any }) {
               { label: 'Living Area', val: p.livingArea ? `${Number(p.livingArea).toLocaleString()} sf` : '—' },
               { label: 'Year Built', val: p.yearBuilt || '—' },
             ].map(m => (
-              <div key={m.label} className="rounded-lg border border-slate-700 bg-slate-800 p-2 text-center">
+              <div key={m.label} className="rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))] p-2 text-center">
                 <div className="font-mono text-sm text-amber-400">{m.val}</div>
-                <div className="mt-1 text-xs text-slate-400">{m.label}</div>
+                <div className="mt-1 text-xs text-[rgb(var(--zw-ink2))]">{m.label}</div>
               </div>
             ))}
           </div>
@@ -104,19 +104,19 @@ function KpiCard({ data }: { data: any }) {
                 ['Max Bid', kpi.maxBid ? `$${Number(kpi.maxBid).toLocaleString()}` : null],
               ].map(([k, v]) => v ? (
                 <div key={k as string} className="flex justify-between">
-                  <span className="text-xs text-slate-400">{k}</span>
-                  <span className="font-mono text-xs text-slate-200">{v}</span>
+                  <span className="text-xs text-[rgb(var(--zw-ink2))]">{k}</span>
+                  <span className="font-mono text-xs text-[rgb(var(--zw-ink2))]">{v}</span>
                 </div>
               ) : null)}
             </div>
             {kpi.kpiCount && (
-              <div className="mt-2 font-mono text-xs text-slate-600">{kpi.kpiCount} KPIs populated</div>
+              <div className="mt-2 font-mono text-xs text-[rgb(var(--zw-ink2))]">{kpi.kpiCount} KPIs populated</div>
             )}
           </div>
         </>
       )}
       {data?.metadata?.photoUrl && (
-        <div className="overflow-hidden rounded-lg border border-slate-700">
+        <div className="overflow-hidden rounded-lg border border-[rgb(var(--zw-border2))]">
           <img src={data.metadata.photoUrl} alt="Aerial view" className="h-36 w-full object-cover"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
         </div>
@@ -129,26 +129,26 @@ function ZoneTable({ data }: { data: any }) {
   const districts: any[] = data?.districts || (data?.zoneCode ? [data] : [])
   if (!districts.length) return null
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-700">
-      <div className="border-b border-slate-700 bg-slate-800/60 px-3 py-2 font-mono text-xs uppercase tracking-widest text-slate-400">
+    <div className="overflow-hidden rounded-lg border border-[rgb(var(--zw-border2))]">
+      <div className="border-b border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.6)] px-3 py-2 font-mono text-xs uppercase tracking-widest text-[rgb(var(--zw-ink2))]">
         Zoning Districts
       </div>
-      <div className="divide-y divide-slate-700/50">
+      <div className="divide-y divide-[rgb(var(--zw-elev)/0.5)]">
         {districts.map((d: any, i: number) => (
           <div key={i} className="p-3">
             <div className="mb-1.5 flex items-center gap-2">
               <span className="rounded bg-blue-900/30 border border-blue-500/20 px-1.5 py-0.5 font-mono text-xs text-blue-300">
                 {d.zoneCode || d.code}
               </span>
-              <span className="text-sm text-slate-200">{d.zoneName || d.name}</span>
+              <span className="text-sm text-[rgb(var(--zw-ink2))]">{d.zoneName || d.name}</span>
             </div>
-            <div className="text-xs text-slate-400">{d.jurisdiction} · {d.county} County</div>
+            <div className="text-xs text-[rgb(var(--zw-ink2))]">{d.jurisdiction} · {d.county} County</div>
             {(d.maxHeight || d.setbacks) && (
               <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1">
-                {d.maxHeight && <div className="flex justify-between text-xs"><span className="text-slate-400">Max Height</span><span className="font-mono text-slate-300">{d.maxHeight} ft</span></div>}
-                {d.coverage && <div className="flex justify-between text-xs"><span className="text-slate-400">Coverage</span><span className="font-mono text-slate-300">{d.coverage}%</span></div>}
-                {d.far && <div className="flex justify-between text-xs"><span className="text-slate-400">FAR</span><span className="font-mono text-slate-300">{d.far}</span></div>}
-                {d.setbacks?.front && <div className="flex justify-between text-xs"><span className="text-slate-400">Front Setback</span><span className="font-mono text-slate-300">{d.setbacks.front} ft</span></div>}
+                {d.maxHeight && <div className="flex justify-between text-xs"><span className="text-[rgb(var(--zw-ink2))]">Max Height</span><span className="font-mono text-[rgb(var(--zw-ink2))]">{d.maxHeight} ft</span></div>}
+                {d.coverage && <div className="flex justify-between text-xs"><span className="text-[rgb(var(--zw-ink2))]">Coverage</span><span className="font-mono text-[rgb(var(--zw-ink2))]">{d.coverage}%</span></div>}
+                {d.far && <div className="flex justify-between text-xs"><span className="text-[rgb(var(--zw-ink2))]">FAR</span><span className="font-mono text-[rgb(var(--zw-ink2))]">{d.far}</span></div>}
+                {d.setbacks?.front && <div className="flex justify-between text-xs"><span className="text-[rgb(var(--zw-ink2))]">Front Setback</span><span className="font-mono text-[rgb(var(--zw-ink2))]">{d.setbacks.front} ft</span></div>}
               </div>
             )}
           </div>
@@ -163,14 +163,14 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
         <div className="text-4xl opacity-20">🗺️</div>
-        <div className="font-semibold text-slate-400">Property Intelligence Panel</div>
-        <p className="max-w-xs text-sm text-slate-600 leading-relaxed">
+        <div className="font-semibold text-[rgb(var(--zw-ink2))]">Property Intelligence Panel</div>
+        <p className="max-w-xs text-sm text-[rgb(var(--zw-ink2))] leading-relaxed">
           Ask about any Florida property, zoning district, or county. Analysis appears here automatically.
         </p>
         <div className="mt-2 flex flex-col gap-2 w-full max-w-sm">
           {['Ask about any FL parcel or address', 'Get 128-KPI property intelligence', 'View zoning rules + permitted uses', 'FEMA flood zone + Census data'].map((s, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-800/30 px-3 py-2 text-xs text-slate-400">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-700 font-mono text-xs text-slate-600">{i+1}</span>
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.3)] px-3 py-2 text-xs text-[rgb(var(--zw-ink2))]">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[rgb(var(--zw-border2))] font-mono text-xs text-[rgb(var(--zw-ink2))]">{i+1}</span>
               {s}
             </div>
           ))}
@@ -181,30 +181,30 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
   return (
     <div className="p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="font-mono text-xs uppercase tracking-widest text-slate-400">
+        <div className="font-mono text-xs uppercase tracking-widest text-[rgb(var(--zw-ink2))]">
           {artifact.type === 'table' ? '📊 Analysis' : artifact.type === 'map' ? '🗺️ Map' : '📄 Report'}
         </div>
         {artifact.metadata?.jurisdiction && (
-          <span className="rounded border border-slate-700 bg-slate-800 px-2 py-0.5 font-mono text-xs text-slate-400">
+          <span className="rounded border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))] px-2 py-0.5 font-mono text-xs text-[rgb(var(--zw-ink2))]">
             {artifact.metadata.jurisdiction}
           </span>
         )}
       </div>
-      <div className="font-semibold text-slate-200 text-sm">{artifact.title}</div>
+      <div className="font-semibold text-[rgb(var(--zw-ink2))] text-sm">{artifact.title}</div>
       {artifact.type === 'table' && artifact.data?.parcels && <KpiCard data={artifact.data} />}
       {artifact.type === 'table' && artifact.data?.districts && !artifact.data?.parcels && <ZoneTable data={artifact.data} />}
       {artifact.type === 'map' && (
-        <div className="rounded-lg border border-slate-700 bg-slate-800/40 p-4 text-center">
+        <div className="rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.4)] p-4 text-center">
           <div className="text-2xl mb-2">🗺️</div>
-          <div className="text-sm text-slate-400">Map: {artifact.title}</div>
+          <div className="text-sm text-[rgb(var(--zw-ink2))]">Map: {artifact.title}</div>
           {artifact.metadata?.coordinates && (
-            <div className="mt-1 font-mono text-xs text-slate-600">
+            <div className="mt-1 font-mono text-xs text-[rgb(var(--zw-ink2))]">
               {artifact.metadata.coordinates[1].toFixed(4)}, {artifact.metadata.coordinates[0].toFixed(4)}
             </div>
           )}
           <a href={`https://www.google.com/maps?q=${artifact.metadata?.coordinates?.[1]},${artifact.metadata?.coordinates?.[0]}`}
             target="_blank" rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-slate-300 hover:border-amber-500/40 hover:text-amber-400 transition-colors">
+            className="mt-3 inline-flex items-center gap-1 rounded border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))] px-3 py-1.5 text-xs text-[rgb(var(--zw-ink2))] hover:border-amber-500/40 hover:text-amber-400 transition-colors">
             Open in Maps →
           </a>
         </div>
@@ -215,14 +215,14 @@ function ArtifactPanel({ artifact }: { artifact: Artifact | null }) {
 
 // ── assistant-ui message rendering (safe markdown, no dangerouslySetInnerHTML) ──
 const MARKDOWN_COMPONENTS = {
-  h1: (props: any) => <h3 className="font-semibold text-slate-100 mt-2" {...props} />,
-  h2: (props: any) => <h4 className="font-medium text-slate-200 mt-1.5" {...props} />,
-  h3: (props: any) => <h4 className="font-medium text-slate-200 mt-1.5" {...props} />,
+  h1: (props: any) => <h3 className="font-semibold text-[rgb(var(--zw-ink))] mt-2" {...props} />,
+  h2: (props: any) => <h4 className="font-medium text-[rgb(var(--zw-ink2))] mt-1.5" {...props} />,
+  h3: (props: any) => <h4 className="font-medium text-[rgb(var(--zw-ink2))] mt-1.5" {...props} />,
   p: (props: any) => <p className="text-sm leading-relaxed" {...props} />,
-  strong: (props: any) => <strong className="text-slate-100 font-semibold" {...props} />,
-  code: (props: any) => <code className="font-mono text-xs bg-slate-800 rounded px-1 py-0.5 text-amber-300" {...props} />,
+  strong: (props: any) => <strong className="text-[rgb(var(--zw-ink))] font-semibold" {...props} />,
+  code: (props: any) => <code className="font-mono text-xs bg-[rgb(var(--zw-card))] rounded px-1 py-0.5 text-amber-300" {...props} />,
   ul: (props: any) => <ul className="space-y-1 pl-4 list-disc marker:text-amber-400" {...props} />,
-  ol: (props: any) => <ol className="space-y-1 pl-4 list-decimal marker:text-slate-400 marker:font-mono marker:text-xs" {...props} />,
+  ol: (props: any) => <ol className="space-y-1 pl-4 list-decimal marker:text-[rgb(var(--zw-ink2))] marker:font-mono marker:text-xs" {...props} />,
   li: (props: any) => <li className="text-sm leading-relaxed" {...props} />,
   a: (props: any) => <a className="text-amber-400 underline hover:text-amber-300" target="_blank" rel="noopener noreferrer" {...props} />,
 }
@@ -239,8 +239,8 @@ function UserPlainText() {
 function AssistantMessage() {
   return (
     <div className="flex justify-start">
-      <div className="mr-2 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-slate-900">Z</div>
-      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-bl-sm border border-slate-700/60 bg-slate-800/50 px-3 py-2.5 text-slate-300">
+      <div className="mr-2 mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-[rgb(var(--zw-ink))]">Z</div>
+      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-bl-sm border border-[rgb(var(--zw-border2)/0.6)] bg-[rgb(var(--zw-card)/0.5)] px-3 py-2.5 text-[rgb(var(--zw-ink2))]">
         <MessagePrimitive.Parts components={{ Text: AssistantMarkdownText }} />
       </MessagePrimitive.Root>
     </div>
@@ -250,7 +250,7 @@ function AssistantMessage() {
 function UserMessage() {
   return (
     <div className="flex justify-end">
-      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-br-sm bg-[#1B2737]/70 border border-[#1B2737] px-3 py-2.5 text-slate-100">
+      <MessagePrimitive.Root className="max-w-[86%] rounded-xl rounded-br-sm bg-[rgb(var(--zw-elev)/0.7)] border border-[rgb(var(--zw-border2))] px-3 py-2.5 text-[rgb(var(--zw-ink))]">
         <MessagePrimitive.Parts components={{ Text: UserPlainText }} />
       </MessagePrimitive.Root>
     </div>
@@ -383,34 +383,34 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-    <div className="flex h-full w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 font-sans">
+    <div className="flex h-full w-full overflow-hidden rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page))] font-sans">
 
       {/* ── LEFT: Chat ── */}
-      <div className="flex w-[420px] min-w-[360px] flex-col border-r border-slate-800 bg-slate-900/60">
-        <div className="flex items-center gap-2.5 border-b border-slate-800 bg-slate-900/80 px-4 py-3 shrink-0">
+      <div className="flex w-[420px] min-w-[360px] flex-col border-r border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.6)]">
+        <div className="flex items-center gap-2.5 border-b border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.8)] px-4 py-3 shrink-0">
           <div className="flex gap-1.5">
             <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
             <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
             <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
           </div>
-          <span className="ml-1 font-mono text-xs text-slate-400">ZoneWise AI · Florida Real Estate</span>
-          <div className={`ml-auto flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-xs ${authReady ? 'border-amber-500/20 bg-amber-500/5 text-amber-400' : 'border-slate-700 bg-slate-800/50 text-slate-400'}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${authReady ? 'bg-amber-400 animate-pulse' : 'bg-slate-600'}`} />
+          <span className="ml-1 font-mono text-xs text-[rgb(var(--zw-ink2))]">ZoneWise AI · Florida Real Estate</span>
+          <div className={`ml-auto flex items-center gap-1.5 rounded border px-2 py-0.5 font-mono text-xs ${authReady ? 'border-amber-500/20 bg-amber-500/5 text-amber-400' : 'border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.5)] text-[rgb(var(--zw-ink2))]'}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${authReady ? 'bg-amber-400 animate-pulse' : 'bg-[rgb(var(--zw-elev))]'}`} />
             {authReady ? 'LIVE · Claude Sonnet' : 'Connecting…'}
           </div>
         </div>
 
         <ThreadPrimitive.Viewport className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 scroll-smooth" autoScroll>
           {messages.length === 0 && (
-            <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
-              <div className="mb-1 font-semibold text-slate-200">ZoneWise AI 🏛</div>
-              <p className="mb-4 text-sm text-slate-400 leading-relaxed">
+            <div className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.3)] p-4">
+              <div className="mb-1 font-semibold text-[rgb(var(--zw-ink2))]">ZoneWise AI 🏛</div>
+              <p className="mb-4 text-sm text-[rgb(var(--zw-ink2))] leading-relaxed">
                 Ask me anything about Florida zoning, parcels, land use, and development feasibility across all 67 counties.
               </p>
               <div className="flex flex-col gap-2">
                 {CHIPS.map((c, i) => (
                   <button key={i} onClick={() => runCompletion(c.text)}
-                    className="flex items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/40 px-3 py-2.5 text-left text-xs text-slate-400 transition-all hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-slate-200">
+                    className="flex items-center gap-2.5 rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.4)] px-3 py-2.5 text-left text-xs text-[rgb(var(--zw-ink2))] transition-all hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-[rgb(var(--zw-ink2))]">
                     <span className="text-base">{c.icon}</span>
                     {c.text}
                   </button>
@@ -423,8 +423,8 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
 
           {loading && (
             <div className="flex items-start gap-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-slate-900">Z</div>
-              <div className="rounded-xl rounded-bl-sm border border-slate-700/60 bg-slate-800/50 px-4 py-3">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-amber-500 font-bold text-xs text-[rgb(var(--zw-ink))]">Z</div>
+              <div className="rounded-xl rounded-bl-sm border border-[rgb(var(--zw-border2)/0.6)] bg-[rgb(var(--zw-card)/0.5)] px-4 py-3">
                 <div className="flex gap-1.5">
                   {[0,1,2].map(i => (
                     <div key={i} className="h-2 w-2 rounded-full bg-amber-400 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
@@ -435,36 +435,36 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
           )}
         </ThreadPrimitive.Viewport>
 
-        <div className="shrink-0 border-t border-slate-800 bg-slate-900/70 p-3">
+        <div className="shrink-0 border-t border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.7)] p-3">
           <ComposerPrimitive.Root className="flex items-end gap-2">
             <ComposerPrimitive.Input
               rows={1}
               placeholder="Ask about any FL parcel, zoning, or feasibility…"
-              className="flex-1 resize-none rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2.5 text-sm text-slate-200 placeholder-slate-600 outline-none transition focus:border-amber-500/40 focus:bg-slate-800 disabled:opacity-50 max-h-[120px]" />
+              className="flex-1 resize-none rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.6)] px-3 py-2.5 text-sm text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] outline-none transition focus:border-amber-500/40 focus:bg-[rgb(var(--zw-card))] disabled:opacity-50 max-h-[120px]" />
             <ComposerPrimitive.Send
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-slate-900 transition hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-sm">
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-[rgb(var(--zw-ink))] transition hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-sm">
               →
             </ComposerPrimitive.Send>
           </ComposerPrimitive.Root>
-          <p className="mt-2 text-center font-mono text-xs text-slate-700">
+          <p className="mt-2 text-center font-mono text-xs text-[rgb(var(--zw-ink))]">
             67 FL Counties · 10.5M Parcels · 128 KPIs · Powered by Claude AI
           </p>
         </div>
       </div>
 
       {/* ── RIGHT: Intel Panel ── */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-slate-950">
-        <div className="flex shrink-0 gap-1 border-b border-slate-800 bg-slate-900/40 px-3 pt-2">
+      <div className="flex flex-1 flex-col overflow-hidden bg-[rgb(var(--zw-page))]">
+        <div className="flex shrink-0 gap-1 border-b border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] px-3 pt-2">
           {(['analysis', 'pipeline', 'about'] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`rounded-t-lg border-b-2 px-4 py-2 font-mono text-xs capitalize transition ${activeTab === tab
-                ? 'border-amber-500 text-amber-400 bg-slate-950'
-                : 'border-transparent text-slate-400 hover:text-slate-300'}`}>
+                ? 'border-amber-500 text-amber-400 bg-[rgb(var(--zw-page))]'
+                : 'border-transparent text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'}`}>
               {tab}
             </button>
           ))}
           {activeArtifact && (
-            <div className="ml-auto flex items-center gap-1.5 py-2 font-mono text-xs text-slate-600">
+            <div className="ml-auto flex items-center gap-1.5 py-2 font-mono text-xs text-[rgb(var(--zw-ink2))]">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               {activeArtifact.title.slice(0, 40)}{activeArtifact.title.length > 40 ? '…' : ''}
             </div>
@@ -476,7 +476,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
 
           {activeTab === 'pipeline' && (
             <div className="p-4 space-y-2">
-              <div className="mb-4 font-mono text-xs uppercase tracking-widest text-slate-600">Analysis Pipeline</div>
+              <div className="mb-4 font-mono text-xs uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Analysis Pipeline</div>
               {PIPELINE.map((step, i) => {
                 const isDone = pipeline > i
                 const isActive = pipeline === i
@@ -484,14 +484,14 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
                   <div key={i} className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-all ${
                     isDone ? 'border-emerald-500/20 bg-emerald-500/5' :
                     isActive ? 'border-amber-500/30 bg-amber-500/5' :
-                    'border-slate-800 bg-slate-900/30 opacity-40'}`}>
+                    'border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.3)] opacity-40'}`}>
                     <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-mono ${
                       isDone ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
                       isActive ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                      'bg-slate-800 text-slate-600'}`}>
+                      'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))]'}`}>
                       {isDone ? '✓' : i + 1}
                     </div>
-                    <span className={`text-sm ${isDone ? 'text-slate-300' : isActive ? 'text-amber-300' : 'text-slate-600'}`}>{step}</span>
+                    <span className={`text-sm ${isDone ? 'text-[rgb(var(--zw-ink2))]' : isActive ? 'text-amber-300' : 'text-[rgb(var(--zw-ink2))]'}`}>{step}</span>
                     {isActive && (
                       <div className="ml-auto flex gap-1">
                         {[0,1,2].map(j => (
@@ -499,7 +499,7 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
                         ))}
                       </div>
                     )}
-                    {isDone && <span className="ml-auto font-mono text-xs text-slate-600">done</span>}
+                    {isDone && <span className="ml-auto font-mono text-xs text-[rgb(var(--zw-ink2))]">done</span>}
                   </div>
                 )
               })}
@@ -508,9 +508,9 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
 
           {activeTab === 'about' && (
             <div className="p-4 space-y-4">
-              <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
-                <div className="mb-2 font-semibold text-slate-200">ZoneWise AI</div>
-                <p className="text-sm text-slate-400 leading-relaxed">
+              <div className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.3)] p-4">
+                <div className="mb-2 font-semibold text-[rgb(var(--zw-ink2))]">ZoneWise AI</div>
+                <p className="text-sm text-[rgb(var(--zw-ink2))] leading-relaxed">
                   Florida real estate intelligence across all 67 counties. 10.5M+ parcels, 5,395 zoning districts, 128-KPI scoring.
                 </p>
               </div>
@@ -523,9 +523,9 @@ export default function ChatWidget({ apiEndpoint = '/api/chat', authToken: propT
                 { label: 'AI Model', val: 'Claude Sonnet' },
                 { label: 'Coverage', val: '🗺 67 FL counties' },
               ].map(r => (
-                <div key={r.label} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/40 px-3 py-2">
-                  <span className="text-xs text-slate-400">{r.label}</span>
-                  <span className="font-mono text-xs text-slate-300">{r.val}</span>
+                <div key={r.label} className="flex items-center justify-between rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] px-3 py-2">
+                  <span className="text-xs text-[rgb(var(--zw-ink2))]">{r.label}</span>
+                  <span className="font-mono text-xs text-[rgb(var(--zw-ink2))]">{r.val}</span>
                 </div>
               ))}
             </div>

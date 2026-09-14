@@ -44,7 +44,7 @@ export const DEFAULT_MAP_CENTER = MIAMI_DADE_CENTER
 
 export const ZONING_COLORS: Record<string, string> = {
   RU: '#22C55E', BU: '#3B82F6', TU: '#8B5CF6', IU: '#EF4444',
-  PUD: '#1A90FF', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
+  PUD: 'rgb(var(--zw-brand))', AU: '#A3E635', PA: '#06B6D4', GML: '#FB923C',
   ARR: '#84CC16', SP: '#F472B6',
 }
 
@@ -56,7 +56,7 @@ export const ZONING_LABELS: Record<string, string> = {
 
 export function getZoningColor(code: string): string {
   const prefix = Object.keys(ZONING_COLORS).find(k => code?.startsWith(k))
-  return prefix ? ZONING_COLORS[prefix] : '#94A3B8'
+  return prefix ? ZONING_COLORS[prefix] : 'rgb(var(--zw-elev))'
 }
 
 export function toWebMercator(lat: number, lng: number) {
@@ -133,7 +133,7 @@ export const CHOROPLETH_COLOR_STOPS: [number, string][] = [
   [0,       '#2563EB'],
   [180000,  '#22C55E'],
   [280000,  '#EAB308'],
-  [380000,  '#F97316'],
+  [380000,  'rgb(var(--zw-brand))'],
   [500000,  '#EF4444'],
   [700000,  '#DC2626'],
 ]

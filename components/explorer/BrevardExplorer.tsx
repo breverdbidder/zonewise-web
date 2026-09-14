@@ -82,7 +82,7 @@ type: 'heatmap',
         paint: {
           'heatmap-weight': ['interpolate', ['linear'], ['get', 'value'], 0, 0, 500000, 1],
           'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 10, 1, 18, 3],
-          'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#2563EB', 0.4, '#22C55E', 0.6, '#1A90FF', 0.8, '#EF4444', 1, '#DC2626'],
+          'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#2563EB', 0.4, '#22C55E', 0.6, 'rgb(var(--zw-brand))', 0.8, '#EF4444', 1, '#DC2626'],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 10, 15, 18, 30],
           'heatmap-opacity': 0.65
         }
@@ -200,9 +200,9 @@ type: 'heatmap',
   return (
     <div className="flex h-full">
       {/* SIDEBAR */}
-      <div className="w-[380px] bg-slate-950 border-r border-slate-800 flex flex-col shrink-0 max-md:hidden">
+      <div className="w-[380px] bg-[rgb(var(--zw-page))] border-r border-[rgb(var(--zw-border2))] flex flex-col shrink-0 max-md:hidden">
         {/* Search */}
-        <div className="p-3 border-b border-slate-800">
+        <div className="p-3 border-b border-[rgb(var(--zw-border2))]">
           <div className="flex gap-2">
             <input
               type="text"
@@ -210,31 +210,31 @@ type: 'heatmap',
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
               placeholder="Search any Brevard address..."
-              className="flex-1 bg-slate-900 border border-slate-700 rounded-md px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-zw-orange-400 transition-colors"
+              className="flex-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-md px-3 py-2 text-sm text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-[rgb(var(--zw-brand))] transition-colors"
             />
             <button
               onClick={handleSearch}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSearch() } }}
               disabled={loading}
               aria-label="Search parcels"
-              className="px-3 py-2 bg-zw-orange text-slate-950 rounded-md text-sm font-bold hover:brightness-110 disabled:opacity-40 transition-all"
+              className="px-3 py-2 bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] rounded-md text-sm font-bold hover:brightness-110 disabled:opacity-40 transition-all"
             >
               🔍
             </button>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1.5">{parcelCount} parcels · Click any parcel on the map</p>
+          <p className="text-[11px] text-[rgb(var(--zw-ink2))] mt-1.5">{parcelCount} parcels · Click any parcel on the map</p>
         </div>
 
         {/* Layers */}
-        <div className="p-3 border-b border-slate-800">
-          <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Map Layers</h4>
+        <div className="p-3 border-b border-[rgb(var(--zw-border2))]">
+          <h4 className="text-[11px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Map Layers</h4>
           {([
-            { key: 'parcels' as const, label: 'All Brevard Parcels', color: '#1A90FF' },
+            { key: 'parcels' as const, label: 'All Brevard Parcels', color: 'rgb(var(--zw-brand))' },
             { key: 'zoning' as const, label: 'Zoning Districts', color: '#3B82F6' },
             { key: 'flu' as const, label: 'Future Land Use', color: '#A855F7' },
             { key: 'heatmap' as const, label: 'Value Heatmap', color: '#EF4444' },
           ]).map(l => (
-            <label key={l.key} className="flex items-center gap-2 py-1 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+            <label key={l.key} className="flex items-center gap-2 py-1 text-xs text-[rgb(var(--zw-ink2))] cursor-pointer hover:text-[rgb(var(--zw-ink2))] transition-colors">
               <input type="checkbox" checked={layers[l.key]} onChange={() => setLayers(p => ({ ...p, [l.key]: !p[l.key] }))} className="accent-zw-orange rounded" />
               <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: l.color }} />
               {l.label}
@@ -247,7 +247,7 @@ type: 'heatmap',
           {selectedParcel ? <ParcelDetail parcel={selectedParcel} /> : (
             <div className="text-center py-16">
               <div className="text-5xl mb-4 opacity-15">🗺️</div>
-              <p className="text-sm text-slate-400 max-w-[240px] mx-auto leading-relaxed">
+              <p className="text-sm text-[rgb(var(--zw-ink2))] max-w-[240px] mx-auto leading-relaxed">
                 Click any parcel on the map to see property details and open the full ZoneWise.AI analysis.
               </p>
             </div>
@@ -255,11 +255,11 @@ type: 'heatmap',
         </div>
 
         {/* Legend */}
-        <div className="p-3 border-t border-slate-800">
-          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Zoning Legend</h4>
+        <div className="p-3 border-t border-[rgb(var(--zw-border2))]">
+          <h4 className="text-[10px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-1">Zoning Legend</h4>
           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
             {Object.entries(ZONING_LABELS).slice(0, 8).map(([code, label]) => (
-              <div key={code} className="flex items-center gap-1.5 text-[10px] text-slate-400">
+              <div key={code} className="flex items-center gap-1.5 text-[10px] text-[rgb(var(--zw-ink2))]">
                 <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: getZoningColor(code) }} />
                 {code} — {label}
               </div>
@@ -283,14 +283,14 @@ type: 'heatmap',
               onClick={() => { if (mapRef.current) mapRef.current.setStyle('mapbox://styles/mapbox/' + s.id) }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (mapRef.current) mapRef.current.setStyle('mapbox://styles/mapbox/' + s.id) } }}
               aria-label={`Switch to ${s.label} map style`}
-              className="px-2.5 py-1.5 bg-white/90 border border-slate-300 rounded-md text-[11px] font-semibold text-slate-700 hover:bg-zw-orange/10 hover:border-zw-orange/50 hover:text-zw-orange-600 transition-all backdrop-blur-sm shadow-sm"
+              className="px-2.5 py-1.5 bg-white/90 border border-slate-300 rounded-md text-[11px] font-semibold text-[rgb(var(--zw-ink))] hover:bg-[rgb(var(--zw-brand)/0.1)] hover:border-[rgb(var(--zw-brand)/0.5)] hover:text-[rgb(var(--zw-brand-hover))] transition-all backdrop-blur-sm shadow-sm"
             >
               {s.label}
             </button>
           ))}
         </div>
         {loading && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-slate-700 rounded-md px-4 py-2 text-xs text-zw-orange font-semibold backdrop-blur-sm z-10">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[rgb(var(--zw-page)/0.9)] border border-[rgb(var(--zw-border2))] rounded-md px-4 py-2 text-xs text-[rgb(var(--zw-brand))] font-semibold backdrop-blur-sm z-10">
             Loading parcel data...
           </div>
         )}
@@ -308,9 +308,9 @@ function ParcelDetail({ parcel }: { parcel: ParcelAttributes }) {
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-base font-bold text-white leading-tight">{addr || 'Unknown Address'}</h3>
-        <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-        <p className="text-[11px] text-slate-400 mt-0.5 font-mono">{pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}</p>
+        <h3 className="text-base font-bold text-[rgb(var(--zw-ink))] leading-tight">{addr || 'Unknown Address'}</h3>
+        <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
+        <p className="text-[11px] text-[rgb(var(--zw-ink2))] mt-0.5 font-mono">{pid} · {(parcel.USE_CODE_DESCRIPTION || '').trim()}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -320,24 +320,24 @@ function ParcelDetail({ parcel }: { parcel: ParcelAttributes }) {
           { label: 'Living Area', value: `${parseInt(parcel.LIV_AREA) || '—'} sqft` },
           { label: 'Lot', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
         ].map(s => (
-          <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-            <div className="text-[10px] text-slate-400 uppercase tracking-wider">{s.label}</div>
-            <div className="text-sm font-bold text-white font-mono mt-0.5">{s.value}</div>
+          <div key={s.label} className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-md p-2.5">
+            <div className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider">{s.label}</div>
+            <div className="text-sm font-bold text-[rgb(var(--zw-ink))] font-mono mt-0.5">{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-        <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Owner</div>
-        <div className="text-sm font-semibold text-white">{parcel.OWNER_NAME1 || '—'}</div>
-        {parcel.OWNER_NAME2 && <div className="text-xs text-slate-400">{parcel.OWNER_NAME2}</div>}
-        <div className="text-[11px] text-slate-400 mt-1">Subdivision: {parcel.SUBDIVISION_NAME || '—'}</div>
-        <div className="text-[11px] text-slate-400">Millage: {parcel.MILLAGE_CODE || '—'} · Homestead: {parseFloat(parcel.HOMESTEAD_VALUE) > 0 ? 'Yes ✓' : 'No'}</div>
+      <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-md p-2.5">
+        <div className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-1">Owner</div>
+        <div className="text-sm font-semibold text-[rgb(var(--zw-ink))]">{parcel.OWNER_NAME1 || '—'}</div>
+        {parcel.OWNER_NAME2 && <div className="text-xs text-[rgb(var(--zw-ink2))]">{parcel.OWNER_NAME2}</div>}
+        <div className="text-[11px] text-[rgb(var(--zw-ink2))] mt-1">Subdivision: {parcel.SUBDIVISION_NAME || '—'}</div>
+        <div className="text-[11px] text-[rgb(var(--zw-ink2))]">Millage: {parcel.MILLAGE_CODE || '—'} · Homestead: {parseFloat(parcel.HOMESTEAD_VALUE) > 0 ? 'Yes ✓' : 'No'}</div>
       </div>
 
       <div className="space-y-2 pt-1">
         <a href={`/parcel/${pidEnc}`}
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-zw-orange/15 border border-zw-orange/30 text-zw-orange rounded-md text-sm font-bold hover:bg-zw-orange/25 transition-colors">
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[rgb(var(--zw-brand)/0.15)] border border-[rgb(var(--zw-brand)/0.3)] text-[rgb(var(--zw-brand))] rounded-md text-sm font-bold hover:bg-[rgb(var(--zw-brand)/0.25)] transition-colors">
           🗺️ Full ZoneWise.AI Analysis
         </a>
         <a href={`https://www.bcpao.us/PropertySearch/#/account/${parcel.PROPERTY_ID}`} target="_blank" rel="noopener noreferrer"
@@ -364,15 +364,15 @@ function popupHtml(a: ParcelAttributes): string {
   const pid = a.PARCEL_ID || ''
   const pidEnc = encodeURIComponent(pid)
   const r = (k: string, v: string) =>
-    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:#64748B">${k}</span><span style="color:#1A90FF;font-weight:600;font-family:monospace">${v}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:rgb(var(--zw-elev))">${k}</span><span style="color:rgb(var(--zw-brand));font-weight:600;font-family:monospace">${v}</span></div>`
 
   return `<div style="font-family:system-ui,sans-serif">
-    <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;border-bottom:1px solid #1E293B;padding-bottom:5px">${addr || 'Parcel'}</div>
+    <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;border-bottom:1px solid rgb(var(--zw-card));padding-bottom:5px">${addr || 'Parcel'}</div>
     ${r('Parcel', pid)}${r('Owner', (a.OWNER_NAME1 || '—').substring(0, 22))}
     ${r('Building', formatCurrency(a.BLDG_VALUE))}${r('Land', formatCurrency(a.LAND_VALUE))}
     ${r('Use', (a.USE_CODE_DESCRIPTION || '—').trim())}
-    <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid #1E293B;padding-top:6px">
-      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgba(26,144,255,.12);color:#1A90FF;border:1px solid rgba(26,144,255,.3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid rgb(var(--zw-card));padding-top:6px">
+      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgb(var(--zw-brand) / 12);color:rgb(var(--zw-brand));border:1px solid rgb(var(--zw-brand) / 3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
       <a href="https://www.bcpao.us/PropertySearch/#/account/${a.PROPERTY_ID}" target="_blank" style="display:block;text-align:center;padding:5px;background:rgba(59,130,246,.1);color:#3B82F6;border:1px solid rgba(59,130,246,.2);border-radius:4px;font-size:10px;font-weight:600;text-decoration:none">📋 BCPAO Property Search</a>
     </div></div>`
 }

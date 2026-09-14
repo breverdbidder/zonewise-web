@@ -19,19 +19,19 @@ export function BattleCardLayout({ competitor }: Props) {
   const isStub = competitor.parity_kpi_codes.length === 0 && competitor.advantage_kpi_codes.length === 0
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#0B1119] text-slate-100">
+    <main id="main-content" className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       {/* ── HERO ───────────────────────────────────────────────────────── */}
       <header
-        className="border-b border-slate-800"
+        className="border-b border-[rgb(var(--zw-border2))]"
         style={{
           background:
-            'linear-gradient(135deg, #1B2737 0%, #0d2040 60%, #0B1119 100%)',
+            'linear-gradient(135deg, rgb(var(--zw-elev)) 0%, #0d2040 60%, rgb(var(--zw-page)) 100%)',
         }}
       >
         <div className="mx-auto max-w-6xl px-6 py-16">
           <Link
             href="/competitors"
-            className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#1A90FF] hover:text-[#FBBF24]"
+            className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[rgb(var(--zw-brand))] hover:text-[#FBBF24]"
           >
             ← All competitors
           </Link>
@@ -40,35 +40,35 @@ export function BattleCardLayout({ competitor }: Props) {
             <div className="min-w-0 flex-1">
               <div className="mb-3 flex flex-wrap items-center gap-3">
                 <ThreatBadge threat={competitor.threat} />
-                <span className="text-[11px] font-mono text-slate-400">
+                <span className="text-[11px] font-mono text-[rgb(var(--zw-ink2))]">
                   {competitor.domain}
                 </span>
               </div>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
-                ZoneWise.AI <span className="text-[#1A90FF]">vs</span> {competitor.name}
+              <h1 className="text-4xl font-bold leading-tight tracking-tight text-[rgb(var(--zw-ink))] sm:text-5xl">
+                ZoneWise.AI <span className="text-[rgb(var(--zw-brand))]">vs</span> {competitor.name}
               </h1>
-              <p className="mt-4 max-w-2xl text-lg text-slate-300">
+              <p className="mt-4 max-w-2xl text-lg text-[rgb(var(--zw-ink2))]">
                 {competitor.tagline}
               </p>
             </div>
 
             {!isStub && (
-              <div className="rounded-xl border border-slate-700/60 bg-slate-950/60 p-5 text-center backdrop-blur-sm">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="rounded-xl border border-[rgb(var(--zw-border2)/0.6)] bg-[rgb(var(--zw-page)/0.6)] p-5 text-center backdrop-blur-sm">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                   Head-to-Head
                 </div>
                 <div className="mt-2 flex items-baseline justify-center gap-2">
-                  <span className="text-3xl font-bold text-[#1A90FF]">
+                  <span className="text-3xl font-bold text-[rgb(var(--zw-brand))]">
                     {competitor.zonewise_wins}
                   </span>
-                  <span className="text-slate-600">/</span>
-                  <span className="text-2xl font-semibold text-slate-400">
+                  <span className="text-[rgb(var(--zw-ink2))]">/</span>
+                  <span className="text-2xl font-semibold text-[rgb(var(--zw-ink2))]">
                     {competitor.competitor_wins}
                   </span>
-                  <span className="text-slate-600">/</span>
-                  <span className="text-xl text-slate-500">{competitor.ties}</span>
+                  <span className="text-[rgb(var(--zw-ink2))]">/</span>
+                  <span className="text-xl text-[rgb(var(--zw-ink2))]">{competitor.ties}</span>
                 </div>
-                <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                   ZoneWise / Them / Ties
                 </div>
               </div>
@@ -83,13 +83,13 @@ export function BattleCardLayout({ competitor }: Props) {
           <section className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-8 text-center">
             <p className="text-sm text-amber-300">
               Full battle card in development. Tracked in{' '}
-              <code className="rounded bg-slate-900 px-1.5 py-0.5 text-amber-200">
+              <code className="rounded bg-[rgb(var(--zw-page))] px-1.5 py-0.5 text-amber-200">
                 BATTLE-CARDS-SPRINT-S0-ADDENDUM.md
               </code>
               .
             </p>
-            <p className="mt-2 text-xs text-slate-400">
-              Threat level: <strong className="text-white">{competitor.threat}</strong> •{' '}
+            <p className="mt-2 text-xs text-[rgb(var(--zw-ink2))]">
+              Threat level: <strong className="text-[rgb(var(--zw-ink))]">{competitor.threat}</strong> •{' '}
               {totalRows > 0 ? `${totalRows} data points tracked` : 'KPI mapping pending'}
             </p>
           </section>
@@ -98,17 +98,17 @@ export function BattleCardLayout({ competitor }: Props) {
             {/* ── VERDICT BANNER ─────────────────────────────────────── */}
             <section
               aria-labelledby="verdict-heading"
-              className="rounded-xl border border-[#1A90FF]/30 bg-gradient-to-br from-[#1A90FF]/10 to-transparent p-6"
+              className="rounded-xl border border-[rgb(var(--zw-brand)/0.3)] bg-gradient-to-br from-[rgb(var(--zw-brand)/0.1)] to-transparent p-6"
             >
               <h2 id="verdict-heading" className="sr-only">
                 Verdict
               </h2>
-              <p className="text-lg leading-relaxed text-slate-200">
-                <span aria-hidden="true" className="mr-2 text-[#1A90FF]">“</span>
+              <p className="text-lg leading-relaxed text-[rgb(var(--zw-ink2))]">
+                <span aria-hidden="true" className="mr-2 text-[rgb(var(--zw-brand))]">“</span>
                 {competitor.verdict_line}
-                <span aria-hidden="true" className="ml-1 text-[#1A90FF]">”</span>
+                <span aria-hidden="true" className="ml-1 text-[rgb(var(--zw-brand))]">”</span>
               </p>
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-[rgb(var(--zw-ink2))]">
                 — ZoneWise.AI • BidDeed.AI • Everest Capital USA
               </p>
             </section>
@@ -122,14 +122,14 @@ export function BattleCardLayout({ competitor }: Props) {
                 Positioning
               </h2>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6">
-                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <div className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6">
+                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                   Their Strengths
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-300">
+                <ul className="space-y-2 text-sm text-[rgb(var(--zw-ink2))]">
                   {competitor.their_strengths.map((s, i) => (
                     <li key={i} className="flex gap-2">
-                      <span aria-hidden="true" className="text-slate-500">
+                      <span aria-hidden="true" className="text-[rgb(var(--zw-ink2))]">
                         ·
                       </span>
                       <span>{s}</span>
@@ -138,11 +138,11 @@ export function BattleCardLayout({ competitor }: Props) {
                 </ul>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6">
-                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <div className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6">
+                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                   Their Weaknesses
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-300">
+                <ul className="space-y-2 text-sm text-[rgb(var(--zw-ink2))]">
                   {competitor.their_weaknesses.map((w, i) => (
                     <li key={i} className="flex gap-2">
                       <span aria-hidden="true" className="text-rose-500">
@@ -154,14 +154,14 @@ export function BattleCardLayout({ competitor }: Props) {
                 </ul>
               </div>
 
-              <div className="rounded-xl border border-[#1A90FF]/30 bg-[#1A90FF]/5 p-6">
-                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#1A90FF]">
+              <div className="rounded-xl border border-[rgb(var(--zw-brand)/0.3)] bg-[rgb(var(--zw-brand)/0.05)] p-6">
+                <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[rgb(var(--zw-brand))]">
                   Our Edge
                 </h3>
-                <ul className="space-y-2 text-sm text-slate-200">
+                <ul className="space-y-2 text-sm text-[rgb(var(--zw-ink2))]">
                   {competitor.our_edge.map((e, i) => (
                     <li key={i} className="flex gap-2">
-                      <span aria-hidden="true" className="text-[#1A90FF]">
+                      <span aria-hidden="true" className="text-[rgb(var(--zw-brand))]">
                         ★
                       </span>
                       <span>{e}</span>
@@ -182,29 +182,29 @@ export function BattleCardLayout({ competitor }: Props) {
 
             {/* ── CTA BANNER ─────────────────────────────────────────── */}
             <section
-              className="rounded-xl border border-slate-800 bg-gradient-to-br from-[#1B2737] to-[#0B1119] p-8 text-center"
+              className="rounded-xl border border-[rgb(var(--zw-border2))] bg-gradient-to-br from-[rgb(var(--zw-elev))] to-[rgb(var(--zw-page))] p-8 text-center"
               aria-labelledby="cta-heading"
             >
               <h2
                 id="cta-heading"
-                className="text-2xl font-bold text-white sm:text-3xl"
+                className="text-2xl font-bold text-[rgb(var(--zw-ink))] sm:text-3xl"
               >
-                See how ZoneWise wins on <em className="not-italic text-[#1A90FF]">your</em> parcel
+                See how ZoneWise wins on <em className="not-italic text-[rgb(var(--zw-brand))]">your</em> parcel
               </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400">
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-[rgb(var(--zw-ink2))]">
                 BidDeed.AI foreclosure intelligence + ZoneWise.AI zoning analysis — together
                 in one platform, across 67 Florida counties. Start free.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/sign-up"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#1A90FF] px-6 py-3 text-sm font-bold text-[#0B1119] shadow-lg transition hover:bg-[#FBBF24]"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[rgb(var(--zw-brand))] px-6 py-3 text-sm font-bold text-[rgb(var(--zw-brand-ink))] shadow-lg transition hover:bg-[#FBBF24]"
                 >
                   Start for free →
                 </Link>
                 <Link
                   href="/explorer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-500"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[rgb(var(--zw-border2))] px-6 py-3 text-sm font-semibold text-[rgb(var(--zw-ink2))] transition hover:border-[rgb(var(--zw-border2))]"
                 >
                   Explore live map
                 </Link>
@@ -215,24 +215,24 @@ export function BattleCardLayout({ competitor }: Props) {
             {competitor.sources.length > 0 && (
               <section
                 aria-labelledby="sources-heading"
-                className="rounded-xl border border-slate-800 bg-slate-900/40 p-6"
+                className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6"
               >
                 <h2
                   id="sources-heading"
-                  className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400"
+                  className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]"
                 >
                   Sources (Honesty Protocol)
                 </h2>
-                <ul className="space-y-2 text-xs text-slate-400">
+                <ul className="space-y-2 text-xs text-[rgb(var(--zw-ink2))]">
                   {competitor.sources.map((s, i) => (
                     <li key={i} className="flex gap-2">
-                      <span className="font-mono text-slate-600">[{s.date}]</span>
+                      <span className="font-mono text-[rgb(var(--zw-ink2))]">[{s.date}]</span>
                       {s.url ? (
                         <a
                           href={s.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#1A90FF] underline decoration-[#1A90FF]/30 hover:decoration-[#1A90FF]"
+                          className="text-[rgb(var(--zw-brand))] underline decoration-[#1A90FF]/30 hover:decoration-[#1A90FF]"
                         >
                           {s.label}
                         </a>

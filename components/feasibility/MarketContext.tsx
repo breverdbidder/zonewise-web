@@ -9,8 +9,8 @@ import dynamic from 'next/dynamic'
 const MapboxMap = dynamic(() => import('./MapboxMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center bg-slate-900 rounded-xl w-full h-full" style={{ minHeight: 180 }}>
-      <span className="text-slate-400 text-sm animate-pulse">Loading map…</span>
+    <div className="flex items-center justify-center bg-[rgb(var(--zw-page))] rounded-xl w-full h-full" style={{ minHeight: 180 }}>
+      <span className="text-[rgb(var(--zw-ink2))] text-sm animate-pulse">Loading map…</span>
     </div>
   ),
 })
@@ -23,10 +23,10 @@ interface MarketContextProps {
 }
 
 function TrendArrow({ value }: { value?: number }) {
-  if (value === undefined || value === null) return <span className="text-slate-300">—</span>
+  if (value === undefined || value === null) return <span className="text-[rgb(var(--zw-ink2))]">—</span>
   if (value > 0) return <span style={{ color: COLORS.success }}>▲ {value.toFixed(1)}%</span>
   if (value < 0) return <span style={{ color: COLORS.danger }}>▼ {Math.abs(value).toFixed(1)}%</span>
-  return <span className="text-slate-400">→ flat</span>
+  return <span className="text-[rgb(var(--zw-ink2))]">→ flat</span>
 }
 
 function ScoreDot({ score, max = 10 }: { score: number; max?: number }) {
@@ -58,11 +58,11 @@ function MarketScoreGauge({ score }: { score: MarketScore }) {
           >
             {score.total}
           </div>
-          <div className="text-[10px] text-slate-400 mt-1">/10</div>
+          <div className="text-[10px] text-[rgb(var(--zw-ink2))] mt-1">/10</div>
         </div>
         <div className="flex-1">
-          <div className="text-base font-bold text-slate-900 mb-0.5">{label}</div>
-          <div className="text-[11px] text-slate-500 leading-relaxed">{score.breakdown}</div>
+          <div className="text-base font-bold text-[rgb(var(--zw-ink))] mb-0.5">{label}</div>
+          <div className="text-[11px] text-[rgb(var(--zw-ink2))] leading-relaxed">{score.breakdown}</div>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ function MarketScoreGauge({ score }: { score: MarketScore }) {
           ['Home Appreciation', score.appreciationScore],
         ].map(([label, s]) => (
           <div key={label as string} className="flex items-center gap-3">
-            <div className="text-[11px] text-slate-500 w-[140px] flex-shrink-0">{label as string}</div>
+            <div className="text-[11px] text-[rgb(var(--zw-ink2))] w-[140px] flex-shrink-0">{label as string}</div>
             <div className="flex-1">
               <ScoreDot score={s as number} />
             </div>
@@ -99,7 +99,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
         <div className="flex items-center mb-4 gap-3">
           <div className="flex-1">
             <SectionLabel text="Market Context" />
-            <div className="text-[13px] text-slate-500">
+            <div className="text-[13px] text-[rgb(var(--zw-ink2))]">
               ZIP {demographics.zip} · {site.county} County · {demographics.dataSource}
             </div>
           </div>
@@ -152,15 +152,15 @@ export default function MarketContext({ site, demographics, score }: MarketConte
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <span className="text-base">{icon}</span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider">{label}</span>
+                <span className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider">{label}</span>
               </div>
               <div
-                className="text-xl font-extrabold text-slate-900"
+                className="text-xl font-extrabold text-[rgb(var(--zw-ink))]"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {value}
               </div>
-              <div className="text-[11px] mt-1 text-slate-500">
+              <div className="text-[11px] mt-1 text-[rgb(var(--zw-ink2))]">
                 {note ?? <TrendArrow value={yoy} />}
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
           <div className="flex items-center gap-3 mt-2">
             <div className="flex-1">
               <div className="flex justify-between text-[11px] mb-1">
-                <span className="text-slate-500">Owner-Occupied</span>
+                <span className="text-[rgb(var(--zw-ink2))]">Owner-Occupied</span>
                 <span className="font-bold" style={{ color: COLORS.brand }}>{demographics.ownerOccupiedPct}%</span>
               </div>
               <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
@@ -185,7 +185,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
             </div>
             <div className="flex-1">
               <div className="flex justify-between text-[11px] mb-1">
-                <span className="text-slate-500">Renter-Occupied</span>
+                <span className="text-[rgb(var(--zw-ink2))]">Renter-Occupied</span>
                 <span className="font-bold" style={{ color: COLORS.accent }}>{demographics.renterOccupiedPct}%</span>
               </div>
               <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
@@ -196,7 +196,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
               </div>
             </div>
           </div>
-          <div className="text-[11px] text-slate-400 mt-2.5">
+          <div className="text-[11px] text-[rgb(var(--zw-ink2))] mt-2.5">
             {demographics.renterOccupiedPct >= 35
               ? `Strong renter base (${demographics.renterOccupiedPct}%) — favorable for rental investment strategy.`
               : `Owner-dominant market (${demographics.ownerOccupiedPct}% owners). Rental demand may be softer — validate with comp vacancy data.`}
@@ -208,7 +208,7 @@ export default function MarketContext({ site, demographics, score }: MarketConte
           <SectionLabel text={`Key Employment Drivers — ${site.county} County`} />
           <div className="mt-2 grid grid-cols-2 gap-1.5">
             {['Kennedy Space Center', 'Patrick SFB / USSF', 'L3Harris Technologies', 'Health First', 'SpaceX / Blue Origin', 'Embraer / GITAM'].map((e) => (
-              <div key={e} className="text-[12px] text-slate-600 flex items-center gap-1.5">
+              <div key={e} className="text-[12px] text-[rgb(var(--zw-ink2))] flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: COLORS.brand }} />
                 {e}
               </div>
@@ -220,25 +220,25 @@ export default function MarketContext({ site, demographics, score }: MarketConte
       {/* Sidebar */}
       <div className="w-full lg:w-[300px] lg:flex-shrink-0">
         <SectionLabel text="Location" />
-        <div className="text-sm font-bold text-slate-900 mb-3 leading-snug">{site.address}</div>
+        <div className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3 leading-snug">{site.address}</div>
         <MapboxMap lat={site.lat} lng={site.lng} zoom={12} pitch={0} style={{ height: 220, marginBottom: 16 }} />
 
         <Card className="p-4">
           <SectionLabel text="HUD Fair Market Rent 2026" />
           {[['Studio', '$1,280'], ['1-BR', '$1,450'], ['2-BR', '$1,750'], ['3-BR', '$2,200']].map(([t, v]) => (
             <div key={t} className="flex justify-between py-1 text-xs border-b border-slate-50">
-              <span className="text-slate-500">{t}</span>
+              <span className="text-[rgb(var(--zw-ink2))]">{t}</span>
               <span className="font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v}</span>
             </div>
           ))}
-          <div className="text-[10px] text-slate-400 mt-2">Source: HUD FMR 2026 · {site.county} County</div>
+          <div className="text-[10px] text-[rgb(var(--zw-ink2))] mt-2">Source: HUD FMR 2026 · {site.county} County</div>
         </Card>
 
         <div className="mt-3 rounded-lg p-3.5" style={{ background: COLORS.brandLight, border: `1px solid ${COLORS.brand}30` }}>
           <div className="text-[10px] font-bold uppercase tracking-wider mb-1.5" style={{ color: COLORS.brandDark }}>
             Data Sources
           </div>
-          <div className="text-[11px] text-slate-500 leading-relaxed">
+          <div className="text-[11px] text-[rgb(var(--zw-ink2))] leading-relaxed">
             Census ACS 5-Year ({demographics.dataYear}) · Bureau of Labor Statistics · HUD FMR 2026 · {site.county} County Property Appraiser
           </div>
         </div>

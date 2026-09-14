@@ -275,8 +275,11 @@ export default function MassingEngine() {
 
     // ── Scene ──
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color('#0B1119')
-    scene.fog = new THREE.FogExp2('#0B1119', 0.0015)
+    // Theme-aware canvas bg: --zw-page is an RGB triplet var (light #fff / dark #0B1119).
+    const zwPage = getComputedStyle(document.documentElement).getPropertyValue('--zw-page').trim().split(/\s+/).join(',')
+    const pageColor = `rgb(${zwPage})`
+    scene.background = new THREE.Color(pageColor)
+    scene.fog = new THREE.FogExp2(pageColor, 0.0015)
 
     // ── Camera (fov 35, architectural) ──
     const camera = new THREE.PerspectiveCamera(35, W / H, 0.5, 3000)
@@ -767,7 +770,7 @@ export default function MassingEngine() {
       const overlay = overlayRef.current
       if (overlay) {
         overlay.innerHTML = ''
-        const labelStyle = 'position:absolute;background:#1B2737;color:white;font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgba(26,144,255,0.5)'
+        const labelStyle = 'position:absolute;background:rgb(var(--zw-elev));color:rgb(var(--zw-ink));font-size:11px;font-family:Inter,sans-serif;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;border:1px solid rgb(var(--zw-brand) / 0.5)'
 
         // Building height label (top center)
         const htLabel = document.createElement('div')
@@ -778,7 +781,7 @@ export default function MassingEngine() {
         // Units badge
         if (m.units > 1) {
           const unitLabel = document.createElement('div')
-          unitLabel.style.cssText = labelStyle + ';top:44px;right:12px;background:#1A90FF;color:#0B1119;font-weight:700'
+          unitLabel.style.cssText = labelStyle + ';top:44px;right:12px;background:rgb(var(--zw-brand));color:rgb(var(--zw-page));font-weight:700'
           unitLabel.textContent = `${m.units} units`
           overlay.appendChild(unitLabel)
         }
@@ -1059,14 +1062,14 @@ export default function MassingEngine() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0B1119] text-white">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       {/* Page header */}
-      <div className="border-b border-slate-800 px-6 py-4">
+      <div className="border-b border-[rgb(var(--zw-border2))] px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm">3D</div>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[rgb(var(--zw-brand))] to-[rgb(var(--zw-brand))] flex items-center justify-center text-[rgb(var(--zw-ink))] font-bold text-sm">3D</div>
           <div>
-            <h1 className="text-lg font-bold text-white">3D Massing Engine</h1>
-            <p className="text-xs text-slate-400">Address → Zoning → Building Envelope → Capacity</p>
+            <h1 className="text-lg font-bold text-[rgb(var(--zw-ink))]">3D Massing Engine</h1>
+            <p className="text-xs text-[rgb(var(--zw-ink2))]">Address → Zoning → Building Envelope → Capacity</p>
           </div>
         </div>
       </div>
@@ -1081,22 +1084,22 @@ export default function MassingEngine() {
               onChange={e => handleSearch(e.target.value)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
               placeholder="Type a Brevard County address (e.g. 123 Main St, Cocoa)..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400 text-sm"
+              className="w-full bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl px-4 py-3.5 text-[rgb(var(--zw-ink))] placeholder-[rgb(var(--zw-ink2))] focus:outline-none focus:border-[rgb(var(--zw-brand))] focus:ring-1 focus:ring-[rgb(var(--zw-brand))] text-sm"
             />
             {searching && (
-              <div className="absolute right-4 top-3.5 text-slate-400 text-xs">Searching...</div>
+              <div className="absolute right-4 top-3.5 text-[rgb(var(--zw-ink2))] text-xs">Searching...</div>
             )}
           </div>
           {showDropdown && results.length > 0 && (
-            <div className="absolute z-20 w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
+            <div className="absolute z-20 w-full mt-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl shadow-2xl overflow-hidden">
               {results.map(r => (
                 <button
                   key={r.parcel_id}
                   onMouseDown={() => handleSelect(r)}
-                  className="w-full text-left px-4 py-3 hover:bg-slate-800 border-b border-slate-800 last:border-0 transition-colors"
+                  className="w-full text-left px-4 py-3 hover:bg-[rgb(var(--zw-card))] border-b border-[rgb(var(--zw-border2))] last:border-0 transition-colors"
                 >
-                  <div className="text-sm text-white">{r.address}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">
+                  <div className="text-sm text-[rgb(var(--zw-ink))]">{r.address}</div>
+                  <div className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">
                     {r.use_description ?? 'Unknown use'} · {r.acres?.toFixed(2) ?? '?'} ac · ID: {r.parcel_id}
                   </div>
                 </button>
@@ -1104,7 +1107,7 @@ export default function MassingEngine() {
             </div>
           )}
           {showDropdown && results.length === 0 && !searching && query.length >= 3 && (
-            <div className="absolute z-20 w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-400 text-sm shadow-xl">
+            <div className="absolute z-20 w-full mt-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl px-4 py-3 text-[rgb(var(--zw-ink2))] text-sm shadow-xl">
               No properties found for "{query}"
             </div>
           )}
@@ -1126,8 +1129,8 @@ export default function MassingEngine() {
 
         {/* Zoning loading */}
         {loadingZoning && (
-          <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
-            <div className="w-4 h-4 border-2 border-slate-600 border-t-orange-400 rounded-full animate-spin" />
+          <div className="flex items-center gap-2 text-[rgb(var(--zw-ink2))] text-sm mb-4">
+            <div className="w-4 h-4 border-2 border-[rgb(var(--zw-border2))] border-t-orange-400 rounded-full animate-spin" />
             Loading zoning data...
           </div>
         )}
@@ -1140,16 +1143,16 @@ export default function MassingEngine() {
             <div className="space-y-4">
 
               {/* Zone header card */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <span className="inline-block bg-orange-500/20 text-orange-400 text-xs font-bold px-2.5 py-1 rounded-lg mr-2">
+                    <span className="inline-block bg-[rgb(var(--zw-brand)/0.2)] text-[rgb(var(--zw-brand))] text-xs font-bold px-2.5 py-1 rounded-lg mr-2">
                       {zoning.zone_code}
                     </span>
-                    <span className="text-white font-semibold">{zoning.district_name}</span>
+                    <span className="text-[rgb(var(--zw-ink))] font-semibold">{zoning.district_name}</span>
                   </div>
                   {zoning.jurisdiction && (
-                    <span className="text-xs text-slate-500">{zoning.jurisdiction}</span>
+                    <span className="text-xs text-[rgb(var(--zw-ink2))]">{zoning.jurisdiction}</span>
                   )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1164,17 +1167,17 @@ export default function MassingEngine() {
                     { label: 'Parking/Unit',  val: String(metrics.parkingPerUnit) },
                     { label: 'Pkg/1000 sf',   val: String(metrics.parkingPer1k)  },
                   ].map(item => (
-                    <div key={item.label} className="bg-slate-800 rounded-lg p-2.5">
-                      <div className="text-slate-400 text-xs leading-tight">{item.label}</div>
-                      <div className="text-white font-semibold text-sm mt-1">{item.val}</div>
+                    <div key={item.label} className="bg-[rgb(var(--zw-card))] rounded-lg p-2.5">
+                      <div className="text-[rgb(var(--zw-ink2))] text-xs leading-tight">{item.label}</div>
+                      <div className="text-[rgb(var(--zw-ink))] font-semibold text-sm mt-1">{item.val}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Capacity metrics */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-slate-200 mb-3">Capacity Metrics</h3>
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-3">Capacity Metrics</h3>
                 <div className="space-y-0">
                   {[
                     { label: 'Lot Area',               val: `${metrics.lotArea.toLocaleString()} sf  (${metrics.acreage.toFixed(2)} ac)` },
@@ -1186,9 +1189,9 @@ export default function MassingEngine() {
                     { label: 'Estimated Units',        val: metrics.useType === 'sfr' ? '1 unit' : metrics.units > 0 ? `${metrics.units} units` : 'N/A' },
                     { label: 'Density',                val: metrics.density > 0 ? `${metrics.density.toFixed(1)} units/ac` : 'N/A' },
                   ].map(item => (
-                    <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-800 last:border-0">
-                      <span className="text-slate-400 text-sm">{item.label}</span>
-                      <span className="text-white text-sm font-medium tabular-nums">{item.val}</span>
+                    <div key={item.label} className="flex justify-between items-center py-2 border-b border-[rgb(var(--zw-border2))] last:border-0">
+                      <span className="text-[rgb(var(--zw-ink2))] text-sm">{item.label}</span>
+                      <span className="text-[rgb(var(--zw-ink))] text-sm font-medium tabular-nums">{item.val}</span>
                     </div>
                   ))}
                 </div>
@@ -1196,8 +1199,8 @@ export default function MassingEngine() {
 
               {/* Permitted uses */}
               {zoning.uses.length > 0 && (
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-slate-200 mb-3">Permitted Uses</h3>
+                <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
+                  <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-3">Permitted Uses</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {zoning.uses.map((u, i) => (
                       <span
@@ -1205,7 +1208,7 @@ export default function MassingEngine() {
                         className={`text-xs px-2 py-0.5 rounded-full border ${
                           u.use_type === 'permitted'   ? 'bg-green-900/30 text-green-400 border-green-800/60' :
                           u.use_type === 'conditional' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-800/60' :
-                          'bg-slate-800 text-slate-400 border-slate-700'
+                          'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] border-[rgb(var(--zw-border2))]'
                         }`}
                       >
                         {u.use_description}
@@ -1214,7 +1217,7 @@ export default function MassingEngine() {
                   </div>
                   <div className="flex gap-3 mt-3">
                     {[{ color: 'bg-green-400', label: 'Permitted' }, { color: 'bg-yellow-400', label: 'Conditional' }].map(l => (
-                      <div key={l.label} className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <div key={l.label} className="flex items-center gap-1.5 text-xs text-[rgb(var(--zw-ink2))]">
                         <div className={`w-2 h-2 rounded-full ${l.color}`} />
                         {l.label}
                       </div>
@@ -1228,17 +1231,17 @@ export default function MassingEngine() {
             <div className="space-y-4">
 
               {/* 3D canvas */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
-                  <span className="text-sm font-semibold text-slate-200">3D Building Envelope</span>
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-[rgb(var(--zw-border2))] flex items-center justify-between flex-wrap gap-2">
+                  <span className="text-sm font-semibold text-[rgb(var(--zw-ink2))]">3D Building Envelope</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500 hidden sm:inline">Drag to rotate · Scroll to zoom</span>
-                    <div className="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                    <span className="text-xs text-[rgb(var(--zw-ink2))] hidden sm:inline">Drag to rotate · Scroll to zoom</span>
+                    <div className="flex rounded-lg border border-[rgb(var(--zw-border2))] overflow-hidden text-xs">
                       {(['single_family', 'townhome_row', 'multifamily_grid'] as LayoutType[]).map(lt => (
                         <button
                           key={lt}
                           onClick={() => setLayoutType(lt)}
-                          className={`px-2.5 py-1 transition-colors ${layoutType === lt ? 'bg-amber-500 text-slate-950 font-semibold' : 'bg-slate-800 text-slate-300 hover:text-white'}`}
+                          className={`px-2.5 py-1 transition-colors ${layoutType === lt ? 'bg-amber-500 text-[rgb(var(--zw-ink))] font-semibold' : 'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))]'}`}
                         >
                           {lt === 'single_family' ? 'Single Family' : lt === 'townhome_row' ? 'Townhome Row' : 'Multifamily Grid'}
                         </button>
@@ -1246,14 +1249,14 @@ export default function MassingEngine() {
                     </div>
                     <button
                       onClick={handleSnapshot}
-                      className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
+                      className="text-xs bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] px-2.5 py-1 rounded-lg border border-[rgb(var(--zw-border2))] transition-colors"
                     >
                       Download Render
                     </button>
                     <button
                       onClick={() => gate.requireGate(handleDownloadDxf, 'massing_cad_export', 'Enter your email to download the CAD file.')}
                       disabled={dxfDownloading || candidates.length === 0}
-                      className="text-xs bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 hover:text-white px-2.5 py-1 rounded-lg border border-slate-700 transition-colors"
+                      className="text-xs bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] disabled:opacity-40 disabled:cursor-not-allowed text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] px-2.5 py-1 rounded-lg border border-[rgb(var(--zw-border2))] transition-colors"
                       title={candidates.length === 0 ? (layoutType === 'single_family' ? 'No parcel boundary polygon available for this property' : 'No compliant layout found for this parcel + layout type (lot may be too small, or over the zone\'s density/coverage cap)') : undefined}
                     >
                       {dxfDownloading ? 'Exporting…' : 'Download CAD (DXF)'}
@@ -1261,7 +1264,7 @@ export default function MassingEngine() {
                   </div>
                 </div>
                 {gate.showGate && (
-                  <div className="px-4 py-3 border-b border-slate-800">
+                  <div className="px-4 py-3 border-b border-[rgb(var(--zw-border2))]">
                     <EmailGateInline
                       onSubmit={gate.submitGate}
                       ctaLabel="Get my CAD file"
@@ -1270,16 +1273,16 @@ export default function MassingEngine() {
                   </div>
                 )}
                 {dxfError && (
-                  <div className="px-4 py-2 text-xs text-red-400 border-b border-slate-800">{dxfError}</div>
+                  <div className="px-4 py-2 text-xs text-red-400 border-b border-[rgb(var(--zw-border2))]">{dxfError}</div>
                 )}
                 <div style={{ position: 'relative', width: '100%', height: 420 }}>
                   {webglLost ? (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#0B1119] text-center">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[rgb(var(--zw-page))] text-center">
                       <span className="text-2xl">⚠️</span>
-                      <p className="text-sm font-medium text-slate-300">3D rendering unavailable — try refreshing</p>
+                      <p className="text-sm font-medium text-[rgb(var(--zw-ink2))]">3D rendering unavailable — try refreshing</p>
                       <button
                         onClick={() => { setWebglLost(false) }}
-                        className="rounded-lg bg-[#1A90FF] px-4 py-1.5 text-xs font-semibold text-slate-900 hover:bg-[#1A90FF]/90"
+                        className="rounded-lg bg-[rgb(var(--zw-brand))] px-4 py-1.5 text-xs font-semibold text-[rgb(var(--zw-ink))] hover:bg-[rgb(var(--zw-brand)/0.9)]"
                       >
                         Refresh
                       </button>
@@ -1298,16 +1301,16 @@ export default function MassingEngine() {
                   )}
                 </div>
                 {/* Legend */}
-                <div className="px-4 py-2.5 border-t border-slate-800 flex items-center gap-4 flex-wrap">
+                <div className="px-4 py-2.5 border-t border-[rgb(var(--zw-border2))] flex items-center gap-4 flex-wrap">
                   {[
-                    { color: '#1A90FF', label: 'Lot boundary'  },
+                    { color: 'rgb(var(--zw-brand))', label: 'Lot boundary'  },
                     { color: '#22C55E', label: 'Setback zone'  },
                     { color: '#88BBDD', label: 'Glass facade'  },
                     { color: '#D4D0C8', label: 'Concrete'      },
                   ].map(item => (
                     <div key={item.label} className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
-                      <span className="text-xs text-slate-400">{item.label}</span>
+                      <span className="text-xs text-[rgb(var(--zw-ink2))]">{item.label}</span>
                     </div>
                   ))}
                 </div>
@@ -1315,14 +1318,14 @@ export default function MassingEngine() {
 
               {/* Unit mix — MF */}
               {unitMix && (
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-slate-200 mb-3">
-                    Unit Mix <span className="text-slate-500 font-normal">({metrics.units} total)</span>
+                <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
+                  <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-3">
+                    Unit Mix <span className="text-[rgb(var(--zw-ink2))] font-normal">({metrics.units} total)</span>
                   </h3>
                   <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-slate-400 text-xs">
+                      <tr className="text-[rgb(var(--zw-ink2))] text-xs">
                         <th className="text-left pb-2 font-medium">Type</th>
                         <th className="text-right pb-2 font-medium">Count</th>
                         <th className="text-right pb-2 font-medium">Avg SF</th>
@@ -1331,19 +1334,19 @@ export default function MassingEngine() {
                     </thead>
                     <tbody>
                       {unitMix.map(u => (
-                        <tr key={u.type} className="border-t border-slate-800">
-                          <td className="py-2 text-white">{u.type}</td>
-                          <td className="py-2 text-right text-white tabular-nums">{u.count}</td>
-                          <td className="py-2 text-right text-slate-300 tabular-nums">{u.sf.toLocaleString()}</td>
+                        <tr key={u.type} className="border-t border-[rgb(var(--zw-border2))]">
+                          <td className="py-2 text-[rgb(var(--zw-ink))]">{u.type}</td>
+                          <td className="py-2 text-right text-[rgb(var(--zw-ink))] tabular-nums">{u.count}</td>
+                          <td className="py-2 text-right text-[rgb(var(--zw-ink2))] tabular-nums">{u.sf.toLocaleString()}</td>
                           <td className="py-2 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <div className="w-14 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                              <div className="w-14 bg-[rgb(var(--zw-card))] rounded-full h-1.5 overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-orange-400"
+                                  className="h-full rounded-full bg-[rgb(var(--zw-brand))]"
                                   style={{ width: `${u.pct * 100}%` }}
                                 />
                               </div>
-                              <span className="text-slate-300 tabular-nums text-xs w-8 text-right">
+                              <span className="text-[rgb(var(--zw-ink2))] tabular-nums text-xs w-8 text-right">
                                 {(u.pct * 100).toFixed(0)}%
                               </span>
                             </div>
@@ -1358,35 +1361,35 @@ export default function MassingEngine() {
 
               {/* Unit mix — SFR */}
               {metrics.useType === 'sfr' && (
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-slate-200 mb-3">Unit Mix</h3>
+                <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
+                  <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-3">Unit Mix</h3>
                   <div className="flex items-center gap-4">
-                    <div className="text-4xl font-bold text-white">1</div>
+                    <div className="text-4xl font-bold text-[rgb(var(--zw-ink))]">1</div>
                     <div>
-                      <div className="text-white font-medium">Single Family Residence</div>
-                      <div className="text-slate-400 text-sm">{Math.round(metrics.env.actualGFA).toLocaleString()} sf buildable GFA</div>
+                      <div className="text-[rgb(var(--zw-ink))] font-medium">Single Family Residence</div>
+                      <div className="text-[rgb(var(--zw-ink2))] text-sm">{Math.round(metrics.env.actualGFA).toLocaleString()} sf buildable GFA</div>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Parking summary */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-slate-200 mb-3">Parking Summary</h3>
+              <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-3">Parking Summary</h3>
                 <div className="space-y-0">
                   {[
                     { label: 'Required Spaces',         val: String(metrics.requiredSpaces) },
                     { label: 'Surface Area Required',   val: `${metrics.spaceArea.toLocaleString()} sf` },
                     { label: 'Parking % of Lot',        val: `${metrics.lotArea > 0 ? ((metrics.spaceArea / metrics.lotArea) * 100).toFixed(1) : '0'}%` },
                   ].map(item => (
-                    <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-800 last:border-0">
-                      <span className="text-slate-400 text-sm">{item.label}</span>
-                      <span className="text-white text-sm font-medium tabular-nums">{item.val}</span>
+                    <div key={item.label} className="flex justify-between items-center py-2 border-b border-[rgb(var(--zw-border2))] last:border-0">
+                      <span className="text-[rgb(var(--zw-ink2))] text-sm">{item.label}</span>
+                      <span className="text-[rgb(var(--zw-ink))] text-sm font-medium tabular-nums">{item.val}</span>
                     </div>
                   ))}
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-slate-400 text-sm">Recommendation</span>
-                    <span className={`text-sm font-semibold ${metrics.requiredSpaces > 50 ? 'text-orange-400' : 'text-green-400'}`}>
+                    <span className="text-[rgb(var(--zw-ink2))] text-sm">Recommendation</span>
+                    <span className={`text-sm font-semibold ${metrics.requiredSpaces > 50 ? 'text-[rgb(var(--zw-brand))]' : 'text-green-400'}`}>
                       {metrics.requiredSpaces > 50 ? 'Structured Parking' : 'Surface Lot'}
                     </span>
                   </div>
@@ -1400,16 +1403,16 @@ export default function MassingEngine() {
         {/* Empty state */}
         {!selected && !searching && (
           <div className="text-center py-24">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 mb-4">
-              <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] mb-4">
+              <svg className="w-8 h-8 text-[rgb(var(--zw-brand))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
-            <h2 className="text-lg font-semibold text-white mb-1">Enter a Brevard County address</h2>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
+            <h2 className="text-lg font-semibold text-[rgb(var(--zw-ink))] mb-1">Enter a Brevard County address</h2>
+            <p className="text-sm text-[rgb(var(--zw-ink2))] max-w-md mx-auto">
               Search any property to generate a 3D building envelope with zoning controls, capacity analysis, unit mix, and parking requirements.
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-6 text-xs text-slate-600">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 sm:gap-x-6 text-xs text-[rgb(var(--zw-ink2))]">
               <span>Height data: 97%</span>
               <span>Setbacks: 95%</span>
               <span>Coverage: 100%</span>

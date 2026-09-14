@@ -42,7 +42,7 @@ export default function SplitScreenPreview() {
   return (
     <div className="flex flex-col md:flex-row rounded-xl overflow-hidden border border-gray-200 shadow-lg bg-white">
       {/* Left Panel — AI Chatbot */}
-      <div className="w-full md:w-[40%] bg-[#1B2737] text-white flex flex-col min-h-[480px]">
+      <div className="w-full md:w-[40%] bg-[rgb(var(--zw-brand))] text-white flex flex-col min-h-[480px]">
         {/* Chat Header */}
         <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -59,8 +59,8 @@ export default function SplitScreenPreview() {
                 onClick={() => setActiveLang(lang.code)}
                 className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
                   activeLang === lang.code
-                    ? 'bg-[#1A90FF] text-[#1B2737]'
-                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    ? 'bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink2))]'
+                    : 'bg-white/10 text-[rgb(var(--zw-ink))]/70 hover:bg-white/20'
                 }`}
               >
                 {lang.code}
@@ -77,7 +77,7 @@ export default function SplitScreenPreview() {
                 className={`max-w-[85%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
                   msg.role === 'user'
                     ? 'bg-white/20 rounded-br-sm'
-                    : 'bg-[#162D4A] border border-white/10 rounded-bl-sm'
+                    : 'bg-[rgb(var(--zw-elev))] border border-white/10 rounded-bl-sm'
                 }`}
               >
                 <p className="whitespace-pre-line">{msg.text}</p>
@@ -92,7 +92,7 @@ export default function SplitScreenPreview() {
             <a
               href={`/explorer?q=${encodeURIComponent(chip.toLowerCase())}`}
               key={chip}
-              className="px-3 py-1.5 bg-white/10 text-white/80 text-xs rounded-full border border-white/10"
+              className="px-3 py-1.5 bg-white/10 text-[rgb(var(--zw-ink))]/80 text-xs rounded-full border border-white/10"
             >
               {chip}
             </a>
@@ -110,7 +110,7 @@ export default function SplitScreenPreview() {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 px-4 py-3 text-sm font-medium capitalize transition-colors ${
                 activeTab === tab
-                  ? 'text-[#1B2737] border-b-2 border-[#1A90FF]'
+                  ? 'text-[rgb(var(--zw-ink2))] border-b-2 border-[rgb(var(--zw-brand))]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -148,7 +148,7 @@ function MapTab() {
       {/* Semi-transparent heatmap overlay */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[15%] left-[20%] w-28 h-24 bg-red-500/20 rounded-full blur-2xl" />
-        <div className="absolute top-[35%] left-[50%] w-36 h-28 bg-orange-500/15 rounded-full blur-2xl" />
+        <div className="absolute top-[35%] left-[50%] w-36 h-28 bg-[rgb(var(--zw-brand)/0.15)] rounded-full blur-2xl" />
         <div className="absolute top-[55%] left-[25%] w-24 h-20 bg-green-500/15 rounded-full blur-2xl" />
         <div className="absolute top-[40%] right-[15%] w-32 h-24 bg-red-500/15 rounded-full blur-2xl" />
       </div>
@@ -162,7 +162,7 @@ function MapTab() {
             <span className="text-gray-600">High distress</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-orange-500/60 rounded-sm" />
+            <div className="w-3 h-3 bg-[rgb(var(--zw-brand)/0.6)] rounded-sm" />
             <span className="text-gray-600">Moderate</span>
           </div>
           <div className="flex items-center gap-2">
@@ -187,8 +187,8 @@ function CalendarTab() {
         <h3 className="font-semibold text-gray-800">February 2026</h3>
         <div className="flex gap-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-500 rounded-full" /> Foreclosure</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#1A90FF] rounded-full" /> Tax Deed</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#1B2737] rounded-full" /> Surplus</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[rgb(var(--zw-brand))] rounded-full" /> Tax Deed</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[rgb(var(--zw-elev))] rounded-full" /> Surplus</span>
         </div>
       </div>
       {/* Day headers */}
@@ -207,7 +207,7 @@ function CalendarTab() {
             } ${
               type === 'foreclosure' ? 'bg-red-50 text-red-700 border border-red-200' :
               type === 'tax-deed' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-              type === 'surplus' ? 'bg-[#E8F4FD] text-[#1B2737] border border-[#C5DFEF]' :
+              type === 'surplus' ? 'bg-[#E8F4FD] text-[rgb(var(--zw-ink2))] border border-[rgb(var(--zw-border2))]' :
               'hover:bg-gray-50'
             }`}
           >
@@ -215,8 +215,8 @@ function CalendarTab() {
             {type && (
               <span className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${
                 type === 'foreclosure' ? 'bg-red-500' :
-                type === 'tax-deed' ? 'bg-[#1A90FF]' :
-                'bg-[#1B2737]'
+                type === 'tax-deed' ? 'bg-[rgb(var(--zw-brand))]' :
+                'bg-[rgb(var(--zw-elev))]'
               }`} />
             )}
           </div>
@@ -233,7 +233,7 @@ function AnalyticsTab() {
         {kpiCards.map((kpi) => (
           <div key={kpi.label} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500 mb-1">{kpi.label}</p>
-            <p className="text-2xl font-bold text-[#1B2737]">{kpi.value}</p>
+            <p className="text-2xl font-bold text-[rgb(var(--zw-ink2))]">{kpi.value}</p>
             <div className="flex items-center gap-1 mt-1">
               <span className={`text-xs font-medium ${kpi.up ? 'text-green-600' : 'text-red-500'}`}>
                 {kpi.change}
@@ -247,7 +247,7 @@ function AnalyticsTab() {
               {[40, 55, 35, 60, 45, 70, 50, 65, 80, 60, 75, 85].map((h, i) => (
                 <div
                   key={i}
-                  className="flex-1 bg-[#1B2737]/20 rounded-t-sm"
+                  className="flex-1 bg-[rgb(var(--zw-elev)/0.2)] rounded-t-sm"
                   style={{ height: `${h}%` }}
                 />
               ))}

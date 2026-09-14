@@ -338,11 +338,11 @@ export default function VoiceDraftsman() {
   const isRTL = transcript ? /[\u0590-\u05FF]/.test(transcript.text) : false
 
   return (
-    <div className="mt-6 rounded border border-slate-800 bg-slate-950 p-4">
+    <div className="mt-6 rounded border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page))] p-4">
       <div className="flex items-center justify-between mb-1">
-        <p className="text-sm font-medium text-slate-300">Talk to the Voice Draftsman</p>
+        <p className="text-sm font-medium text-[rgb(var(--zw-ink2))]">Talk to the Voice Draftsman</p>
       </div>
-      <p className="text-xs text-slate-500 mb-3">
+      <p className="text-xs text-[rgb(var(--zw-ink2))] mb-3">
         Describe what you want built out loud — the draftsman drafts it live using this same compiler, then gives you a Parcel ID and Plan name to Load above.
       </p>
 
@@ -375,7 +375,7 @@ export default function VoiceDraftsman() {
               onChange={(e) => setGateEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submitGateEmail()}
               placeholder="your@email.com"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-2 text-sm text-[rgb(var(--zw-ink2))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             {gateErr && <p className="text-xs text-red-400 mt-1">Enter a valid email to start.</p>}
           </div>
@@ -388,10 +388,10 @@ export default function VoiceDraftsman() {
         </div>
       )}
 
-      {statusMsg && <p className="mt-2 text-xs text-slate-400">{statusMsg}</p>}
+      {statusMsg && <p className="mt-2 text-xs text-[rgb(var(--zw-ink2))]">{statusMsg}</p>}
 
       {transcript && (
-        <div dir={isRTL ? 'rtl' : 'ltr'} className="mt-3 rounded bg-slate-900 border border-slate-800 px-3 py-2 text-sm text-slate-300">
+        <div dir={isRTL ? 'rtl' : 'ltr'} className="mt-3 rounded bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] px-3 py-2 text-sm text-[rgb(var(--zw-ink2))]">
           {transcript.who === 'user' ? 'You: ' : 'Draftsman: '}
           {transcript.text}
         </div>
@@ -408,7 +408,7 @@ export default function VoiceDraftsman() {
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="text-xs px-2 py-1 rounded border border-slate-700 text-slate-400 hover:text-slate-200"
+            className="text-xs px-2 py-1 rounded border border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]"
           >
             📎 Attach reference (PDF/image)
           </button>
@@ -417,14 +417,14 @@ export default function VoiceDraftsman() {
             value={attachCaption}
             onChange={(e) => setAttachCaption(e.target.value)}
             placeholder="optional note about this file"
-            className="flex-1 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-xs text-slate-300 placeholder:text-slate-600"
+            className="flex-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-2 py-1 text-xs text-[rgb(var(--zw-ink2))] placeholder:text-[rgb(var(--zw-ink2))]"
           />
         </div>
       )}
       {attachProgress && (
         <p
           className={`mt-2 text-xs ${
-            attachProgress.state === 'err' ? 'text-red-400' : attachProgress.state === 'ok' ? 'text-emerald-400' : 'text-slate-400'
+            attachProgress.state === 'err' ? 'text-red-400' : attachProgress.state === 'ok' ? 'text-emerald-400' : 'text-[rgb(var(--zw-ink2))]'
           }`}
         >
           {attachProgress.msg}

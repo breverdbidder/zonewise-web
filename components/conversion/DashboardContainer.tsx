@@ -78,7 +78,7 @@ export default function DashboardContainer() {
   return (
     <div
       className="flex flex-col w-full h-full p-6 gap-6"
-      style={{ background: '#0B1119', color: '#FFFFFF' }}
+      style={{ background: 'rgb(var(--zw-page))', color: '#FFFFFF' }}
       onClick={trackClick}
     >
       {/* KPI grid — tool-ui StatsDisplay */}
@@ -89,7 +89,7 @@ export default function DashboardContainer() {
         <StatsDisplay
           id="dashboard-kpis"
           stats={kpiStats}
-          className="max-w-full min-w-0 [&_.card]:!bg-[#1B2737] [&_.card]:!border-[rgba(26,144,255,0.15)]"
+          className="max-w-full min-w-0 [&_.card]:!bg-[rgb(var(--zw-elev))] [&_.card]:!border-[rgb(var(--zw-brand) / 0.15)]"
         />
       </div>
 
@@ -100,14 +100,14 @@ export default function DashboardContainer() {
         style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.3)' }}
       >
         <div className="min-w-0">
-          <p className="text-sm font-semibold" style={{ color: '#1A90FF' }}>Upgrade to unlock full coverage</p>
+          <p className="text-sm font-semibold" style={{ color: 'rgb(var(--zw-brand))' }}>Upgrade to unlock full coverage</p>
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Live parcel zoning, AI feasibility scoring, and personalized alerts across 67 counties
           </p>
         </div>
         <button
           className="rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap"
-          style={{ background: '#1A90FF', color: '#0B1119', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+          style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))', border: 'none', cursor: 'pointer', flexShrink: 0 }}
           onClick={(e) => { e.stopPropagation(); trackClick() }}
         >
           Upgrade — $99/mo

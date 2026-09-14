@@ -54,7 +54,7 @@ export default function HybridPreview({ counties }: HybridPreviewProps) {
   return (
     <div className="flex flex-col h-full" style={{ color: '#FFFFFF', padding: '2rem' }}>
       {/* Header */}
-      <h2 className="font-bold mb-4" style={{ fontSize: '1.25rem', color: '#1A90FF' }}>
+      <h2 className="font-bold mb-4" style={{ fontSize: '1.25rem', color: 'rgb(var(--zw-brand))' }}>
         Your Focus Counties
       </h2>
 
@@ -67,7 +67,7 @@ export default function HybridPreview({ counties }: HybridPreviewProps) {
             style={{
               background: 'rgba(245, 158, 11, 0.15)',
               border: '1px solid rgba(245, 158, 11, 0.4)',
-              color: '#1A90FF',
+              color: 'rgb(var(--zw-brand))',
             }}
           >
             {county}
@@ -82,7 +82,7 @@ export default function HybridPreview({ counties }: HybridPreviewProps) {
             className="flex-1 rounded-lg p-4"
             style={{ background: 'rgba(30, 58, 95, 0.5)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
-            <div className="text-2xl font-bold" style={{ color: '#1A90FF' }}>
+            <div className="text-2xl font-bold" style={{ color: 'rgb(var(--zw-brand))' }}>
               {totalParcels.toLocaleString()}
             </div>
             <div className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -94,7 +94,7 @@ export default function HybridPreview({ counties }: HybridPreviewProps) {
               className="flex-1 rounded-lg p-4"
               style={{ background: 'rgba(30, 58, 95, 0.5)', border: '1px solid rgba(255,255,255,0.1)' }}
             >
-              <div className="text-2xl font-bold" style={{ color: '#1A90FF' }}>
+              <div className="text-2xl font-bold" style={{ color: 'rgb(var(--zw-brand))' }}>
                 {coveragePct}%
               </div>
               <div className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.6)' }}>

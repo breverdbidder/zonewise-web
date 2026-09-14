@@ -22,9 +22,9 @@ export default function GlowButton({
   const baseClasses = 'relative inline-flex items-center gap-2 px-8 py-4 rounded-xl text-lg font-semibold overflow-hidden transition-colors'
 
   const variantClasses = {
-    primary: 'bg-[#1A90FF] text-[#0B1119] hover:bg-[#005EB8]',
-    secondary: 'bg-[#1B2737] text-white hover:bg-[#162D4A]',
-    outline: 'border-2 border-[#1B2737] text-[#1B2737] hover:bg-[#1B2737] hover:text-white',
+    primary: 'bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand-ink))] hover:bg-[#005EB8]',
+    secondary: 'bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] hover:bg-[rgb(var(--zw-elev))]',
+    outline: 'border-2 border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))] hover:bg-[rgb(var(--zw-elev))] hover:text-[rgb(var(--zw-ink))]',
   }
 
   const glowColor = variant === 'primary'

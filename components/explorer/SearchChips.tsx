@@ -24,7 +24,7 @@ export default function SearchChips({ onSelect, max = 6, layout = 'grid' }: Prop
           <button
             key={chip.text}
             onClick={() => onSelect(chip.text)}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-slate-900 border border-slate-800 rounded-full text-[11px] text-slate-400 hover:border-amber-500/40 hover:text-slate-200 transition-colors whitespace-nowrap min-h-[44px]"
+            className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-full text-[11px] text-[rgb(var(--zw-ink2))] hover:border-amber-500/40 hover:text-[rgb(var(--zw-ink2))] transition-colors whitespace-nowrap min-h-[44px]"
           >
             <span>{chip.icon}</span>
             <span>{chip.text.length > 32 ? chip.text.slice(0, 32) + '…' : chip.text}</span>
@@ -40,7 +40,7 @@ export default function SearchChips({ onSelect, max = 6, layout = 'grid' }: Prop
         <button
           key={chip.text}
           onClick={() => onSelect(chip.text)}
-          className="text-left px-2.5 py-2 bg-slate-900 border border-slate-800 rounded-lg text-[11px] text-slate-400 hover:border-amber-500/40 hover:text-slate-200 transition-colors leading-tight min-h-[44px]"
+          className="text-left px-2.5 py-2 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg text-[11px] text-[rgb(var(--zw-ink2))] hover:border-amber-500/40 hover:text-[rgb(var(--zw-ink2))] transition-colors leading-tight min-h-[44px]"
         >
           <span className="mr-1">{chip.icon}</span>
           {chip.text.length > 38 ? chip.text.slice(0, 38) + '…' : chip.text}

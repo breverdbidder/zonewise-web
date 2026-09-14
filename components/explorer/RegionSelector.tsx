@@ -12,10 +12,10 @@ interface Props {
 
 export default function RegionSelector({ value, onChange }: Props) {
   return (
-    <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
+    <div className="bg-[rgb(var(--zw-page)/0.9)] border border-[rgb(var(--zw-border2))] rounded-xl p-3 backdrop-blur-sm">
       <div
         id="zone-filter-label"
-        className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2"
+        className="text-[9px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2"
       >
         Zone Filter
       </div>
@@ -41,7 +41,7 @@ export default function RegionSelector({ value, onChange }: Props) {
             className={`px-2 py-1 rounded-md text-[11px] cursor-pointer transition-colors ${
               value === f.value
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent'
+                : 'text-[rgb(var(--zw-ink2))] hover:bg-[rgb(var(--zw-card))] hover:text-[rgb(var(--zw-ink2))] border border-transparent'
             }`}
           >
             {f.label}

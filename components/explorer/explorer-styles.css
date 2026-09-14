@@ -1,9 +1,9 @@
 /* ZoneWise.AI Brevard Explorer — Mapbox Popup Dark Theme */
 
 .mapboxgl-popup-content {
-  background: #0F172A !important;
-  color: #E2E8F0 !important;
-  border: 1px solid #1E293B !important;
+  background: rgb(var(--zw-card)) !important;
+  color: rgb(var(--zw-ink)) !important;
+  border: 1px solid rgb(var(--zw-border2)) !important;
   border-radius: 8px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
   padding: 0 !important;
@@ -14,17 +14,17 @@
 }
 
 .mapboxgl-popup-tip {
-  border-top-color: #0F172A !important;
+  border-top-color: rgb(var(--zw-card)) !important;
 }
 
 .mapboxgl-popup-close-button {
-  color: #64748B !important;
+  color: rgb(var(--zw-ink2)) !important;
   font-size: 18px !important;
   padding: 4px 8px !important;
 }
 
 .mapboxgl-popup-close-button:hover {
-  color: #1A90FF !important;
+  color: rgb(var(--zw-brand)) !important;
   background: transparent !important;
 }
 

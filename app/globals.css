@@ -7,9 +7,84 @@
 @tailwind utilities;
 
 :root {
-  /* TWIN 2026-09-13: one house brand = biddeed.ai palette (PR #44 canon).
-     Navy family = biddeed dark-theme family; brand blue replaces the retired
-     Grok amber (variable names kept so existing classes keep working). */
+  /* TWIN 2026-09-13 stage 3: LIGHT is the house-brand default, exactly like
+     biddeed.ai (PR #44 canon: white canvas, ink #1a1a1a, navy #0A2540, tint
+     #E6F0FA, border #D7E3F1, brand #005EB8, hover #004A92).
+     Dark values live under html.dark below - same families, dark canon. */
+  --navy-50: #E6F0FA;
+  --navy-100: #E6F0FA;
+  --navy-200: #D7E3F1;
+  --navy-300: #0A2540;
+  --navy-400: #0A2540;
+  --navy-500: #004A92;
+  --navy-600: #0A2540;
+  --navy-700: #0A2540;
+  --navy-800: #0A2540;
+  --navy-900: #0A2540;
+
+  --orange-50: #E6F0FA;
+  --orange-100: #E6F0FA;
+  --orange-200: #E6F0FA;
+  --orange-300: #005EB8;
+  --orange-400: #005EB8;
+  --orange-500: #005EB8;
+  --orange-600: #004A92;
+
+  --slate-50: #ffffff;
+  --slate-100: #E6F0FA;
+  --slate-200: #D7E3F1;
+  --slate-300: #D7E3F1;
+  --slate-400: #0A2540;
+  --slate-500: #0A2540;
+  --slate-600: #0A2540;
+  --slate-700: #0A2540;
+  --slate-800: #0A2540;
+  --slate-900: #0A2540;
+  --slate-950: #0A2540;
+
+  /* shadcn semantic colors - LIGHT canon */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+  --primary: 209.3 100% 36.1%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 66.7% 94.1%;
+  --secondary-foreground: 0 0% 10%;
+  --muted: 210 66.7% 94.1%;
+  --muted-foreground: 210 73% 14.5%;
+  --accent: 209.3 100% 36.1%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 210 73% 14.5%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 212.3 48.1% 89.4%;
+  --input: 210 73% 14.5%;
+  --ring: 209.3 100% 36.1%;
+  --chart-1: 209.3 100% 36.1%;
+  --chart-2: 210 73% 14.5%;
+  --chart-3: 209.6 100% 28.6%;
+  --chart-4: 210 66.7% 94.1%;
+  --chart-5: 212.3 48.1% 89.4%;
+  --primary-hover: 209.6 100% 28.6%;
+  --radius: 0.5rem;
+
+  /* theme-aware surface/ink/brand vars (RGB triplets for rgb(var(--x)/alpha)) */
+  --zw-page: 255 255 255;
+  --zw-card: 255 255 255;
+  --zw-elev: 230 240 250;
+  --zw-border2: 215 227 241;
+  --zw-ink: 26 26 26;
+  --zw-ink2: 10 37 64;
+  --zw-brand: 0 94 184;
+  --zw-brand-hover: 0 74 146;
+  --zw-brand-ink: 255 255 255;
+}
+
+html.dark {
+  /* DARK canon (previous default): #0B1119 bg, #111B27 card, #1B2737 tint,
+     #EDEDED ink, #9EB2C7 secondary, #24344C border, brand #1A90FF, hover #4DA6FF */
   --navy-50: #E6F0FA;
   --navy-100: #D7E3F1;
   --navy-200: #9EB2C7;
@@ -21,8 +96,6 @@
   --navy-800: #0B1119;
   --navy-900: #0B1119;
 
-  /* Brand blue family (was amber). 300/400 = dark-theme brand #1A90FF,
-     500/600 = light-theme brand #005EB8 / hover #004A92. */
   --orange-50: #E6F0FA;
   --orange-100: #D7E3F1;
   --orange-200: #4DA6FF;
@@ -31,7 +104,6 @@
   --orange-500: #005EB8;
   --orange-600: #004A92;
 
-  /* Slate colors for dark theme */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
@@ -44,9 +116,6 @@
   --slate-900: #0f172a;
   --slate-950: #0B1119;
 
-  /* shadcn semantic colors (HSL values — no hsl() wrapper) */
-  /* TWIN: biddeed.ai DARK canon (#0B1119 bg, #111B27 card, #1B2737 tint,
-     #EDEDED ink, #24344C border, brand #1A90FF, hover #4DA6FF) */
   --background: 213 39% 7%;
   --foreground: 0 0% 93%;
   --card: 214 39% 11%;
@@ -64,32 +133,24 @@
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 96%;
   --border: 216 35% 22%;
-  /* Control-boundary fix (issue #20109 pattern, zonewise-web instance):
-     --input was identical to --border (217.2 32.6% 17.5%), a low-contrast
-     container-edge token that resolves to ~1.37:1 against --background
-     (222.2 84% 4.9%) — invisible as a form-control boundary and fails WCAG
-     2.1 SC 1.4.11 (non-text contrast >=3:1). New value 217.2 20% 45% keeps
-     the same hue family (217.2, slate-blue) so it still reads as part of
-     the palette, but lifts lightness from 17.5% to 45% and lowers
-     saturation from 32.6% to 20% to avoid looking like a saturated accent.
-     Computed contrast ratio vs background: ~3.82:1 (relative luminance via
-     WCAG formula: bg rgb(2,8,23) lum 0.0025; --input rgb(92,109,138)
-     lum 0.0876; (0.0876+0.05)/(0.0025+0.05) = 3.82). Meets the >=3:1 floor
-     with headroom. Deliberately not the brand accent (38 92% 50%, orange —
-     reserved for focus/active) and not pure white (0 0% 100%, too harsh
-     for a resting border). border-input (Tailwind, shadcn convention) maps
-     to this token in tailwind.config.ts, so components/ui/input.tsx and
-     components/ui/select.tsx inherit the fix with no further changes. */
   --input: 217.2 20% 45%;
   --ring: 209 100% 55%;
-  --radius: 0.5rem;
-
-  /* Chart colors */
   --chart-1: 213 54% 24%;
   --chart-2: 209 100% 55%;
   --chart-3: 142 76% 36%;
   --chart-4: 221 83% 53%;
   --chart-5: 262 83% 58%;
+  --radius: 0.5rem;
+
+  --zw-page: 11 17 25;
+  --zw-card: 17 27 39;
+  --zw-elev: 27 39 55;
+  --zw-border2: 36 52 76;
+  --zw-ink: 237 237 237;
+  --zw-ink2: 158 178 199;
+  --zw-brand: 26 144 255;
+  --zw-brand-hover: 77 166 255;
+  --zw-brand-ink: 11 17 25;
 }
 
 * {
@@ -118,6 +179,16 @@ body {
 
 /* Skeleton shimmer matching navy/slate palette */
 .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(215, 227, 241, 0.4) 25%,
+    rgba(215, 227, 241, 0.8) 50%,
+    rgba(215, 227, 241, 0.4) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+html.dark .skeleton-shimmer {
   background: linear-gradient(
     90deg,
     rgba(30, 58, 95, 0.3) 25%,
@@ -506,24 +577,23 @@ html:not(.hydrated) [style*="opacity:0"] {
   section { page-break-inside: avoid; }
 
   /* Ensure colors render in print */
-  .bg-\[\#1B2737\] { background-color: #1B2737 !important; }
-  .text-\[\#1B2737\] { color: #1B2737 !important; }
-  .text-\[\#1A90FF\] { color: #1A90FF !important; }
+  .bg-\[rgb\(var\(--zw-brand\)\)\] { background-color: #005EB8 !important; }
+  .text-\[rgb\(var\(--zw-brand\)\)\] { color: #005EB8 !important; }
+  .text-\[rgb\(var\(--zw-ink2\)\)\] { color: #0A2540 !important; }
 }
 
 @layer base {
   :root {
-    /* TWIN: biddeed.ai sidebar tokens (dark canon; this app is dark-first) */
-    --sidebar-background: 213 39% 7%;
-    --sidebar-foreground: 0 0% 93%;
-    --sidebar-primary: 209 100% 55%;
-    --sidebar-primary-foreground: 213 39% 7%;
-    --sidebar-accent: 214 35% 16%;
-    --sidebar-accent-foreground: 0 0% 93%;
-    --sidebar-border: 216 35% 22%;
-    --sidebar-ring: 209 100% 55%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 209.3 100% 36.1%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 66.7% 94.1%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 212.3 48.1% 89.4%;
+    --sidebar-ring: 209.3 100% 36.1%;
   }
-  .dark {
+  html.dark {
     --sidebar-background: 213 39% 7%;
     --sidebar-foreground: 0 0% 93%;
     --sidebar-primary: 209 100% 55%;

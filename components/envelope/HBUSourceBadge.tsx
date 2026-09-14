@@ -67,7 +67,7 @@ export function HBUSourceBadge({ source, className = '' }: HBUSourceBadgeProps) 
         letterSpacing: '0.03em',
         background: 'rgba(245, 158, 11, 0.10)',
         border: '1px solid rgba(245, 158, 11, 0.30)',
-        color: '#1A90FF',
+        color: 'rgb(var(--zw-brand))',
         userSelect: 'none',
         whiteSpace: 'nowrap',
       }}

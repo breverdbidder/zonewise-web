@@ -34,7 +34,7 @@ export const OnboardingTooltip = () => {
       >
         <div className="flex items-start">
           <div className="flex-shrink-0">
-            <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-6 w-6 text-[rgb(var(--zw-ink))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -65,7 +65,7 @@ export const OnboardingTooltip = () => {
               completeOnboarding();
             }}
             aria-label="Dismiss tooltip"
-            className="flex-shrink-0 ml-2 text-white hover:text-blue-200"
+            className="flex-shrink-0 ml-2 text-[rgb(var(--zw-ink))] hover:text-blue-200"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
