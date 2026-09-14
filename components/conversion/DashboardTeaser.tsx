@@ -46,7 +46,7 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
               border: '1px solid rgba(245, 158, 11, 0.4)',
             }}
           >
-            <Lock size={24} color="#F59E0B" />
+            <Lock size={24} color="#1A90FF" />
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
                 width: '10px',
                 height: '10px',
                 borderRadius: '50%',
-                background: i < filledDots ? '#F59E0B' : 'rgba(255,255,255,0.2)',
+                background: i < filledDots ? '#1A90FF' : 'rgba(255,255,255,0.2)',
                 transition: 'background 0.2s',
               }}
             />
@@ -87,8 +87,8 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
           onClick={onCTAClick}
           className="w-full font-semibold rounded-lg py-3 text-sm"
           style={{
-            background: '#F59E0B',
-            color: '#020617',
+            background: '#1A90FF',
+            color: '#0B1119',
             border: 'none',
             cursor: 'pointer',
             transition: 'opacity 0.15s',
