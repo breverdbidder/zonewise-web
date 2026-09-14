@@ -31,7 +31,7 @@ export function TextScramble({
   trigger = "scroll",
   className,
   duration = 1200,
-  color = "#F59E0B",
+  color = "#1A90FF",
   scramblingColor = "rgba(255,255,255,0.3)",
 }: TextScrambleProps) {
   const [displayed, setDisplayed] = useState<{ char: string; resolved: boolean }[]>(
