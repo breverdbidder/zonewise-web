@@ -186,7 +186,7 @@ export default function Photorealistic3DViewer({
   return (
     <div className="relative w-full h-full" style={{ minHeight: '400px' }}>
       {/* Navy branded chrome bezel */}
-      <div className="absolute inset-0 border-2 border-[#1E3A5F] rounded-lg overflow-hidden z-0">
+      <div className="absolute inset-0 border-2 border-[#1B2737] rounded-lg overflow-hidden z-0">
         <div ref={containerRef} className="w-full h-full" aria-hidden="true" />
       </div>
 
@@ -194,7 +194,7 @@ export default function Photorealistic3DViewer({
       {loading && !error && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 rounded-lg z-10">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-[#F59E0B] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <div className="w-8 h-8 border-2 border-[#1A90FF] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-slate-300 text-sm">Loading 3D tiles...</p>
           </div>
         </div>
@@ -213,8 +213,8 @@ export default function Photorealistic3DViewer({
       )}
 
       {/* Parcel ID badge */}
-      <div className="absolute top-3 left-3 bg-[#1E3A5F]/90 backdrop-blur-sm px-3 py-1.5 rounded-md z-20">
-        <span className="text-[#F59E0B] text-xs font-mono">{parcelId}</span>
+      <div className="absolute top-3 left-3 bg-[#1B2737]/90 backdrop-blur-sm px-3 py-1.5 rounded-md z-20">
+        <span className="text-[#1A90FF] text-xs font-mono">{parcelId}</span>
       </div>
     </div>
   )
