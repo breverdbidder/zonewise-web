@@ -96,9 +96,9 @@ export default function BuyBoxForm() {
     // Resting (inactive) border fixed from rgba(255,255,255,0.15) to the
     // --input token equivalent (hsl(217.2 20% 45%), ~3.82:1 vs background)
     // per issue #20109 pattern — active state (amber) untouched.
-    border: active ? '1px solid #F59E0B' : '1px solid hsl(217.2, 20%, 45%)',
+    border: active ? '1px solid #1A90FF' : '1px solid hsl(217.2, 20%, 45%)',
     background: active ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)',
-    color: active ? '#F59E0B' : 'rgba(255,255,255,0.7)',
+    color: active ? '#1A90FF' : 'rgba(255,255,255,0.7)',
     transition: 'all 0.15s',
     userSelect: 'none',
   })
@@ -119,8 +119,8 @@ export default function BuyBoxForm() {
                   width: '28px',
                   height: '28px',
                   flexShrink: 0,
-                  background: s <= step ? '#F59E0B' : 'rgba(255,255,255,0.1)',
-                  color: s <= step ? '#020617' : 'rgba(255,255,255,0.5)',
+                  background: s <= step ? '#1A90FF' : 'rgba(255,255,255,0.1)',
+                  color: s <= step ? '#0B1119' : 'rgba(255,255,255,0.5)',
                 }}
               >
                 {s}
@@ -130,7 +130,7 @@ export default function BuyBoxForm() {
                   style={{
                     flex: 1,
                     height: '2px',
-                    background: s < step ? '#F59E0B' : 'rgba(255,255,255,0.1)',
+                    background: s < step ? '#1A90FF' : 'rgba(255,255,255,0.1)',
                   }}
                 />
               )}
@@ -148,7 +148,7 @@ export default function BuyBoxForm() {
       <div className="flex-1 overflow-y-auto">
         {step === 1 && (
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold" style={{ color: '#F59E0B' }}>Select Counties</h3>
+            <h3 className="font-semibold" style={{ color: '#1A90FF' }}>Select Counties</h3>
             <div className="flex flex-wrap gap-2">
               {TOP_COUNTIES.map((county) => (
                 <button
@@ -161,12 +161,12 @@ export default function BuyBoxForm() {
               ))}
             </div>
 
-            <h3 className="font-semibold mt-2" style={{ color: '#F59E0B' }}>Map View</h3>
+            <h3 className="font-semibold mt-2" style={{ color: '#1A90FF' }}>Map View</h3>
             <div
               className="rounded-lg flex items-center justify-center gap-2"
               style={{
                 height: '160px',
-                background: '#1E3A5F',
+                background: '#1B2737',
                 border: '1px solid rgba(245, 158, 11, 0.2)',
                 color: 'rgba(255,255,255,0.5)',
                 fontSize: '0.875rem',
@@ -180,7 +180,7 @@ export default function BuyBoxForm() {
 
         {step === 2 && (
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold" style={{ color: '#F59E0B' }}>Price Range</h3>
+            <h3 className="font-semibold" style={{ color: '#1A90FF' }}>Price Range</h3>
             <div className="flex gap-3">
               <div style={{ flex: 1 }}>
                 <label className="block text-xs mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
@@ -208,7 +208,7 @@ export default function BuyBoxForm() {
               </div>
             </div>
 
-            <h3 className="font-semibold" style={{ color: '#F59E0B' }}>Property Types</h3>
+            <h3 className="font-semibold" style={{ color: '#1A90FF' }}>Property Types</h3>
             <div className="flex flex-wrap gap-2">
               {PROPERTY_TYPES.map((type) => (
                 <button
@@ -221,7 +221,7 @@ export default function BuyBoxForm() {
               ))}
             </div>
 
-            <h3 className="font-semibold" style={{ color: '#F59E0B' }}>Zoning Codes</h3>
+            <h3 className="font-semibold" style={{ color: '#1A90FF' }}>Zoning Codes</h3>
             <div className="flex flex-wrap gap-2">
               {ZONING_CODES.map((code) => (
                 <button
@@ -238,7 +238,7 @@ export default function BuyBoxForm() {
 
         {step === 3 && (
           <div className="flex flex-col gap-4">
-            <h3 className="font-semibold" style={{ color: '#F59E0B' }}>Alert Channels</h3>
+            <h3 className="font-semibold" style={{ color: '#1A90FF' }}>Alert Channels</h3>
 
             <label className="flex items-center gap-3 cursor-pointer">
               <div
@@ -247,7 +247,7 @@ export default function BuyBoxForm() {
                   width: '40px',
                   height: '22px',
                   borderRadius: '999px',
-                  background: form.alertEmail ? '#F59E0B' : 'rgba(255,255,255,0.15)',
+                  background: form.alertEmail ? '#1A90FF' : 'rgba(255,255,255,0.15)',
                   position: 'relative',
                   cursor: 'pointer',
                   transition: 'background 0.2s',
@@ -325,7 +325,7 @@ export default function BuyBoxForm() {
           <button
             onClick={() => setStep((s) => s + 1)}
             className="flex-1 py-2 rounded-lg text-sm font-semibold"
-            style={{ background: '#F59E0B', color: '#020617', border: 'none', cursor: 'pointer' }}
+            style={{ background: '#1A90FF', color: '#0B1119', border: 'none', cursor: 'pointer' }}
           >
             Next
           </button>
@@ -335,8 +335,8 @@ export default function BuyBoxForm() {
             disabled={loading}
             className="flex-1 py-2 rounded-lg text-sm font-semibold"
             style={{
-              background: loading ? 'rgba(245, 158, 11, 0.5)' : '#F59E0B',
-              color: '#020617',
+              background: loading ? 'rgba(245, 158, 11, 0.5)' : '#1A90FF',
+              color: '#0B1119',
               border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
             }}
