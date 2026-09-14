@@ -17,7 +17,7 @@ export const GeoMap = React.memo(function GeoMap({ id, className }: Pick<GeoMapP
         className,
       )}
     >
-      Interactive map — <a href="/explorer" className="ml-1 underline text-[#F59E0B]">Open Explorer</a>
+      Interactive map — <a href="/explorer" className="ml-1 underline text-[#1A90FF]">Open Explorer</a>
     </div>
   );
 });
