@@ -64,8 +64,8 @@ async function fetchS5Report(params: { mca_id?: string; address?: string }): Pro
 function S5Picker() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-slate-950 p-8 gap-4 min-h-[60vh]">
-      <div className="w-14 h-14 rounded-full bg-[#1E3A5F]/10 dark:bg-[#1E3A5F]/30 flex items-center justify-center">
-        <FileSearch className="w-7 h-7 text-[#1E3A5F] dark:text-[#F59E0B]" />
+      <div className="w-14 h-14 rounded-full bg-[#1B2737]/10 dark:bg-[#1B2737]/30 flex items-center justify-center">
+        <FileSearch className="w-7 h-7 text-[#1B2737] dark:text-[#1A90FF]" />
       </div>
       <div className="text-center max-w-sm">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Select a Property Report</h2>
@@ -74,7 +74,7 @@ function S5Picker() {
           or a ZoneWise zoning report with <code className="text-xs bg-gray-100 dark:bg-slate-800 px-1 rounded">?parcel=</code>.
         </p>
       </div>
-      <Link href="/chat" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1E3A5F] text-white text-sm font-medium hover:bg-[#1E3A5F]/80 transition-colors">
+      <Link href="/chat" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B2737] text-white text-sm font-medium hover:bg-[#1B2737]/80 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Back to ZoneWise Chat
       </Link>
@@ -95,7 +95,7 @@ function S5Teaser({ mcaId }: { mcaId?: string }) {
           Pro subscription.
         </p>
       </div>
-      <Link href="/pricing" className="px-4 py-2 rounded-lg bg-[#F59E0B] text-[#020617] text-sm font-semibold hover:bg-[#F59E0B]/80 transition-colors">
+      <Link href="/pricing" className="px-4 py-2 rounded-lg bg-[#1A90FF] text-[#0B1119] text-sm font-semibold hover:bg-[#1A90FF]/80 transition-colors">
         Upgrade to Pro
       </Link>
     </div>
@@ -165,8 +165,8 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
               Back to Chat
             </Link>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-[#020617] flex items-center justify-center">
-                <span className="text-[#F59E0B] text-xs font-bold">B</span>
+              <div className="w-6 h-6 rounded bg-[#0B1119] flex items-center justify-center">
+                <span className="text-[#1A90FF] text-xs font-bold">B</span>
               </div>
               <span className="text-sm font-semibold text-gray-900 dark:text-white">BidDeed.AI S5 Report</span>
             </div>
@@ -207,7 +207,7 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
         </div>
         <Link
           href="/chat"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1E3A5F] text-white text-sm font-medium hover:bg-[#1E3A5F]/80 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B2737] text-white text-sm font-medium hover:bg-[#1B2737]/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to ZoneWise Chat
@@ -231,7 +231,7 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
             Back to Chat
           </Link>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#1E3A5F] flex items-center justify-center">
+            <div className="w-6 h-6 rounded bg-[#1B2737] flex items-center justify-center">
               <span className="text-white text-xs font-bold">Z</span>
             </div>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">ZoneWise.AI</span>
