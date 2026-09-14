@@ -103,7 +103,7 @@ function FloatingUI({ show }: BadgesProps) {
           <div style={{ color: 'rgba(148,163,184,0.7)', fontSize: '9px', letterSpacing: '1.5px', marginBottom: '3px', textTransform: 'uppercase' }}>
             Opening Bid
           </div>
-          <div style={{ color: '#F59E0B', fontSize: '24px', fontWeight: 800, lineHeight: 1 }}>
+          <div style={{ color: '#1A90FF', fontSize: '24px', fontWeight: 800, lineHeight: 1 }}>
             $184K
           </div>
           <div style={{ color: '#22c55e', fontSize: '11px', fontWeight: 600, marginTop: '3px' }}>
@@ -196,7 +196,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'linear-gradient(#1E3A5F 1px, transparent 1px), linear-gradient(to right, #1E3A5F 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
           backgroundSize: '64px 64px',
           opacity: 0.025,
           zIndex: 6,
