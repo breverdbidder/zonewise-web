@@ -38,14 +38,14 @@ export default function Error({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#020617',
+        background: '#0B1119',
         color: '#e2e8f0',
         fontFamily: 'Inter, system-ui, sans-serif',
         padding: '2rem',
       }}
     >
       <main style={{ textAlign: 'center', maxWidth: '28rem' }} role="main">
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: '#F59E0B' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: '#1A90FF' }}>
           ZoneWise.AI
         </h1>
         <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
@@ -54,7 +54,7 @@ export default function Error({
         <button
           onClick={() => reset()}
           style={{
-            background: '#1E3A5F',
+            background: '#1B2737',
             color: '#ffffff',
             border: 'none',
             padding: '0.625rem 1.25rem',
