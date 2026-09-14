@@ -33,9 +33,9 @@ const CAPABILITIES = [
 
 export default function FootprintsPage() {
   return (
-    <div className="min-h-full bg-[#020617] px-4 py-10 sm:px-8">
+    <div className="min-h-full bg-[#0B1119] px-4 py-10 sm:px-8">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#F59E0B]">
+        <div className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
           <Building2 className="h-3.5 w-3.5" /> Building intelligence
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -54,8 +54,8 @@ export default function FootprintsPage() {
               className="rounded-lg border p-5"
               style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.6)' }}
             >
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1E3A5F]">
-                <c.icon className="h-4 w-4 text-[#F59E0B]" />
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1B2737]">
+                <c.icon className="h-4 w-4 text-[#1A90FF]" />
               </div>
               <h2 className="text-sm font-semibold text-white">{c.title}</h2>
               <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">{c.body}</p>
@@ -68,7 +68,7 @@ export default function FootprintsPage() {
           style={{ background: '#0d1829', borderColor: 'rgba(245,158,11,0.28)' }}
         >
           <div className="mb-2 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />
+            <AlertTriangle className="h-4 w-4 text-[#1A90FF]" />
             <h2 className="text-sm font-semibold text-white">Ingestion in progress</h2>
           </div>
           <p className="text-[13px] leading-relaxed text-slate-400">
