@@ -28,7 +28,7 @@ function StatItem({ label, value, formatter, suffix, loading }: StatItemProps) {
       {loading ? (
         <div className="h-10 w-24 mx-auto rounded-lg bg-slate-700/60 animate-pulse mb-2" />
       ) : (
-        <p className="text-3xl sm:text-4xl font-bold text-[#F59E0B]">
+        <p className="text-3xl sm:text-4xl font-bold text-[#1A90FF]">
           {displayValue}{suffix}
         </p>
       )}
