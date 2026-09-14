@@ -345,6 +345,8 @@ const counterObs = new IntersectionObserver((entries)=>{
   });
 },{threshold:0.5});
 document.querySelectorAll('[data-target]').forEach(el=>counterObs.observe(el));
+/* fallback: never leave counters at 0 if the observer misses */
+setTimeout(()=>document.querySelectorAll('[data-target]').forEach(el=>{const t=parseInt(el.dataset.target);if(t&&(el.textContent==='0'||el.textContent===''))el.textContent=t.toLocaleString();}),2500);
 </script>
 </body>
 </html>
