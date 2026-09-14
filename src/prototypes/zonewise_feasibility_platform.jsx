@@ -11,7 +11,7 @@ const COLORS = {
   brand: "#0D9488",       // teal-600 — primary
   brandDark: "#0F766E",   // teal-700
   brandLight: "#CCFBF1",  // teal-100
-  accent: "#F59E0B",      // amber-500
+  accent: "#1A90FF",      // amber-500
   navy: "#0F172A",        // slate-900
   surface: "#F8FAFC",
   card: "#FFFFFF",
@@ -447,7 +447,7 @@ function MarketTab() {
                 </div>
               ))}
             </div>
-            <div style={{ background: "#FEF3C7", borderRadius: 8, padding: 14 }}>
+            <div style={{ background: "#E6F0FA", borderRadius: 8, padding: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#92400E", marginBottom: 8 }}>🚀 Key Employment Drivers</div>
               {["Kennedy Space Center", "Patrick SFB", "L3Harris Technologies", "Health First", "SpaceX / Blue Origin"].map((e) => (
                 <div key={e} style={{ fontSize: 12, color: COLORS.textSecondary, padding: "3px 0" }}>• {e}</div>
@@ -859,7 +859,7 @@ export default function ZoneWiseApp() {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
           <h1 style={{ fontSize: 18, fontWeight: 700, color: COLORS.textPrimary, margin: 0 }}>{SITE.address}</h1>
           <span style={{ fontSize: 11, background: COLORS.surface, border: `1px solid ${COLORS.border}`, padding: "3px 8px", borderRadius: 6, color: COLORS.textSecondary }}>{SITE.zone}</span>
-          <span style={{ fontSize: 11, background: "#FEF3C7", padding: "3px 8px", borderRadius: 6, color: "#92400E", fontWeight: 600 }}>Flood: {SITE.flood}</span>
+          <span style={{ fontSize: 11, background: "#E6F0FA", padding: "3px 8px", borderRadius: 6, color: "#92400E", fontWeight: 600 }}>Flood: {SITE.flood}</span>
         </div>
         {tab === "Site" && <SiteTab />}
         {tab === "Market" && <MarketTab />}
