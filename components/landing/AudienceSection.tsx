@@ -64,7 +64,7 @@ export function AudienceSection() {
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: i * 0.12 }}
               className="rounded-lg border p-8"
-              style={{ background: '#0d1829', borderColor: 'rgba(30,58,95,0.5)' }}
+              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.5)' }}
             >
               <div className="mb-4 font-mono text-xs uppercase tracking-[0.1em] text-slate-500">
                 {a.tag}
