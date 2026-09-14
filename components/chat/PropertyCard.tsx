@@ -151,7 +151,7 @@ export default function PropertyCard({ data, parcelId, onClose }: PropertyCardPr
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-      style={{ backdropFilter: 'blur(6px)', background: 'rgba(2,6,23,0.75)' }}
+      style={{ backdropFilter: 'blur(6px)', background: 'rgba(11,17,25,0.75)' }}
       onClick={handleBackdropClick}
     >
       {/* Modal panel — slides up on mobile */}
