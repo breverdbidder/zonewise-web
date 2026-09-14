@@ -97,7 +97,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       className="border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground"
       {...props}
     >
-      <SidebarHeader className="border-b border-slate-800">
+      <SidebarHeader className="border-b border-[rgb(var(--zw-border2))]">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
@@ -106,8 +106,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   ZW
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold text-slate-100">ZoneWise.AI</span>
-                  <span className="truncate text-xs text-slate-400">Zoning & Feasibility</span>
+                  <span className="truncate font-semibold text-[rgb(var(--zw-ink))]">ZoneWise.AI</span>
+                  <span className="truncate text-xs text-[rgb(var(--zw-ink2))]">Zoning & Feasibility</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -117,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain groups={navGroups} />
       </SidebarContent>
-      <SidebarFooter className="border-t border-slate-800">
+      <SidebarFooter className="border-t border-[rgb(var(--zw-border2))]">
         <NavUser />
       </SidebarFooter>
     </Sidebar>

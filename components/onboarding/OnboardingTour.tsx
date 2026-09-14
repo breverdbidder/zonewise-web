@@ -130,10 +130,10 @@ export function OnboardingTour() {
       >
         <div
           style={{
-            background: '#0f172a',
-            border: '1px solid #1B2737',
+            background: 'rgb(var(--zw-page))',
+            border: '1px solid rgb(var(--zw-elev))',
             borderRadius: '16px',
-            boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(27,39,55,0.4)',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgb(var(--zw-border2) / 0.4)',
             padding: '28px 24px 20px',
           }}
         >
@@ -143,7 +143,7 @@ export function OnboardingTour() {
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: '#94a3b8',
+                color: 'rgb(var(--zw-ink2)))',
                 letterSpacing: '0.08em',
               }}
             >
@@ -155,7 +155,7 @@ export function OnboardingTour() {
               style={{
                 fontFamily: 'monospace',
                 fontSize: '11px',
-                color: '#94a3b8',
+                color: 'rgb(var(--zw-ink2)))',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -167,7 +167,7 @@ export function OnboardingTour() {
                 alignItems: 'center',
               }}
               onMouseEnter={e => ((e.target as HTMLElement).style.color = '#cbd5e1')}
-              onMouseLeave={e => ((e.target as HTMLElement).style.color = '#94a3b8')}
+              onMouseLeave={e => ((e.target as HTMLElement).style.color = 'rgb(var(--zw-elev))')}
             >
               Skip tour ✕
             </button>
@@ -202,7 +202,7 @@ export function OnboardingTour() {
           <p
             style={{
               fontSize: '14px',
-              color: '#94a3b8',
+              color: 'rgb(var(--zw-ink2)))',
               lineHeight: 1.6,
               textAlign: 'center',
               marginBottom: '24px',
@@ -229,7 +229,7 @@ export function OnboardingTour() {
                   width: i === step ? '20px' : '8px',
                   height: '8px',
                   borderRadius: '4px',
-                  background: i === step ? '#1A90FF' : '#1B2737',
+                  background: i === step ? 'rgb(var(--zw-brand))' : 'rgb(var(--zw-elev))',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
@@ -248,9 +248,9 @@ export function OnboardingTour() {
                   flex: 1,
                   padding: '10px 0',
                   borderRadius: '8px',
-                  border: '1px solid #1B2737',
+                  border: '1px solid rgb(var(--zw-elev))',
                   background: 'transparent',
-                  color: '#94a3b8',
+                  color: 'rgb(var(--zw-ink2)))',
                   fontSize: '14px',
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -258,13 +258,13 @@ export function OnboardingTour() {
                 }}
                 onMouseEnter={e => {
                   const el = e.target as HTMLElement
-                  el.style.borderColor = '#2d5a8f'
+                  el.style.borderColor = 'rgb(var(--zw-elev))'
                   el.style.color = '#cbd5e1'
                 }}
                 onMouseLeave={e => {
                   const el = e.target as HTMLElement
-                  el.style.borderColor = '#1B2737'
-                  el.style.color = '#94a3b8'
+                  el.style.borderColor = 'rgb(var(--zw-elev))'
+                  el.style.color = 'rgb(var(--zw-elev))'
                 }}
               >
                 ← Back
@@ -277,8 +277,8 @@ export function OnboardingTour() {
                 padding: '10px 0',
                 borderRadius: '8px',
                 border: 'none',
-                background: '#1A90FF',
-                color: '#0B1119',
+                background: 'rgb(var(--zw-brand))',
+                color: 'rgb(var(--zw-brand-ink)))',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: 'pointer',

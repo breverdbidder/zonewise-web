@@ -93,10 +93,10 @@ export default function HelpContent() {
   }, [search, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-[#0B1119] text-slate-200">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink2))]">
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="mb-2 text-3xl font-bold text-[#1A90FF]">Help Center</h1>
-        <p className="mb-8 text-sm text-slate-400">
+        <h1 className="mb-2 text-3xl font-bold text-[rgb(var(--zw-brand))]">Help Center</h1>
+        <p className="mb-8 text-sm text-[rgb(var(--zw-ink2))]">
           Find answers to common questions about ZoneWise.AI
         </p>
 
@@ -106,7 +106,7 @@ export default function HelpContent() {
           placeholder="Search questions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="mb-6 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-slate-200 placeholder-slate-500 outline-none focus:border-[#1A90FF] focus:ring-1 focus:ring-[#1A90FF]"
+          className="mb-6 w-full rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page))] px-4 py-3 text-sm text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] outline-none focus:border-[rgb(var(--zw-brand))] focus:ring-1 focus:ring-[rgb(var(--zw-brand))]"
           aria-label="Search FAQ questions"
         />
 
@@ -116,8 +116,8 @@ export default function HelpContent() {
             onClick={() => setActiveCategory(null)}
             className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
               !activeCategory
-                ? 'bg-[#1A90FF] text-[#0B1119]'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand-ink))]'
+                : 'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
             }`}
             aria-pressed={!activeCategory}
           >
@@ -129,8 +129,8 @@ export default function HelpContent() {
               onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
               className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                 activeCategory === cat
-                  ? 'bg-[#1A90FF] text-[#0B1119]'
-                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand-ink))]'
+                  : 'bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
               }`}
               aria-pressed={activeCategory === cat}
             >
@@ -142,7 +142,7 @@ export default function HelpContent() {
         {/* FAQ accordion */}
         <div className="space-y-2">
           {filtered.length === 0 && (
-            <p className="py-8 text-center text-sm text-slate-500">
+            <p className="py-8 text-center text-sm text-[rgb(var(--zw-ink2))]">
               No matching questions found. Try a different search term.
             </p>
           )}
@@ -152,7 +152,7 @@ export default function HelpContent() {
             return (
               <div
                 key={globalIndex}
-                className="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/50"
+                className="overflow-hidden rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.5)]"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : globalIndex)}
@@ -161,13 +161,13 @@ export default function HelpContent() {
                   aria-controls={`faq-answer-${globalIndex}`}
                 >
                   <div>
-                    <span className="mr-2 rounded bg-slate-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    <span className="mr-2 rounded bg-[rgb(var(--zw-card))] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                       {faq.category}
                     </span>
-                    <span className="text-sm font-medium text-slate-200">{faq.question}</span>
+                    <span className="text-sm font-medium text-[rgb(var(--zw-ink2))]">{faq.question}</span>
                   </div>
                   <span
-                    className={`ml-4 text-lg text-slate-500 transition-transform ${
+                    className={`ml-4 text-lg text-[rgb(var(--zw-ink2))] transition-transform ${
                       isOpen ? 'rotate-45' : ''
                     }`}
                     aria-hidden="true"
@@ -178,7 +178,7 @@ export default function HelpContent() {
                 {isOpen && (
                   <div
                     id={`faq-answer-${globalIndex}`}
-                    className="border-t border-slate-800 px-5 py-4 text-sm leading-relaxed text-slate-400"
+                    className="border-t border-[rgb(var(--zw-border2))] px-5 py-4 text-sm leading-relaxed text-[rgb(var(--zw-ink2))]"
                   >
                     {faq.answer}
                   </div>
@@ -189,28 +189,28 @@ export default function HelpContent() {
         </div>
 
         {/* API Docs Link */}
-        <div className="mt-8 rounded-xl border border-[#1B2737]/40 bg-[#1B2737]/10 p-5 flex items-center justify-between gap-4">
+        <div className="mt-8 rounded-xl border border-[rgb(var(--zw-border2)/0.4)] bg-[rgb(var(--zw-elev)/0.1)] p-5 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-slate-200">Building on ZoneWise?</p>
-            <p className="text-xs text-slate-500 mt-0.5">REST API, authentication, rate limits, and code examples</p>
+            <p className="text-sm font-medium text-[rgb(var(--zw-ink2))]">Building on ZoneWise?</p>
+            <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">REST API, authentication, rate limits, and code examples</p>
           </div>
           <a
             href="/docs"
-            className="shrink-0 inline-block rounded-lg border border-[#1B2737] px-4 py-2 text-xs font-semibold text-[#1A90FF] hover:bg-[#1B2737]/30 transition"
+            className="shrink-0 inline-block rounded-lg border border-[rgb(var(--zw-border2))] px-4 py-2 text-xs font-semibold text-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-elev)/0.3)] transition"
           >
             API Docs →
           </a>
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/50 p-6 text-center">
-          <p className="mb-1 text-sm font-medium text-slate-200">Still need help?</p>
-          <p className="mb-4 text-xs text-slate-500">
+        <div className="mt-6 rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.5)] p-6 text-center">
+          <p className="mb-1 text-sm font-medium text-[rgb(var(--zw-ink2))]">Still need help?</p>
+          <p className="mb-4 text-xs text-[rgb(var(--zw-ink2))]">
             Our team typically responds within 24 hours
           </p>
           <a
             href="mailto:support@zonewise.ai"
-            className="inline-block rounded-lg bg-[#1A90FF] px-6 py-2.5 text-sm font-semibold text-[#0B1119] transition hover:bg-[#005EB8]"
+            className="inline-block rounded-lg bg-[rgb(var(--zw-brand))] px-6 py-2.5 text-sm font-semibold text-[rgb(var(--zw-brand-ink))] transition hover:bg-[#005EB8]"
           >
             Contact Support
           </a>

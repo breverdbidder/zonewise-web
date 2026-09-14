@@ -69,7 +69,7 @@ const TodoIcon = memo(function TodoIcon({
         aria-hidden="true"
       >
         <X
-          className="size-4 text-white motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-75 motion-safe:delay-75 motion-safe:duration-200 motion-safe:fill-mode-both"
+          className="size-4 text-[rgb(var(--zw-ink))] motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-75 motion-safe:delay-75 motion-safe:duration-200 motion-safe:fill-mode-both"
           strokeWidth={3}
         />
       </span>

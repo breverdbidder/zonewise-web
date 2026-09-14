@@ -57,7 +57,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
   const SortTh = ({ field, label }: { field: SpreadsheetSort; label: string }) => (
     <th
       onClick={() => handleSort(field)}
-      className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-slate-300 select-none whitespace-nowrap"
+      className="px-2 py-1.5 text-left text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:text-gray-700 dark:hover:text-[rgb(var(--zw-ink2))] select-none whitespace-nowrap"
     >
       {label}
       {sortField === field && <span className="ml-0.5">{sortDir === 'asc' ? '\u2191' : '\u2193'}</span>}
@@ -67,7 +67,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
   if (loading) {
     return (
       <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-8 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-zw-navy-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[rgb(var(--zw-border2))] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -80,7 +80,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
         </span>
         <button
           onClick={() => downloadCSV(auctions)}
-          className="px-3 py-1 text-xs font-medium bg-zw-navy-500 text-white rounded hover:bg-zw-navy-600 transition-colors"
+          className="px-3 py-1 text-xs font-medium bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink))] rounded hover:bg-[rgb(var(--zw-elev))] transition-colors"
         >
           Export CSV
         </button>
@@ -112,7 +112,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
                 <tr
                   key={a.id}
                   onClick={() => onSelectAuction(a)}
-                  className="hover:bg-gray-50 dark:hover:bg-slate-800/30 cursor-pointer transition-colors"
+                  className="hover:bg-gray-50 dark:hover:bg-[rgb(var(--zw-card)/0.3)] cursor-pointer transition-colors"
                 >
                   <td className="px-2 py-1.5 text-gray-900 dark:text-slate-200 whitespace-nowrap">{a.county}</td>
                   <td className="px-2 py-1.5 text-gray-600 dark:text-slate-400 font-mono whitespace-nowrap">{a.case_number}</td>
@@ -135,7 +135,7 @@ export default function AuctionSpreadsheet({ auctions, loading, onSelectAuction 
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     {score.recommendation !== 'UNKNOWN' && (
                       <span
-                        className="px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
+                        className="px-1.5 py-0.5 rounded text-[10px] font-bold text-[rgb(var(--zw-ink))]"
                         style={{ backgroundColor: score.color }}
                       >
                         {score.recommendation}

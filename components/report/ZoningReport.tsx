@@ -110,10 +110,10 @@ function Section({
   id?: string
 }) {
   return (
-    <section id={id} className="rounded-2xl border border-slate-700/60 overflow-hidden print:border-slate-300">
-      <div className="flex items-center gap-2.5 px-5 py-3 bg-[#1B2737]/80 border-b border-slate-700/60 print:bg-blue-950">
-        <span className="text-[#1A90FF]">{icon}</span>
-        <h2 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h2>
+    <section id={id} className="rounded-2xl border border-[rgb(var(--zw-border2)/0.6)] overflow-hidden print:border-slate-300">
+      <div className="flex items-center gap-2.5 px-5 py-3 bg-[rgb(var(--zw-elev)/0.8)] border-b border-[rgb(var(--zw-border2)/0.6)] print:bg-blue-950">
+        <span className="text-[rgb(var(--zw-brand))]">{icon}</span>
+        <h2 className="text-sm font-semibold text-[rgb(var(--zw-ink))] uppercase tracking-wider">{title}</h2>
       </div>
       <div className="px-5 py-4">{children}</div>
     </section>
@@ -122,20 +122,20 @@ function Section({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 py-1.5 border-b border-slate-800/50 last:border-0 print:border-slate-200">
-      <span className="text-slate-400 text-sm shrink-0 print:text-slate-600">{label}</span>
-      <span className="text-slate-100 text-sm text-right break-all print:text-slate-900">{value}</span>
+    <div className="flex justify-between gap-4 py-1.5 border-b border-[rgb(var(--zw-border2)/0.5)] last:border-0 print:border-slate-200">
+      <span className="text-[rgb(var(--zw-ink2))] text-sm shrink-0 print:text-[rgb(var(--zw-ink2))]">{label}</span>
+      <span className="text-[rgb(var(--zw-ink))] text-sm text-right break-all print:text-[rgb(var(--zw-ink))]">{value}</span>
     </div>
   )
 }
 
 function HighlightRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex justify-between gap-4 py-1.5 border-b border-slate-800/50 last:border-0 print:border-slate-200">
-      <span className="text-slate-400 text-sm shrink-0 print:text-slate-600">{label}</span>
+    <div className="flex justify-between gap-4 py-1.5 border-b border-[rgb(var(--zw-border2)/0.5)] last:border-0 print:border-slate-200">
+      <span className="text-[rgb(var(--zw-ink2))] text-sm shrink-0 print:text-[rgb(var(--zw-ink2))]">{label}</span>
       <div className="text-right">
-        <span className="text-[#1A90FF] font-semibold text-sm">{value}</span>
-        {sub && <span className="block text-xs text-slate-500 print:text-slate-500">{sub}</span>}
+        <span className="text-[rgb(var(--zw-brand))] font-semibold text-sm">{value}</span>
+        {sub && <span className="block text-xs text-[rgb(var(--zw-ink2))] print:text-[rgb(var(--zw-ink2))]">{sub}</span>}
       </div>
     </div>
   )
@@ -172,14 +172,14 @@ function PermissionBadge({ type }: { type: PermittedUse['permission_type'] }) {
 export function ZoningReportSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-10 bg-slate-800 rounded-xl w-1/2" />
-      <div className="h-6 bg-slate-800 rounded w-1/3" />
+      <div className="h-10 bg-[rgb(var(--zw-card))] rounded-xl w-1/2" />
+      <div className="h-6 bg-[rgb(var(--zw-card))] rounded w-1/3" />
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="rounded-2xl border border-slate-700/60 overflow-hidden">
-          <div className="h-11 bg-[#1B2737]/80" />
+        <div key={i} className="rounded-2xl border border-[rgb(var(--zw-border2)/0.6)] overflow-hidden">
+          <div className="h-11 bg-[rgb(var(--zw-elev)/0.8)]" />
           <div className="px-5 py-4 space-y-3">
             {[1, 2, 3].map((j) => (
-              <div key={j} className="h-4 bg-slate-800 rounded w-full" />
+              <div key={j} className="h-4 bg-[rgb(var(--zw-card))] rounded w-full" />
             ))}
           </div>
         </div>
@@ -193,9 +193,9 @@ export function ZoningReportError({ parcelId, message }: { parcelId: string; mes
   return (
     <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
       <div className="text-red-400 text-4xl mb-3">!</div>
-      <h2 className="text-white font-semibold text-lg mb-1">Report Failed</h2>
-      <p className="text-slate-400 text-sm mb-2">Could not generate zoning report for parcel <code className="text-[#1A90FF]">{parcelId}</code>.</p>
-      <p className="text-slate-500 text-xs">{message}</p>
+      <h2 className="text-[rgb(var(--zw-ink))] font-semibold text-lg mb-1">Report Failed</h2>
+      <p className="text-[rgb(var(--zw-ink2))] text-sm mb-2">Could not generate zoning report for parcel <code className="text-[rgb(var(--zw-brand))]">{parcelId}</code>.</p>
+      <p className="text-[rgb(var(--zw-ink2))] text-xs">{message}</p>
     </div>
   )
 }
@@ -230,31 +230,31 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
   return (
     <div
       className="min-h-screen font-[Inter,sans-serif] print:bg-white"
-      style={{ background: '#0B1119', color: '#f8fafc' }}
+      style={{ background: 'rgb(var(--zw-page))', color: '#f8fafc' }}
     >
       {/* ── Header bar ── */}
-      <div className="sticky top-0 z-30 border-b border-slate-700/60 bg-[#0B1119]/90 backdrop-blur-sm print:hidden">
+      <div className="sticky top-0 z-30 border-b border-[rgb(var(--zw-border2)/0.6)] bg-[rgb(var(--zw-page)/0.9)] backdrop-blur-sm print:hidden">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
-            <Link href="/explorer" className="text-[#1A90FF] hover:text-amber-300 shrink-0">
+            <Link href="/explorer" className="text-[rgb(var(--zw-brand))] hover:text-amber-300 shrink-0">
               <ChevronRight className="w-4 h-4 rotate-180" />
             </Link>
-            <span className="text-slate-400 text-sm truncate">
+            <span className="text-[rgb(var(--zw-ink2))] text-sm truncate">
               Zoning Report —{' '}
-              <code className="text-[#1A90FF] font-mono text-xs">{parcelId}</code>
+              <code className="text-[rgb(var(--zw-brand))] font-mono text-xs">{parcelId}</code>
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleShare}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors border border-slate-700"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] text-xs font-medium transition-colors border border-[rgb(var(--zw-border2))]"
             >
               <Share2 className="w-3.5 h-3.5" />
               {copied ? 'Copied!' : 'Share'}
             </button>
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1A90FF] hover:bg-amber-500 text-white text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--zw-brand))] hover:bg-amber-500 text-white text-xs font-medium transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               PDF
@@ -268,12 +268,12 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
 
         {/* Title */}
         <div className="mb-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight print:text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--zw-ink))] leading-tight print:text-[rgb(var(--zw-ink))]">
             ZoneWise Property Report
           </h1>
-          <p className="text-slate-400 text-sm mt-1 print:text-slate-600">
+          <p className="text-[rgb(var(--zw-ink2))] text-sm mt-1 print:text-[rgb(var(--zw-ink2))]">
             Parcel ID:{' '}
-            <code className="text-[#1A90FF] font-mono">{parcelId}</code>
+            <code className="text-[rgb(var(--zw-brand))] font-mono">{parcelId}</code>
             {data.jurisdiction && (
               <> &mdash; {data.jurisdiction}</>
             )}
@@ -291,9 +291,9 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             <Row label="Vacant" value={data.is_vacant === true ? 'Yes' : data.is_vacant === false ? 'No' : '—'} />
           </TwoCol>
           {data.legal_description && (
-            <div className="mt-3 pt-3 border-t border-slate-800/50">
-              <p className="text-slate-400 text-xs mb-1">Legal Description</p>
-              <p className="text-slate-300 text-xs break-all print:text-slate-700">{data.legal_description}</p>
+            <div className="mt-3 pt-3 border-t border-[rgb(var(--zw-border2)/0.5)]">
+              <p className="text-[rgb(var(--zw-ink2))] text-xs mb-1">Legal Description</p>
+              <p className="text-[rgb(var(--zw-ink2))] text-xs break-all print:text-[rgb(var(--zw-ink))]">{data.legal_description}</p>
             </div>
           )}
         </Section>
@@ -316,9 +316,9 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             <Row label="Jurisdiction" value={str(data.jurisdiction)} />
           </TwoCol>
           {data.zone_description && (
-            <div className="mt-3 pt-3 border-t border-slate-800/50">
-              <p className="text-slate-400 text-xs mb-1">Description</p>
-              <p className="text-slate-300 text-sm print:text-slate-700">{data.zone_description}</p>
+            <div className="mt-3 pt-3 border-t border-[rgb(var(--zw-border2)/0.5)]">
+              <p className="text-[rgb(var(--zw-ink2))] text-xs mb-1">Description</p>
+              <p className="text-[rgb(var(--zw-ink2))] text-sm print:text-[rgb(var(--zw-ink))]">{data.zone_description}</p>
             </div>
           )}
           {data.municipal_code_url && (
@@ -327,7 +327,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
                 href={data.municipal_code_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[#1A90FF] hover:text-amber-300 text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 text-[rgb(var(--zw-brand))] hover:text-amber-300 text-sm font-medium transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View Municipal Code
@@ -379,13 +379,13 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             <div className="space-y-4">
               {Object.entries(usesByCategory).map(([category, uses]) => (
                 <div key={category}>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 print:text-slate-600">
+                  <p className="text-xs font-semibold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2 print:text-[rgb(var(--zw-ink2))]">
                     {category}
                   </p>
                   <div className="space-y-1.5">
                     {uses.map((use, i) => (
-                      <div key={i} className="flex items-center justify-between gap-3 py-1 border-b border-slate-800/40 last:border-0 print:border-slate-200">
-                        <span className="text-slate-300 text-sm print:text-slate-700">{use.use_name}</span>
+                      <div key={i} className="flex items-center justify-between gap-3 py-1 border-b border-[rgb(var(--zw-border2)/0.4)] last:border-0 print:border-slate-200">
+                        <span className="text-[rgb(var(--zw-ink2))] text-sm print:text-[rgb(var(--zw-ink))]">{use.use_name}</span>
                         <PermissionBadge type={use.permission_type} />
                       </div>
                     ))}
@@ -393,7 +393,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex items-center gap-4 text-xs text-slate-500">
+            <div className="mt-4 flex items-center gap-4 text-xs text-[rgb(var(--zw-ink2))]">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" /> By Right
               </span>
@@ -412,13 +412,13 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Aerial photo */}
             <div>
-              <p className="text-xs text-slate-400 mb-2 uppercase tracking-wider">Aerial Photo (BCPAO)</p>
+              <p className="text-xs text-[rgb(var(--zw-ink2))] mb-2 uppercase tracking-wider">Aerial Photo (BCPAO)</p>
               {data.aerial_photo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={data.aerial_photo_url}
                   alt={`Aerial photo for parcel ${parcelId}`}
-                  className="w-full h-48 object-cover rounded-xl border border-slate-700"
+                  className="w-full h-48 object-cover rounded-xl border border-[rgb(var(--zw-border2))]"
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement
                     target.style.display = 'none'
@@ -428,7 +428,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
                 />
               ) : null}
               <div
-                className="w-full h-48 rounded-xl border border-slate-700 bg-slate-800 items-center justify-center text-slate-500 text-sm"
+                className="w-full h-48 rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))] items-center justify-center text-[rgb(var(--zw-ink2))] text-sm"
                 style={{ display: data.aerial_photo_url ? 'none' : 'flex' }}
               >
                 No photo available
@@ -436,21 +436,21 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             </div>
             {/* Zoning map placeholder */}
             <div>
-              <p className="text-xs text-slate-400 mb-2 uppercase tracking-wider">Zoning Map</p>
+              <p className="text-xs text-[rgb(var(--zw-ink2))] mb-2 uppercase tracking-wider">Zoning Map</p>
               {data.zoning_map_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={data.zoning_map_url}
                   alt="Zoning map"
-                  className="w-full h-48 object-cover rounded-xl border border-slate-700"
+                  className="w-full h-48 object-cover rounded-xl border border-[rgb(var(--zw-border2))]"
                 />
               ) : (
-                <div className="w-full h-48 rounded-xl border border-slate-700 bg-slate-800 flex items-center justify-center flex-col gap-2 text-slate-500 text-sm">
-                  <Layers className="w-8 h-8 text-slate-600" />
+                <div className="w-full h-48 rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card))] flex items-center justify-center flex-col gap-2 text-[rgb(var(--zw-ink2))] text-sm">
+                  <Layers className="w-8 h-8 text-[rgb(var(--zw-ink2))]" />
                   <span>Map not available</span>
                   <Link
                     href={`/explorer?parcel=${encodeURIComponent(parcelId)}`}
-                    className="text-[#1A90FF] hover:text-amber-300 text-xs underline underline-offset-2"
+                    className="text-[rgb(var(--zw-brand))] hover:text-amber-300 text-xs underline underline-offset-2"
                   >
                     Open in Explorer
                   </Link>
@@ -464,14 +464,14 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
         <Section icon={<Brain className="w-4 h-4" />} title="AI Zoning Analysis" id="ai">
           {data.ai_summary ? (
             <div>
-              <p className="text-slate-200 text-sm leading-relaxed print:text-slate-800">{data.ai_summary}</p>
-              <p className="text-slate-600 text-xs mt-3">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm leading-relaxed print:text-[rgb(var(--zw-ink))]">{data.ai_summary}</p>
+              <p className="text-[rgb(var(--zw-ink2))] text-xs mt-3">
                 Generated by Gemini Flash &mdash; AI analysis for informational purposes only. Verify with local planning department.
               </p>
             </div>
           ) : (
-            <p className="text-slate-500 text-sm">
-              AI analysis unavailable for this parcel. Configure <code className="text-slate-400">GEMINI_API_KEY</code> to enable.
+            <p className="text-[rgb(var(--zw-ink2))] text-sm">
+              AI analysis unavailable for this parcel. Configure <code className="text-[rgb(var(--zw-ink2))]">GEMINI_API_KEY</code> to enable.
             </p>
           )}
         </Section>
@@ -480,16 +480,16 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
         <Section icon={<Box className="w-4 h-4" />} title="3D Massing Preview" id="massing">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <p className="text-slate-300 text-sm mb-1">
+              <p className="text-[rgb(var(--zw-ink2))] text-sm mb-1">
                 Visualize the maximum buildable envelope for this parcel in 3D.
               </p>
-              <p className="text-slate-500 text-xs">
+              <p className="text-[rgb(var(--zw-ink2))] text-xs">
                 Based on FAR {str(data.far)}, {data.max_height_ft ?? '—'}ft max height, and {data.lot_coverage_pct ?? '—'}% lot coverage.
               </p>
             </div>
             <Link
               href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-              className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A90FF] hover:bg-amber-500 text-white text-sm font-semibold transition-colors print:hidden"
+              className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[rgb(var(--zw-brand))] hover:bg-amber-500 text-white text-sm font-semibold transition-colors print:hidden"
             >
               <Box className="w-4 h-4" />
               Open 3D View
@@ -518,7 +518,7 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
             <Row label="Population Density" value={data.population_density != null ? `${Math.round(data.population_density).toLocaleString()} / sq mi` : '—'} />
             <Row label="Vacancy Rate" value={data.vacancy_rate != null ? `${(data.vacancy_rate * 100).toFixed(1)}%` : '—'} />
           </TwoCol>
-          <p className="text-slate-600 text-xs mt-3">
+          <p className="text-[rgb(var(--zw-ink2))] text-xs mt-3">
             Market context data enrichment coming soon. Data sourced from US Census / ACS.
           </p>
         </Section>
@@ -527,21 +527,21 @@ export default function ZoningReport({ data, parcelId }: ZoningReportProps) {
         <div className="flex items-center gap-3 pt-2 pb-8 print:hidden">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A90FF] hover:bg-amber-500 text-white font-semibold text-sm transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[rgb(var(--zw-brand))] hover:bg-amber-500 text-white font-semibold text-sm transition-colors"
           >
             <Download className="w-4 h-4" />
             Download PDF
           </button>
           <button
             onClick={handleShare}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition-colors border border-slate-700"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink2))] font-semibold text-sm transition-colors border border-[rgb(var(--zw-border2))]"
           >
             <Share2 className="w-4 h-4" />
             {copied ? 'Link copied!' : 'Share Report'}
           </button>
           <Link
             href={`/massing?parcel=${encodeURIComponent(parcelId)}`}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1B2737] hover:bg-[#1B2737]/80 text-white font-semibold text-sm transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand))]/80 text-white font-semibold text-sm transition-colors"
           >
             <Box className="w-4 h-4" />
             3D Massing

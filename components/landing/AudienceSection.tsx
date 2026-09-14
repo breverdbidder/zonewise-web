@@ -33,7 +33,7 @@ const AUDIENCES = [
 
 export function AudienceSection() {
   return (
-    <section className="border-t border-slate-800 bg-[#0B1119] py-20 sm:py-28">
+    <section className="border-t border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page))] py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -42,13 +42,13 @@ export function AudienceSection() {
           transition={{ duration: 0.6 }}
           className="mb-14 max-w-2xl"
         >
-          <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[#1A90FF]">
+          <div className="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-[rgb(var(--zw-brand))]">
             One platform, two questions
           </div>
-          <h2 className="text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold leading-[1.12] tracking-tight text-[rgb(var(--zw-ink))] sm:text-4xl">
             &ldquo;What can I build here?&rdquo; is only half the decision.
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-slate-400">
+          <p className="mt-5 text-base leading-relaxed text-[rgb(var(--zw-ink2))]">
             Site-planning tools answer the first question once you have already committed to
             the parcel. ZoneWise answers it alongside the one that comes first — whether the
             site is worth acquiring at all.
@@ -64,18 +64,18 @@ export function AudienceSection() {
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: i * 0.12 }}
               className="rounded-lg border p-8"
-              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.5)' }}
+              style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-border2) / 0.5)' }}
             >
-              <div className="mb-4 font-mono text-xs uppercase tracking-[0.1em] text-slate-500">
+              <div className="mb-4 font-mono text-xs uppercase tracking-[0.1em] text-[rgb(var(--zw-ink2))]">
                 {a.tag}
               </div>
-              <h3 className="mb-6 text-xl font-semibold leading-snug text-white sm:text-2xl">
+              <h3 className="mb-6 text-xl font-semibold leading-snug text-[rgb(var(--zw-ink))] sm:text-2xl">
                 {a.title}
               </h3>
               <ul className="space-y-4">
                 {a.points.map((p) => (
-                  <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-slate-400">
-                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[#1A90FF]" />
+                  <li key={p} className="flex gap-3 text-[14px] leading-relaxed text-[rgb(var(--zw-ink2))]">
+                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[rgb(var(--zw-brand))]" />
                     <span>{p}</span>
                   </li>
                 ))}

@@ -36,9 +36,9 @@ export interface OutcomeReportInput {
   generatedAt: string
 }
 
-const NAVY: [number, number, number] = [30, 58, 95] // #1B2737
-const AMBER: [number, number, number] = [245, 158, 11] // #1A90FF
-const VOID: [number, number, number] = [2, 6, 23] // #0B1119
+const NAVY: [number, number, number] = [30, 58, 95] // rgb(var(--zw-elev))
+const AMBER: [number, number, number] = [245, 158, 11] // rgb(var(--zw-brand))
+const VOID: [number, number, number] = [2, 6, 23] // rgb(var(--zw-page))
 const SLATE: [number, number, number] = [100, 116, 139]
 
 const money = (n: number) => '$' + Math.round(n).toLocaleString('en-US')

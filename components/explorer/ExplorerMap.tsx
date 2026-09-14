@@ -215,7 +215,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         type: 'fill',
         source: 'zoning-overlay-src',
         paint: {
-          'fill-color': ['coalesce', ['get', 'zone_color'], '#94A3B8'],
+          'fill-color': ['coalesce', ['get', 'zone_color'], 'rgb(var(--zw-elev))'],
           'fill-opacity': 0.35,
         },
         layout: { visibility: 'none' },
@@ -225,7 +225,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         type: 'line',
         source: 'zoning-overlay-src',
         paint: {
-          'line-color': ['coalesce', ['get', 'zone_color'], '#94A3B8'],
+          'line-color': ['coalesce', ['get', 'zone_color'], 'rgb(var(--zw-elev))'],
           'line-opacity': 0.6,
           'line-width': 0.8,
         },
@@ -422,7 +422,7 @@ const ExplorerMap = forwardRef<ExplorerMapHandle, Props>(function ExplorerMap(
         tabIndex={0}
       />
       {loading && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/90 border border-slate-700 rounded-md px-4 py-2 text-xs text-amber-400 font-semibold backdrop-blur-sm z-10 pointer-events-none">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-[rgb(var(--zw-page)/0.9)] border border-[rgb(var(--zw-border2))] rounded-md px-4 py-2 text-xs text-amber-400 font-semibold backdrop-blur-sm z-10 pointer-events-none">
           Loading parcel data...
         </div>
       )}
@@ -526,15 +526,15 @@ function popupHtml(a: ParcelAttributes): string {
   const pid = a.PARCEL_ID || ''
   const pidEnc = encodeURIComponent(pid)
   const r = (k: string, v: string) =>
-    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:#64748B">${k}</span><span style="color:#1A90FF;font-weight:600;font-family:monospace">${v}</span></div>`
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px"><span style="color:rgb(var(--zw-elev))">${k}</span><span style="color:rgb(var(--zw-brand));font-weight:600;font-family:monospace">${v}</span></div>`
 
   return `<div style="font-family:system-ui,sans-serif">
-    <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;border-bottom:1px solid #1E293B;padding-bottom:5px">${addr || 'Parcel'}</div>
+    <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;border-bottom:1px solid rgb(var(--zw-card));padding-bottom:5px">${addr || 'Parcel'}</div>
     ${r('Parcel', pid)}${r('Owner', (a.OWNER_NAME1 || '—').substring(0, 22))}
     ${r('Building', formatCurrency(a.BLDG_VALUE))}${r('Land', formatCurrency(a.LAND_VALUE))}
     ${r('Use', (a.USE_CODE_DESCRIPTION || '—').trim())}
-    <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid #1E293B;padding-top:6px">
-      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgba(26,144,255,.12);color:#1A90FF;border:1px solid rgba(26,144,255,.3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;border-top:1px solid rgb(var(--zw-card));padding-top:6px">
+      <a href="/parcel/${pidEnc}" style="display:block;text-align:center;padding:6px;background:rgb(var(--zw-brand) / 12);color:rgb(var(--zw-brand));border:1px solid rgb(var(--zw-brand) / 3);border-radius:4px;font-size:11px;font-weight:700;text-decoration:none">🗺️ ZoneWise.AI Analysis</a>
       <a href="https://www.bcpao.us/PropertySearch/#/account/${a.PROPERTY_ID}" target="_blank" style="display:block;text-align:center;padding:5px;background:rgba(59,130,246,.1);color:#3B82F6;border:1px solid rgba(59,130,246,.2);border-radius:4px;font-size:10px;font-weight:600;text-decoration:none">📋 BCPAO Property Search</a>
     </div></div>`
 }

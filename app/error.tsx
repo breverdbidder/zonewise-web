@@ -38,23 +38,23 @@ export default function Error({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#0B1119',
+        background: 'rgb(var(--zw-page))',
         color: '#e2e8f0',
         fontFamily: 'Inter, system-ui, sans-serif',
         padding: '2rem',
       }}
     >
       <main style={{ textAlign: 'center', maxWidth: '28rem' }} role="main">
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: '#1A90FF' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: 'rgb(var(--zw-brand))' }}>
           ZoneWise.AI
         </h1>
-        <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+        <p style={{ color: 'rgb(var(--zw-ink2)))', marginBottom: '1.5rem', lineHeight: 1.6 }}>
           Something didn&apos;t load correctly. Refresh to try again.
         </p>
         <button
           onClick={() => reset()}
           style={{
-            background: '#1B2737',
+            background: 'rgb(var(--zw-elev))',
             color: '#ffffff',
             border: 'none',
             padding: '0.625rem 1.25rem',

@@ -31,7 +31,7 @@ export function ExploreWithChat({ className = '' }: ExploreWithChatProps) {
   return (
     <div className={`flex h-full w-full overflow-hidden ${className}`}>
       {/* Desktop: 40/60 split — chat left, DevIntel right */}
-      <div className="hidden lg:flex w-[40%] min-w-[360px] max-w-[480px] flex-col border-r border-slate-800 overflow-hidden">
+      <div className="hidden lg:flex w-[40%] min-w-[360px] max-w-[480px] flex-col border-r border-[rgb(var(--zw-border2))] overflow-hidden">
         <ChatWidget onAssistantMessage={handleAssistantMessage} />
       </div>
 
@@ -48,7 +48,7 @@ export function ExploreWithChat({ className = '' }: ExploreWithChatProps) {
         <button
           onClick={() => setShowChat(v => !v)}
           className="w-14 h-14 rounded-full flex items-center justify-center text-xl shadow-lg transition-all"
-          style={{ background: '#1B2737', color: '#1A90FF' }}
+          style={{ background: 'rgb(var(--zw-elev))', color: 'rgb(var(--zw-brand))' }}
           aria-label={showChat ? 'Close chat' : 'Open chat'}
         >
           {showChat ? '✕' : '💬'}
@@ -57,10 +57,10 @@ export function ExploreWithChat({ className = '' }: ExploreWithChatProps) {
 
       {/* Mobile: chat overlay */}
       {showChat && (
-        <div className="lg:hidden fixed inset-0 z-40 flex flex-col bg-slate-950">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
-            <span className="text-sm font-medium text-slate-200">ZoneWise AI</span>
-            <button onClick={() => setShowChat(false)} className="text-slate-400 hover:text-white">✕</button>
+        <div className="lg:hidden fixed inset-0 z-40 flex flex-col bg-[rgb(var(--zw-page))]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[rgb(var(--zw-border2))]">
+            <span className="text-sm font-medium text-[rgb(var(--zw-ink2))]">ZoneWise AI</span>
+            <button onClick={() => setShowChat(false)} className="text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))]">✕</button>
           </div>
           <div className="flex-1 overflow-hidden">
             <ChatWidget onAssistantMessage={(content) => {

@@ -98,22 +98,22 @@ export default async function Labs3DViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B1119] text-white">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       {/* Header */}
-      <header className="border-b border-slate-800 px-6 py-4">
+      <header className="border-b border-[rgb(var(--zw-border2))] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-semibold text-white">
+            <h1 className="text-lg font-semibold text-[rgb(var(--zw-ink))]">
               ZoneWise Labs
-              <span className="ml-2 text-xs bg-[#1A90FF]/20 text-[#1A90FF] px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-xs bg-[rgb(var(--zw-brand)/0.2)] text-[rgb(var(--zw-brand))] px-2 py-0.5 rounded-full">
                 POC
               </span>
             </h1>
-            <p className="text-slate-400 text-sm mt-0.5">Google Photorealistic 3D Tiles</p>
+            <p className="text-[rgb(var(--zw-ink2))] text-sm mt-0.5">Google Photorealistic 3D Tiles</p>
           </div>
           <a
             href="/"
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] transition-colors"
           >
             Back to ZoneWise
           </a>
@@ -134,30 +134,30 @@ export default async function Labs3DViewerPage() {
           {/* Corner card — parcel info + BidDeed/ZoneWise pairing */}
           <div className="space-y-4">
             {/* Parcel Info Card */}
-            <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">Parcel Details</h2>
+            <div className="bg-[rgb(var(--zw-page)/0.8)] border border-[rgb(var(--zw-border2))] rounded-lg p-4">
+              <h2 className="text-sm font-semibold text-[rgb(var(--zw-brand))] mb-3">Parcel Details</h2>
               <dl className="space-y-2 text-sm">
                 <div>
-                  <dt className="text-slate-500 text-xs">Parcel ID</dt>
-                  <dd className="text-white font-mono text-xs">{displayParcel.parcel_id}</dd>
+                  <dt className="text-[rgb(var(--zw-ink2))] text-xs">Parcel ID</dt>
+                  <dd className="text-[rgb(var(--zw-ink))] font-mono text-xs">{displayParcel.parcel_id}</dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 text-xs">Address</dt>
-                  <dd className="text-white">
+                  <dt className="text-[rgb(var(--zw-ink2))] text-xs">Address</dt>
+                  <dd className="text-[rgb(var(--zw-ink))]">
                     {displayParcel.phy_addr1 ?? 'N/A'}
                     <br />
-                    <span className="text-slate-400">
+                    <span className="text-[rgb(var(--zw-ink2))]">
                       {displayParcel.phy_city}, FL {displayParcel.phy_zipcd}
                     </span>
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 text-xs">DOR Use Code</dt>
-                  <dd className="text-white font-mono">{displayParcel.dor_uc ?? 'N/A'}</dd>
+                  <dt className="text-[rgb(var(--zw-ink2))] text-xs">DOR Use Code</dt>
+                  <dd className="text-[rgb(var(--zw-ink))] font-mono">{displayParcel.dor_uc ?? 'N/A'}</dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 text-xs">Just Value</dt>
-                  <dd className="text-white">
+                  <dt className="text-[rgb(var(--zw-ink2))] text-xs">Just Value</dt>
+                  <dd className="text-[rgb(var(--zw-ink))]">
                     {displayParcel.jv
                       ? `$${displayParcel.jv.toLocaleString()}`
                       : 'N/A'}
@@ -167,29 +167,29 @@ export default async function Labs3DViewerPage() {
             </div>
 
             {/* BidDeed Auction Status */}
-            <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">
+            <div className="bg-[rgb(var(--zw-page)/0.8)] border border-[rgb(var(--zw-border2))] rounded-lg p-4">
+              <h2 className="text-sm font-semibold text-[rgb(var(--zw-brand))] mb-3">
                 BidDeed.AI — Foreclosure
               </h2>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-[rgb(var(--zw-ink2))]">
                 {auctionInfo.bidDeedStatus ?? 'Unknown'}
               </p>
             </div>
 
             {/* ZoneWise Tax Deed Status */}
-            <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-[#1A90FF] mb-3">
+            <div className="bg-[rgb(var(--zw-page)/0.8)] border border-[rgb(var(--zw-border2))] rounded-lg p-4">
+              <h2 className="text-sm font-semibold text-[rgb(var(--zw-brand))] mb-3">
                 ZoneWise.AI — Zoning
               </h2>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-[rgb(var(--zw-ink2))]">
                 {auctionInfo.zoneWiseStatus ?? 'Unknown'}
               </p>
             </div>
 
             {/* POC Info */}
-            <div className="bg-[#1B2737]/20 border border-[#1B2737]/40 rounded-lg p-4">
-              <h2 className="text-xs font-semibold text-slate-400 mb-2">POC Status</h2>
-              <ul className="text-xs text-slate-500 space-y-1">
+            <div className="bg-[rgb(var(--zw-elev)/0.2)] border border-[rgb(var(--zw-border2)/0.4)] rounded-lg p-4">
+              <h2 className="text-xs font-semibold text-[rgb(var(--zw-ink2))] mb-2">POC Status</h2>
+              <ul className="text-xs text-[rgb(var(--zw-ink2))] space-y-1">
                 <li>CesiumJS 1.115 (MIT)</li>
                 <li>Google 3D Tiles API</li>
                 <li>requestRenderMode: true</li>

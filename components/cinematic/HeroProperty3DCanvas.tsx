@@ -11,8 +11,8 @@ import gsap from 'gsap'
 const CREAM      = '#F7F2EA'
 const CREAM_DARK = '#EDE7D8'
 const TERRACOTTA = '#C05A33'
-const NAVY       = '#1B2737'
-const ORANGE     = '#1A90FF'
+const NAVY       = 'rgb(var(--zw-elev))'
+const ORANGE     = 'rgb(var(--zw-brand))'
 const BROWN      = '#6B3B1F'
 const GLASS      = '#BAD8F7'
 
@@ -134,14 +134,14 @@ function HouseModel() {
           style={{ pointerEvents: 'none', userSelect: 'none' }}
         >
           <div style={{
-            background: '#1B2737',
-            border: '1.5px solid #1A90FF',
+            background: 'rgb(var(--zw-elev))',
+            border: '1.5px solid rgb(var(--zw-brand))',
             borderRadius: '3px',
             padding: '3px 8px',
             textAlign: 'center',
           }}>
             <div style={{
-              color: '#1A90FF',
+              color: 'rgb(var(--zw-brand))',
               fontSize: '9px',
               fontWeight: 800,
               letterSpacing: '1.5px',
@@ -222,7 +222,7 @@ export default function HeroProperty3DCanvas() {
       dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: false }}
     >
-      <color attach="background" args={['#0B1119']} />
+      <color attach="background" args={['rgb(var(--zw-page))']} />
 
       {/* Warm Florida sun key light */}
       <directionalLight
@@ -244,7 +244,7 @@ export default function HeroProperty3DCanvas() {
       <pointLight color="#1A90FF" intensity={0.6} position={[-4, 2, 4]} />
 
       {/* Subtle depth fog */}
-      <fog attach="fog" args={['#0B1119', 16, 30]} />
+      <fog attach="fog" args={['rgb(var(--zw-page))', 16, 30]} />
 
       <Suspense fallback={null}>
         <Scene />

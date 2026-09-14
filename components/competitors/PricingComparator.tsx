@@ -16,36 +16,36 @@ export function PricingComparator({ competitorName, tiers }: Props) {
   return (
     <section
       aria-labelledby="pricing-heading"
-      className="rounded-xl border border-slate-800 bg-slate-900/40 p-6"
+      className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6"
     >
       <h2
         id="pricing-heading"
-        className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400"
+        className="mb-1 text-xs font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]"
       >
         Pricing comparison
       </h2>
-      <p className="mb-5 text-xs text-slate-500">
+      <p className="mb-5 text-xs text-[rgb(var(--zw-ink2))]">
         Sources: {competitorName} published pricing and ZoneWise.AI plans (
         <a
           href="/pricing"
-          className="text-[#1A90FF] underline decoration-[#1A90FF]/40 hover:decoration-[#1A90FF]"
+          className="text-[rgb(var(--zw-brand))] underline decoration-[#1A90FF]/40 hover:decoration-[#1A90FF]"
         >
           /pricing
         </a>
         ).
       </p>
 
-      <div className="overflow-x-auto rounded-lg border border-slate-800">
+      <div className="overflow-x-auto rounded-lg border border-[rgb(var(--zw-border2))]">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-slate-800 bg-slate-900/60">
-              <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <tr className="border-b border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.6)]">
+              <th scope="col" className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                 Tier
               </th>
-              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                 {competitorName}
               </th>
-              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[#1A90FF]">
+              <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[rgb(var(--zw-brand))]">
                 ZoneWise.AI
               </th>
               <th scope="col" className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-emerald-400">
@@ -57,11 +57,11 @@ export function PricingComparator({ competitorName, tiers }: Props) {
             {tiers.map((tier, i) => (
               <tr
                 key={tier.label}
-                className={`border-b border-slate-800/50 ${i % 2 === 0 ? 'bg-slate-900/30' : ''}`}
+                className={`border-b border-[rgb(var(--zw-border2)/0.5)] ${i % 2 === 0 ? 'bg-[rgb(var(--zw-page)/0.3)]' : ''}`}
               >
-                <td className="px-4 py-3 font-semibold text-white">{tier.label}</td>
-                <td className="px-4 py-3 text-right font-mono text-slate-300">{tier.competitor_price}</td>
-                <td className="px-4 py-3 text-right font-mono font-bold text-[#1A90FF]">
+                <td className="px-4 py-3 font-semibold text-[rgb(var(--zw-ink))]">{tier.label}</td>
+                <td className="px-4 py-3 text-right font-mono text-[rgb(var(--zw-ink2))]">{tier.competitor_price}</td>
+                <td className="px-4 py-3 text-right font-mono font-bold text-[rgb(var(--zw-brand))]">
                   {tier.zonewise_price}
                 </td>
                 <td className="px-4 py-3 text-right font-bold text-emerald-400">

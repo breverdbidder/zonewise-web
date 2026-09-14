@@ -122,7 +122,7 @@ export default function ExportTab({ site }: ExportTabProps) {
       {/* LEFT: Chat interface */}
       <div className="flex-1 min-w-0 flex flex-col" style={{ minHeight: 520 }}>
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-base font-bold text-slate-900">Generate Reports</span>
+          <span className="text-base font-bold text-[rgb(var(--zw-ink))]">Generate Reports</span>
           <Badge text="NLP-Powered" color={COLORS.brand} />
           <Badge text="128 KPIs" color={COLORS.accent} />
         </div>
@@ -133,10 +133,10 @@ export default function ExportTab({ site }: ExportTabProps) {
             {messages.length === 0 && (
               <div className="text-center py-10">
                 <div className="text-2xl mb-2">💬</div>
-                <div className="text-sm font-semibold text-slate-900 mb-1">
+                <div className="text-sm font-semibold text-[rgb(var(--zw-ink))] mb-1">
                   Ask ZoneWise anything about this property
                 </div>
-                <div className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                <div className="text-xs text-[rgb(var(--zw-ink2))] max-w-sm mx-auto leading-relaxed">
                   Generate feasibility reports, pro formas, investor decks, and IC memos
                   from a single message. Powered by Claude + 128-KPI engine + FEMA + Census data.
                 </div>
@@ -152,7 +152,7 @@ export default function ExportTab({ site }: ExportTabProps) {
                   className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-teal-600 text-white'
-                      : 'bg-slate-50 text-slate-800 border border-slate-200'
+                      : 'bg-slate-50 text-[rgb(var(--zw-ink))] border border-slate-200'
                   }`}
                   style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
                 >
@@ -163,7 +163,7 @@ export default function ExportTab({ site }: ExportTabProps) {
 
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-400 flex items-center gap-2">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-[rgb(var(--zw-ink2))] flex items-center gap-2">
                   <span className="inline-block w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse" />
                   Analyzing with 128-KPI engine...
                 </div>
@@ -207,7 +207,7 @@ export default function ExportTab({ site }: ExportTabProps) {
 
       {/* RIGHT: Quick prompts */}
       <div className="w-full lg:w-[280px] flex-shrink-0">
-        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">
+        <div className="text-xs font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2.5">
           Quick Generate
         </div>
         <div className="space-y-2">
@@ -218,10 +218,10 @@ export default function ExportTab({ site }: ExportTabProps) {
               disabled={loading}
               className="w-full text-left bg-white rounded-lg border border-slate-200 px-3.5 py-3 hover:border-teal-300 hover:bg-teal-50/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <div className="text-sm font-semibold text-slate-900">
+              <div className="text-sm font-semibold text-[rgb(var(--zw-ink))]">
                 {qp.icon} {qp.label}
               </div>
-              <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+              <div className="text-[11px] text-[rgb(var(--zw-ink2))] mt-0.5 leading-snug">
                 {qp.prompt(site.address).slice(0, 80)}...
               </div>
             </button>
@@ -235,7 +235,7 @@ export default function ExportTab({ site }: ExportTabProps) {
           <div className="text-[10px] font-semibold mb-1" style={{ color: COLORS.brandDark }}>
             How it works
           </div>
-          <div className="text-[11px] text-slate-500 leading-relaxed space-y-1">
+          <div className="text-[11px] text-[rgb(var(--zw-ink2))] leading-relaxed space-y-1">
             <div>1. Type or pick a prompt</div>
             <div>2. Claude queries 10.5M parcels + 128 KPIs</div>
             <div>3. FEMA flood + Census scores auto-computed</div>
@@ -243,7 +243,7 @@ export default function ExportTab({ site }: ExportTabProps) {
           </div>
         </div>
 
-        <div className="mt-3 text-[10px] text-slate-400 leading-relaxed">
+        <div className="mt-3 text-[10px] text-[rgb(var(--zw-ink2))] leading-relaxed">
           Full split-screen experience with map artifacts available at{' '}
           <a href="/dashboard" className="text-teal-600 underline">
             /dashboard

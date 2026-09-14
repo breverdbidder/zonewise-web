@@ -89,8 +89,8 @@ function FloatingUI({ show }: BadgesProps) {
         }}
       >
         <div style={{
-          background: 'rgba(11,17,25,0.88)',
-          border: '1px solid rgba(26,144,255,0.45)',
+          background: 'rgb(var(--zw-page) / 0.88)',
+          border: '1px solid rgb(var(--zw-brand) / 0.45)',
           borderRadius: '10px',
           padding: '10px 18px',
           fontFamily: 'Inter, system-ui, sans-serif',
@@ -103,7 +103,7 @@ function FloatingUI({ show }: BadgesProps) {
           <div style={{ color: 'rgba(148,163,184,0.7)', fontSize: '9px', letterSpacing: '1.5px', marginBottom: '3px', textTransform: 'uppercase' }}>
             Opening Bid
           </div>
-          <div style={{ color: '#1A90FF', fontSize: '24px', fontWeight: 800, lineHeight: 1 }}>
+          <div style={{ color: 'rgb(var(--zw-brand))', fontSize: '24px', fontWeight: 800, lineHeight: 1 }}>
             $184K
           </div>
           <div style={{ color: '#22c55e', fontSize: '11px', fontWeight: 600, marginTop: '3px' }}>
@@ -157,7 +157,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
       <div
         className={cn('relative overflow-hidden', className)}
         style={{
-          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgba(27,39,55,0.92) 0%, rgba(11,17,25,1) 65%)',
+          background: 'radial-gradient(ellipse 110% 90% at 65% 55%, rgb(var(--zw-border2) / 0.92) 0%, rgb(var(--zw-page) / 1) 65%)',
         }}
       >
         {children && <div className="relative z-10">{children}</div>}
@@ -184,7 +184,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgba(11,17,25,0.45) 65%, rgba(11,17,25,0.88) 100%)',
+          background: 'radial-gradient(ellipse 90% 85% at 50% 45%, transparent 10%, rgb(var(--zw-page) / 0.45) 65%, rgb(var(--zw-page) / 0.88) 100%)',
           zIndex: 5,
           pointerEvents: 'none',
         }}
@@ -196,7 +196,7 @@ export function HeroProperty3D({ className, children }: HeroProperty3DProps) {
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'linear-gradient(#1B2737 1px, transparent 1px), linear-gradient(to right, #1B2737 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgb(var(--zw-elev)) 1px, transparent 1px), linear-gradient(to right, rgb(var(--zw-elev)) 1px, transparent 1px)',
           backgroundSize: '64px 64px',
           opacity: 0.025,
           zIndex: 6,

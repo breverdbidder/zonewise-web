@@ -77,7 +77,7 @@ export default function ExplorerMobileSheet({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-30 bg-[#0B1119] border-t border-slate-800 rounded-t-2xl shadow-2xl transition-all duration-300 ease-out overflow-hidden flex flex-col"
+      className="fixed bottom-0 left-0 right-0 z-30 bg-[rgb(var(--zw-page))] border-t border-[rgb(var(--zw-border2))] rounded-t-2xl shadow-2xl transition-all duration-300 ease-out overflow-hidden flex flex-col"
       style={{ height: SHEET_HEIGHTS[sheetState] }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -89,7 +89,7 @@ export default function ExplorerMobileSheet({
         role="button"
         aria-label="Toggle sheet height"
       >
-        <div className="w-10 h-1 bg-slate-700 rounded-full" />
+        <div className="w-10 h-1 bg-[rgb(var(--zw-elev))] rounded-full" />
       </div>
 
       {/* ── Collapsed: search bar + AI button ─────────────────────────────── */}
@@ -97,14 +97,14 @@ export default function ExplorerMobileSheet({
         <div className="px-3 pb-3 flex items-center gap-2">
           <button
             onClick={() => setSheetState('half')}
-            className="flex-1 flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-400 min-h-[44px]"
+            className="flex-1 flex items-center gap-2 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl px-4 py-2.5 text-sm text-[rgb(var(--zw-ink2))] min-h-[44px]"
           >
             <span className="text-base">🔍</span>
             <span>Ask anything about Florida zoning...</span>
           </button>
           <button
             onClick={() => { setSheetState('half'); setActiveTab('chat') }}
-            className="w-11 h-11 bg-[#1A90FF] rounded-xl flex items-center justify-center text-slate-950 font-bold text-base min-h-[44px]"
+            className="w-11 h-11 bg-[rgb(var(--zw-brand))] rounded-xl flex items-center justify-center text-[rgb(var(--zw-ink))] font-bold text-base min-h-[44px]"
             aria-label="Open AI chat"
           >
             🤖
@@ -116,13 +116,13 @@ export default function ExplorerMobileSheet({
       {sheetState !== 'collapsed' && (
         <div className="flex flex-col flex-1 overflow-hidden">
           {/* Tab bar */}
-          <div className="shrink-0 flex border-b border-slate-800 px-3 gap-2">
+          <div className="shrink-0 flex border-b border-[rgb(var(--zw-border2))] px-3 gap-2">
             <button
               onClick={() => setActiveTab('chat')}
               className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                 activeTab === 'chat'
-                  ? 'border-[#1A90FF] text-[#1A90FF]'
-                  : 'border-transparent text-slate-400 hover:text-slate-300'
+                  ? 'border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))]'
+                  : 'border-transparent text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
               }`}
             >
               🤖 AI Chat
@@ -132,8 +132,8 @@ export default function ExplorerMobileSheet({
                 onClick={() => setActiveTab('parcel')}
                 className={`px-3 py-2.5 text-sm font-semibold transition-colors min-h-[44px] border-b-2 ${
                   activeTab === 'parcel'
-                    ? 'border-[#1A90FF] text-[#1A90FF]'
-                    : 'border-transparent text-slate-400 hover:text-slate-300'
+                    ? 'border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))]'
+                    : 'border-transparent text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
                 }`}
               >
                 🗺️ Parcel
@@ -165,7 +165,7 @@ export default function ExplorerMobileSheet({
               />
               {/* Search chips below parcel */}
               <div className="mt-4">
-                <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-2">Explore more</p>
+                <p className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Explore more</p>
                 <SearchChips
                   onSelect={text => {
                     setActiveTab('chat')

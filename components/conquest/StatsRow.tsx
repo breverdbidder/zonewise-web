@@ -14,15 +14,15 @@ function StatCard({ label, value, sub, highlight }: StatCardProps) {
           : 'border-white/10 bg-white/5'
       }`}
     >
-      <span className="text-xs font-medium uppercase tracking-widest text-slate-400">{label}</span>
+      <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">{label}</span>
       <span
         className={`text-3xl font-bold tabular-nums ${
-          highlight ? 'text-amber-400' : 'text-white'
+          highlight ? 'text-amber-400' : 'text-[rgb(var(--zw-ink))]'
         }`}
       >
         {value}
       </span>
-      {sub && <span className="text-xs text-slate-400">{sub}</span>}
+      {sub && <span className="text-xs text-[rgb(var(--zw-ink2))]">{sub}</span>}
     </div>
   )
 }

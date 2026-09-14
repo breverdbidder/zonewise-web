@@ -129,8 +129,8 @@ export function buildOutcomeReportData(params: {
   }
 }
 
-const NAVY: [number, number, number] = [30, 58, 95] // #1B2737
-const AMBER: [number, number, number] = [245, 158, 11] // #1A90FF
+const NAVY: [number, number, number] = [30, 58, 95] // rgb(var(--zw-elev))
+const AMBER: [number, number, number] = [245, 158, 11] // rgb(var(--zw-brand))
 const SLATE_900: [number, number, number] = [15, 23, 42]
 const SLATE_500: [number, number, number] = [100, 116, 139]
 

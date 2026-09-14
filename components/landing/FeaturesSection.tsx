@@ -55,9 +55,9 @@ const MARQUEE_ITEMS = [
 
 export function FeaturesSection() {
   return (
-    <section className="bg-[#0B1119] py-0 sm:py-0 overflow-hidden">
+    <section className="bg-[rgb(var(--zw-page))] py-0 sm:py-0 overflow-hidden">
       {/* Kinetic marquee band */}
-      <div className="border-y border-[#1B2737]/30 py-2 mb-16">
+      <div className="border-y border-[rgb(var(--zw-border2)/0.3)] py-2 mb-16">
         <KineticMarquee
           items={MARQUEE_ITEMS}
           speed={0.4}
@@ -70,10 +70,10 @@ export function FeaturesSection() {
 
       <div className="mx-auto max-w-7xl px-4 pb-20 sm:pb-28">
         <div className="mb-16 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[rgb(var(--zw-ink))] mb-4">
             Feasibility in one search
           </h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
+          <p className="text-[rgb(var(--zw-ink2))] max-w-xl mx-auto">
             Enter an address. Get the zoning, the envelope, the constraints and the numbers —
             before you spend a dollar on design.
           </p>
@@ -95,14 +95,14 @@ export function FeaturesSection() {
           {features.slice(4).map((f) => (
             <div
               key={f.title}
-              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[#1A90FF]/40 hover:shadow-[0_0_28px_rgba(26,144,255,0.1)]"
-              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.5)' }}
+              className="group rounded-2xl p-8 border transition-all duration-300 hover:border-[rgb(var(--zw-brand)/0.4)] hover:shadow-[0_0_28px_rgb(var(--zw-brand) / 0.1)]"
+              style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-border2) / 0.5)' }}
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B2737] transition-colors group-hover:bg-[#1A90FF]/10">
-                <f.icon className="h-5 w-5 text-[#1A90FF]" />
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[rgb(var(--zw-elev))] transition-colors group-hover:bg-[rgb(var(--zw-brand)/0.1)]">
+                <f.icon className="h-5 w-5 text-[rgb(var(--zw-brand))]" />
               </div>
-              <h3 className="text-white font-semibold text-base mb-2">{f.title}</h3>
-              <p className="text-sm text-slate-400">{f.description}</p>
+              <h3 className="text-[rgb(var(--zw-ink))] font-semibold text-base mb-2">{f.title}</h3>
+              <p className="text-sm text-[rgb(var(--zw-ink2))]">{f.description}</p>
             </div>
           ))}
         </div>

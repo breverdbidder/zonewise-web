@@ -18,18 +18,18 @@ interface Props {
 }
 
 const LAYER_ITEMS = [
-  { key: 'parcels' as const, id: 'parcels-layer', label: 'Parcels', color: '#1A90FF' },
+  { key: 'parcels' as const, id: 'parcels-layer', label: 'Parcels', color: 'rgb(var(--zw-brand))' },
   { key: 'zoning'  as const, id: 'zoning-layer',  label: 'Zoning',  color: '#3B82F6' },
   { key: 'flu'     as const, id: 'flu-layer',      label: 'FLU',     color: '#8B5CF6' },
 ]
 
 export default function LayerControls({ layers, choroplethVisible, zoningOverlayVisible, onToggleLayer, onToggleChoropleth, onToggleZoningOverlay }: Props) {
   return (
-    <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 backdrop-blur-sm">
-      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Layers</div>
+    <div className="bg-[rgb(var(--zw-page)/0.9)] border border-[rgb(var(--zw-border2))] rounded-xl p-3 backdrop-blur-sm">
+      <div className="text-[9px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Layers</div>
       <div className="space-y-1.5">
         {/* Heatmap */}
-        <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200 min-h-[44px] md:min-h-0">
+        <label className="flex items-center gap-2 text-[11px] text-[rgb(var(--zw-ink2))] cursor-pointer hover:text-[rgb(var(--zw-ink2))] min-h-[44px] md:min-h-0">
           <input
             type="checkbox"
             checked={choroplethVisible}
@@ -41,7 +41,7 @@ export default function LayerControls({ layers, choroplethVisible, zoningOverlay
         </label>
 
         {/* Zoning Overlay */}
-        <label className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200 min-h-[44px] md:min-h-0">
+        <label className="flex items-center gap-2 text-[11px] text-[rgb(var(--zw-ink2))] cursor-pointer hover:text-[rgb(var(--zw-ink2))] min-h-[44px] md:min-h-0">
           <input
             type="checkbox"
             checked={zoningOverlayVisible}
@@ -54,7 +54,7 @@ export default function LayerControls({ layers, choroplethVisible, zoningOverlay
 
         {/* BCPAO layers */}
         {LAYER_ITEMS.map(({ key, id, label, color }) => (
-          <label key={key} className="flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer hover:text-slate-200 min-h-[44px] md:min-h-0">
+          <label key={key} className="flex items-center gap-2 text-[11px] text-[rgb(var(--zw-ink2))] cursor-pointer hover:text-[rgb(var(--zw-ink2))] min-h-[44px] md:min-h-0">
             <input
               type="checkbox"
               checked={layers[key]}

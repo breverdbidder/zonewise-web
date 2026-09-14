@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-:root{--navy:#1B2737;--navy-900:#07111C;--navy-800:#0F2035;--navy-700:#162D4A;--orange:#1A90FF;--orange-dim:rgba(26,144,255,.12);--cyan:#03B3CB;--bg:#0B1119;--bg2:#0f172a;--bg3:#1e293b;--sl400:#94a3b8;--sl300:#cbd5e1;--sl200:#e2e8f0;--bid:#10B981;--review:#1A90FF;--skip:#EF4444}
+:root{--navy:#E6F0FA;--navy-900:#FFFFFF;--navy-800:#E6F0FA;--navy-700:#D7E3F1;--orange:#005EB8;--orange-dim:rgba(0,94,184,.10);--cyan:#03B3CB;--bg:#FFFFFF;--bg2:#FFFFFF;--bg3:#E6F0FA;--sl400:#0A2540;--sl300:#1a1a1a;--sl200:#1a1a1a;--bid:#10B981;--review:#005EB8;--skip:#EF4444}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sl300);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.6}
@@ -37,7 +37,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 /* Hero */
 .hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 2rem 4rem}
 .hero-inner{max-width:720px;margin:0 auto;text-align:center}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--orange-dim);border:1px solid rgba(26,144,255,.25);padding:.35rem .9rem;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--orange);margin-bottom:1.5rem;letter-spacing:.04em}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--orange-dim);border:1px solid rgba(0,94,184,.25);padding:.35rem .9rem;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--orange);margin-bottom:1.5rem;letter-spacing:.04em}
 .hero-badge::before{content:'';width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 h1{font-family:'DM Serif Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);color:#fff;line-height:1.08;margin-bottom:1rem;letter-spacing:-.02em}
@@ -68,8 +68,8 @@ h1 em{color:var(--orange);font-style:italic}
 .section-sub{text-align:center;color:var(--sl400);margin-bottom:3rem;font-size:.95rem}
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
 .feat{background:var(--bg2);border:1px solid var(--navy-700);border-radius:12px;padding:1.5rem;transition:all .3s}
-.feat:hover{border-color:rgba(26,144,255,.3);transform:translateY(-3px)}
-.feat-icon{width:40px;height:40px;background:var(--orange-dim);border:1px solid rgba(26,144,255,.2);border-radius:10px;display:grid;place-items:center;font-size:1.1rem;margin-bottom:1rem}
+.feat:hover{border-color:rgba(0,94,184,.3);transform:translateY(-3px)}
+.feat-icon{width:40px;height:40px;background:var(--orange-dim);border:1px solid rgba(0,94,184,.2);border-radius:10px;display:grid;place-items:center;font-size:1.1rem;margin-bottom:1rem}
 .feat h3{font-family:'DM Serif Display',serif;font-size:1.15rem;color:#fff;margin-bottom:.5rem}
 .feat p{font-size:.85rem;color:var(--sl400);line-height:1.6}
 

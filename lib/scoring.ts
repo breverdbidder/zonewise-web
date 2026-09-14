@@ -32,12 +32,12 @@ export function getRecommendation(
 ): ScoringResult {
   const maxBid = calculateMaxBid(justValue)
   if (maxBid === null) {
-    return { recommendation: 'UNKNOWN', color: '#6B7280', ratio: null, maxBid: null }
+    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2)))', ratio: null, maxBid: null }
   }
 
   const bid = openingBid || justValue || 0
   if (bid <= 0) {
-    return { recommendation: 'UNKNOWN', color: '#6B7280', ratio: null, maxBid }
+    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2)))', ratio: null, maxBid }
   }
 
   const ratio = Math.round((maxBid / bid) * 100)
@@ -46,7 +46,7 @@ export function getRecommendation(
     return { recommendation: 'BID', color: '#22C55E', ratio, maxBid }
   }
   if (ratio >= 60) {
-    return { recommendation: 'REVIEW', color: '#1A90FF', ratio, maxBid }
+    return { recommendation: 'REVIEW', color: 'rgb(var(--zw-brand))', ratio, maxBid }
   }
   return { recommendation: 'SKIP', color: '#EF4444', ratio, maxBid }
 }

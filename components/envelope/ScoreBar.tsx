@@ -1,5 +1,5 @@
 const GREEN = '#22c55e'
-const ORANGE = '#1A90FF'
+const ORANGE = 'rgb(var(--zw-brand))'
 const RED = '#ef4444'
 
 export interface ScoreBarProps {

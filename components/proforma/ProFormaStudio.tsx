@@ -63,8 +63,8 @@ function isScenarioComplete(f: ScenarioForm): boolean {
 }
 
 const inputCls =
-  'bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 w-full'
-const labelCls = 'block text-xs text-slate-400 mb-1'
+  'bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm text-[rgb(var(--zw-ink2))] placeholder-[rgb(var(--zw-ink2))] focus:outline-none focus:ring-2 focus:ring-blue-600 w-full'
+const labelCls = 'block text-xs text-[rgb(var(--zw-ink2))] mb-1'
 
 function ScenarioFields({
   form, onChange, title,
@@ -75,8 +75,8 @@ function ScenarioFields({
 }) {
   const set = <K extends keyof ScenarioForm>(k: K, v: ScenarioForm[K]) => onChange({ ...form, [k]: v })
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
-      <h3 className="text-sm font-semibold text-slate-200">{title}</h3>
+    <div className="bg-[rgb(var(--zw-page)/0.6)] border border-[rgb(var(--zw-border2))] rounded-xl p-4 space-y-3">
+      <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))]">{title}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
           <label className={labelCls}>Scenario Name</label>
@@ -217,17 +217,17 @@ export default function ProFormaStudio() {
   }, [report])
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <header className="border-b border-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink2))]">
+      <header className="border-b border-[rgb(var(--zw-border2))] px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-w-7xl mx-auto">
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-white tracking-tight flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-orange-400" />
+            <h1 className="text-lg font-semibold text-[rgb(var(--zw-ink))] tracking-tight flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-[rgb(var(--zw-brand))]" />
               Pro Forma Studio
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">ZoneWise.AI — development financial modeling &amp; outcome reports</p>
+            <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">ZoneWise.AI — development financial modeling &amp; outcome reports</p>
           </div>
-          <label className="flex items-center gap-2 text-xs text-slate-400">
+          <label className="flex items-center gap-2 text-xs text-[rgb(var(--zw-ink2))]">
             <input type="checkbox" checked={compareEnabled} onChange={(e) => setCompareEnabled(e.target.checked)} className="accent-orange-500" />
             Compare against a baseline scenario
           </label>
@@ -240,18 +240,18 @@ export default function ProFormaStudio() {
           {compareEnabled && <ScenarioFields form={baseline} onChange={setBaseline} title="Baseline Scenario (e.g. as-of-right)" />}
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center gap-3">
-          <label className="inline-flex items-center gap-2 text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 cursor-pointer">
+        <div className="bg-[rgb(var(--zw-page)/0.6)] border border-[rgb(var(--zw-border2))] rounded-xl p-4 flex flex-wrap items-center gap-3">
+          <label className="inline-flex items-center gap-2 text-sm text-[rgb(var(--zw-ink2))] bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 cursor-pointer">
             <ImageIcon className="h-4 w-4" />
             {snapshotName ? snapshotName : 'Attach Massing Render (PNG)'}
             <input type="file" accept="image/png" className="hidden" onChange={(e) => handleSnapshotUpload(e.target.files?.[0])} />
           </label>
           {snapshotDataUrl && (
-            <button onClick={() => { setSnapshotDataUrl(undefined); setSnapshotName(undefined) }} className="text-slate-500 hover:text-slate-300">
+            <button onClick={() => { setSnapshotDataUrl(undefined); setSnapshotName(undefined) }} className="text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]">
               <X className="h-4 w-4" />
             </button>
           )}
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">
             Download a render from the 3D Massing Studio, then attach it here to include in the outcome report.
           </span>
         </div>
@@ -259,7 +259,7 @@ export default function ProFormaStudio() {
         <button
           onClick={handleCalculate}
           disabled={!canCalculate || loading}
-          className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-semibold rounded px-4 py-2 text-sm"
+          className="inline-flex items-center gap-2 bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand))] disabled:opacity-40 disabled:cursor-not-allowed text-[rgb(var(--zw-ink))] font-semibold rounded px-4 py-2 text-sm"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Calculator className="h-4 w-4" />}
           Calculate Pro Forma
@@ -271,13 +271,13 @@ export default function ProFormaStudio() {
 
         {report && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-white">Outcome Report</h2>
+                <h2 className="text-base font-semibold text-[rgb(var(--zw-ink))]">Outcome Report</h2>
                 <button
                   onClick={() => gate.requireGate(handleDownloadPdf, 'proforma_pdf_export', 'Enter your email to download the full Pro Forma PDF.')}
                   disabled={exportingPdf}
-                  className="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium text-slate-200 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 bg-[rgb(var(--zw-card))] hover:bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-border2))] rounded px-3 py-1.5 text-sm font-medium text-[rgb(var(--zw-ink2))] disabled:opacity-50"
                 >
                   {exportingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
                   Download PDF
@@ -286,10 +286,10 @@ export default function ProFormaStudio() {
 
               <div className={`grid gap-4 mb-6 ${report.headline.length > 3 ? 'grid-cols-2 sm:grid-cols-5' : 'grid-cols-3'}`}>
                 {report.headline.map((stat) => (
-                  <div key={stat.label} className="bg-slate-950 border border-slate-800 rounded-lg p-3">
-                    <div className="text-xl font-bold text-orange-400">{stat.value}</div>
-                    <div className="text-xs text-slate-400 mt-1">{stat.label}</div>
-                    {stat.sublabel && <div className="text-[11px] text-slate-500 mt-0.5">{stat.sublabel}</div>}
+                  <div key={stat.label} className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-3">
+                    <div className="text-xl font-bold text-[rgb(var(--zw-brand))]">{stat.value}</div>
+                    <div className="text-xs text-[rgb(var(--zw-ink2))] mt-1">{stat.label}</div>
+                    {stat.sublabel && <div className="text-[11px] text-[rgb(var(--zw-ink2))] mt-0.5">{stat.sublabel}</div>}
                   </div>
                 ))}
               </div>
@@ -298,10 +298,10 @@ export default function ProFormaStudio() {
                 <>
                   {report.comparison && (
                     <div className="mb-6 overflow-x-auto">
-                      <h3 className="text-sm font-semibold text-slate-200 mb-2">Baseline vs Optimized</h3>
+                      <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-2">Baseline vs Optimized</h3>
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="text-left text-slate-500 border-b border-slate-800">
+                          <tr className="text-left text-[rgb(var(--zw-ink2))] border-b border-[rgb(var(--zw-border2))]">
                             <th className="py-1.5 font-medium">Metric</th>
                             <th className="py-1.5 font-medium">Baseline</th>
                             <th className="py-1.5 font-medium">Optimized</th>
@@ -310,11 +310,11 @@ export default function ProFormaStudio() {
                         </thead>
                         <tbody>
                           {report.comparison.map((row) => (
-                            <tr key={row.label} className="border-b border-slate-800/50">
-                              <td className="py-1.5 text-slate-300">{row.label}</td>
-                              <td className="py-1.5 text-slate-400">{row.baseline}</td>
-                              <td className="py-1.5 text-slate-200">{row.optimized}</td>
-                              <td className="py-1.5 text-orange-400">{row.delta}</td>
+                            <tr key={row.label} className="border-b border-[rgb(var(--zw-border2)/0.5)]">
+                              <td className="py-1.5 text-[rgb(var(--zw-ink2))]">{row.label}</td>
+                              <td className="py-1.5 text-[rgb(var(--zw-ink2))]">{row.baseline}</td>
+                              <td className="py-1.5 text-[rgb(var(--zw-ink2))]">{row.optimized}</td>
+                              <td className="py-1.5 text-[rgb(var(--zw-brand))]">{row.delta}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -323,26 +323,26 @@ export default function ProFormaStudio() {
                   )}
 
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-200 mb-2">Formula Transparency</h3>
+                    <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-2">Formula Transparency</h3>
                     <div className="space-y-2">
                       {report.formulaLines.map((line) => (
-                        <div key={line.label} className="border-b border-slate-800/50 pb-2">
+                        <div key={line.label} className="border-b border-[rgb(var(--zw-border2)/0.5)] pb-2">
                           <div className="flex justify-between text-sm">
-                            <span className="text-slate-300">{line.label}</span>
-                            <span className="text-slate-100 font-mono">{line.result.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                            <span className="text-[rgb(var(--zw-ink2))]">{line.label}</span>
+                            <span className="text-[rgb(var(--zw-ink))] font-mono">{line.result.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
                           </div>
-                          <div className="text-xs text-slate-500 font-mono">= {line.formula}</div>
-                          {line.note && <div className="text-xs text-slate-600 italic mt-0.5">{line.note}</div>}
+                          <div className="text-xs text-[rgb(var(--zw-ink2))] font-mono">= {line.formula}</div>
+                          {line.note && <div className="text-xs text-[rgb(var(--zw-ink2))] italic mt-0.5">{line.note}</div>}
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs text-slate-500 italic mt-4 border-t border-slate-800 pt-3">{report.assumptionsNote}</p>
+                    <p className="text-xs text-[rgb(var(--zw-ink2))] italic mt-4 border-t border-[rgb(var(--zw-border2))] pt-3">{report.assumptionsNote}</p>
                   </div>
                 </>
               ) : (
-                <div className="border-t border-slate-800 pt-4">
-                  <h3 className="text-sm font-semibold text-slate-200 mb-1">Formula Transparency — locked</h3>
-                  <p className="text-xs text-slate-500 mb-3">
+                <div className="border-t border-[rgb(var(--zw-border2))] pt-4">
+                  <h3 className="text-sm font-semibold text-[rgb(var(--zw-ink2))] mb-1">Formula Transparency — locked</h3>
+                  <p className="text-xs text-[rgb(var(--zw-ink2))] mb-3">
                     See the full per-line formula breakdown{report.comparison ? ' and baseline comparison' : ''} — enter your email to unlock.
                   </p>
                   <EmailGateInline

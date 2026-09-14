@@ -78,20 +78,20 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backdropFilter: 'blur(6px)', background: 'rgba(11,17,25,0.80)' }}
+      style={{ backdropFilter: 'blur(6px)', background: 'rgb(var(--zw-page) / 0.80)' }}
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm mx-4 bg-[#0f1929] border border-slate-700 rounded-2xl p-6 shadow-2xl"
+        className="relative w-full max-w-sm mx-4 bg-[#0f1929] border border-[rgb(var(--zw-border2))] rounded-2xl p-6 shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-[#1A90FF]/10 border border-[#1A90FF]/30 flex items-center justify-center">
-            <Lock className="w-6 h-6 text-[#1A90FF]" />
+          <div className="w-14 h-14 rounded-full bg-[rgb(var(--zw-brand)/0.1)] border border-[rgb(var(--zw-brand)/0.3)] flex items-center justify-center">
+            <Lock className="w-6 h-6 text-[rgb(var(--zw-brand))]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Daily limit reached</h2>
-            <p className="text-sm text-slate-400 mt-1">
+            <h2 className="text-lg font-bold text-[rgb(var(--zw-ink))]">Daily limit reached</h2>
+            <p className="text-sm text-[rgb(var(--zw-ink2))] mt-1">
               You&apos;ve used your {FREE_LIMIT} free address lookups for today.
               Upgrade for unlimited access.
             </p>
@@ -99,13 +99,13 @@ function PaywallModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={handleSubscribe}
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-[#1A90FF] hover:bg-[#1A90FF]/80 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+            className="w-full py-3 rounded-xl bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.8)] text-white font-semibold text-sm transition-colors disabled:opacity-60"
           >
             {loading ? 'Redirecting…' : 'Upgrade to Pro — $15/month'}
           </button>
           <button
             onClick={onClose}
-            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            className="text-xs text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))] transition-colors"
           >
             Maybe later
           </button>
@@ -194,8 +194,8 @@ function ContextCard({
   if (!parcel && !zoning) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-4">
-        <div className="w-14 h-14 rounded-full bg-[#1B2737]/20 flex items-center justify-center">
-          <Building2 className="w-7 h-7 text-[#1B2737]" />
+        <div className="w-14 h-14 rounded-full bg-[rgb(var(--zw-elev)/0.2)] flex items-center justify-center">
+          <Building2 className="w-7 h-7 text-[rgb(var(--zw-ink2))]" />
         </div>
         <div>
           <p className="text-sm font-medium text-gray-600 dark:text-slate-300">No parcel selected</p>
@@ -220,7 +220,7 @@ function ContextCard({
       {parcel && (
         <div className="space-y-1">
           <div className="flex items-start gap-2">
-            <MapPin className="w-4 h-4 text-[#1A90FF] shrink-0 mt-0.5" />
+            <MapPin className="w-4 h-4 text-[rgb(var(--zw-brand))] shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">{parcel.address}</p>
               {parcel.city && <p className="text-xs text-gray-500 dark:text-slate-400">{parcel.city}, FL</p>}
@@ -241,7 +241,7 @@ function ContextCard({
       {zoning && (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-md bg-[#1B2737] text-white text-xs font-bold font-mono">
+            <span className="px-2.5 py-1 rounded-md bg-[rgb(var(--zw-brand))] text-white text-xs font-bold font-mono">
               {zoning.zone_code}
             </span>
             <span className="text-xs text-gray-600 dark:text-slate-300 leading-tight">{zoning.zone_name}</span>
@@ -295,7 +295,7 @@ function ContextCard({
               <ul className="space-y-1">
                 {displayedUses.map((u, i) => (
                   <li key={i} className="text-xs text-gray-500 dark:text-slate-400 flex items-start gap-1.5">
-                    <span className="text-[#1A90FF] shrink-0 mt-0.5">·</span>
+                    <span className="text-[rgb(var(--zw-brand))] shrink-0 mt-0.5">·</span>
                     {u.use_description}
                   </li>
                 ))}
@@ -303,7 +303,7 @@ function ContextCard({
               {uses.length > 10 && (
                 <button
                   onClick={() => setShowAllUses(!showAllUses)}
-                  className="mt-1.5 text-xs text-[#1A90FF] hover:underline flex items-center gap-1"
+                  className="mt-1.5 text-xs text-[rgb(var(--zw-brand))] hover:underline flex items-center gap-1"
                 >
                   {showAllUses ? <><ChevronUp className="w-3 h-3" /> Show less</> : <><ChevronDown className="w-3 h-3" /> +{uses.length - 10} more</>}
                 </button>
@@ -317,7 +317,7 @@ function ContextCard({
               {onViewPropertyDetails && (
                 <button
                   onClick={() => onViewPropertyDetails(parcel.parcel_id)}
-                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#1A90FF] hover:bg-[#1A90FF]/80 text-white text-xs font-semibold transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.8)] text-white text-xs font-semibold transition-colors"
                 >
                   <Building2 className="w-3.5 h-3.5" />
                   View Property Details
@@ -325,14 +325,14 @@ function ContextCard({
               )}
               <a
                 href={`/report?parcel=${encodeURIComponent(parcel.parcel_id)}`}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-[#1A90FF] text-[#1A90FF] hover:bg-[#1A90FF]/10 text-xs font-semibold transition-colors"
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.1)] text-xs font-semibold transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View Full Zoning Report
               </a>
               <a
                 href={`/massing?address=${encodeURIComponent(parcel.address)}`}
-                className="flex items-center gap-1.5 text-xs text-[#1A90FF] hover:text-[#1A90FF]/80 transition-colors"
+                className="flex items-center gap-1.5 text-xs text-[rgb(var(--zw-brand))] hover:text-[rgb(var(--zw-brand)/0.8)] transition-colors"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View 3D Massing Model
@@ -362,7 +362,7 @@ const MARKDOWN_COMPONENTS = {
   ul: (props: any) => <ul className="space-y-0.5 my-1 list-disc list-inside ml-3" {...props} />,
   ol: (props: any) => <ol className="space-y-0.5 my-1 list-decimal list-inside ml-3" {...props} />,
   li: (props: any) => <li {...props} />,
-  a: (props: any) => <a className="text-[#1A90FF] underline hover:text-[#1A90FF]/80" target="_blank" rel="noopener noreferrer" {...props} />,
+  a: (props: any) => <a className="text-[rgb(var(--zw-brand))] underline hover:text-[rgb(var(--zw-brand)/0.8)]" target="_blank" rel="noopener noreferrer" {...props} />,
 }
 
 function AssistantMarkdownText() {
@@ -433,14 +433,14 @@ function FeedbackButtons({
         <button
           onClick={() => onThumbsUp(messageId)}
           title="Good response"
-          className="flex items-center gap-1 px-2 py-1 rounded border border-[#1B2737]/40 text-[#1B2737] dark:text-slate-400 dark:border-slate-600 hover:bg-[#1B2737]/10 transition-colors text-xs"
+          className="flex items-center gap-1 px-2 py-1 rounded border border-[rgb(var(--zw-border2)/0.4)] text-[rgb(var(--zw-ink2))] dark:text-slate-400 dark:border-slate-600 hover:bg-[rgb(var(--zw-elev)/0.1)] transition-colors text-xs"
         >
           <ThumbsUp className="w-3 h-3" />
         </button>
         <button
           onClick={() => onThumbsDown(messageId)}
           title="Bad response"
-          className="flex items-center gap-1 px-2 py-1 rounded border border-[#1B2737]/40 text-[#1B2737] dark:text-slate-400 dark:border-slate-600 hover:bg-[#1B2737]/10 transition-colors text-xs"
+          className="flex items-center gap-1 px-2 py-1 rounded border border-[rgb(var(--zw-border2)/0.4)] text-[rgb(var(--zw-ink2))] dark:text-slate-400 dark:border-slate-600 hover:bg-[rgb(var(--zw-elev)/0.1)] transition-colors text-xs"
         >
           <ThumbsDown className="w-3 h-3" />
         </button>
@@ -454,12 +454,12 @@ function FeedbackButtons({
             onChange={e => onTextChange(messageId, e.target.value)}
             placeholder="What went wrong? (optional)"
             maxLength={200}
-            className="flex-1 text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none focus:border-[#1B2737]/60"
+            className="flex-1 text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none focus:border-[rgb(var(--zw-border2)/0.6)]"
             autoFocus
           />
           <button
             onClick={() => onSubmitNegative(messageId)}
-            className="shrink-0 px-2.5 py-1.5 rounded bg-[#1B2737] text-white text-xs hover:bg-[#1B2737]/80 transition-colors"
+            className="shrink-0 px-2.5 py-1.5 rounded bg-[rgb(var(--zw-brand))] text-white text-xs hover:bg-[rgb(var(--zw-brand))]/80 transition-colors"
           >
             Send
           </button>
@@ -493,7 +493,7 @@ function AssistantMessage() {
               <span
                 key={i}
                 title={c.detail}
-                className="text-xs px-2 py-0.5 rounded-full bg-[#1B2737]/60 text-gray-600 dark:text-slate-300 border border-[#1B2737]/40 cursor-default"
+                className="text-xs px-2 py-0.5 rounded-full bg-[rgb(var(--zw-elev)/0.6)] text-gray-600 dark:text-slate-300 border border-[rgb(var(--zw-border2)/0.4)] cursor-default"
               >
                 📋 {c.source}
               </span>
@@ -506,14 +506,14 @@ function AssistantMessage() {
           <div className="px-1 flex flex-wrap gap-1.5">
             <button
               onClick={() => onViewPropertyDetails(custom.parcel!.parcel_id)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1A90FF] hover:bg-[#1A90FF]/80 text-white text-xs font-semibold transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.8)] text-white text-xs font-semibold transition-colors"
             >
               <Building2 className="w-3.5 h-3.5" />
               View Property Details
             </button>
             <a
               href={`/report?parcel=${encodeURIComponent(custom.parcel.parcel_id)}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1A90FF] text-[#1A90FF] hover:bg-[#1A90FF]/10 text-xs font-semibold transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.1)] text-xs font-semibold transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Full Zoning Report
@@ -538,7 +538,7 @@ function UserMessage() {
   return (
     <div className="flex justify-end">
       <div className="max-w-[80%] space-y-1">
-        <MessagePrimitive.Root className="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words bg-[#1A90FF] text-white rounded-tr-sm">
+        <MessagePrimitive.Root className="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words bg-[rgb(var(--zw-brand))] text-white rounded-tr-sm">
           <MessagePrimitive.Parts components={{ Text: UserPlainText }} />
         </MessagePrimitive.Root>
       </div>
@@ -738,8 +738,8 @@ export default function ZoningChatbot() {
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
               <div>
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1B2737] to-[#1B2737]/60 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-[#1A90FF] text-2xl font-bold">Z</span>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[rgb(var(--zw-elev))] to-[rgb(var(--zw-elev)/0.6)] flex items-center justify-center mx-auto mb-4">
+                  <span className="text-[rgb(var(--zw-brand))] text-2xl font-bold">Z</span>
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">ZoneWise AI</h2>
                 <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Florida zoning intelligence for Brevard County</p>
@@ -750,7 +750,7 @@ export default function ZoningChatbot() {
                   <button
                     key={prompt}
                     onClick={() => sendMessage(prompt)}
-                    className="text-left text-xs px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100/60 dark:bg-slate-800/60 text-gray-600 dark:text-slate-300 hover:border-[#1A90FF]/40 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="text-left text-xs px-3 py-2.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100/60 dark:bg-slate-800/60 text-gray-600 dark:text-slate-300 hover:border-[rgb(var(--zw-brand)/0.4)] hover:text-gray-900 dark:hover:text-[rgb(var(--zw-ink))] transition-colors"
                   >
                     {prompt}
                   </button>
@@ -780,9 +780,9 @@ export default function ZoningChatbot() {
             />
             <ComposerPrimitive.Send
               aria-label="Send message"
-              className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1A90FF] hover:bg-[#1A90FF]/80"
+              className="shrink-0 w-11 h-11 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand)/0.8)]"
             >
-              <Send className="w-4 h-4 text-white" />
+              <Send className="w-4 h-4 text-[rgb(var(--zw-ink))]" />
             </ComposerPrimitive.Send>
           </ComposerPrimitive.Root>
           <p className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 text-center">
@@ -797,7 +797,7 @@ export default function ZoningChatbot() {
           <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Parcel Context</span>
           <button
             onClick={() => setContextPanelOpen(!contextPanelOpen)}
-            className="text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300"
+            className="text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-[rgb(var(--zw-ink2))]"
           >
             {contextPanelOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -818,7 +818,7 @@ export default function ZoningChatbot() {
         <div className="lg:hidden fixed bottom-20 right-4 z-10">
           <button
             onClick={() => setContextPanelOpen(!contextPanelOpen)}
-            className="px-3 py-2 rounded-xl bg-[#1B2737] text-white text-xs font-medium shadow-lg flex items-center gap-1.5"
+            className="px-3 py-2 rounded-xl bg-[rgb(var(--zw-brand))] text-white text-xs font-medium shadow-lg flex items-center gap-1.5"
           >
             <Building2 className="w-3.5 h-3.5" />
             {contextZoning?.zone_code ?? 'Zone Info'}
@@ -840,7 +840,7 @@ export default function ZoningChatbot() {
       {propertyCardLoading && (
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-          style={{ backdropFilter: 'blur(6px)', background: 'rgba(11,17,25,0.75)' }}
+          style={{ backdropFilter: 'blur(6px)', background: 'rgb(var(--zw-page) / 0.75)' }}
         >
           <div className="w-full sm:w-[560px] max-h-[85dvh] bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-t-2xl sm:rounded-2xl p-6 space-y-4 animate-pulse">
             <div className="h-44 bg-gray-100 dark:bg-slate-800 rounded-xl" />

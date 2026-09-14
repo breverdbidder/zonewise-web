@@ -4,8 +4,8 @@ import { useEffect, useRef, useMemo } from 'react'
 import * as THREE from 'three'
 import { computeEnvelope } from '@/lib/development-analysis/hbu-engine'
 
-const SLATE = '#0B1119'
-const ORANGE = '#1A90FF'
+const SLATE = 'rgb(var(--zw-page))'
+const ORANGE = 'rgb(var(--zw-brand))'
 
 export interface Envelope3DProps {
   lotW: number

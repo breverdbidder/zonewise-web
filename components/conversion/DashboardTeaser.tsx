@@ -75,7 +75,7 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
                 width: '10px',
                 height: '10px',
                 borderRadius: '50%',
-                background: i < filledDots ? '#1A90FF' : 'rgba(255,255,255,0.2)',
+                background: i < filledDots ? 'rgb(var(--zw-brand))' : 'rgba(255,255,255,0.2)',
                 transition: 'background 0.2s',
               }}
             />
@@ -87,8 +87,8 @@ export default function DashboardTeaser({ onCTAClick }: DashboardTeaserProps) {
           onClick={onCTAClick}
           className="w-full font-semibold rounded-lg py-3 text-sm"
           style={{
-            background: '#1A90FF',
-            color: '#0B1119',
+            background: 'rgb(var(--zw-brand))',
+            color: 'rgb(var(--zw-brand-ink)))',
             border: 'none',
             cursor: 'pointer',
             transition: 'opacity 0.15s',

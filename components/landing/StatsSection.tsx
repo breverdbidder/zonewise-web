@@ -44,15 +44,15 @@ export function StatsSection() {
   ]
 
   return (
-    <section className="border-y border-slate-800 bg-slate-900/30 py-16">
+    <section className="border-y border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.3)] py-16">
       <div className="mx-auto max-w-5xl px-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {items.map((s) => (
             <div key={s.label}>
-              <div className="font-mono text-3xl sm:text-4xl font-bold tabular-nums text-[#1A90FF] mb-1">
+              <div className="font-mono text-3xl sm:text-4xl font-bold tabular-nums text-[rgb(var(--zw-brand))] mb-1">
                 {s.value}
               </div>
-              <div className="text-sm text-slate-400">{s.label}</div>
+              <div className="text-sm text-[rgb(var(--zw-ink2))]">{s.label}</div>
             </div>
           ))}
         </div>

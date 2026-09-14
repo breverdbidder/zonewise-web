@@ -41,7 +41,7 @@ export default function ZoningDisclaimer() {
         'w-full px-4 py-2 text-xs text-center',
         isCritical
           ? 'bg-amber-950/60 border-t border-amber-800/50 text-amber-300'
-          : 'bg-slate-900/80 border-t border-slate-800 text-slate-500',
+          : 'bg-[rgb(var(--zw-page)/0.8)] border-t border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))]',
       ].join(' ')}
     >
       <span>

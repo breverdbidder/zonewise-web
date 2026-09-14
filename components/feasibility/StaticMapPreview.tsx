@@ -59,7 +59,7 @@ export default function StaticMapPreview({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-slate-900 ${className}`}
+      className={`relative overflow-hidden rounded-xl bg-[rgb(var(--zw-page))] ${className}`}
       style={{ minHeight: 120, ...style }}
     >
       {src && !failed ? (
@@ -75,7 +75,7 @@ export default function StaticMapPreview({
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-slate-400 text-xs">
+          <span className="text-[rgb(var(--zw-ink2))] text-xs">
             {token ? 'Map preview unavailable' : 'Mapbox token not configured'}
           </span>
         </div>

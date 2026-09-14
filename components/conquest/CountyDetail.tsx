@@ -22,34 +22,34 @@ function ConqueredView({ detail }: CountyDetailProps) {
       {/* Hero stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Coverage</span>
+          <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Coverage</span>
           <span className="text-3xl font-bold text-emerald-400">100%</span>
-          <span className="text-xs text-slate-400">Fully conquered</span>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">Fully conquered</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Zoned Parcels</span>
-          <span className="text-3xl font-bold text-white tabular-nums">
+          <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Zoned Parcels</span>
+          <span className="text-3xl font-bold text-[rgb(var(--zw-ink))] tabular-nums">
             {county.zoned_parcels.toLocaleString()}
           </span>
-          <span className="text-xs text-slate-400">zoning_assignments</span>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">zoning_assignments</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Jurisdictions</span>
-          <span className="text-3xl font-bold text-white tabular-nums">{jurisdictions.length || 17}</span>
-          <span className="text-xs text-slate-400">municipalities</span>
+          <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Jurisdictions</span>
+          <span className="text-3xl font-bold text-[rgb(var(--zw-ink))] tabular-nums">{jurisdictions.length || 17}</span>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">municipalities</span>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-1">
-          <span className="text-xs font-medium uppercase tracking-widest text-slate-400">Last Run</span>
-          <span className="text-lg font-bold text-white">{county.last_run ?? '—'}</span>
-          <span className="text-xs text-slate-400">pipeline date</span>
+          <span className="text-xs font-medium uppercase tracking-widest text-[rgb(var(--zw-ink2))]">Last Run</span>
+          <span className="text-lg font-bold text-[rgb(var(--zw-ink))]">{county.last_run ?? '—'}</span>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">pipeline date</span>
         </div>
       </div>
 
       {/* Jurisdiction table */}
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-semibold text-white">Jurisdiction Breakdown</h2>
-          <span className="text-xs text-slate-400">{jurisdictions.length} jurisdictions</span>
+          <h2 className="font-semibold text-[rgb(var(--zw-ink))]">Jurisdiction Breakdown</h2>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">{jurisdictions.length} jurisdictions</span>
         </div>
         <JurisdictionTable jurisdictions={jurisdictions} totalZoned={totalZoned} />
       </div>
@@ -67,8 +67,8 @@ function PendingView({ detail }: CountyDetailProps) {
         <span className="text-3xl">🏔️</span>
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-bold text-white">Ready to Conquer</h2>
-        <p className="text-slate-400 max-w-md">
+        <h2 className="text-2xl font-bold text-[rgb(var(--zw-ink))]">Ready to Conquer</h2>
+        <p className="text-[rgb(var(--zw-ink2))] max-w-md">
           {county.name} County has ~{(county.total_parcels / 1000).toFixed(0)}K parcels waiting to be
           zoned. Run the pipeline to start conquering.
         </p>
@@ -85,16 +85,16 @@ function PendingView({ detail }: CountyDetailProps) {
       {/* County stats */}
       <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-          <div className="text-2xl font-bold text-white tabular-nums">
+          <div className="text-2xl font-bold text-[rgb(var(--zw-ink))] tabular-nums">
             ~{(county.total_parcels / 1000).toFixed(0)}K
           </div>
-          <div className="text-xs text-slate-400 mt-1">Est. Parcels</div>
+          <div className="text-xs text-[rgb(var(--zw-ink2))] mt-1">Est. Parcels</div>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-          <div className="text-2xl font-bold text-white">
+          <div className="text-2xl font-bold text-[rgb(var(--zw-ink))]">
             {REGION_LABELS[county.region]}
           </div>
-          <div className="text-xs text-slate-400 mt-1">Region</div>
+          <div className="text-xs text-[rgb(var(--zw-ink2))] mt-1">Region</div>
         </div>
       </div>
     </div>
@@ -111,21 +111,21 @@ export default function CountyDetailComponent({ detail }: CountyDetailProps) {
       <div className="flex items-center gap-4">
         <Link
           href="/conquest"
-          className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-1.5"
+          className="text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] transition-colors text-sm flex items-center gap-1.5"
         >
           ← Back
         </Link>
-        <span className="text-slate-700">/</span>
-        <span className="text-slate-400 text-sm">Conquest</span>
-        <span className="text-slate-700">/</span>
-        <span className="text-white text-sm font-medium">{county.name}</span>
+        <span className="text-[rgb(var(--zw-ink))]">/</span>
+        <span className="text-[rgb(var(--zw-ink2))] text-sm">Conquest</span>
+        <span className="text-[rgb(var(--zw-ink))]">/</span>
+        <span className="text-[rgb(var(--zw-ink))] text-sm font-medium">{county.name}</span>
       </div>
 
       {/* County title */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-white">{county.name} County</h1>
-          <p className="text-slate-400 mt-1">
+          <h1 className="text-4xl font-bold text-[rgb(var(--zw-ink))]">{county.name} County</h1>
+          <p className="text-[rgb(var(--zw-ink2))] mt-1">
             DOR #{String(county.dor_number).padStart(2, '0')} · FIPS {county.fips} ·{' '}
             {REGION_LABELS[county.region]} Florida
           </p>
@@ -135,7 +135,7 @@ export default function CountyDetailComponent({ detail }: CountyDetailProps) {
             ✓ CONQUERED
           </span>
         ) : (
-          <span className="px-4 py-2 rounded-xl bg-slate-800 text-slate-400 border border-white/10 font-bold text-sm">
+          <span className="px-4 py-2 rounded-xl bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] border border-white/10 font-bold text-sm">
             PENDING
           </span>
         )}

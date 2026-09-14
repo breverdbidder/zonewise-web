@@ -57,12 +57,12 @@ export default function FeasibilityLayout({
         {/* Logo */}
         <div className="flex items-center gap-2 mr-2 sm:mr-9 shrink-0">
           <div
-            className="w-7 h-7 rounded-md flex items-center justify-center text-sm font-extrabold text-white"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-sm font-extrabold text-[rgb(var(--zw-ink))]"
             style={{ background: `linear-gradient(135deg, ${COLORS.brand}, ${COLORS.accent})` }}
           >
             Z
           </div>
-          <span className="hidden sm:inline font-bold text-[17px] text-white" style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: '-0.5px' }}>
+          <span className="hidden sm:inline font-bold text-[17px] text-[rgb(var(--zw-ink))]" style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: '-0.5px' }}>
             ZoneWise<span style={{ color: COLORS.accent }}>.AI</span>
           </span>
         </div>
@@ -94,16 +94,16 @@ export default function FeasibilityLayout({
           className="hidden sm:flex items-center gap-2 bg-white/[0.1] px-3.5 py-1.5 rounded-lg cursor-pointer hover:bg-white/[0.16] transition-colors border-none shrink-0"
         >
           <span className="text-xs opacity-90">💬</span>
-          <span className="text-[13px] text-white/90 italic">Ask anything about this site...</span>
+          <span className="text-[13px] text-[rgb(var(--zw-ink))]/90 italic">Ask anything about this site...</span>
         </button>
 
         {/* User */}
         <div className="ml-1 sm:ml-3 flex items-center gap-2 shrink-0">
-          <span className="hidden sm:inline text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full" style={{ background: COLORS.brand }}>
+          <span className="hidden sm:inline text-[10px] font-semibold text-[rgb(var(--zw-ink))] px-2.5 py-0.5 rounded-full" style={{ background: COLORS.brand }}>
             PRO
           </span>
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-[rgb(var(--zw-ink))]"
             style={{ background: COLORS.brand }}
           >
             AS
@@ -115,18 +115,18 @@ export default function FeasibilityLayout({
       {!betaBannerDismissed && (
         <div
           className="flex items-center justify-between px-6 py-2.5 text-[12px]"
-          style={{ background: '#1A90FF1A', borderBottom: '1px solid #1A90FF33' }}
+          style={{ background: 'rgb(var(--zw-brand)/0.101961)', borderBottom: '1px solid rgb(var(--zw-brand)/0.2)' }}
         >
           <div className="flex items-center gap-2">
             <DemoDataBadge label="Beta" />
-            <span className="text-slate-700">
+            <span className="text-[rgb(var(--zw-ink))]">
               Feasibility tools are in beta. Some data uses sample values. Coverage expanding weekly.
             </span>
           </div>
           <button
             type="button"
             onClick={() => setBetaBannerDismissed(true)}
-            className="text-slate-400 hover:text-slate-600 text-[13px] cursor-pointer border-none bg-transparent px-1"
+            className="text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))] text-[13px] cursor-pointer border-none bg-transparent px-1"
             aria-label="Dismiss banner"
           >
             ✕
@@ -138,8 +138,8 @@ export default function FeasibilityLayout({
       <main className="max-w-[1200px] mx-auto px-5 py-5 pb-16">
         {/* Address header */}
         <div className="flex items-center flex-wrap gap-2.5 mb-4">
-          <h1 className="text-lg font-bold text-slate-900 m-0">{site.address}</h1>
-          <span className="text-[11px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-slate-500">
+          <h1 className="text-lg font-bold text-[rgb(var(--zw-ink))] m-0">{site.address}</h1>
+          <span className="text-[11px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md text-[rgb(var(--zw-ink2))]">
             {site.zone}
           </span>
           {site.flood !== 'X' && (

@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#020617] text-white">
+    <div className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       <LandingNavbar />
       <HeroCinematicSection />
       <StatsSection />

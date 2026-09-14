@@ -77,8 +77,8 @@ export default function ParcelDetail({ parcelId }: Props) {
             map.on('load', () => {
               // Add parcel boundary
               map.addSource('target-parcel', { type: 'geojson', data: feat })
-              map.addLayer({ id: 'target-fill', type: 'fill', source: 'target-parcel', paint: { 'fill-color': '#1A90FF', 'fill-opacity': 0.3 } })
-              map.addLayer({ id: 'target-line', type: 'line', source: 'target-parcel', paint: { 'line-color': '#1A90FF', 'line-width': 3 } })
+              map.addLayer({ id: 'target-fill', type: 'fill', source: 'target-parcel', paint: { 'fill-color': 'rgb(var(--zw-brand))', 'fill-opacity': 0.3 } })
+              map.addLayer({ id: 'target-line', type: 'line', source: 'target-parcel', paint: { 'line-color': 'rgb(var(--zw-brand))', 'line-width': 3 } })
 
               // BCPAO parcel overlay
               map.addSource('bcpao-parcels', {
@@ -105,7 +105,7 @@ export default function ParcelDetail({ parcelId }: Props) {
               }
             })
 
-            new mapboxgl.Marker({ color: '#1A90FF' }).setLngLat([cLng, cLat]).addTo(map)
+            new mapboxgl.Marker({ color: 'rgb(var(--zw-brand))' }).setLngLat([cLng, cLat]).addTo(map)
             mapRef.current = map
           }
         }
@@ -132,20 +132,20 @@ export default function ParcelDetail({ parcelId }: Props) {
   }, [parcelId])
 
   if (loading) return (
-    <div className="flex items-center justify-center h-full bg-slate-950">
+    <div className="flex items-center justify-center h-full bg-[rgb(var(--zw-page))]">
       <div className="text-center">
         <div className="text-3xl animate-spin inline-block mb-3">◐</div>
-        <p className="text-sm text-slate-400">Loading parcel {decodeURIComponent(parcelId)}...</p>
+        <p className="text-sm text-[rgb(var(--zw-ink2))]">Loading parcel {decodeURIComponent(parcelId)}...</p>
       </div>
     </div>
   )
 
   if (error || !parcel) return (
-    <div className="flex items-center justify-center h-full bg-slate-950">
+    <div className="flex items-center justify-center h-full bg-[rgb(var(--zw-page))]">
       <div className="text-center max-w-md">
         <div className="text-4xl mb-3">⚠️</div>
         <p className="text-sm text-red-400 mb-4">{error || 'Parcel not found'}</p>
-        <Link href="/explorer" className="px-4 py-2 bg-zw-orange text-slate-950 rounded-md text-sm font-bold">
+        <Link href="/explorer" className="px-4 py-2 bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-ink))] rounded-md text-sm font-bold">
           ← Back to Explorer
         </Link>
       </div>
@@ -158,15 +158,15 @@ export default function ParcelDetail({ parcelId }: Props) {
   return (
     <div className="flex h-full">
       {/* Sidebar */}
-      <div className="w-[420px] bg-slate-950 border-r border-slate-800 overflow-y-auto shrink-0 max-md:hidden">
+      <div className="w-[420px] bg-[rgb(var(--zw-page))] border-r border-[rgb(var(--zw-border2))] overflow-y-auto shrink-0 max-md:hidden">
         {/* Tab bar */}
-        <div className="flex border-b border-slate-800 px-4 gap-1 pt-3">
+        <div className="flex border-b border-[rgb(var(--zw-border2))] px-4 gap-1 pt-3">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
               activeTab === 'overview'
-                ? 'border-[#1A90FF] text-[#1A90FF]'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))]'
+                : 'border-transparent text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
             }`}
           >
             Overview
@@ -175,8 +175,8 @@ export default function ParcelDetail({ parcelId }: Props) {
             onClick={() => setActiveTab('competitor')}
             className={`px-3 py-2 text-xs font-semibold transition-colors border-b-2 ${
               activeTab === 'competitor'
-                ? 'border-[#1A90FF] text-[#1A90FF]'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
+                ? 'border-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand))]'
+                : 'border-transparent text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink2))]'
             }`}
           >
             vs PropZone
@@ -193,21 +193,21 @@ export default function ParcelDetail({ parcelId }: Props) {
         {/* Overview tab */}
         {activeTab === 'overview' && (
         <div>
-        <div className="p-4 border-b border-slate-800">
-          <Link href="/explorer" className="text-xs text-zw-orange hover:underline">← Back to Explorer</Link>
+        <div className="p-4 border-b border-[rgb(var(--zw-border2))]">
+          <Link href="/explorer" className="text-xs text-[rgb(var(--zw-brand))] hover:underline">← Back to Explorer</Link>
           {coords && (
             <div className="mt-3 rounded-lg overflow-hidden" style={{ height: 160 }}>
               <MiniMap lat={coords.lat} lng={coords.lng} className="w-full h-full" />
             </div>
           )}
-          <h1 className="text-lg font-bold text-white mt-2">{addr || 'Unknown Address'}</h1>
-          <p className="text-xs text-slate-400 mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-          <p className="text-[11px] text-slate-400 font-mono mt-1">{parcel.PARCEL_ID}</p>
+          <h1 className="text-lg font-bold text-[rgb(var(--zw-ink))] mt-2">{addr || 'Unknown Address'}</h1>
+          <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
+          <p className="text-[11px] text-[rgb(var(--zw-ink2))] font-mono mt-1">{parcel.PARCEL_ID}</p>
         </div>
 
         {/* Values */}
-        <div className="p-4 border-b border-slate-800">
-          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Property Values</h3>
+        <div className="p-4 border-b border-[rgb(var(--zw-border2))]">
+          <h3 className="text-[11px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Property Values</h3>
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: 'Total Value', value: formatCurrency(totalValue) },
@@ -217,17 +217,17 @@ export default function ParcelDetail({ parcelId }: Props) {
               { label: 'Living Area', value: `${parseInt(parcel.LIV_AREA) || '—'} sqft` },
               { label: 'Lot Size', value: `${parseFloat(parcel.ACRES)?.toFixed(2) || '—'} ac` },
             ].map(s => (
-              <div key={s.label} className="bg-slate-900 border border-slate-800 rounded-md p-2.5">
-                <div className="text-[10px] text-slate-400 uppercase tracking-wider">{s.label}</div>
-                <div className="text-sm font-bold text-white font-mono mt-0.5">{s.value}</div>
+              <div key={s.label} className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-md p-2.5">
+                <div className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider">{s.label}</div>
+                <div className="text-sm font-bold text-[rgb(var(--zw-ink))] font-mono mt-0.5">{s.value}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Owner & Details */}
-        <div className="p-4 border-b border-slate-800">
-          <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Owner & Details</h3>
+        <div className="p-4 border-b border-[rgb(var(--zw-border2))]">
+          <h3 className="text-[11px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Owner & Details</h3>
           <div className="space-y-1.5 text-xs">
             {[
               ['Owner', parcel.OWNER_NAME1 || '—'],
@@ -236,21 +236,21 @@ export default function ParcelDetail({ parcelId }: Props) {
               ['Millage Code', parcel.MILLAGE_CODE || '—'],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between">
-                <span className="text-slate-400">{k}</span>
-                <span className="text-white font-medium text-right max-w-[60%]">{v}</span>
+                <span className="text-[rgb(var(--zw-ink2))]">{k}</span>
+                <span className="text-[rgb(var(--zw-ink))] font-medium text-right max-w-[60%]">{v}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Links */}
-        <div className="p-4 border-b border-slate-800 space-y-2">
+        <div className="p-4 border-b border-[rgb(var(--zw-border2))] space-y-2">
           {/* Download Report — opens printable ZoningReport page (browser print → PDF) */}
           <a
             href={`/report?parcel=${encodeURIComponent(parcel.PARCEL_ID)}&print=1`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#1B2737]/60 border border-[#1B2737] text-white rounded-md text-sm font-semibold hover:bg-[#1B2737] transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[rgb(var(--zw-brand))]/60 border border-[rgb(var(--zw-border2))] text-white rounded-md text-sm font-semibold hover:bg-[rgb(var(--zw-brand))] transition-colors"
             title="Opens printable report — use browser Print → Save as PDF"
           >
             <span>⬇</span> Download Report
@@ -260,7 +260,7 @@ export default function ParcelDetail({ parcelId }: Props) {
             📋 Full BCPAO Record
           </a>
           <Link href="/explorer"
-            className="flex items-center justify-center gap-2 w-full py-2 bg-slate-800 border border-slate-700 text-slate-300 rounded-md text-xs font-semibold hover:bg-slate-700 transition-colors">
+            className="flex items-center justify-center gap-2 w-full py-2 bg-[rgb(var(--zw-card))] border border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))] rounded-md text-xs font-semibold hover:bg-[rgb(var(--zw-elev))] transition-colors">
             🗺️ Back to County Explorer
           </Link>
         </div>
@@ -268,15 +268,15 @@ export default function ParcelDetail({ parcelId }: Props) {
         {/* Nearby */}
         {nearby.length > 0 && (
           <div className="p-4">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nearby Parcels</h3>
+            <h3 className="text-[11px] font-bold text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-2">Nearby Parcels</h3>
             {nearby.map(n => {
               const nAddr = [n.STREET_NUMBER, n.STREET_NAME, n.STREET_TYPE].filter(Boolean).join(' ')
               return (
                 <Link key={n.PARCEL_ID} href={`/parcel/${encodeURIComponent(n.PARCEL_ID)}`}
-                  className="block bg-slate-900 border border-slate-800 rounded-md p-2 mb-1.5 hover:border-zw-orange/50 transition-colors">
-                  <div className="text-xs font-semibold text-white">{nAddr || n.PARCEL_ID}</div>
-                  <div className="flex gap-3 mt-0.5 text-[10px] text-slate-400">
-                    <span>Bldg: <span className="text-zw-orange font-mono">{formatCurrency(n.BLDG_VALUE)}</span></span>
+                  className="block bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-md p-2 mb-1.5 hover:border-[rgb(var(--zw-brand)/0.5)] transition-colors">
+                  <div className="text-xs font-semibold text-[rgb(var(--zw-ink))]">{nAddr || n.PARCEL_ID}</div>
+                  <div className="flex gap-3 mt-0.5 text-[10px] text-[rgb(var(--zw-ink2))]">
+                    <span>Bldg: <span className="text-[rgb(var(--zw-brand))] font-mono">{formatCurrency(n.BLDG_VALUE)}</span></span>
                     <span>{parseInt(n.LIV_AREA) || '—'} sqft</span>
                   </div>
                 </Link>

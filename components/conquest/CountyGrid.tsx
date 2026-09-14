@@ -37,8 +37,8 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="font-semibold text-sm text-white leading-tight">{county.name}</h3>
-          <span className="text-xs text-slate-400">DOR #{String(county.dor_number).padStart(2, '0')}</span>
+          <h3 className="font-semibold text-sm text-[rgb(var(--zw-ink))] leading-tight">{county.name}</h3>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">DOR #{String(county.dor_number).padStart(2, '0')}</span>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span
@@ -57,10 +57,10 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
       {/* Coverage bar */}
       <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
-          <span className="text-xs text-slate-400">Coverage</span>
+          <span className="text-xs text-[rgb(var(--zw-ink2))]">Coverage</span>
           <span
             className={`text-xs font-bold tabular-nums ${
-              isConquered ? 'text-emerald-400' : 'text-slate-400'
+              isConquered ? 'text-emerald-400' : 'text-[rgb(var(--zw-ink2))]'
             }`}
           >
             {county.coverage_pct.toFixed(0)}%
@@ -69,7 +69,7 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
         <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              isConquered ? 'bg-emerald-400' : 'bg-slate-600'
+              isConquered ? 'bg-emerald-400' : 'bg-[rgb(var(--zw-elev))]'
             }`}
             style={{ width: coverageWidth }}
           />
@@ -83,13 +83,13 @@ function CountyCard({ county }: { county: CountyConquestStatus }) {
         </div>
       )}
       {!isConquered && (
-        <div className="text-xs text-slate-600 font-mono">
+        <div className="text-xs text-[rgb(var(--zw-ink2))] font-mono">
           ~{(county.total_parcels / 1000).toFixed(0)}K parcels pending
         </div>
       )}
 
       {/* Hover arrow */}
-      <span className="absolute bottom-3 right-3 text-slate-600 group-hover:text-slate-400 transition-colors text-xs">
+      <span className="absolute bottom-3 right-3 text-[rgb(var(--zw-ink2))] group-hover:text-[rgb(var(--zw-ink2))] transition-colors text-xs">
         →
       </span>
     </Link>
@@ -161,7 +161,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
           placeholder="Search county..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-[180px] max-w-xs bg-white/5 border border-input rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-colors"
+          className="flex-1 min-w-[180px] max-w-xs bg-white/5 border border-input rounded-lg px-3 py-2 text-sm text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-colors"
         />
 
         {/* Region filter */}
@@ -172,8 +172,8 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
               onClick={() => setRegion(r)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize ${
                 region === r
-                  ? 'bg-amber-500 text-slate-900'
-                  : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-input'
+                  ? 'bg-amber-500 text-[rgb(var(--zw-ink))]'
+                  : 'bg-white/5 text-[rgb(var(--zw-ink2))] hover:bg-white/10 hover:text-[rgb(var(--zw-ink))] border border-input'
               }`}
             >
               {r === 'all' ? `All (${counties.length})` : r}
@@ -185,7 +185,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
         <select
           value={sort}
           onChange={e => setSort(e.target.value as SortKey)}
-          className="bg-white/5 border border-input rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-amber-500/50 cursor-pointer"
+          className="bg-white/5 border border-input rounded-lg px-3 py-2 text-xs text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/50 cursor-pointer"
         >
           <option value="alpha">A–Z</option>
           <option value="population">Population</option>
@@ -193,14 +193,14 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
         </select>
 
         {/* Live indicator */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 ml-auto">
+        <div className="flex items-center gap-1.5 text-xs text-[rgb(var(--zw-ink2))] ml-auto">
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Live
         </div>
       </div>
 
       {/* Results summary */}
-      <div className="text-xs text-slate-400">
+      <div className="text-xs text-[rgb(var(--zw-ink2))]">
         Showing {filtered.length} of {counties.length} counties
         {conqueredCount > 0 && (
           <span className="text-emerald-400 ml-2">
@@ -217,7 +217,7 @@ export default function CountyGrid({ initialData }: CountyGridProps) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-16 text-slate-400 text-sm">
+        <div className="text-center py-16 text-[rgb(var(--zw-ink2))] text-sm">
           No counties match your search.
         </div>
       )}

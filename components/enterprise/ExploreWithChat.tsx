@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import { DevIntelTab } from '@/components/envelope/DevIntelTab'
 import type { Parcel } from '@/lib/development-analysis/types'
 
-const NAVY = '#1B2737'
-const ORANGE = '#1A90FF'
-const SLATE = '#0B1119'
+const NAVY = 'rgb(var(--zw-elev))'
+const ORANGE = 'rgb(var(--zw-brand))'
+const SLATE = 'rgb(var(--zw-page))'
 
 interface ChatMessage {
   id: string
@@ -134,7 +134,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
         {/* Chat header */}
         <div className="h-12 px-4 flex items-center gap-2 border-b border-gray-800 shrink-0">
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: ORANGE }} />
-          <span className="text-sm font-semibold text-white">ZoneWise Chat</span>
+          <span className="text-sm font-semibold text-[rgb(var(--zw-ink))]">ZoneWise Chat</span>
           {selectedParcel && (
             <span className="ml-auto text-[10px] px-2 py-0.5 rounded truncate max-w-[140px]" style={{ background: `${NAVY}cc`, color: ORANGE }}>
               {selectedParcel.address}
@@ -151,7 +151,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
               <div className="space-y-1.5">
                 {EXAMPLE_PROMPTS.map(q => (
                   <button key={q} onClick={() => handleSend(q)}
-                    className="block w-full text-left text-[11px] text-gray-400 hover:text-white px-3 py-2 rounded-lg border border-gray-700/50 hover:border-amber-500/30 transition-colors">
+                    className="block w-full text-left text-[11px] text-gray-400 hover:text-[rgb(var(--zw-ink))] px-3 py-2 rounded-lg border border-gray-700/50 hover:border-amber-500/30 transition-colors">
                     {q}
                   </button>
                 ))}
@@ -169,7 +169,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
               <div
                 className="max-w-[90%] px-3 py-2 rounded-xl text-xs leading-relaxed"
                 style={{
-                  background: m.role === 'user' ? NAVY : '#1e293b',
+                  background: m.role === 'user' ? NAVY : 'rgb(var(--zw-card))',
                   color: '#f8fafc',
                   borderRadius: m.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                 }}
@@ -184,7 +184,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
               <div className="w-5 h-5 rounded mr-1.5 shrink-0 flex items-center justify-center" style={{ background: NAVY }}>
                 <span style={{ color: ORANGE, fontSize: 9, fontWeight: 900 }}>Z</span>
               </div>
-              <div className="px-3 py-2.5 rounded-xl" style={{ background: '#1e293b' }}>
+              <div className="px-3 py-2.5 rounded-xl" style={{ background: 'rgb(var(--zw-card))' }}>
                 <div className="flex gap-1">
                   {[0, 150, 300].map(d => (
                     <span key={d} className="w-1.5 h-1.5 rounded-full animate-bounce"
@@ -206,7 +206,7 @@ export default function ExploreWithChat({ initialParcelId }: ExploreWithChatProp
               onKeyDown={handleKeyDown}
               placeholder="Ask about a parcel or development..."
               rows={1}
-              className="flex-1 bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 resize-none focus:outline-none focus:border-amber-500/50 transition-colors"
+              className="flex-1 bg-gray-800/80 border border-gray-700 rounded-lg px-3 py-2 text-xs text-[rgb(var(--zw-ink))] placeholder-gray-500 resize-none focus:outline-none focus:border-amber-500/50 transition-colors"
             />
             <button
               onClick={() => handleSend()}

@@ -47,7 +47,7 @@ export default function HeroCTA() {
           {copy.beta_cta}
         </GlowButton>
       </span>
-      <a href="#how" className="text-zw-navy font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
+      <a href="#how" className="text-[rgb(var(--zw-ink2))] font-medium flex items-center gap-2 px-8 py-4 rounded-xl hover:bg-slate-50 transition-colors">
         See how it works
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

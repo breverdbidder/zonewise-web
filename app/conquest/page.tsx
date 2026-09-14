@@ -21,7 +21,7 @@ export default async function ConquestPage() {
   const conqueredCount = counties.filter(c => c.conquered).length
 
   return (
-    <main className="min-h-screen bg-[#020617] text-white">
+    <main className="min-h-screen bg-[rgb(var(--zw-page))] text-[rgb(var(--zw-ink))]">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-8">
         {/* Page header */}
         <div className="flex flex-col gap-2">
@@ -33,8 +33,8 @@ export default async function ConquestPage() {
               🗺️
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Conquest Dashboard</h1>
-              <p className="text-slate-400 text-sm">Florida statewide zoning coverage · 67 counties · {(totalFlParcels / 1_000_000).toFixed(1)}M parcels</p>
+              <h1 className="text-3xl font-bold text-[rgb(var(--zw-ink))]">Conquest Dashboard</h1>
+              <p className="text-[rgb(var(--zw-ink2))] text-sm">Florida statewide zoning coverage · 67 counties · {(totalFlParcels / 1_000_000).toFixed(1)}M parcels</p>
             </div>
           </div>
         </div>

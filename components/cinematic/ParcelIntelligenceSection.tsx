@@ -38,7 +38,7 @@ export function ParcelIntelligenceSection() {
         className="relative py-24 px-4"
         style={{
           background:
-            'radial-gradient(ellipse 90% 70% at 50% 30%, rgba(27,39,55,0.55) 0%, #0B1119 70%)',
+            'radial-gradient(ellipse 90% 70% at 50% 30%, rgb(var(--zw-border2) / 0.55) 0%, rgb(var(--zw-page)) 70%)',
         }}
       >
         <div className="mx-auto max-w-xl space-y-8">
@@ -46,16 +46,16 @@ export function ParcelIntelligenceSection() {
             <div
               key={b.title}
               className="rounded-2xl p-8 border"
-              style={{ background: '#0d1829', borderColor: 'rgba(27,39,55,0.5)' }}
+              style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-border2) / 0.5)' }}
             >
               <div
                 className="text-xs uppercase tracking-widest mb-3 font-medium"
-                style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
+                style={{ color: 'rgb(var(--zw-brand))', letterSpacing: '0.1em' }}
               >
                 {b.eyebrow}
               </div>
-              <h3 className="text-white font-semibold text-2xl mb-3 tracking-tight">{b.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{b.body}</p>
+              <h3 className="text-[rgb(var(--zw-ink))] font-semibold text-2xl mb-3 tracking-tight">{b.title}</h3>
+              <p className="text-sm text-[rgb(var(--zw-ink2))] leading-relaxed">{b.body}</p>
             </div>
           ))}
         </div>
@@ -64,7 +64,7 @@ export function ParcelIntelligenceSection() {
   }
 
   return (
-    <section ref={wrapperRef} className="relative h-[280vh] bg-[#0B1119]">
+    <section ref={wrapperRef} className="relative h-[280vh] bg-[rgb(var(--zw-page))]">
       <div className="sticky top-0 h-screen overflow-hidden">
         <ParcelIntelligenceCanvas scrollTriggerEl={wrapperRef.current} />
 
@@ -74,7 +74,7 @@ export function ParcelIntelligenceSection() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'radial-gradient(ellipse 90% 85% at 50% 50%, transparent 20%, rgba(11,17,25,0.55) 70%, rgba(11,17,25,0.92) 100%)',
+              'radial-gradient(ellipse 90% 85% at 50% 50%, transparent 20%, rgb(var(--zw-page) / 0.55) 70%, rgb(var(--zw-page) / 0.92) 100%)',
             zIndex: 5,
           }}
         />
@@ -83,18 +83,18 @@ export function ParcelIntelligenceSection() {
         <div className="absolute z-20 left-6 sm:left-16 top-1/3 -translate-y-1/2 max-w-md pointer-events-none">
           <div
             className="rounded-2xl p-8 border backdrop-blur-md"
-            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(26,144,255,0.2)' }}
+            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgb(var(--zw-brand) / 0.2)' }}
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
-              style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
+              style={{ color: 'rgb(var(--zw-brand))', letterSpacing: '0.1em' }}
             >
               {BEATS[0].eyebrow}
             </div>
-            <h3 className="text-white font-semibold text-2xl sm:text-3xl mb-3 tracking-tight">
+            <h3 className="text-[rgb(var(--zw-ink))] font-semibold text-2xl sm:text-3xl mb-3 tracking-tight">
               {BEATS[0].title}
             </h3>
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">{BEATS[0].body}</p>
+            <p className="text-sm sm:text-base text-[rgb(var(--zw-ink2))] leading-relaxed">{BEATS[0].body}</p>
           </div>
         </div>
 
@@ -102,18 +102,18 @@ export function ParcelIntelligenceSection() {
         <div className="absolute z-20 right-6 sm:right-16 bottom-1/4 max-w-md pointer-events-none">
           <div
             className="rounded-2xl p-8 border backdrop-blur-md"
-            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgba(26,144,255,0.2)' }}
+            style={{ background: 'rgba(13,24,41,0.72)', borderColor: 'rgb(var(--zw-brand) / 0.2)' }}
           >
             <div
               className="text-xs uppercase tracking-widest mb-3 font-medium"
-              style={{ color: '#1A90FF', letterSpacing: '0.1em' }}
+              style={{ color: 'rgb(var(--zw-brand))', letterSpacing: '0.1em' }}
             >
               {BEATS[1].eyebrow}
             </div>
-            <h3 className="text-white font-semibold text-2xl sm:text-3xl mb-3 tracking-tight">
+            <h3 className="text-[rgb(var(--zw-ink))] font-semibold text-2xl sm:text-3xl mb-3 tracking-tight">
               {BEATS[1].title}
             </h3>
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed">{BEATS[1].body}</p>
+            <p className="text-sm sm:text-base text-[rgb(var(--zw-ink2))] leading-relaxed">{BEATS[1].body}</p>
           </div>
         </div>
       </div>

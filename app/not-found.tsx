@@ -12,7 +12,7 @@ export default function NotFound() {
     <div
       style={{
         minHeight: '100vh',
-        background: '#0B1119',
+        background: 'rgb(var(--zw-page))',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -28,7 +28,7 @@ export default function NotFound() {
           style={{
             fontSize: '1rem',
             fontWeight: 700,
-            color: '#1A90FF',
+            color: 'rgb(var(--zw-brand))',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
             marginBottom: '0.5rem',
@@ -44,7 +44,7 @@ export default function NotFound() {
           fontSize: '8rem',
           fontWeight: 900,
           lineHeight: 1,
-          color: '#1B2737',
+          color: 'rgb(var(--zw-ink2)))',
           marginBottom: '1.5rem',
           letterSpacing: '-0.04em',
         }}
@@ -70,7 +70,7 @@ export default function NotFound() {
       <p
         style={{
           fontSize: '1rem',
-          color: '#94a3b8',
+          color: 'rgb(var(--zw-ink2)))',
           maxWidth: '400px',
           textAlign: 'center',
           lineHeight: 1.6,
@@ -89,8 +89,8 @@ export default function NotFound() {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '0.75rem 1.75rem',
-            background: '#1A90FF',
-            color: '#0B1119',
+            background: 'rgb(var(--zw-brand))',
+            color: 'rgb(var(--zw-brand-ink)))',
             fontWeight: 700,
             fontSize: '0.95rem',
             borderRadius: '0.5rem',
@@ -105,7 +105,7 @@ export default function NotFound() {
             display: 'inline-flex',
             alignItems: 'center',
             padding: '0.75rem 1.75rem',
-            background: '#1B2737',
+            background: 'rgb(var(--zw-elev))',
             color: '#f1f5f9',
             fontWeight: 600,
             fontSize: '0.95rem',

@@ -17,7 +17,7 @@ import { Search, Loader2, MapPin, X } from 'lucide-react'
  * Brightened + made prominent Aug 16 2026 (Ariel): thicker amber-accent
  * border with a glow so the bar reads as the primary action instead of
  * blending into the dark surface, always-white input text (was
- * text-slate-900 with a dark: variant that never reliably applied on this
+ * text-[rgb(var(--zw-ink))] with a dark: variant that never reliably applied on this
  * always-dark section), larger type, and a brighter placeholder/menu text.
  */
 
@@ -35,9 +35,9 @@ interface Result {
 
 const TRUST: Record<string, { label: string; color: string; bg: string }> = {
   verified:   { label: 'Verified',   color: '#10B981', bg: 'rgba(16,185,129,.12)' },
-  estimated:  { label: 'Estimated',  color: '#1A90FF', bg: 'rgba(26,144,255,.12)' },
-  unverified: { label: 'Unverified', color: '#94A3B8', bg: 'rgba(100,116,139,.15)' },
-  none:       { label: 'No zoning',  color: '#64748B', bg: 'rgba(100,116,139,.12)' },
+  estimated:  { label: 'Estimated',  color: 'rgb(var(--zw-brand))', bg: 'rgb(var(--zw-brand) / 12)' },
+  unverified: { label: 'Unverified', color: 'rgb(var(--zw-ink2)))', bg: 'rgba(100,116,139,.15)' },
+  none:       { label: 'No zoning',  color: 'rgb(var(--zw-ink2)))', bg: 'rgba(100,116,139,.12)' },
 }
 
 export function ParcelSearchBar({ currentAddress }: { currentAddress?: string }) {
@@ -91,21 +91,21 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
   return (
     <div ref={boxRef} className="relative w-full">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#1A90FF]" />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[rgb(var(--zw-brand))]" />
         <input
           value={q}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => results.length && setOpen(true)}
           placeholder={currentAddress ? `Analyze another address…` : 'Enter a Florida address, e.g. 1390 KANAB AVE'}
-          className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-white placeholder:text-slate-300 outline-none transition-all focus:border-[#1A90FF] focus:ring-2 focus:ring-[#1A90FF]/40"
-          style={{ background: 'rgba(15,23,42,.65)', borderColor: 'rgba(26,144,255,.55)', boxShadow: '0 0 0 1px rgba(26,144,255,.12), 0 2px 12px rgba(26,144,255,.08)' }}
+          className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] outline-none transition-all focus:border-[rgb(var(--zw-brand))] focus:ring-2 focus:ring-[rgb(var(--zw-brand)/0.4)]"
+          style={{ background: 'rgb(var(--zw-card) / 65)', borderColor: 'rgb(var(--zw-brand) / 55)', boxShadow: '0 0 0 1px rgb(var(--zw-brand) / 12), 0 2px 12px rgb(var(--zw-brand) / 08)' }}
           aria-label="Search Florida parcels by address"
         />
-        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#1A90FF]" />}
+        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[rgb(var(--zw-brand))]" />}
         {!loading && q && (
           <button onClick={() => { setQ(''); setResults([]); setOpen(false) }}
                   aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-white">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))]">
             <X className="h-4 w-4" />
           </button>
         )}
@@ -113,7 +113,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
 
       {open && (results.length > 0 || hint) && (
         <div className="absolute z-[60] mt-2 w-full overflow-hidden rounded-lg border shadow-2xl"
-             style={{ background: '#0d1829', borderColor: 'rgba(26,144,255,.35)' }}>
+             style={{ background: 'rgb(var(--zw-card))', borderColor: 'rgb(var(--zw-brand) / 35)' }}>
           {results.map((r) => {
             const t = TRUST[r.trust_level] ?? TRUST.none
             return (
@@ -123,17 +123,17 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
                 className="flex w-full items-start gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-white/5"
                 style={{ borderColor: 'rgba(30,41,59,.6)' }}
               >
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#1A90FF]" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[rgb(var(--zw-brand))]" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-white">{r.address}</span>
-                  <span className="block truncate text-xs text-slate-300">
+                  <span className="block truncate text-sm font-medium text-[rgb(var(--zw-ink))]">{r.address}</span>
+                  <span className="block truncate text-xs text-[rgb(var(--zw-ink2))]">
                     {r.city}, FL {r.zip} · {r.county} County
                     {r.just_value ? ` · $${Number(r.just_value).toLocaleString()}` : ''}
                   </span>
                 </span>
                 <span className="flex shrink-0 flex-col items-end gap-1">
                   {r.zone_code && (
-                    <span className="font-mono text-xs font-semibold text-white">{r.zone_code}</span>
+                    <span className="font-mono text-xs font-semibold text-[rgb(var(--zw-ink))]">{r.zone_code}</span>
                   )}
                   <span className="rounded px-1.5 py-0.5 font-mono text-[9.5px] font-bold"
                         style={{ color: t.color, background: t.bg }}>
@@ -143,7 +143,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
               </button>
             )
           })}
-          {hint && <div className="px-4 py-3 text-xs text-slate-300">{hint}</div>}
+          {hint && <div className="px-4 py-3 text-xs text-[rgb(var(--zw-ink2))]">{hint}</div>}
         </div>
       )}
     </div>

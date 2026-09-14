@@ -51,12 +51,12 @@ export default function SmsConsentOnboardingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0B1119', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      <div style={{ width: '100%', maxWidth: '480px', backgroundColor: '#0f172a', borderRadius: '12px', padding: '32px', border: '1px solid #1e293b' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'rgb(var(--zw-page))', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '480px', backgroundColor: 'rgb(var(--zw-page))', borderRadius: '12px', padding: '32px', border: '1px solid rgb(var(--zw-card))' }}>
         <h1 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>
           Stay in the loop
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>
+        <p style={{ color: 'rgb(var(--zw-ink2)))', fontSize: '14px', marginBottom: '24px' }}>
           Welcome{user?.firstName ? `, ${user.firstName}` : ''}. Want text alerts for matching deals?
           Totally optional — you can also do this later from account settings.
         </p>
@@ -72,7 +72,7 @@ export default function SmsConsentOnboardingPage() {
             placeholder="(555) 123-4567"
             style={{
               width: '100%', padding: '10px 12px', borderRadius: '8px',
-              border: '1px solid #334155', backgroundColor: '#1e293b',
+              border: '1px solid rgb(var(--zw-elev))', backgroundColor: 'rgb(var(--zw-card))',
               color: '#f8fafc', fontSize: '14px', marginBottom: '16px',
             }}
           />
@@ -101,8 +101,8 @@ export default function SmsConsentOnboardingPage() {
               disabled={submitting || !consent}
               style={{
                 flex: 1, padding: '10px 16px', borderRadius: '8px', border: 'none',
-                backgroundColor: consent ? '#1A90FF' : '#334155',
-                color: consent ? '#0B1119' : '#64748b',
+                backgroundColor: consent ? 'rgb(var(--zw-brand))' : 'rgb(var(--zw-elev))',
+                color: consent ? 'rgb(var(--zw-page))' : 'rgb(var(--zw-elev))',
                 fontWeight: 600, fontSize: '14px',
                 cursor: consent && !submitting ? 'pointer' : 'not-allowed',
               }}
@@ -114,8 +114,8 @@ export default function SmsConsentOnboardingPage() {
               onClick={handleSkip}
               style={{
                 padding: '10px 16px', borderRadius: '8px',
-                border: '1px solid #334155', backgroundColor: 'transparent',
-                color: '#94a3b8', fontSize: '14px', cursor: 'pointer',
+                border: '1px solid rgb(var(--zw-elev))', backgroundColor: 'transparent',
+                color: 'rgb(var(--zw-ink2)))', fontSize: '14px', cursor: 'pointer',
               }}
             >
               Skip

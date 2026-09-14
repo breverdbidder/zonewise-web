@@ -23,20 +23,20 @@ export default function BetaOverlay({
         >
           <div
             className="rounded-xl px-6 py-5 flex flex-col items-center gap-3 max-w-xs text-center shadow-xl"
-            style={{ background: '#1B2737', border: '1px solid #1A90FF4D' }}
+            style={{ background: 'rgb(var(--zw-elev))', border: '1px solid rgb(var(--zw-brand)/0.301961)' }}
           >
             <span
               className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full"
-              style={{ background: '#1A90FF1A', color: '#1A90FF', border: '1px solid #1A90FF4D' }}
+              style={{ background: 'rgb(var(--zw-brand)/0.101961)', color: 'rgb(var(--zw-brand))', border: '1px solid rgb(var(--zw-brand)/0.301961)' }}
             >
               Beta
             </span>
-            <p className="text-[13px] font-semibold text-white leading-snug m-0">{message}</p>
+            <p className="text-[13px] font-semibold text-[rgb(var(--zw-ink))] leading-snug m-0">{message}</p>
             <button
               type="button"
               onClick={() => setDismissed(true)}
               className="text-[11px] font-medium px-4 py-1.5 rounded-full transition-colors cursor-pointer border-none"
-              style={{ background: '#1A90FF', color: '#0B1119' }}
+              style={{ background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))' }}
             >
               Show data anyway
             </button>

@@ -209,7 +209,7 @@ export async function GET(
   let recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN' = 'UNKNOWN'
   let maxBid: number | null = null
   let bidRatio: number | null = null
-  let recommendationColor = '#6B7280' // gray
+  let recommendationColor = 'rgb(var(--zw-elev))' // gray
 
   if (justValue && justValue > 0) {
     maxBid = Math.round((justValue * 0.70) - 10000 - Math.min(25000, justValue * 0.15))
@@ -222,7 +222,7 @@ export async function GET(
         recommendationColor = '#22C55E'
       } else if (bidRatio >= 60) {
         recommendation = 'REVIEW'
-        recommendationColor = '#1A90FF'
+        recommendationColor = 'rgb(var(--zw-brand))'
       } else {
         recommendation = 'SKIP'
         recommendationColor = '#EF4444'

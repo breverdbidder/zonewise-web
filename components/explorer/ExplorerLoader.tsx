@@ -17,22 +17,22 @@ class ExplorerErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div className="flex items-center justify-center h-full bg-slate-950">
+        <div className="flex items-center justify-center h-full bg-[rgb(var(--zw-page))]">
           <div className="text-center max-w-md px-6">
             <div className="text-4xl mb-3">⚠️</div>
-            <h2 className="text-lg font-bold text-white mb-2">Explorer failed to load</h2>
-            <p className="text-sm text-slate-400 mb-4">
+            <h2 className="text-lg font-bold text-[rgb(var(--zw-ink))] mb-2">Explorer failed to load</h2>
+            <p className="text-sm text-[rgb(var(--zw-ink2))] mb-4">
               {this.state.error.message || 'An unexpected error occurred'}
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-amber-500 text-slate-950 rounded-lg font-medium text-sm hover:bg-amber-400 transition-colors"
+              className="px-4 py-2 bg-amber-500 text-[rgb(var(--zw-ink))] rounded-lg font-medium text-sm hover:bg-amber-400 transition-colors"
             >
               Reload Page
             </button>
             <details className="mt-4 text-left">
-              <summary className="text-xs text-slate-600 cursor-pointer">Technical details</summary>
-              <pre className="mt-2 text-xs text-slate-600 overflow-auto max-h-32 bg-slate-900 p-2 rounded">
+              <summary className="text-xs text-[rgb(var(--zw-ink2))] cursor-pointer">Technical details</summary>
+              <pre className="mt-2 text-xs text-[rgb(var(--zw-ink2))] overflow-auto max-h-32 bg-[rgb(var(--zw-page))] p-2 rounded">
                 {this.state.error.stack}
               </pre>
             </details>
@@ -47,11 +47,11 @@ class ExplorerErrorBoundary extends Component<
 const ExplorerV2 = dynamic(() => import('@/components/explorer/ExplorerV2'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full bg-slate-950">
+    <div className="flex items-center justify-center h-full bg-[rgb(var(--zw-page))]">
       <div className="text-center">
         <div className="text-4xl animate-spin inline-block mb-3">◐</div>
-        <p className="text-sm text-slate-400">Loading Explorer V2...</p>
-        <p className="text-xs text-slate-600 mt-1">262K+ parcels · Choropleth · AI Chat</p>
+        <p className="text-sm text-[rgb(var(--zw-ink2))]">Loading Explorer V2...</p>
+        <p className="text-xs text-[rgb(var(--zw-ink2))] mt-1">262K+ parcels · Choropleth · AI Chat</p>
       </div>
     </div>
   ),

@@ -19,7 +19,7 @@ export default function OGImage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #1B2737 0%, #152B47 100%)',
+          background: 'linear-gradient(135deg, rgb(var(--zw-elev)) 0%, #152B47 100%)',
           fontFamily: 'system-ui, sans-serif',
           position: 'relative',
         }}
@@ -54,10 +54,10 @@ export default function OGImage() {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: '#F47B20',
+              background: 'rgb(var(--zw-brand))',
             }}
           />
-          <span style={{ color: '#F47B20', fontSize: '18px', fontWeight: 600 }}>
+          <span style={{ color: 'rgb(var(--zw-brand))', fontSize: '18px', fontWeight: 600 }}>
             Join the Beta
           </span>
         </div>
@@ -75,7 +75,7 @@ export default function OGImage() {
             style={{
               width: '56px',
               height: '56px',
-              background: '#F47B20',
+              background: 'rgb(var(--zw-brand))',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
@@ -92,7 +92,7 @@ export default function OGImage() {
         {/* Tagline */}
         <p
           style={{
-            color: '#94A3B8',
+            color: 'rgb(var(--zw-ink2)))',
             fontSize: '28px',
             textAlign: 'center',
             maxWidth: '800px',
@@ -126,11 +126,11 @@ export default function OGImage() {
               }}
             >
               <span
-                style={{ color: '#F47B20', fontSize: '36px', fontWeight: 700 }}
+                style={{ color: 'rgb(var(--zw-brand))', fontSize: '36px', fontWeight: 700 }}
               >
                 {stat.value}
               </span>
-              <span style={{ color: '#64748B', fontSize: '16px' }}>
+              <span style={{ color: 'rgb(var(--zw-ink2)))', fontSize: '16px' }}>
                 {stat.label}
               </span>
             </div>

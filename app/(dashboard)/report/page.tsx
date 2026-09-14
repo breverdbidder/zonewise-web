@@ -64,8 +64,8 @@ async function fetchS5Report(params: { mca_id?: string; address?: string }): Pro
 function S5Picker() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-slate-950 p-8 gap-4 min-h-[60vh]">
-      <div className="w-14 h-14 rounded-full bg-[#1B2737]/10 dark:bg-[#1B2737]/30 flex items-center justify-center">
-        <FileSearch className="w-7 h-7 text-[#1B2737] dark:text-[#1A90FF]" />
+      <div className="w-14 h-14 rounded-full bg-[rgb(var(--zw-elev)/0.1)] dark:bg-[#1B2737]/30 flex items-center justify-center">
+        <FileSearch className="w-7 h-7 text-[rgb(var(--zw-ink2))] dark:text-[#1A90FF]" />
       </div>
       <div className="text-center max-w-sm">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Select a Property Report</h2>
@@ -74,7 +74,7 @@ function S5Picker() {
           or a ZoneWise zoning report with <code className="text-xs bg-gray-100 dark:bg-slate-800 px-1 rounded">?parcel=</code>.
         </p>
       </div>
-      <Link href="/chat" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B2737] text-white text-sm font-medium hover:bg-[#1B2737]/80 transition-colors">
+      <Link href="/chat" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[rgb(var(--zw-brand))] text-white text-sm font-medium hover:bg-[rgb(var(--zw-brand))]/80 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Back to ZoneWise Chat
       </Link>
@@ -95,7 +95,7 @@ function S5Teaser({ mcaId }: { mcaId?: string }) {
           Pro subscription.
         </p>
       </div>
-      <Link href="/pricing" className="px-4 py-2 rounded-lg bg-[#1A90FF] text-[#0B1119] text-sm font-semibold hover:bg-[#1A90FF]/80 transition-colors">
+      <Link href="/pricing" className="px-4 py-2 rounded-lg bg-[rgb(var(--zw-brand))] text-[rgb(var(--zw-brand-ink))] text-sm font-semibold hover:bg-[rgb(var(--zw-brand)/0.8)] transition-colors">
         Upgrade to Pro
       </Link>
     </div>
@@ -159,14 +159,14 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
           <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between print:hidden">
             <Link
               href="/chat"
-              className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-[rgb(var(--zw-ink))] transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Chat
             </Link>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-[#0B1119] flex items-center justify-center">
-                <span className="text-[#1A90FF] text-xs font-bold">B</span>
+              <div className="w-6 h-6 rounded bg-[rgb(var(--zw-page))] flex items-center justify-center">
+                <span className="text-[rgb(var(--zw-brand))] text-xs font-bold">B</span>
               </div>
               <span className="text-sm font-semibold text-gray-900 dark:text-white">BidDeed.AI S5 Report</span>
             </div>
@@ -207,7 +207,7 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
         </div>
         <Link
           href="/chat"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1B2737] text-white text-sm font-medium hover:bg-[#1B2737]/80 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[rgb(var(--zw-brand))] text-white text-sm font-medium hover:bg-[rgb(var(--zw-brand))]/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to ZoneWise Chat
@@ -225,14 +225,14 @@ export default async function ReportPage({ searchParams }: ReportPageProps) {
         <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between print:hidden">
           <Link
             href="/chat"
-            className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-[rgb(var(--zw-ink))] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Chat
           </Link>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#1B2737] flex items-center justify-center">
-              <span className="text-white text-xs font-bold">Z</span>
+            <div className="w-6 h-6 rounded bg-[rgb(var(--zw-elev))] flex items-center justify-center">
+              <span className="text-[rgb(var(--zw-ink))] text-xs font-bold">Z</span>
             </div>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">ZoneWise.AI</span>
           </div>

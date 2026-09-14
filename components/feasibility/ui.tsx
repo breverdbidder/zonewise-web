@@ -37,7 +37,7 @@ export function Card({ children, className = '', style }: CardProps) {
 
 export function SectionLabel({ text }: { text: string }) {
   return (
-    <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-semibold">
+    <div className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-1.5 font-semibold">
       {text}
     </div>
   )
@@ -53,9 +53,9 @@ interface KVRowProps {
 export function KVRow({ label, value, bold, mono }: KVRowProps) {
   return (
     <div className="flex justify-between py-1 text-[13px] border-b border-slate-50">
-      <span className="text-slate-500">{label}</span>
+      <span className="text-[rgb(var(--zw-ink2))]">{label}</span>
       <span
-        className={`${bold ? 'font-bold' : 'font-medium'} text-slate-900`}
+        className={`${bold ? 'font-bold' : 'font-medium'} text-[rgb(var(--zw-ink))]`}
         style={mono ? { fontFamily: "'JetBrains Mono', monospace" } : undefined}
       >
         {value}

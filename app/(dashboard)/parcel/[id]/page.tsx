@@ -59,14 +59,14 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
 
   if (!parcel) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-slate-950">
+      <div className="flex-1 flex items-center justify-center bg-[rgb(var(--zw-page))]">
         <div className="text-center max-w-md px-6">
           <div className="text-5xl mb-4">🔍</div>
-          <h1 className="text-xl font-bold text-white mb-2">Parcel Not Found</h1>
-          <p className="text-sm text-slate-400 mb-6">
-            Could not find parcel <span className="font-mono text-zw-orange">{decodeURIComponent(id)}</span> in BCPAO records.
+          <h1 className="text-xl font-bold text-[rgb(var(--zw-ink))] mb-2">Parcel Not Found</h1>
+          <p className="text-sm text-[rgb(var(--zw-ink2))] mb-6">
+            Could not find parcel <span className="font-mono text-[rgb(var(--zw-brand))]">{decodeURIComponent(id)}</span> in BCPAO records.
           </p>
-          <Link href="/explorer" className="inline-flex items-center gap-2 px-4 py-2.5 bg-zw-orange/15 border border-zw-orange/30 text-zw-orange rounded-md text-sm font-bold hover:bg-zw-orange/25 transition-colors">
+          <Link href="/explorer" className="inline-flex items-center gap-2 px-4 py-2.5 bg-[rgb(var(--zw-brand)/0.15)] border border-[rgb(var(--zw-brand)/0.3)] text-[rgb(var(--zw-brand))] rounded-md text-sm font-bold hover:bg-[rgb(var(--zw-brand)/0.25)] transition-colors">
             ← Back to Explorer
           </Link>
         </div>
@@ -78,19 +78,19 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
   const totalValue = (parcel.BLDG_VALUE || 0) + (parcel.LAND_VALUE || 0)
 
   return (
-    <div className="flex-1 overflow-y-auto bg-slate-950">
+    <div className="flex-1 overflow-y-auto bg-[rgb(var(--zw-page))]">
       <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
 
         {/* Back nav */}
-        <Link href="/explorer" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-zw-orange transition-colors mb-4">
+        <Link href="/explorer" className="inline-flex items-center gap-1.5 text-sm text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-brand))] transition-colors mb-4">
           ← Back to Explorer
         </Link>
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white">{addr || 'Unknown Address'}</h1>
-          <p className="text-sm text-slate-400 mt-1">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
-          <p className="text-xs text-slate-500 font-mono mt-1">Parcel: {parcel.PARCEL_ID}</p>
+          <h1 className="text-2xl font-bold text-[rgb(var(--zw-ink))]">{addr || 'Unknown Address'}</h1>
+          <p className="text-sm text-[rgb(var(--zw-ink2))] mt-1">{(parcel.CITY || '').trim()}, FL {parcel.ZIP_CODE || ''}</p>
+          <p className="text-xs text-[rgb(var(--zw-ink2))] font-mono mt-1">Parcel: {parcel.PARCEL_ID}</p>
         </div>
 
         {/* Value cards */}
@@ -101,9 +101,9 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
             { label: 'Land', value: fmt(parcel.LAND_VALUE) },
             { label: 'Living Area', value: `${fmtN(parcel.LIV_AREA)} sqft` },
           ].map(s => (
-            <div key={s.label} className={`rounded-lg p-4 border ${s.accent ? 'bg-zw-orange/10 border-zw-orange/30' : 'bg-slate-900 border-slate-800'}`}>
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{s.label}</div>
-              <div className={`text-lg font-bold font-mono ${s.accent ? 'text-zw-orange' : 'text-white'}`}>{s.value}</div>
+            <div key={s.label} className={`rounded-lg p-4 border ${s.accent ? 'bg-[rgb(var(--zw-brand)/0.1)] border-[rgb(var(--zw-brand)/0.3)]' : 'bg-[rgb(var(--zw-page))] border-[rgb(var(--zw-border2))]'}`}>
+              <div className="text-[10px] text-[rgb(var(--zw-ink2))] uppercase tracking-wider mb-1">{s.label}</div>
+              <div className={`text-lg font-bold font-mono ${s.accent ? 'text-[rgb(var(--zw-brand))]' : 'text-[rgb(var(--zw-ink))]'}`}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -111,8 +111,8 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
         {/* Details grid */}
         <div className="grid sm:grid-cols-2 gap-4 mb-6">
           {/* Property Info */}
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
-            <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">🏠 Property Details</h2>
+          <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5">
+            <h2 className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3 flex items-center gap-2">🏠 Property Details</h2>
             <dl className="space-y-2">
               {[
                 ['Use', (parcel.USE_CODE_DESCRIPTION || '').trim()],
@@ -124,16 +124,16 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
                 ['Exemption', (parcel.EXEMPTION_CODE || '').trim() || 'None'],
               ].map(([k, v]) => (
                 <div key={k as string} className="flex justify-between text-xs">
-                  <dt className="text-slate-500">{k}</dt>
-                  <dd className="text-slate-300 font-mono text-right">{v}</dd>
+                  <dt className="text-[rgb(var(--zw-ink2))]">{k}</dt>
+                  <dd className="text-[rgb(var(--zw-ink2))] font-mono text-right">{v}</dd>
                 </div>
               ))}
             </dl>
           </div>
 
           {/* Owner Info */}
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-5">
-            <h2 className="text-sm font-bold text-white mb-3 flex items-center gap-2">👤 Owner Information</h2>
+          <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5">
+            <h2 className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-3 flex items-center gap-2">👤 Owner Information</h2>
             <dl className="space-y-2">
               {[
                 ['Owner', parcel.OWNER_NAME1 || '—'],
@@ -144,8 +144,8 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
                 ['Plat Book/Page', `${parcel.PLAT_BOOK || '—'} / ${parcel.PLAT_PAGE || '—'}`],
               ].map(([k, v]) => (
                 <div key={k as string} className="flex justify-between text-xs">
-                  <dt className="text-slate-500">{k}</dt>
-                  <dd className="text-slate-300 font-mono text-right">{v}</dd>
+                  <dt className="text-[rgb(var(--zw-ink2))]">{k}</dt>
+                  <dd className="text-[rgb(var(--zw-ink2))] font-mono text-right">{v}</dd>
                 </div>
               ))}
             </dl>
@@ -153,17 +153,17 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Legal Description */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
-          <h2 className="text-sm font-bold text-white mb-2 flex items-center gap-2">📜 Legal Description</h2>
-          <p className="text-xs text-slate-400 font-mono leading-relaxed">{parcel.LEGAL_DESC || '—'}</p>
+        <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5 mb-6">
+          <h2 className="text-sm font-bold text-[rgb(var(--zw-ink))] mb-2 flex items-center gap-2">📜 Legal Description</h2>
+          <p className="text-xs text-[rgb(var(--zw-ink2))] font-mono leading-relaxed">{parcel.LEGAL_DESC || '—'}</p>
         </div>
 
         {/* Owner Intelligence (OSINT) */}
         <div className="mb-6">
           <Suspense fallback={
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 animate-pulse">
-              <div className="h-4 bg-slate-800 rounded w-40 mb-3" />
-              <div className="h-8 bg-slate-800 rounded w-60" />
+            <div className="bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg p-5 animate-pulse">
+              <div className="h-4 bg-[rgb(var(--zw-card))] rounded w-40 mb-3" />
+              <div className="h-8 bg-[rgb(var(--zw-card))] rounded w-60" />
             </div>
           }>
             <OwnerIntelPanel identifier={decodeURIComponent(id)} />
@@ -177,7 +177,7 @@ export default async function ParcelPage({ params }: { params: Promise<{ id: str
             📋 BCPAO Full Record
           </a>
           <Link href="/explorer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-zw-orange/10 border border-zw-orange/25 text-zw-orange rounded-lg text-sm font-semibold hover:bg-zw-orange/20 transition-colors">
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[rgb(var(--zw-brand)/0.1)] border border-[rgb(var(--zw-brand)/0.25)] text-[rgb(var(--zw-brand))] rounded-lg text-sm font-semibold hover:bg-[rgb(var(--zw-brand)/0.2)] transition-colors">
             🗺️ Back to Explorer
           </Link>
         </div>

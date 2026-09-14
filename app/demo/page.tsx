@@ -38,7 +38,7 @@ const LOGS = [
 ]
 
 const KPI_SECTIONS = [
-  { id: 'fin',  label: 'BidWise Intelligence',      icon: '$', color: '#1A90FF', count: 74, kpis: [
+  { id: 'fin',  label: 'BidWise Intelligence',      icon: '$', color: 'rgb(var(--zw-brand))', count: 74, kpis: [
     { l: 'After-Repair Value',     v: '$387,000', s: 'BCPAO + 6-comp CMA',       score: 88 },
     { l: 'Max Bid (Formula)',       v: '$213,000', s: '(ARV×70%)−Repairs−$10K',  score: 95, hi: true },
     { l: 'Estimated Repairs',       v: '$42,000',  s: 'Contractor estimate',      score: 72 },
@@ -100,13 +100,13 @@ const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', curren
 
 const TAG: Record<string, { bg: string; bd: string; tx: string }> = {
   BID:    { bg: 'rgba(34,197,94,.08)',  bd: 'rgba(34,197,94,.5)',  tx: '#22C55E' },
-  REVIEW: { bg: 'rgba(26,144,255,.08)', bd: 'rgba(26,144,255,.5)', tx: '#1A90FF' },
+  REVIEW: { bg: 'rgb(var(--zw-brand) / 08)', bd: 'rgb(var(--zw-brand) / 5)', tx: 'rgb(var(--zw-brand))' },
   SKIP:   { bg: 'rgba(239,68,68,.08)',  bd: 'rgba(239,68,68,.5)',  tx: '#EF4444' },
 }
 
 const LC: Record<string, string> = {
-  DiscoverWise: '#3B82F6', GatherWise: '#1A90FF', TitleWise: '#94A3B8',
-  LienWise: '#1A90FF', ScoreWise: '#3B82F6', BidWise: '#22C55E', InsightWise: '#94A3B8',
+  DiscoverWise: '#3B82F6', GatherWise: 'rgb(var(--zw-brand))', TitleWise: 'rgb(var(--zw-elev))',
+  LienWise: 'rgb(var(--zw-brand))', ScoreWise: '#3B82F6', BidWise: '#22C55E', InsightWise: 'rgb(var(--zw-elev))',
 }
 
 /* ─── CSS KEYFRAMES injected once ──────────────────────────────────── */
@@ -116,36 +116,36 @@ const CSS = `
 @keyframes slide-up     { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fade-in      { from{opacity:0} to{opacity:1} }
 @keyframes data-in      { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-@keyframes glow         { 0%,100%{box-shadow:0 0 10px rgba(26,144,255,.12)} 50%{box-shadow:0 0 32px rgba(26,144,255,.45)} }
+@keyframes glow         { 0%,100%{box-shadow:0 0 10px rgb(var(--zw-brand) / 12)} 50%{box-shadow:0 0 32px rgb(var(--zw-brand) / 45)} }
 @keyframes spin         { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-@keyframes border-pulse { 0%,100%{border-color:rgba(26,144,255,.3)} 50%{border-color:rgba(26,144,255,.85)} }
+@keyframes border-pulse { 0%,100%{border-color:rgb(var(--zw-brand) / 3)} 50%{border-color:rgb(var(--zw-brand) / 85)} }
 @keyframes scanline     { 0%{top:0%;opacity:.6} 100%{top:110%;opacity:0} }
 @keyframes cursor-blink { 0%,100%,49%{opacity:1} 50%,99%{opacity:0} }
 `
 
 /* ─── SUB COMPONENTS ────────────────────────────────────────────────── */
 function AgentNode({ agent, status }: { agent: typeof AGENTS[0]; status: string }) {
-  const c = { idle: '#1E293B', active: '#1A90FF', done: '#22C55E' }[status] ?? '#1E293B'
-  const tc = { idle: '#64748B', active: '#F1F5F9', done: '#F1F5F9' }[status] ?? '#64748B'
+  const c = { idle: 'rgb(var(--zw-card))', active: 'rgb(var(--zw-brand))', done: '#22C55E' }[status] ?? 'rgb(var(--zw-card))'
+  const tc = { idle: 'rgb(var(--zw-elev))', active: '#F1F5F9', done: '#F1F5F9' }[status] ?? 'rgb(var(--zw-elev))'
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 14, padding: '11px 15px',
-      background: status === 'active' ? 'rgba(26,144,255,.05)' : 'transparent',
-      border: `1px solid ${status === 'active' ? 'rgba(26,144,255,.3)' : '#1E293B'}`,
+      background: status === 'active' ? 'rgb(var(--zw-brand) / 05)' : 'transparent',
+      border: `1px solid ${status === 'active' ? 'rgb(var(--zw-brand) / 3)' : 'rgb(var(--zw-card))'}`,
       borderRadius: 9, transition: 'all .35s',
       animation: status === 'active' ? 'glow 2s ease infinite, border-pulse 2s ease infinite' : 'none',
     }}>
       <div style={{ position: 'relative', width: 30, height: 30, flexShrink: 0 }}>
         {status === 'active' && (
           <>
-            <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderRadius: '50%', border: '2px solid #1A90FF', animation: 'pulse-ring 1.3s ease-out infinite' }} />
-            <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderRadius: '50%', border: '2px solid #1A90FF', animation: 'pulse-ring 1.3s ease-out infinite', animationDelay: '.4s' }} />
+            <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderRadius: '50%', border: '2px solid rgb(var(--zw-brand))', animation: 'pulse-ring 1.3s ease-out infinite' }} />
+            <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderRadius: '50%', border: '2px solid rgb(var(--zw-brand))', animation: 'pulse-ring 1.3s ease-out infinite', animationDelay: '.4s' }} />
           </>
         )}
         <div style={{
           width: 30, height: 30, borderRadius: '50%', border: `2px solid ${c}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: status === 'done' ? 'rgba(34,197,94,.1)' : status === 'active' ? 'rgba(26,144,255,.08)' : 'transparent',
+          background: status === 'done' ? 'rgba(34,197,94,.1)' : status === 'active' ? 'rgb(var(--zw-brand) / 08)' : 'transparent',
           fontSize: 12, color: c, transition: 'all .35s',
           animation: status === 'active' ? 'spin 2.5s linear infinite' : 'none',
           fontFamily: 'monospace',
@@ -155,11 +155,11 @@ function AgentNode({ agent, status }: { agent: typeof AGENTS[0]; status: string 
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: tc, transition: 'color .3s' }}>{agent.label}</div>
-        <div style={{ fontFamily: 'monospace', fontSize: 10, color: status === 'active' ? '#94A3B8' : '#334155', marginTop: 1 }}>
+        <div style={{ fontFamily: 'monospace', fontSize: 10, color: status === 'active' ? 'rgb(var(--zw-elev))' : 'rgb(var(--zw-elev))', marginTop: 1 }}>
           {status === 'active' ? agent.desc : status === 'done' ? '✓ Complete' : 'Standby'}
         </div>
       </div>
-      {status === 'active' && <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#1A90FF', animation: 'blink .9s infinite', letterSpacing: '.08em' }}>LIVE</span>}
+      {status === 'active' && <span style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-brand))', animation: 'blink .9s infinite', letterSpacing: '.08em' }}>LIVE</span>}
       {status === 'done'   && <span style={{ fontFamily: 'monospace', fontSize: 9, color: '#22C55E', letterSpacing: '.08em' }}>DONE</span>}
     </div>
   )
@@ -168,21 +168,21 @@ function AgentNode({ agent, status }: { agent: typeof AGENTS[0]; status: string 
 type KpiDef = { l: string; v: string; s: string; score: number | null; hi?: boolean }
 
 function KpiRow({ kpi, vis, delay }: { kpi: KpiDef; vis: boolean; delay: number }) {
-  const sc = kpi.score === null ? '#64748B' : kpi.score >= 80 ? '#22C55E' : kpi.score >= 60 ? '#1A90FF' : '#EF4444'
+  const sc = kpi.score === null ? 'rgb(var(--zw-elev))' : kpi.score >= 80 ? '#22C55E' : kpi.score >= 60 ? 'rgb(var(--zw-brand))' : '#EF4444'
   const circ = 2 * Math.PI * 11
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px',
-      background: kpi.hi ? 'rgba(26,144,255,.04)' : 'rgba(255,255,255,.01)',
-      border: `1px solid ${kpi.hi ? 'rgba(26,144,255,.18)' : '#1E293B'}`, borderRadius: 6,
+      background: kpi.hi ? 'rgb(var(--zw-brand) / 04)' : 'rgba(255,255,255,.01)',
+      border: `1px solid ${kpi.hi ? 'rgb(var(--zw-brand) / 18)' : 'rgb(var(--zw-card))'}`, borderRadius: 6,
       opacity: vis ? 1 : 0, transform: vis ? 'translateX(0)' : 'translateX(-14px)',
       transition: 'opacity .3s,transform .3s', transitionDelay: `${delay}s`,
     }}>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11, fontWeight: 500, color: kpi.hi ? '#1A90FF' : '#F1F5F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{kpi.l}</div>
-        <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', marginTop: 1 }}>{kpi.s}</div>
+        <div style={{ fontSize: 11, fontWeight: 500, color: kpi.hi ? 'rgb(var(--zw-brand))' : '#F1F5F9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{kpi.l}</div>
+        <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 1 }}>{kpi.s}</div>
       </div>
-      <div style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: kpi.hi ? '#1A90FF' : '#F1F5F9', whiteSpace: 'nowrap', flexShrink: 0 }}>{kpi.v}</div>
+      <div style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: kpi.hi ? 'rgb(var(--zw-brand))' : '#F1F5F9', whiteSpace: 'nowrap', flexShrink: 0 }}>{kpi.v}</div>
       {kpi.score !== null && (
         <div style={{ width: 28, height: 28, flexShrink: 0, position: 'relative' }}>
           <svg width="28" height="28" viewBox="0 0 28 28">
@@ -218,7 +218,7 @@ function KpiSectionComp({ sec, vis, kvis }: { sec: KpiSection; vis: boolean; kvi
         <div style={{ width: 26, height: 26, borderRadius: 5, background: `${sec.color}18`, border: `1px solid ${sec.color}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: sec.color }}>{sec.icon}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#F1F5F9' }}>{sec.label}</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', marginTop: 1 }}>{sec.count} KPIs ANALYZED</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 1 }}>{sec.count} KPIs ANALYZED</div>
         </div>
         <div style={{ padding: '2px 8px', borderRadius: 10, background: `${sec.color}18`, border: `1px solid ${sec.color}35` }}>
           <span style={{ fontFamily: 'monospace', fontSize: 8, color: sec.color, fontWeight: 700, letterSpacing: '.06em' }}>COMPLETE</span>
@@ -235,8 +235,8 @@ function OverallScore({ vis }: { vis: boolean }) {
   const c = 2 * Math.PI * 54
   return (
     <div style={{
-      padding: 20, border: '1px solid rgba(26,144,255,.3)', borderRadius: 11,
-      background: 'linear-gradient(135deg,rgba(26,144,255,.06) 0%,transparent 60%)',
+      padding: 20, border: '1px solid rgb(var(--zw-brand) / 3)', borderRadius: 11,
+      background: 'linear-gradient(135deg,rgb(var(--zw-brand) / 06) 0%,transparent 60%)',
       display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap',
       opacity: vis ? 1 : 0, transform: vis ? 'scale(1)' : 'scale(.92)',
       transition: 'opacity .6s,transform .6s cubic-bezier(.34,1.56,.64,1)',
@@ -248,24 +248,24 @@ function OverallScore({ vis }: { vis: boolean }) {
           <circle cx="60" cy="60" r="54" fill="none" stroke="#1A90FF" strokeWidth="7"
             strokeDasharray={c} strokeDashoffset={vis ? c - (c * .84) : c}
             strokeLinecap="round" transform="rotate(-90 60 60)"
-            style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)', transitionDelay: '.2s', filter: 'drop-shadow(0 0 8px rgba(26,144,255,.6))' }} />
+            style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)', transitionDelay: '.2s', filter: 'drop-shadow(0 0 8px rgb(var(--zw-brand) / 6))' }} />
         </svg>
         <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ fontSize: 30, fontWeight: 800, color: '#1A90FF', lineHeight: 1 }}>84</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#94A3B8', marginTop: 2 }}>/ 100</div>
+          <div style={{ fontSize: 30, fontWeight: 800, color: 'rgb(var(--zw-brand))', lineHeight: 1 }}>84</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 2 }}>/ 100</div>
         </div>
       </div>
       <div style={{ flex: 1, minWidth: 220 }}>
-        <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#1A90FF', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 6 }}>◉ OVERALL AUCTION SCORE</div>
+        <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-brand))', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 6 }}>◉ OVERALL AUCTION SCORE</div>
         <div style={{ fontSize: 22, fontWeight: 800, color: '#22C55E', marginBottom: 4 }}>⭐ BIDWISE: STRONG BID</div>
-        <div style={{ fontSize: 12, color: '#94A3B8', lineHeight: 1.65, marginBottom: 12 }}>
+        <div style={{ fontSize: 12, color: 'rgb(var(--zw-ink2)))', lineHeight: 1.65, marginBottom: 12 }}>
           2847 Harbor Blvd clears all critical KPI thresholds. Clean title chain, junior HOA lien, 107% bid/judgment ratio, strong coastal MTR demand. Max bid $213,000.
         </div>
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
           {[{ l: '298', d: 'KPIs Analyzed' }, { l: '4', d: 'Risk Flags' }, { l: '94%', d: 'Confidence' }, { l: '#1', d: 'Priority Bid' }].map(x => (
-            <div key={x.l} style={{ padding: '5px 10px', background: 'rgba(26,144,255,.08)', border: '1px solid rgba(26,144,255,.2)', borderRadius: 6, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#1A90FF' }}>{x.l}</div>
-              <div style={{ fontFamily: 'monospace', fontSize: 8, color: '#64748B', marginTop: 1 }}>{x.d}</div>
+            <div key={x.l} style={{ padding: '5px 10px', background: 'rgb(var(--zw-brand) / 08)', border: '1px solid rgb(var(--zw-brand) / 2)', borderRadius: 6, textAlign: 'center' }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: 'rgb(var(--zw-brand))' }}>{x.l}</div>
+              <div style={{ fontFamily: 'monospace', fontSize: 8, color: 'rgb(var(--zw-ink2)))', marginTop: 1 }}>{x.d}</div>
             </div>
           ))}
         </div>
@@ -278,34 +278,34 @@ type Prop = typeof PROPS[0]
 
 function PropCard({ prop, highlightReport, index }: { prop: Prop; highlightReport: boolean; index: number }) {
   const t = TAG[prop.tag]
-  const sc = prop.score >= 75 ? '#22C55E' : prop.score >= 60 ? '#1A90FF' : '#EF4444'
+  const sc = prop.score >= 75 ? '#22C55E' : prop.score >= 60 ? 'rgb(var(--zw-brand))' : '#EF4444'
   return (
     <div style={{
-      background: '#0F172A', border: `1px solid ${highlightReport ? 'rgba(26,144,255,.4)' : '#1E293B'}`,
+      background: 'rgb(var(--zw-page))', border: `1px solid ${highlightReport ? 'rgb(var(--zw-brand) / 4)' : 'rgb(var(--zw-card))'}`,
       borderRadius: 9, padding: 13, animation: 'slide-up .4s ease both', animationDelay: `${index * .1}s`,
-      boxShadow: highlightReport ? '0 0 18px rgba(26,144,255,.07)' : 'none', transition: 'all .3s',
+      boxShadow: highlightReport ? '0 0 18px rgb(var(--zw-brand) / 07)' : 'none', transition: 'all .3s',
     }}>
       {highlightReport && (
-        <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#1A90FF', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-brand))', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 5 }}>
           <span style={{ animation: 'blink 1s infinite' }}>●</span> GENERATING BIDWISE REPORT
         </div>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9' }}>{prop.addr}</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', marginTop: 2 }}>{prop.city} · {prop.sqft.toLocaleString()} sqft · {prop.year}</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 2 }}>{prop.city} · {prop.sqft.toLocaleString()} sqft · {prop.year}</div>
         </div>
         <div style={{ padding: '3px 10px', borderRadius: 18, fontSize: 10, fontWeight: 700, background: t.bg, border: `1px solid ${t.bd}`, color: t.tx, letterSpacing: '.06em', flexShrink: 0 }}>{prop.tag}</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7, marginTop: 11 }}>
-        {[{ l: 'ARV', v: fmt(prop.arv), c: '#F1F5F9' }, { l: 'Max Bid', v: fmt(prop.maxBid), c: '#1A90FF' }, { l: 'Judgment', v: fmt(prop.judgment), c: '#94A3B8' }].map(x => (
+        {[{ l: 'ARV', v: fmt(prop.arv), c: '#F1F5F9' }, { l: 'Max Bid', v: fmt(prop.maxBid), c: 'rgb(var(--zw-brand))' }, { l: 'Judgment', v: fmt(prop.judgment), c: 'rgb(var(--zw-elev))' }].map(x => (
           <div key={x.l} style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 600, color: x.c }}>{x.v}</div>
-            <div style={{ fontSize: 9, color: '#64748B', marginTop: 1, textTransform: 'uppercase', letterSpacing: '.05em' }}>{x.l}</div>
+            <div style={{ fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 1, textTransform: 'uppercase', letterSpacing: '.05em' }}>{x.l}</div>
           </div>
         ))}
       </div>
-      <div style={{ height: 2, background: '#0F172A', borderRadius: 1, overflow: 'hidden', marginTop: 9 }}>
+      <div style={{ height: 2, background: 'rgb(var(--zw-page))', borderRadius: 1, overflow: 'hidden', marginTop: 9 }}>
         <div style={{ height: '100%', borderRadius: 1, background: sc, width: `${prop.score}%`, transition: 'width 1.2s ease' }} />
       </div>
     </div>
@@ -316,18 +316,18 @@ function Terminal({ lines, active }: { lines: string[]; active: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight }, [lines])
   return (
-    <div ref={ref} style={{ background: '#0B1119', border: '1px solid #1E293B', borderRadius: 9, padding: 14, height: 180, overflowY: 'hidden', position: 'relative' }}>
-      {active && <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(transparent,rgba(26,144,255,.15),transparent)', animation: 'scanline 2s linear infinite', pointerEvents: 'none' }} />}
+    <div ref={ref} style={{ background: 'rgb(var(--zw-page))', border: '1px solid rgb(var(--zw-card))', borderRadius: 9, padding: 14, height: 180, overflowY: 'hidden', position: 'relative' }}>
+      {active && <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(transparent,rgb(var(--zw-brand) / 15),transparent)', animation: 'scanline 2s linear infinite', pointerEvents: 'none' }} />}
       {lines.map((line, i) => {
         const tag = line.match(/^\[(\w+)\]/)?.[1] ?? ''
         return (
           <div key={i} style={{ fontFamily: 'monospace', fontSize: 11, lineHeight: 1.85, animation: 'data-in .2s ease both', animationDelay: `${i * .03}s` }}>
-            <span style={{ color: LC[tag] ?? '#64748B' }}>{line.slice(0, line.indexOf(']') + 1)}</span>
-            <span style={{ color: '#94A3B8' }}>{line.slice(line.indexOf(']') + 1)}</span>
+            <span style={{ color: LC[tag] ?? 'rgb(var(--zw-elev))' }}>{line.slice(0, line.indexOf(']') + 1)}</span>
+            <span style={{ color: 'rgb(var(--zw-ink2)))' }}>{line.slice(line.indexOf(']') + 1)}</span>
           </div>
         )
       })}
-      {active && lines.length < 12 && <span style={{ fontFamily: 'monospace', fontSize: 11, color: '#1A90FF', animation: 'cursor-blink 1s infinite' }}>█</span>}
+      {active && lines.length < 12 && <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgb(var(--zw-brand))', animation: 'cursor-blink 1s infinite' }}>█</span>}
     </div>
   )
 }
@@ -338,20 +338,20 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
   return (
     <div style={{ animation: 'fade-in .4s ease' }}>
       <div style={{
-        padding: '14px 18px', background: 'linear-gradient(135deg,rgba(26,144,255,.08) 0%,transparent 100%)',
-        border: '1px solid rgba(26,144,255,.25)', borderRadius: 10, marginBottom: 14,
+        padding: '14px 18px', background: 'linear-gradient(135deg,rgb(var(--zw-brand) / 08) 0%,transparent 100%)',
+        border: '1px solid rgb(var(--zw-brand) / 25)', borderRadius: 10, marginBottom: 14,
         display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: 'wrap',
       }}>
         <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#1A90FF', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 5 }}>◉ BidWise 298-KPI INTELLIGENCE REPORT</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-brand))', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 5 }}>◉ BidWise 298-KPI INTELLIGENCE REPORT</div>
           <div style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9' }}>{prop.addr}</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#94A3B8', marginTop: 2 }}>Cocoa Beach, FL 32931 · Parcel 24-37-14-00-00058.0-0000</div>
-          <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', marginTop: 1 }}>1,842 sqft · Built 1987 · Single Family · Brevard County</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 2 }}>Cocoa Beach, FL 32931 · Parcel 24-37-14-00-00058.0-0000</div>
+          <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 1 }}>1,842 sqft · Built 1987 · Single Family · Brevard County</div>
         </div>
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: t.bg, border: `1px solid ${t.bd}`, color: t.tx, fontSize: 11, fontWeight: 800, letterSpacing: '.08em' }}>{prop.tag}</div>
-          <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(26,144,255,.1)', border: '1px solid rgba(26,144,255,.3)' }}>
-            <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#1A90FF', fontWeight: 700 }}>MAX BID: $213,000</span>
+          <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgb(var(--zw-brand) / 1)', border: '1px solid rgb(var(--zw-brand) / 3)' }}>
+            <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgb(var(--zw-brand))', fontWeight: 700 }}>MAX BID: $213,000</span>
           </div>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.3)' }}>
             <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#22C55E', fontWeight: 700 }}>BID/JDG: 107%</span>
@@ -375,13 +375,13 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
           <div style={{ width: 40, height: 40, borderRadius: 9, background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18, color: '#22C55E' }}>✓</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#22C55E' }}>BIDWISE RECOMMENDATION: BID — UP TO $213,000</div>
-            <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#94A3B8', marginTop: 3 }}>
+            <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 3 }}>
               298/298 KPIs processed · 4 manageable risk flags · 94% data confidence · BidWise · Generated in 52 seconds
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 8, color: '#64748B', letterSpacing: '.1em', textTransform: 'uppercase' }}>POWERED BY BIDWISE — ZoneWise.AI</div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#1A90FF' }}>ZoneWise.AI</div>
+            <div style={{ fontFamily: 'monospace', fontSize: 8, color: 'rgb(var(--zw-ink2)))', letterSpacing: '.1em', textTransform: 'uppercase' }}>POWERED BY BIDWISE — ZoneWise.AI</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'rgb(var(--zw-brand))' }}>ZoneWise.AI</div>
           </div>
         </div>
       )}
@@ -468,7 +468,7 @@ export default function DemoPage() {
   return (
     <>
       <style>{CSS}</style>
-      <div style={{ minHeight: '100vh', background: '#0B1119', color: '#F1F5F9', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', background: 'rgb(var(--zw-page))', color: '#F1F5F9', display: 'flex', flexDirection: 'column' }}>
         <Navbar />
 
         <div style={{ maxWidth: 940, margin: '0 auto', padding: '34px 18px 60px', flex: 1, width: '100%' }}>
@@ -476,15 +476,15 @@ export default function DemoPage() {
           {/* Controls */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 28 }}>
             {!playing ? (
-              <button onClick={handlePlay} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: '#1A90FF', color: '#0B1119', borderRadius: 8, fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer' }}>
+              <button onClick={handlePlay} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))', borderRadius: 8, fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer' }}>
                 ▶ Play Demo
               </button>
             ) : (
-              <button onClick={handlePause} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: '#1E293B', color: '#F1F5F9', borderRadius: 8, fontWeight: 700, fontSize: 14, border: '1px solid #334155', cursor: 'pointer' }}>
+              <button onClick={handlePause} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', background: 'rgb(var(--zw-card))', color: '#F1F5F9', borderRadius: 8, fontWeight: 700, fontSize: 14, border: '1px solid rgb(var(--zw-elev))', cursor: 'pointer' }}>
                 ⏸ Pause
               </button>
             )}
-            <button onClick={handleReplay} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: '#1E293B', color: '#94A3B8', borderRadius: 8, fontWeight: 600, fontSize: 14, border: '1px solid #334155', cursor: 'pointer' }}>
+            <button onClick={handleReplay} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'rgb(var(--zw-card))', color: 'rgb(var(--zw-ink2)))', borderRadius: 8, fontWeight: 600, fontSize: 14, border: '1px solid rgb(var(--zw-elev))', cursor: 'pointer' }}>
               ↺ Replay
             </button>
           </div>
@@ -492,18 +492,18 @@ export default function DemoPage() {
           {/* HERO (idle state) */}
           {phase === 'idle' && (
             <div style={{ textAlign: 'center', marginBottom: 32, animation: 'fade-in .5s ease' }}>
-              <div style={{ fontFamily: 'monospace', fontSize: 11, color: '#1A90FF', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 10 }}>◉ AUTONOMOUS DEMO</div>
+              <div style={{ fontFamily: 'monospace', fontSize: 11, color: 'rgb(var(--zw-brand))', letterSpacing: '.18em', textTransform: 'uppercase', marginBottom: 10 }}>◉ AUTONOMOUS DEMO</div>
               <h1 style={{ fontSize: 'clamp(24px,4.5vw,50px)', fontWeight: 800, lineHeight: 1.06, letterSpacing: '-.03em', marginBottom: 12, color: '#F1F5F9' }}>
-                Every Florida auction.<br /><span style={{ color: '#1A90FF' }}>BidWise. 298 KPIs. In seconds.</span>
+                Every Florida auction.<br /><span style={{ color: 'rgb(var(--zw-brand))' }}>BidWise. 298 KPIs. In seconds.</span>
               </h1>
-              <p style={{ fontSize: 14, color: '#94A3B8', maxWidth: 480, margin: '0 auto', lineHeight: 1.72 }}>
+              <p style={{ fontSize: 14, color: 'rgb(var(--zw-ink2)))', maxWidth: 480, margin: '0 auto', lineHeight: 1.72 }}>
                 5 Wise modules — DiscoverWise, TitleWise, LienWise, ScoreWise — deliver a full 298-KPI BidWise report. Autonomous. No analyst needed.
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginTop: 24 }}>
                 {[{ v: '67', l: 'FL Counties' }, { v: '298', l: 'KPIs / Property' }, { v: '5', l: 'AI Agents' }, { v: '< 60s', l: 'Full Report' }].map(x => (
-                  <div key={x.l} style={{ padding: '9px 17px', background: '#0F172A', border: '1px solid #1E293B', borderRadius: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: '#1A90FF' }}>{x.v}</span>
-                    <span style={{ fontSize: 11, color: '#64748B' }}>{x.l}</span>
+                  <div key={x.l} style={{ padding: '9px 17px', background: 'rgb(var(--zw-page))', border: '1px solid rgb(var(--zw-card))', borderRadius: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: 'rgb(var(--zw-brand))' }}>{x.v}</span>
+                    <span style={{ fontSize: 11, color: 'rgb(var(--zw-ink2)))' }}>{x.l}</span>
                   </div>
                 ))}
               </div>
@@ -514,26 +514,26 @@ export default function DemoPage() {
           {playing && (
             <div style={{ maxWidth: 520, margin: '0 auto', marginBottom: 20 }}>
               <div style={{
-                display: 'flex', alignItems: 'center', background: '#0F172A',
-                border: `1px solid ${phase !== 'idle' ? 'rgba(26,144,255,.7)' : '#334155'}`,
+                display: 'flex', alignItems: 'center', background: 'rgb(var(--zw-page))',
+                border: `1px solid ${phase !== 'idle' ? 'rgb(var(--zw-brand) / 7)' : 'rgb(var(--zw-elev))'}`,
                 borderRadius: 10, overflow: 'hidden', transition: 'border-color .4s,box-shadow .4s',
-                boxShadow: phase !== 'idle' ? '0 0 28px rgba(26,144,255,.10)' : 'none',
+                boxShadow: phase !== 'idle' ? '0 0 28px rgb(var(--zw-brand) / 10)' : 'none',
               }}>
-                <div style={{ padding: '0 13px', color: '#64748B', display: 'flex' }}>
+                <div style={{ padding: '0 13px', color: 'rgb(var(--zw-ink2)))', display: 'flex' }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
                 </div>
                 <div style={{ flex: 1, padding: '13px 0', display: 'flex', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: typed ? '#F1F5F9' : '#334155' }}>
+                  <span style={{ fontSize: 13, color: typed ? '#F1F5F9' : 'rgb(var(--zw-elev))' }}>
                     {typed || (phase === 'idle' ? 'Searching Florida counties...' : '')}
                   </span>
-                  {phase === 'typing' && <span style={{ display: 'inline-block', width: 2, height: 14, background: '#1A90FF', marginLeft: 2, animation: 'cursor-blink .9s infinite' }} />}
+                  {phase === 'typing' && <span style={{ display: 'inline-block', width: 2, height: 14, background: 'rgb(var(--zw-brand))', marginLeft: 2, animation: 'cursor-blink .9s infinite' }} />}
                 </div>
                 <div style={{
-                  padding: '10px 18px', background: '#1A90FF', color: '#0B1119', fontWeight: 700, fontSize: 11, letterSpacing: '.04em',
+                  padding: '10px 18px', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))', fontWeight: 700, fontSize: 11, letterSpacing: '.04em',
                   opacity: phase === 'typing' ? .5 : 1, transition: 'opacity .3s', display: 'flex', alignItems: 'center', gap: 5,
                 }}>
                   {phase === 'agents' || phase === 'results' || tab === 'report'
-                    ? <><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0B1119', display: 'inline-block', animation: 'blink .7s infinite' }} /> RUNNING</>
+                    ? <><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgb(var(--zw-page))', display: 'inline-block', animation: 'blink .7s infinite' }} /> RUNNING</>
                     : 'ANALYZE →'}
                 </div>
               </div>
@@ -545,11 +545,11 @@ export default function DemoPage() {
             <div>
               {/* Stats */}
               {stats && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(70px,1fr))', gap: 1, background: '#1E293B', borderRadius: 9, overflow: 'hidden', marginBottom: 14 }}>
-                  {[{ l: 'Total', v: 19, c: '#F1F5F9' }, { l: 'BID', v: 4, c: '#22C55E' }, { l: 'REVIEW', v: 3, c: '#1A90FF' }, { l: 'SKIP', v: 12, c: '#EF4444' }, { l: 'Judgment', v: '$4.4M', c: '#94A3B8' }].map(x => (
-                    <div key={x.l} style={{ background: '#0F172A', padding: '11px 8px', textAlign: 'center' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(70px,1fr))', gap: 1, background: 'rgb(var(--zw-card))', borderRadius: 9, overflow: 'hidden', marginBottom: 14 }}>
+                  {[{ l: 'Total', v: 19, c: '#F1F5F9' }, { l: 'BID', v: 4, c: '#22C55E' }, { l: 'REVIEW', v: 3, c: 'rgb(var(--zw-brand))' }, { l: 'SKIP', v: 12, c: '#EF4444' }, { l: 'Judgment', v: '$4.4M', c: 'rgb(var(--zw-elev))' }].map(x => (
+                    <div key={x.l} style={{ background: 'rgb(var(--zw-page))', padding: '11px 8px', textAlign: 'center' }}>
                       <div style={{ fontSize: 19, fontWeight: 800, color: x.c, opacity: stv ? 1 : 0, transform: stv ? 'scale(1)' : 'scale(.7)', transition: 'all .5s cubic-bezier(.34,1.56,.64,1)' }}>{x.v}</div>
-                      <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#64748B', marginTop: 2, textTransform: 'uppercase', letterSpacing: '.1em' }}>{x.l}</div>
+                      <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', marginTop: 2, textTransform: 'uppercase', letterSpacing: '.1em' }}>{x.l}</div>
                     </div>
                   ))}
                 </div>
@@ -561,22 +561,22 @@ export default function DemoPage() {
                   <button key={t} onClick={() => setTab(t)} style={{
                     padding: '5px 14px', borderRadius: 5, fontSize: 11, fontWeight: 700,
                     letterSpacing: '.06em', textTransform: 'uppercase', position: 'relative',
-                    background: tab === t ? '#1A90FF' : '#0F172A', color: tab === t ? '#0B1119' : '#475569',
-                    border: tab === t ? 'none' : '1px solid #1E293B', transition: 'all .3s', cursor: 'pointer',
+                    background: tab === t ? 'rgb(var(--zw-brand))' : 'rgb(var(--zw-page))', color: tab === t ? 'rgb(var(--zw-page))' : 'rgb(var(--zw-elev))',
+                    border: tab === t ? 'none' : '1px solid rgb(var(--zw-card))', transition: 'all .3s', cursor: 'pointer',
                   }}>
                     {t}
                     {t === 'report' && tab !== 'report' && rptSecs > 0 && (
-                      <span style={{ position: 'absolute', top: -3, right: -3, width: 7, height: 7, borderRadius: '50%', background: '#1A90FF', animation: 'blink .8s infinite' }} />
+                      <span style={{ position: 'absolute', top: -3, right: -3, width: 7, height: 7, borderRadius: '50%', background: 'rgb(var(--zw-brand))', animation: 'blink .8s infinite' }} />
                     )}
                   </button>
                 ))}
                 <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{
                     width: 6, height: 6, borderRadius: '50%',
-                    background: rptDone ? '#22C55E' : tab === 'report' ? '#1A90FF' : phase === 'results' ? '#22C55E' : '#1A90FF',
+                    background: rptDone ? '#22C55E' : tab === 'report' ? 'rgb(var(--zw-brand))' : phase === 'results' ? '#22C55E' : 'rgb(var(--zw-brand))',
                     animation: phase === 'agents' || (tab === 'report' && !rptDone) ? 'blink .7s infinite' : 'none',
                   }} />
-                  <span style={{ fontFamily: 'monospace', fontSize: 9, color: rptDone ? '#22C55E' : tab === 'report' ? '#1A90FF' : phase === 'results' ? '#22C55E' : '#1A90FF' }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: 9, color: rptDone ? '#22C55E' : tab === 'report' ? 'rgb(var(--zw-brand))' : phase === 'results' ? '#22C55E' : 'rgb(var(--zw-brand))' }}>
                     {rptDone ? 'BIDWISE COMPLETE' : tab === 'report' ? 'GENERATING BIDWISE REPORT' : phase === 'results' ? 'ANALYSIS COMPLETE' : 'ANALYZING BREVARD'}
                   </span>
                 </div>
@@ -587,7 +587,7 @@ export default function DemoPage() {
               {tab === 'results' && (
                 <div style={{ display: 'grid', gap: 7, animation: 'fade-in .3s ease' }}>
                   {props.map((p, i) => <PropCard key={i} prop={p} highlightReport={i === 0 && rptProp} index={i} />)}
-                  <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#334155', textAlign: 'center', marginTop: 6 }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2)))', textAlign: 'center', marginTop: 6 }}>
                     Showing 4 of 19 · 4 BID · 3 REVIEW · 12 SKIP
                   </div>
                 </div>
@@ -601,7 +601,7 @@ export default function DemoPage() {
           )}
 
           <div style={{ textAlign: 'center', marginTop: 44 }}>
-            <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#1E293B', letterSpacing: '.14em' }}>
+            <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink)))', letterSpacing: '.14em' }}>
               ZONEWISE.AI · 298-KPI AGENTIC INTELLIGENCE · FLORIDA FORECLOSURE · Q1 2026
             </div>
           </div>

@@ -53,7 +53,7 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
       {/* Header */}
       <div className="h-14 px-6 flex items-center justify-between border-b border-gray-200 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900/50 transition-colors">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 bg-zw-navy-500 rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full animate-pulse" />
           <h2 className="font-medium text-gray-800 dark:text-slate-200">{activeSession?.title || 'New Conversation'}</h2>
         </div>
         <span className="text-xs text-gray-400 dark:text-slate-500 font-mono">{messages.length} messages</span>
@@ -67,8 +67,8 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
             <OnboardingMessage />
             
             <div className="max-w-lg text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-zw-navy-500/20 to-zw-navy-600/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-zw-navy-500/20">
-                <svg className="w-8 h-8 text-zw-navy-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-gradient-to-br from-[rgb(var(--zw-card)/0.2)] to-[rgb(var(--zw-elev)/0.2)] rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[rgb(var(--zw-border2)/0.2)]">
+                <svg className="w-8 h-8 text-[rgb(var(--zw-ink2))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -78,16 +78,16 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
               <div className="grid grid-cols-2 gap-3">
                 {exampleQueries.map((query, i) => (
                   <button key={i} onClick={() => setInput(query.text)}
-                    className="flex items-start gap-3 p-4 bg-gray-100/70 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-slate-800 border border-gray-200 dark:border-slate-700/50 hover:border-zw-navy-300 dark:hover:border-zw-navy-500/30 rounded-xl text-left transition-all group">
+                    className="flex items-start gap-3 p-4 bg-gray-100/70 dark:bg-slate-800/50 hover:bg-gray-100 dark:hover:bg-[rgb(var(--zw-card))] border border-gray-200 dark:border-slate-700/50 hover:border-[rgb(var(--zw-border2))] dark:hover:border-[rgb(var(--zw-border2)/0.3)] rounded-xl text-left transition-all group">
                     <span className="text-xl">{query.icon}</span>
-                    <span className="text-sm text-gray-600 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-slate-100">{query.text}</span>
+                    <span className="text-sm text-gray-600 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-[rgb(var(--zw-ink))]">{query.text}</span>
                   </button>
                 ))}
               </div>
               <div className="mt-8 flex items-center justify-center gap-6 text-xs text-gray-400 dark:text-slate-500">
-                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>67 Counties</span></div>
-                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>298 KPIs</span></div>
-                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-zw-navy-500 rounded-full" /><span>10.5M Parcels</span></div>
+                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full" /><span>67 Counties</span></div>
+                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full" /><span>298 KPIs</span></div>
+                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full" /><span>10.5M Parcels</span></div>
               </div>
             </div>
           </div>
@@ -98,15 +98,15 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
                 <div className={`max-w-[85%] ${message.role === 'user' ? 'order-2' : ''}`}>
                   {message.role === 'assistant' && (
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 bg-gradient-to-br from-zw-navy-500 to-zw-navy-700 rounded-lg flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">Z</span>
+                      <div className="w-6 h-6 bg-gradient-to-br from-[rgb(var(--zw-card))] to-[rgb(var(--zw-page))] rounded-lg flex items-center justify-center">
+                        <span className="text-[rgb(var(--zw-ink))] text-xs font-bold">Z</span>
                       </div>
                       <span className="text-xs text-gray-400 dark:text-slate-500">ZoneWise.AI</span>
                     </div>
                   )}
                   <div className={`px-4 py-3 rounded-2xl ${
                     message.role === 'user'
-                      ? 'bg-zw-navy-600 text-white rounded-br-md'
+                      ? 'bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] rounded-br-md'
                       : 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-slate-100 rounded-bl-md border border-gray-200 dark:border-slate-700'
                   }`}>
                     <div className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</div>
@@ -115,7 +115,7 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
                     <div className="mt-2 flex flex-wrap gap-2">
                       {message.artifacts.map((artifact) => (
                         <button key={artifact.id} onClick={() => onSelectArtifact(artifact)}
-                          className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-800/50 hover:bg-gray-200 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-600 dark:text-slate-300 transition-colors">
+                          className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-800/50 hover:bg-gray-200 dark:hover:bg-[rgb(var(--zw-elev))] border border-gray-200 dark:border-slate-700 rounded-lg text-xs text-gray-600 dark:text-slate-300 transition-colors">
                           <span>{artifact.title}</span>
                         </button>
                       ))}
@@ -131,9 +131,9 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
               <div className="flex justify-start">
                 <div className="bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 px-4 py-3 rounded-2xl rounded-bl-md">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-zw-navy-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-[rgb(var(--zw-card))] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               </div>
@@ -148,16 +148,16 @@ export default function ChatPanel({ messages, onSendMessage, activeSession, arti
         <form onSubmit={handleSubmit} className="relative">
           <textarea ref={textareaRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
             placeholder="Ask about real estate across Florida..." rows={1}
-            className="w-full px-4 py-3 pr-24 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-zw-navy-500/50 focus:border-zw-navy-500 transition-all" />
+            className="w-full px-4 py-3 pr-24 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-gray-900 dark:text-slate-100 placeholder-gray-400 dark:placeholder-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-[rgb(var(--zw-card)/0.5)] focus:border-[rgb(var(--zw-border2))] transition-all" />
           <div className="absolute right-2 bottom-2 flex items-center gap-2">
-            <button type="button" className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Attach file">
+            <button type="button" className="p-2 hover:bg-gray-100 dark:hover:bg-[rgb(var(--zw-elev))] rounded-lg transition-colors" title="Attach file">
               <svg className="w-5 h-5 text-gray-400 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
             </button>
             <button type="submit" disabled={!input.trim() || isTyping}
-              className="p-2 bg-zw-navy-600 hover:bg-zw-navy-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              className="p-2 bg-[rgb(var(--zw-elev))] hover:bg-[rgb(var(--zw-page))] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors">
+              <svg className="w-5 h-5 text-[rgb(var(--zw-ink))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </button>

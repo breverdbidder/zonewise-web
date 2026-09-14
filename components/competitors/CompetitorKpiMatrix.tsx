@@ -85,14 +85,14 @@ function buildMatrixRows(competitor: CompetitorProfile): KpiMatrixRow[] {
 function OutcomeTag({ outcome }: { outcome: RowOutcome }) {
   if (outcome === 'PARITY') {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-800/60 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+      <span className="inline-flex items-center gap-1 rounded-md border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-card)/0.6)] px-2 py-0.5 text-[10px] font-semibold text-[rgb(var(--zw-ink2))]">
         <span aria-hidden="true">⚖</span> PARITY
       </span>
     )
   }
   if (outcome === 'ADVANTAGE') {
     return (
-      <span className="inline-flex items-center gap-1 rounded-md border border-[#1A90FF]/40 bg-[#1A90FF]/10 px-2 py-0.5 text-[10px] font-bold text-[#1A90FF]">
+      <span className="inline-flex items-center gap-1 rounded-md border border-[rgb(var(--zw-brand)/0.4)] bg-[rgb(var(--zw-brand)/0.1)] px-2 py-0.5 text-[10px] font-bold text-[rgb(var(--zw-brand))]">
         <span aria-hidden="true">★</span> ZONEWISE ONLY
       </span>
     )
@@ -105,7 +105,7 @@ function OutcomeTag({ outcome }: { outcome: RowOutcome }) {
     )
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-0.5 text-[10px] text-slate-500">
+    <span className="inline-flex items-center gap-1 rounded-md border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page))] px-2 py-0.5 text-[10px] text-[rgb(var(--zw-ink2))]">
       TIE
     </span>
   )
@@ -135,24 +135,24 @@ export function CompetitorKpiMatrix({ competitor }: Props) {
   return (
     <section
       aria-labelledby="kpi-matrix-heading"
-      className="rounded-xl border border-slate-800 bg-slate-900/40 p-6"
+      className="rounded-xl border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)] p-6"
     >
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
         <h2
           id="kpi-matrix-heading"
-          className="text-xs font-bold uppercase tracking-wider text-slate-400"
+          className="text-xs font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]"
         >
           KPI Parity Matrix — {rows.length} data points compared
         </h2>
         <div className="flex flex-wrap gap-3 text-[11px]">
-          <span className="text-slate-500">
-            <span className="font-bold text-slate-300">{parity}</span> parity
+          <span className="text-[rgb(var(--zw-ink2))]">
+            <span className="font-bold text-[rgb(var(--zw-ink2))]">{parity}</span> parity
           </span>
-          <span className="text-slate-500">
-            <span className="font-bold text-[#1A90FF]">{advantage}</span> ZoneWise only
+          <span className="text-[rgb(var(--zw-ink2))]">
+            <span className="font-bold text-[rgb(var(--zw-brand))]">{advantage}</span> ZoneWise only
           </span>
           {gap > 0 && (
-            <span className="text-slate-500">
+            <span className="text-[rgb(var(--zw-ink2))]">
               <span className="font-bold text-rose-400">{gap}</span> roadmap
             </span>
           )}
@@ -164,22 +164,22 @@ export function CompetitorKpiMatrix({ competitor }: Props) {
           const catRows = byCategory.get(cat)!
           return (
             <div key={cat}>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                {cat} <span className="font-normal text-slate-600">({catRows.length})</span>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
+                {cat} <span className="font-normal text-[rgb(var(--zw-ink2))]">({catRows.length})</span>
               </h3>
-              <ul className="divide-y divide-slate-800/60 rounded-lg border border-slate-800 bg-slate-950/40">
+              <ul className="divide-y divide-[rgb(var(--zw-card)/0.6)] rounded-lg border border-[rgb(var(--zw-border2))] bg-[rgb(var(--zw-page)/0.4)]">
                 {catRows.map((row) => (
                   <li
                     key={row.kpi_code}
                     className="flex flex-wrap items-start justify-between gap-3 px-4 py-3"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="font-mono text-[10px] uppercase tracking-wider text-slate-600">
+                      <div className="font-mono text-[10px] uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
                         {row.kpi_code}
                       </div>
-                      <div className="text-sm font-semibold text-white">{row.kpi_name}</div>
+                      <div className="text-sm font-semibold text-[rgb(var(--zw-ink))]">{row.kpi_name}</div>
                       {row.description && (
-                        <div className="mt-0.5 text-xs text-slate-500">{row.description}</div>
+                        <div className="mt-0.5 text-xs text-[rgb(var(--zw-ink2))]">{row.description}</div>
                       )}
                     </div>
                     <div className="flex-shrink-0">

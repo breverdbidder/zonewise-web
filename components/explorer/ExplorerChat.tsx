@@ -112,15 +112,15 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
   const remaining = Math.max(0, FREE_CHAT_MESSAGES - chatCount)
 
   return (
-    <div className="flex flex-col h-full bg-slate-950">
+    <div className="flex flex-col h-full bg-[rgb(var(--zw-page))]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2.5 shrink-0">
+      <div className="px-4 py-3 border-b border-[rgb(var(--zw-border2))] flex items-center gap-2.5 shrink-0">
         <div className="w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-base">🤖</div>
         <div>
-          <div className="text-sm font-bold text-white">ZoneWise Explorer AI</div>
-          <div className="text-[11px] text-slate-400">{stats.counties} FL Counties · {formatParcels(stats.parcels)} parcels</div>
+          <div className="text-sm font-bold text-[rgb(var(--zw-ink))]">ZoneWise Explorer AI</div>
+          <div className="text-[11px] text-[rgb(var(--zw-ink2))]">{stats.counties} FL Counties · {formatParcels(stats.parcels)} parcels</div>
         </div>
-        <div className="ml-auto text-[10px] text-slate-600 bg-slate-900 border border-slate-800 rounded px-2 py-1">
+        <div className="ml-auto text-[10px] text-[rgb(var(--zw-ink2))] bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded px-2 py-1">
           {remaining}/{FREE_CHAT_MESSAGES} free
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
         {messages.length === 0 && (
           <div className="py-6 text-center">
             <div className="text-4xl mb-3 opacity-20">💬</div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-[220px] mx-auto">
+            <p className="text-xs text-[rgb(var(--zw-ink2))] leading-relaxed max-w-[220px] mx-auto">
               Ask about any Florida property, zone, or market trend.
             </p>
           </div>
@@ -142,7 +142,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
               className={
                 msg.role === 'user'
                   ? 'max-w-[85%] bg-amber-500/15 border border-amber-500/25 rounded-xl rounded-tr-sm px-3 py-2 text-sm text-white'
-                  : 'max-w-[95%] bg-slate-900 border border-slate-800 rounded-xl rounded-tl-sm px-3 py-2 text-sm text-slate-200'
+                  : 'max-w-[95%] bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-xl rounded-tl-sm px-3 py-2 text-sm text-[rgb(var(--zw-ink2))]'
               }
             >
               {msg.role === 'assistant' ? (
@@ -171,7 +171,7 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
       )}
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-slate-800 shrink-0">
+      <form onSubmit={handleSubmit} className="p-3 border-t border-[rgb(var(--zw-border2))] shrink-0">
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -180,15 +180,15 @@ export default function ExplorerChat({ mapRef, chatCount, onChatCountChange, onG
             onChange={e => setInput(e.target.value)}
             placeholder={remaining > 0 ? 'Try: "Show me R1 zones near water"' : 'Upgrade for unlimited chat'}
             disabled={streaming || remaining === 0}
-            className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500/60 transition-colors disabled:opacity-50"
+            className="flex-1 bg-[rgb(var(--zw-page))] border border-[rgb(var(--zw-border2))] rounded-lg px-3 py-2.5 text-sm text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))] focus:outline-none focus:border-amber-500/60 transition-colors disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={streaming || !input.trim() || remaining === 0}
-            className="px-3 py-2.5 bg-amber-500 text-slate-950 rounded-lg text-sm font-bold hover:brightness-110 disabled:opacity-40 transition-all shrink-0"
+            className="px-3 py-2.5 bg-amber-500 text-[rgb(var(--zw-ink))] rounded-lg text-sm font-bold hover:brightness-110 disabled:opacity-40 transition-all shrink-0"
           >
             {streaming ? (
-              <span className="inline-block w-4 h-4 border-2 border-slate-950/40 border-t-slate-950 rounded-full animate-spin" />
+              <span className="inline-block w-4 h-4 border-2 border-[rgb(var(--zw-border2)/0.4)] border-t-slate-950 rounded-full animate-spin" />
             ) : '↑'}
           </button>
         </div>

@@ -40,7 +40,7 @@ function QualityBadge({ count, total }: { count: number; total: number }) {
 export default function JurisdictionTable({ jurisdictions, totalZoned }: JurisdictionTableProps) {
   if (jurisdictions.length === 0) {
     return (
-      <div className="text-slate-400 text-sm py-8 text-center">
+      <div className="text-[rgb(var(--zw-ink2))] text-sm py-8 text-center">
         No jurisdiction data available.
       </div>
     )
@@ -51,19 +51,19 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-white/10">
-            <th className="text-left py-3 px-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <th className="text-left py-3 px-2 text-xs font-medium uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
               Jurisdiction
             </th>
-            <th className="text-right py-3 px-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <th className="text-right py-3 px-2 text-xs font-medium uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
               Zoned Parcels
             </th>
-            <th className="text-right py-3 px-2 text-xs font-medium uppercase tracking-wider text-slate-400 hidden sm:table-cell">
+            <th className="text-right py-3 px-2 text-xs font-medium uppercase tracking-wider text-[rgb(var(--zw-ink2))] hidden sm:table-cell">
               Share
             </th>
-            <th className="text-left py-3 px-2 text-xs font-medium uppercase tracking-wider text-slate-400 hidden md:table-cell">
+            <th className="text-left py-3 px-2 text-xs font-medium uppercase tracking-wider text-[rgb(var(--zw-ink2))] hidden md:table-cell">
               Sources
             </th>
-            <th className="text-center py-3 px-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <th className="text-center py-3 px-2 text-xs font-medium uppercase tracking-wider text-[rgb(var(--zw-ink2))]">
               Quality
             </th>
           </tr>
@@ -78,11 +78,11 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
                   i === 0 ? 'bg-white/[0.02]' : ''
                 }`}
               >
-                <td className="py-3 px-2 font-medium text-white">{j.jurisdiction}</td>
-                <td className="py-3 px-2 text-right text-slate-300 tabular-nums font-mono text-xs">
+                <td className="py-3 px-2 font-medium text-[rgb(var(--zw-ink))]">{j.jurisdiction}</td>
+                <td className="py-3 px-2 text-right text-[rgb(var(--zw-ink2))] tabular-nums font-mono text-xs">
                   {j.count.toLocaleString()}
                 </td>
-                <td className="py-3 px-2 text-right text-slate-400 tabular-nums text-xs hidden sm:table-cell">
+                <td className="py-3 px-2 text-right text-[rgb(var(--zw-ink2))] tabular-nums text-xs hidden sm:table-cell">
                   {sharePct}%
                 </td>
                 <td className="py-3 px-2 hidden md:table-cell">
@@ -90,7 +90,7 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
                     {j.zone_sources.slice(0, 3).map(s => (
                       <span
                         key={s.source}
-                        className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-white/10"
+                        className="text-[10px] px-1.5 py-0.5 rounded bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] border border-white/10"
                         title={`${s.count.toLocaleString()} parcels`}
                       >
                         {SOURCE_LABELS[s.source] ?? s.source}
@@ -107,11 +107,11 @@ export default function JurisdictionTable({ jurisdictions, totalZoned }: Jurisdi
         </tbody>
         <tfoot>
           <tr className="border-t border-white/20">
-            <td className="py-3 px-2 font-bold text-white">Total</td>
+            <td className="py-3 px-2 font-bold text-[rgb(var(--zw-ink))]">Total</td>
             <td className="py-3 px-2 text-right font-bold text-amber-400 tabular-nums font-mono text-xs">
               {totalZoned.toLocaleString()}
             </td>
-            <td className="py-3 px-2 text-right text-slate-400 text-xs hidden sm:table-cell">100%</td>
+            <td className="py-3 px-2 text-right text-[rgb(var(--zw-ink2))] text-xs hidden sm:table-cell">100%</td>
             <td className="hidden md:table-cell" />
             <td />
           </tr>

@@ -78,21 +78,21 @@ export function ZoomParallax({
         <div
           ref={bgRef}
           className="absolute inset-[-20%] z-[1]"
-          style={{ background: "radial-gradient(ellipse at 50% 40%, #1a2a4a 0%, #0B1119 70%)" }}
+          style={{ background: "radial-gradient(ellipse at 50% 40%, #1a2a4a 0%, rgb(var(--zw-page)) 70%)" }}
         />
         {/* Mid shapes */}
         <div ref={midRef} className="absolute inset-0 z-[2]">
           <div className="absolute w-72 h-72 rounded-full opacity-15 top-[15%] left-[10%]"
-            style={{ background: "radial-gradient(circle, #1A90FF 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgb(var(--zw-brand)) 0%, transparent 70%)" }} />
           <div className="absolute w-48 h-48 rounded-full opacity-10 top-[60%] right-[15%]"
-            style={{ background: "radial-gradient(circle, #1B2737 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgb(var(--zw-elev)) 0%, transparent 70%)" }} />
           <div className="absolute w-96 h-96 rounded-full opacity-10 bottom-[10%] left-[40%]"
-            style={{ background: "radial-gradient(circle, #1A90FF 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgb(var(--zw-brand)) 0%, transparent 70%)" }} />
         </div>
         {/* Foreground headline */}
         <div ref={fgRef} className="absolute inset-0 z-[3] flex items-center justify-center">
           <h2
-            className="text-white font-bold text-center leading-none opacity-90"
+            className="text-[rgb(var(--zw-ink))] font-bold text-center leading-none opacity-90"
             style={{ fontSize: "clamp(48px, 12vw, 160px)", letterSpacing: "-0.04em", lineHeight: "0.95" }}
           >
             {accentWord
@@ -105,8 +105,8 @@ export function ZoomParallax({
         {/* Product reveal */}
         <div ref={productRef} className="absolute inset-0 z-[4] flex items-center justify-center opacity-0">
           <div className="rounded-3xl p-14 text-center max-w-md shadow-2xl"
-            style={{ background: "#0d1829", border: "1px solid rgba(27,39,55,0.6)" }}>
-            <h3 className="text-3xl font-semibold text-white mb-3" style={{ letterSpacing: "-0.025em" }}>
+            style={{ background: "#0d1829", border: "1px solid rgb(var(--zw-border2) / 0.6)" }}>
+            <h3 className="text-3xl font-semibold text-[rgb(var(--zw-ink))] mb-3" style={{ letterSpacing: "-0.025em" }}>
               {headline}
             </h3>
             <p className="text-base mb-6" style={{ color: "rgba(255,255,255,0.55)", lineHeight: "1.6" }}>

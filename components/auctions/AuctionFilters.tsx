@@ -35,7 +35,7 @@ export default function AuctionFilters({
   // them the select sizes to its widest option and spills out of the filter
   // row at 320px (measured: 59px past a 288px container).
   // min-h-11 is the WCAG 2.5.8 touch size, dropped back to auto at md.
-  const selectClass = 'px-3 py-1.5 min-h-11 md:min-h-0 min-w-0 max-w-full text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-gray-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-zw-navy-500/30'
+  const selectClass = 'px-3 py-1.5 min-h-11 md:min-h-0 min-w-0 max-w-full text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-md text-gray-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--zw-card)/0.3)]'
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -78,7 +78,7 @@ export default function AuctionFilters({
             className={`px-2.5 sm:px-3.5 py-1.5 text-sm font-bold rounded transition-colors whitespace-nowrap shrink-0 ${
               viewMode === mode
                 ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-900 dark:text-white hover:bg-white/60 dark:hover:bg-slate-700/60'
+                : 'text-gray-900 dark:text-white hover:bg-white/60 dark:hover:bg-[rgb(var(--zw-elev)/0.6)]'
             }`}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}

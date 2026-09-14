@@ -8,23 +8,23 @@ const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 const clerkAppearance = {
   baseTheme: dark,
   variables: {
-    colorPrimary: '#1B2737',
+    colorPrimary: 'rgb(var(--zw-elev))',
     colorDanger: '#dc2626',
     colorSuccess: '#16a34a',
-    colorWarning: '#1A90FF',
+    colorWarning: 'rgb(var(--zw-brand))',
     fontFamily: 'Inter, system-ui, sans-serif',
   },
   elements: {
-    formButtonPrimary: 'bg-[#1B2737] hover:bg-[#2a5280] text-white',
-    card: 'shadow-lg border border-slate-700',
-    headerTitle: 'text-white',
-    headerSubtitle: 'text-slate-400',
-    socialButtonsBlockButton: 'border-slate-600 text-slate-300 hover:bg-slate-800',
+    formButtonPrimary: 'bg-[rgb(var(--zw-elev))] hover:bg-[#2a5280] text-[rgb(var(--zw-ink))]',
+    card: 'shadow-lg border border-[rgb(var(--zw-border2))]',
+    headerTitle: 'text-[rgb(var(--zw-ink))]',
+    headerSubtitle: 'text-[rgb(var(--zw-ink2))]',
+    socialButtonsBlockButton: 'border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink2))] hover:bg-[rgb(var(--zw-card))]',
     // placeholder: explicitly styled — the live Clerk card renders its light
     // theme despite baseTheme:dark, and the dark input's default placeholder
     // was near-invisible on it (dark-on-dark, flagged in the 2026-08-20 audit).
-    formFieldInput: 'bg-slate-800 border-slate-600 text-white placeholder:text-slate-400',
-    footerActionLink: 'text-[#1A90FF] hover:text-[#fbbf24]',
+    formFieldInput: 'bg-[rgb(var(--zw-card))] border-[rgb(var(--zw-border2))] text-[rgb(var(--zw-ink))] placeholder:text-[rgb(var(--zw-ink2))]',
+    footerActionLink: 'text-[rgb(var(--zw-brand))] hover:text-[#fbbf24]',
     userButtonAvatarBox: 'w-7 h-7',
   },
 }

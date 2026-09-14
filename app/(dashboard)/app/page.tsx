@@ -72,14 +72,14 @@ export default function AppShellPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#0B1119] overflow-hidden">
+    <div className="flex h-screen bg-[rgb(var(--zw-page))] overflow-hidden">
 
       {/* Mobile tab switcher */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[#162D4A] border-t border-slate-700/50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-[rgb(var(--zw-elev))] border-t border-[rgb(var(--zw-border2)/0.5)]">
         <button
           onClick={() => setActiveTab('chat')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'chat' ? 'text-zw-orange border-t-2 border-zw-orange' : 'text-slate-400'
+            activeTab === 'chat' ? 'text-[rgb(var(--zw-brand))] border-t-2 border-[rgb(var(--zw-brand))]' : 'text-[rgb(var(--zw-ink2))]'
           }`}
         >
           AI Chat
@@ -87,7 +87,7 @@ export default function AppShellPage() {
         <button
           onClick={() => setActiveTab('map')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'map' ? 'text-zw-orange border-t-2 border-zw-orange' : 'text-slate-400'
+            activeTab === 'map' ? 'text-[rgb(var(--zw-brand))] border-t-2 border-[rgb(var(--zw-brand))]' : 'text-[rgb(var(--zw-ink2))]'
           }`}
         >
           Map
@@ -98,17 +98,17 @@ export default function AppShellPage() {
       <div
         className={`
           flex flex-col w-full md:w-[380px] md:flex-shrink-0
-          bg-[#162D4A] border-r border-slate-700/50
+          bg-[rgb(var(--zw-elev))] border-r border-[rgb(var(--zw-border2)/0.5)]
           md:flex
           ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'}
         `}
       >
         {/* Chat header */}
-        <div className="shrink-0 px-4 py-3 border-b border-slate-700/50 bg-[#1B2737]/50">
+        <div className="shrink-0 px-4 py-3 border-b border-[rgb(var(--zw-border2)/0.5)] bg-[rgb(var(--zw-elev)/0.5)]">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-sm font-bold text-white">AI Analyst</h1>
-              <p className="text-xs text-slate-400 mt-0.5">67 Counties · 245K Auctions · AI-Powered</p>
+              <h1 className="text-sm font-bold text-[rgb(var(--zw-ink))]">AI Analyst</h1>
+              <p className="text-xs text-[rgb(var(--zw-ink2))] mt-0.5">67 Counties · 245K Auctions · AI-Powered</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
@@ -120,19 +120,19 @@ export default function AppShellPage() {
           <div className="flex gap-3 mt-3">
             <Link
               href="/chat"
-              className="text-xs text-slate-400 hover:text-zw-orange transition-colors border border-slate-600 hover:border-zw-orange/40 px-2 py-1 rounded"
+              className="text-xs text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-brand))] transition-colors border border-[rgb(var(--zw-border2))] hover:border-[rgb(var(--zw-brand)/0.4)] px-2 py-1 rounded"
             >
               Full Chat →
             </Link>
             <Link
               href="/explorer"
-              className="text-xs text-slate-400 hover:text-zw-orange transition-colors border border-slate-600 hover:border-zw-orange/40 px-2 py-1 rounded"
+              className="text-xs text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-brand))] transition-colors border border-[rgb(var(--zw-border2))] hover:border-[rgb(var(--zw-brand)/0.4)] px-2 py-1 rounded"
             >
               Explorer →
             </Link>
             <Link
               href="/auctions"
-              className="text-xs text-slate-400 hover:text-zw-orange transition-colors border border-slate-600 hover:border-zw-orange/40 px-2 py-1 rounded"
+              className="text-xs text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-brand))] transition-colors border border-[rgb(var(--zw-border2))] hover:border-[rgb(var(--zw-brand)/0.4)] px-2 py-1 rounded"
             >
               Calendar →
             </Link>
@@ -149,8 +149,8 @@ export default function AppShellPage() {
               {/* Avatar */}
               <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold ${
                 msg.role === 'user'
-                  ? 'bg-zw-orange text-white'
-                  : 'bg-zw-navy text-white border border-zw-orange/30'
+                  ? 'bg-[rgb(var(--zw-brand))] text-white'
+                  : 'bg-[rgb(var(--zw-elev))] text-[rgb(var(--zw-ink))] border border-[rgb(var(--zw-brand)/0.3)]'
               }`}>
                 {msg.role === 'user' ? 'U' : 'Z'}
               </div>
@@ -159,12 +159,12 @@ export default function AppShellPage() {
               <div
                 className={`max-w-[80%] rounded-xl px-4 py-3 text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-zw-orange/20 text-white border border-zw-orange/20'
-                    : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+                    ? 'bg-[rgb(var(--zw-brand)/0.2)] text-white border border-[rgb(var(--zw-brand)/0.2)]'
+                    : 'bg-[rgb(var(--zw-card)/0.8)] text-[rgb(var(--zw-ink2))] border border-[rgb(var(--zw-border2)/0.5)]'
                 }`}
               >
                 <p className="whitespace-pre-line">{msg.content}</p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-[rgb(var(--zw-ink2))] mt-1">
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -174,12 +174,12 @@ export default function AppShellPage() {
           {/* Typing indicator */}
           {isTyping && (
             <div className="flex gap-3">
-              <div className="w-7 h-7 rounded-full bg-zw-navy border border-zw-orange/30 flex items-center justify-center text-xs font-bold text-white">Z</div>
-              <div className="bg-slate-800/80 border border-slate-700/50 rounded-xl px-4 py-3">
+              <div className="w-7 h-7 rounded-full bg-[rgb(var(--zw-elev))] border border-[rgb(var(--zw-brand)/0.3)] flex items-center justify-center text-xs font-bold text-[rgb(var(--zw-ink))]">Z</div>
+              <div className="bg-[rgb(var(--zw-card)/0.8)] border border-[rgb(var(--zw-border2)/0.5)] rounded-xl px-4 py-3">
                 <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="w-2 h-2 bg-[rgb(var(--zw-elev))] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-[rgb(var(--zw-elev))] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-[rgb(var(--zw-elev))] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function AppShellPage() {
               <button
                 key={i}
                 onClick={() => sendMessage(p)}
-                className="text-xs bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:border-zw-orange/40 hover:text-zw-orange px-3 py-1.5 rounded-full transition-colors"
+                className="text-xs bg-[rgb(var(--zw-card)/0.6)] border border-[rgb(var(--zw-border2)/0.5)] text-[rgb(var(--zw-ink2))] hover:border-[rgb(var(--zw-brand)/0.4)] hover:text-[rgb(var(--zw-brand))] px-3 py-1.5 rounded-full transition-colors"
               >
                 {p}
               </button>
@@ -203,7 +203,7 @@ export default function AppShellPage() {
         )}
 
         {/* Input area */}
-        <div className="shrink-0 px-4 py-3 border-t border-slate-700/50 bg-[#162D4A]">
+        <div className="shrink-0 px-4 py-3 border-t border-[rgb(var(--zw-border2)/0.5)] bg-[rgb(var(--zw-elev))]">
           <div className="flex gap-2">
             <textarea
               value={input}
@@ -211,20 +211,20 @@ export default function AppShellPage() {
               onKeyDown={handleKeyDown}
               placeholder="Ask about any Florida property..."
               rows={1}
-              className="flex-1 bg-slate-800/60 border border-slate-600/50 text-slate-100 placeholder-slate-500 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-zw-orange/50 focus:ring-1 focus:ring-zw-orange/20 transition-colors"
+              className="flex-1 bg-[rgb(var(--zw-card)/0.6)] border border-[rgb(var(--zw-border2)/0.5)] text-[rgb(var(--zw-ink))] placeholder-[rgb(var(--zw-ink2))] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[rgb(var(--zw-brand)/0.5)] focus:ring-1 focus:ring-[rgb(var(--zw-brand)/0.2)] transition-colors"
               style={{ minHeight: '44px', maxHeight: '120px' }}
             />
             <button
               onClick={() => sendMessage()}
               disabled={!input.trim() || isTyping}
-              className="bg-zw-orange hover:bg-zw-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 transition-all duration-200 hover:scale-105 flex-shrink-0"
+              className="bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand))] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 transition-all duration-200 hover:scale-105 flex-shrink-0"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </button>
           </div>
-          <p className="text-xs text-slate-600 mt-2 text-center">Press Enter to send · Shift+Enter for newline</p>
+          <p className="text-xs text-[rgb(var(--zw-ink2))] mt-2 text-center">Press Enter to send · Shift+Enter for newline</p>
         </div>
       </div>
 
@@ -234,20 +234,20 @@ export default function AppShellPage() {
           flex-1 relative
           md:flex
           ${activeTab === 'map' ? 'flex' : 'hidden md:flex'}
-          flex-col bg-slate-900
+          flex-col bg-[rgb(var(--zw-page))]
           pb-16 md:pb-0
         `}
       >
         {/* Map header */}
-        <div className="shrink-0 px-6 py-3 border-b border-slate-700/50 bg-slate-900/80 flex items-center justify-between">
+        <div className="shrink-0 px-6 py-3 border-b border-[rgb(var(--zw-border2)/0.5)] bg-[rgb(var(--zw-page)/0.8)] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h2 className="text-sm font-semibold text-slate-200">Florida Auction Map</h2>
-            <span className="text-xs bg-zw-orange/10 text-zw-orange border border-zw-orange/20 px-2 py-0.5 rounded-full">67 Counties</span>
+            <h2 className="text-sm font-semibold text-[rgb(var(--zw-ink2))]">Florida Auction Map</h2>
+            <span className="text-xs bg-[rgb(var(--zw-brand)/0.1)] text-[rgb(var(--zw-brand))] border border-[rgb(var(--zw-brand)/0.2)] px-2 py-0.5 rounded-full">67 Counties</span>
           </div>
           <div className="flex gap-2">
             <Link
               href="/explorer"
-              className="text-xs bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-colors"
+              className="text-xs bg-[rgb(var(--zw-card))] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] border border-[rgb(var(--zw-border2))] hover:border-[rgb(var(--zw-border2))] px-3 py-1.5 rounded-lg transition-colors"
             >
               Full Explorer →
             </Link>
@@ -262,8 +262,8 @@ export default function AppShellPage() {
               className="absolute inset-0"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(27,39,55,0.5) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(27,39,55,0.5) 1px, transparent 1px)
+                  linear-gradient(rgb(var(--zw-border2) / 0.5) 1px, transparent 1px),
+                  linear-gradient(90deg, rgb(var(--zw-border2) / 0.5) 1px, transparent 1px)
                 `,
                 backgroundSize: '40px 40px',
               }}
@@ -296,8 +296,8 @@ export default function AppShellPage() {
                   key={i}
                   className={`absolute rounded-full transition-all duration-300 ${
                     dot.h
-                      ? 'bg-zw-orange/80 animate-pulse'
-                      : 'bg-zw-navy/60'
+                      ? 'bg-[rgb(var(--zw-brand)/0.8)] animate-pulse'
+                      : 'bg-[rgb(var(--zw-elev)/0.6)]'
                   }`}
                   style={{
                     left: `${dot.x}%`,
@@ -305,7 +305,7 @@ export default function AppShellPage() {
                     width: `${dot.r * 6}px`,
                     height: `${dot.r * 6}px`,
                     animationDelay: `${i * 200}ms`,
-                    boxShadow: dot.h ? '0 0 12px rgba(26,144,255,0.4)' : 'none',
+                    boxShadow: dot.h ? '0 0 12px rgb(var(--zw-brand) / 0.4)' : 'none',
                   }}
                 />
               ))}
@@ -314,17 +314,17 @@ export default function AppShellPage() {
 
           {/* Center overlay */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl px-8 py-6">
-              <div className="w-12 h-12 bg-zw-navy/50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-zw-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center bg-[rgb(var(--zw-page)/0.8)] backdrop-blur-sm border border-[rgb(var(--zw-border2)/0.5)] rounded-2xl px-8 py-6">
+              <div className="w-12 h-12 bg-[rgb(var(--zw-elev)/0.5)] rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-[rgb(var(--zw-brand))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
               </div>
-              <h3 className="text-white font-semibold mb-2">Map Loading</h3>
-              <p className="text-slate-400 text-sm mb-4">Interactive Mapbox choropleth<br />67 Florida counties</p>
+              <h3 className="text-[rgb(var(--zw-ink))] font-semibold mb-2">Map Loading</h3>
+              <p className="text-[rgb(var(--zw-ink2))] text-sm mb-4">Interactive Mapbox choropleth<br />67 Florida counties</p>
               <Link
                 href="/explorer"
-                className="inline-flex items-center gap-2 bg-zw-orange hover:bg-zw-orange-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors pointer-events-auto"
+                className="inline-flex items-center gap-2 bg-[rgb(var(--zw-brand))] hover:bg-[rgb(var(--zw-brand))] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors pointer-events-auto"
               >
                 Open Full Explorer
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,7 +339,7 @@ export default function AppShellPage() {
             {['+', '−', '⊕'].map((ctrl, i) => (
               <button
                 key={i}
-                className="w-9 h-9 bg-slate-800/80 border border-slate-700/50 text-slate-300 hover:text-white hover:border-zw-orange/30 rounded-lg flex items-center justify-center text-sm font-bold transition-colors backdrop-blur-sm"
+                className="w-9 h-9 bg-[rgb(var(--zw-card)/0.8)] border border-[rgb(var(--zw-border2)/0.5)] text-[rgb(var(--zw-ink2))] hover:text-[rgb(var(--zw-ink))] hover:border-[rgb(var(--zw-brand)/0.3)] rounded-lg flex items-center justify-center text-sm font-bold transition-colors backdrop-blur-sm"
               >
                 {ctrl}
               </button>
@@ -347,8 +347,8 @@ export default function AppShellPage() {
           </div>
 
           {/* County info overlay */}
-          <div className="absolute top-4 right-4 bg-slate-800/80 border border-slate-700/50 rounded-xl px-4 py-3 backdrop-blur-sm">
-            <div className="text-xs text-slate-400 mb-2">Active Auctions</div>
+          <div className="absolute top-4 right-4 bg-[rgb(var(--zw-card)/0.8)] border border-[rgb(var(--zw-border2)/0.5)] rounded-xl px-4 py-3 backdrop-blur-sm">
+            <div className="text-xs text-[rgb(var(--zw-ink2))] mb-2">Active Auctions</div>
             <div className="space-y-1">
               {[
                 { county: 'Miami-Dade', count: 234 },
@@ -356,8 +356,8 @@ export default function AppShellPage() {
                 { county: 'Hillsborough', count: 156 },
               ].map((c, i) => (
                 <div key={i} className="flex items-center justify-between gap-4 text-xs">
-                  <span className="text-slate-300">{c.county}</span>
-                  <span className="text-zw-orange font-bold">{c.count}</span>
+                  <span className="text-[rgb(var(--zw-ink2))]">{c.county}</span>
+                  <span className="text-[rgb(var(--zw-brand))] font-bold">{c.count}</span>
                 </div>
               ))}
             </div>

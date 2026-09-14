@@ -1,7 +1,7 @@
 // app/parcel/[id]/page.tsx
 // SUMMIT 77c39794 — Public parcel card renderer (ZoneWise + BidDeed)
 // SSR for SEO, CSP-compliant via nonce from middleware
-// Brand: Navy #1B2737, Orange #1A90FF, Inter, bg #0B1119
+// Brand: Navy rgb(var(--zw-elev)), Orange rgb(var(--zw-brand)), Inter, bg rgb(var(--zw-page))
 
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
@@ -78,7 +78,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
     : 'https://chat.zonewise.ai/signup';
 
   const confidence = card.ai_answer_jsonb.confidence ?? 'INFERRED';
-  const confColor = confidence === 'VERIFIED' ? '#10B981' : confidence === 'UNTESTED' ? '#1A90FF' : '#64748B';
+  const confColor = confidence === 'VERIFIED' ? '#10B981' : confidence === 'UNTESTED' ? 'rgb(var(--zw-brand))' : 'rgb(var(--zw-elev))';
   const addrLine = card.site_addr
     ? `${card.site_addr}${card.site_city ? ', ' + card.site_city : ''}`
     : `PIN ${card.pin}`;
@@ -97,36 +97,36 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
       <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <ViewPixel cardId={card.id} supabaseUrl={SUPABASE_URL} anonKey={SUPABASE_ANON} />
 
-      <main style={{ background: '#0B1119', color: '#F1F5F9', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <main style={{ background: 'rgb(var(--zw-page))', color: '#F1F5F9', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 80px' }}>
-          <header style={{ borderBottom: '1px solid rgba(27,39,55,0.4)', paddingBottom: 20, marginBottom: 32 }}>
+          <header style={{ borderBottom: '1px solid rgb(var(--zw-border2) / 0.4)', paddingBottom: 20, marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
               <Logo app={card.app} />
-              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1A90FF' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgb(var(--zw-brand))' }}>
                 {card.app === 'zonewise' ? 'Zoning Intelligence' : 'Auction Intelligence'}
               </span>
             </div>
             <h1 style={{ fontSize: 34, fontWeight: 700, lineHeight: 1.15, margin: 0, color: '#F8FAFC' }}>{addrLine}</h1>
-            <div style={{ fontSize: 14, color: '#94A3B8', marginTop: 8 }}>
+            <div style={{ fontSize: 14, color: 'rgb(var(--zw-ink2)))', marginTop: 8 }}>
               {card.county} County, FL · PIN {card.pin}
             </div>
           </header>
 
           <section style={{ marginBottom: 32 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
               Question
             </div>
             <p style={{ fontSize: 19, lineHeight: 1.5, color: '#CBD5E1', margin: '0 0 28px' }}>{card.question}</p>
 
             <div style={{
-              background: 'linear-gradient(180deg, rgba(27,39,55,0.25) 0%, rgba(27,39,55,0.08) 100%)',
-              border: '1px solid rgba(27,39,55,0.5)', borderRadius: 12, padding: '24px 28px',
+              background: 'linear-gradient(180deg, rgb(var(--zw-border2) / 0.25) 0%, rgb(var(--zw-border2) / 0.08) 100%)',
+              border: '1px solid rgb(var(--zw-border2) / 0.5)', borderRadius: 12, padding: '24px 28px',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                   AI Analysis
                 </span>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: '#0B1119' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: confColor, color: 'rgb(var(--zw-brand-ink)))' }}>
                   {confidence}
                 </span>
               </div>
@@ -138,18 +138,18 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
 
           {card.citations.length > 0 && (
             <section style={{ marginBottom: 40 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'rgb(var(--zw-ink2)))', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
                 Sources
               </div>
               <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {card.citations.map((c, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(27,39,55,0.3)' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#1A90FF', minWidth: 20 }}>[{i + 1}]</span>
+                  <li key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderTop: i === 0 ? 'none' : '1px solid rgb(var(--zw-border2) / 0.3)' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'rgb(var(--zw-brand))', minWidth: 20 }}>[{i + 1}]</span>
                     <div style={{ flex: 1, fontSize: 14, color: '#CBD5E1' }}>
                       <strong style={{ color: '#F1F5F9' }}>{c.source}</strong>
-                      {c.section && <span style={{ color: '#94A3B8' }}> — {c.section}</span>}
+                      {c.section && <span style={{ color: 'rgb(var(--zw-ink2)))' }}> — {c.section}</span>}
                       {c.url && (
-                        <a href={c.url} target="_blank" rel="noopener nofollow" style={{ color: '#1A90FF', textDecoration: 'none', marginLeft: 8, fontSize: 13 }}>
+                        <a href={c.url} target="_blank" rel="noopener nofollow" style={{ color: 'rgb(var(--zw-brand))', textDecoration: 'none', marginLeft: 8, fontSize: 13 }}>
                           view →
                         </a>
                       )}
@@ -161,7 +161,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
           )}
 
           <section style={{
-            background: '#1B2737', borderRadius: 12, padding: '32px 28px', textAlign: 'center', marginBottom: 32,
+            background: 'rgb(var(--zw-elev))', borderRadius: 12, padding: '32px 28px', textAlign: 'center', marginBottom: 32,
           }}>
             <h2 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 8px', color: '#F8FAFC' }}>
               Ask your own question about any FL parcel
@@ -171,7 +171,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </p>
             <a href={signupHref}
                style={{
-                 display: 'inline-block', background: '#1A90FF', color: '#0B1119',
+                 display: 'inline-block', background: 'rgb(var(--zw-brand))', color: 'rgb(var(--zw-brand-ink)))',
                  fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 8,
                  textDecoration: 'none', letterSpacing: '0.02em',
                }}>
@@ -179,7 +179,7 @@ export default async function ParcelCardPage({ params }: { params: Promise<{ id:
             </a>
           </section>
 
-          <footer style={{ fontSize: 12, color: '#475569', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgba(27,39,55,0.3)' }}>
+          <footer style={{ fontSize: 12, color: 'rgb(var(--zw-ink2)))', display: 'flex', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid rgb(var(--zw-border2) / 0.3)' }}>
             <span>Viewed {card.view_count.toLocaleString()} times · Shared {card.shared_count}</span>
             <span>Generated {new Date(card.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </footer>
@@ -193,8 +193,8 @@ function Logo({ app }: { app: 'zonewise' | 'biddeed' }) {
   const label = app === 'zonewise' ? 'ZoneWise.AI' : 'BidDeed.AI';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 24, height: 24, background: '#1A90FF', borderRadius: 6, position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 4, background: '#1B2737', borderRadius: 3 }} />
+      <div style={{ width: 24, height: 24, background: 'rgb(var(--zw-brand))', borderRadius: 6, position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: 4, background: 'rgb(var(--zw-elev))', borderRadius: 3 }} />
       </div>
       <span style={{ fontSize: 15, fontWeight: 700, color: '#F8FAFC', letterSpacing: '-0.01em' }}>{label}</span>
     </div>
