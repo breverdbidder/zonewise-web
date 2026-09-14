@@ -152,12 +152,12 @@ function tooManyRequests(req: NextRequest, resetAt: number): NextResponse {
   .mark { width:36px; height:36px; border-radius:9px; background:#1d4ed8; color:#fff;
           font-weight:800; font-size:18px; display:flex; align-items:center; justify-content:center; }
   .name { font-size:17px; font-weight:700; color:#fff; }
-  .name span { color:#f59e0b; }
+  .name span { color:#1A90FF; }
   h1 { font-size:20px; margin:0 0 10px; color:#fff; }
   p { margin:0 0 22px; font-size:14px; line-height:1.6; color:#94a3b8; }
-  .wait { font-variant-numeric:tabular-nums; font-weight:700; color:#f59e0b; }
+  .wait { font-variant-numeric:tabular-nums; font-weight:700; color:#1A90FF; }
   a { display:inline-flex; align-items:center; justify-content:center; min-height:44px;
-      padding:0 22px; border-radius:10px; background:#f59e0b; color:#0b1220;
+      padding:0 22px; border-radius:10px; background:#1A90FF; color:#0b1220;
       font-weight:700; font-size:14px; text-decoration:none; }
   .fine { margin-top:18px; font-size:12px; color:#475569; }
 </style></head>
