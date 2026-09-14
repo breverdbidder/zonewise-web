@@ -49,11 +49,11 @@ export default function TopNav() {
                 href={item.href}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   isActive && item.highlight
-                    ? 'text-white bg-[#F59E0B]'
+                    ? 'text-white bg-[#1A90FF]'
                     : isActive
                     ? 'text-zw-navy-700 dark:text-zw-orange-400 bg-zw-navy-50 dark:bg-zw-navy-600/20'
                     : item.highlight
-                    ? 'text-[#F59E0B]/80 hover:text-[#F59E0B] hover:bg-[#F59E0B]/10'
+                    ? 'text-[#1A90FF]/80 hover:text-[#1A90FF] hover:bg-[#1A90FF]/10'
                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800'
                 }`}
               >
@@ -73,7 +73,7 @@ export default function TopNav() {
           <SafeUserButton />
           {/* Hamburger — visible only on mobile */}
           <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-md text-slate-300 hover:text-white hover:bg-[#1E3A5F] transition-colors"
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-md text-slate-300 hover:text-white hover:bg-[#1B2737] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileOpen}
@@ -88,7 +88,7 @@ export default function TopNav() {
       {mobileOpen && (
         <div
           id="mobile-nav-menu"
-          className="md:hidden bg-[#1E3A5F] border-t border-slate-700"
+          className="md:hidden bg-[#1B2737] border-t border-slate-700"
         >
           <div className="flex flex-col py-2 px-4 gap-1">
             {NAV_ITEMS.map((item) => {
@@ -100,11 +100,11 @@ export default function TopNav() {
                   onClick={() => setMobileOpen(false)}
                   className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
                     isActive && item.highlight
-                      ? 'text-white bg-[#F59E0B]'
+                      ? 'text-white bg-[#1A90FF]'
                       : isActive
                       ? 'text-white bg-white/10'
                       : item.highlight
-                      ? 'text-[#F59E0B] hover:bg-white/10'
+                      ? 'text-[#1A90FF] hover:bg-white/10'
                       : 'text-slate-200 hover:text-white hover:bg-white/10'
                   }`}
                 >
