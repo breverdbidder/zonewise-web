@@ -75,7 +75,7 @@ export function CurtainReveal({
         <div
           ref={leftRef}
           className="absolute top-0 bottom-0 left-0 w-1/2 z-[2] flex items-center justify-end pr-10"
-          style={{ background: "#020617", borderRight: "1px solid rgba(30,58,95,0.4)" }}
+          style={{ background: "#020617", borderRight: "1px solid rgba(27,39,55,0.4)" }}
         >
           <h2 className="font-bold text-white" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
             {leftWord}
@@ -85,7 +85,7 @@ export function CurtainReveal({
         <div
           ref={rightRef}
           className="absolute top-0 bottom-0 right-0 w-1/2 z-[2] flex items-center justify-start pl-10"
-          style={{ background: "#020617", borderLeft: "1px solid rgba(30,58,95,0.4)" }}
+          style={{ background: "#020617", borderLeft: "1px solid rgba(27,39,55,0.4)" }}
         >
           <h2 className="font-bold text-white" style={{ fontSize: "clamp(36px, 7vw, 80px)", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
             {rightWord}
