@@ -35,7 +35,7 @@ interface Result {
 
 const TRUST: Record<string, { label: string; color: string; bg: string }> = {
   verified:   { label: 'Verified',   color: '#10B981', bg: 'rgba(16,185,129,.12)' },
-  estimated:  { label: 'Estimated',  color: '#F59E0B', bg: 'rgba(245,158,11,.12)' },
+  estimated:  { label: 'Estimated',  color: '#1A90FF', bg: 'rgba(245,158,11,.12)' },
   unverified: { label: 'Unverified', color: '#94A3B8', bg: 'rgba(100,116,139,.15)' },
   none:       { label: 'No zoning',  color: '#64748B', bg: 'rgba(100,116,139,.12)' },
 }
@@ -91,17 +91,17 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
   return (
     <div ref={boxRef} className="relative w-full">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#F59E0B]" />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#1A90FF]" />
         <input
           value={q}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => results.length && setOpen(true)}
           placeholder={currentAddress ? `Analyze another address…` : 'Enter a Florida address, e.g. 1390 KANAB AVE'}
-          className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-white placeholder:text-slate-300 outline-none transition-all focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/40"
+          className="w-full rounded-lg border-2 py-3 pl-11 pr-10 text-base font-medium text-white placeholder:text-slate-300 outline-none transition-all focus:border-[#1A90FF] focus:ring-2 focus:ring-[#1A90FF]/40"
           style={{ background: 'rgba(15,23,42,.65)', borderColor: 'rgba(245,158,11,.55)', boxShadow: '0 0 0 1px rgba(245,158,11,.12), 0 2px 12px rgba(245,158,11,.08)' }}
           aria-label="Search Florida parcels by address"
         />
-        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#F59E0B]" />}
+        {loading && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#1A90FF]" />}
         {!loading && q && (
           <button onClick={() => { setQ(''); setResults([]); setOpen(false) }}
                   aria-label="Clear search"
@@ -123,7 +123,7 @@ export function ParcelSearchBar({ currentAddress }: { currentAddress?: string })
                 className="flex w-full items-start gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-white/5"
                 style={{ borderColor: 'rgba(30,41,59,.6)' }}
               >
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#F59E0B]" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#1A90FF]" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-white">{r.address}</span>
                   <span className="block truncate text-xs text-slate-300">
