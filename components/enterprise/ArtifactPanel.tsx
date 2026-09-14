@@ -98,7 +98,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
       const el = document.createElement('div')
       el.innerHTML = `<div style="
         width: 32px; height: 32px;
-        background: linear-gradient(135deg, #2A4F7A, #1E3A5F);
+        background: linear-gradient(135deg, #2A4F7A, #1B2737);
         border: 3px solid white;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);
@@ -115,7 +115,7 @@ export default function ArtifactPanel({ artifact, artifacts, onSelectArtifact, o
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
           .setHTML(`
             <div style="padding: 8px; font-family: Arial, sans-serif;">
-              <strong style="color: #1E3A5F; font-size: 14px;">${artifact.data.zoneCode}</strong>
+              <strong style="color: #1B2737; font-size: 14px;">${artifact.data.zoneCode}</strong>
               <div style="color: #666; font-size: 12px;">${artifact.data.zoneName || ''}</div>
               <div style="color: #888; font-size: 11px;">${artifact.data.jurisdiction || ''}</div>
             </div>
