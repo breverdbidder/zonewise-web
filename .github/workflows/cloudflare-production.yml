@@ -107,6 +107,14 @@ jobs:
                 continue;
               }
               if (m[1].startsWith('VERCEL_')) continue;
+              // Supabase service-role rotation source of truth is the masked
+              // GitHub secret. Never let a stale Vercel value silently win.
+              if (m[1] === 'SUPABASE_SERVICE_ROLE_KEY') {
+                const fb = process.env.FALLBACK_SUPABASE_SERVICE_ROLE_KEY;
+                if (!fb) { unresolved.push(m[1]); continue; }
+                resolved.push(m[1]); out.push(m[1] + '=' + JSON.stringify(fb));
+                continue;
+              }
               out.push(m[1] + '=' + JSON.stringify(val));
             }
             fs.writeFileSync('.env.production.local', out.join('\n') + '\n');
@@ -115,6 +123,7 @@ jobs:
             console.log('  resolved from repo secrets: ' + (resolved.join(', ') || 'none'));
             console.log('  UNRESOLVED (not bound): ' + (unresolved.join(', ') || 'none'));
             if (unresolved.includes('CLERK_SECRET_KEY')) { console.error('::error::CLERK_SECRET_KEY is Vercel-sensitive and has no repo-secret fallback'); process.exit(1); }
+            if (unresolved.includes('SUPABASE_SERVICE_ROLE_KEY')) { console.error('::error::SUPABASE_SERVICE_ROLE_KEY repo secret is missing; refusing deploy'); process.exit(1); }
           "
           rm -f "$SRC"
 
