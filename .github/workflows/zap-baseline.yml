@@ -31,7 +31,7 @@ jobs:
             *) echo "Target must be the public ZoneWise production site" >&2; exit 1 ;;
           esac
       - name: ZAP baseline
-        uses: zaproxy/action-baseline@v0.14.0
+        uses: zaproxy/action-baseline@15c68dd2097803f36bcaf23ef2582c84bccdb72d # v0.14.0
         with:
           target: ${{ inputs.target || 'https://zonewise.ai' }}
           rules_file_name: '.zap/rules.tsv'
