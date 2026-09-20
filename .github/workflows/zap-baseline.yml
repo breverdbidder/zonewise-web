@@ -1,0 +1,40 @@
+name: OWASP ZAP Baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Public URL to scan
+        required: true
+        default: https://zonewise.ai
+        type: string
+  schedule:
+    - cron: '23 6 * * 1'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  baseline:
+    name: Passive baseline scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Validate target
+        shell: bash
+        env:
+          TARGET: ${{ inputs.target || 'https://zonewise.ai' }}
+        run: |
+          case "$TARGET" in
+            https://zonewise.ai|https://www.zonewise.ai) ;;
+            *) echo "Target must be the public ZoneWise production site" >&2; exit 1 ;;
+          esac
+      - name: ZAP baseline
+        uses: zaproxy/action-baseline@15c68dd2097803f36bcaf23ef2582c84bccdb72d # v0.14.0
+        with:
+          target: ${{ inputs.target || 'https://zonewise.ai' }}
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a -j -m 3'
+          allow_issue_writing: true
+          fail_action: false

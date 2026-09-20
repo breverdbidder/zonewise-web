@@ -1,0 +1,6 @@
+# rule_id	action	comment
+10035	WARN	Strict-Transport-Security review
+10038	WARN	Content-Security-Policy review
+10020	WARN	Anti-clickjacking header review
+10021	WARN	X-Content-Type-Options review
+10016	IGNORE	Web browser XSS protection is obsolete in modern browsers
