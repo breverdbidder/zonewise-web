@@ -1,0 +1,49 @@
+name: Supabase legacy-key cutover preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replacement-key:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Validate masked replacement and probe required RPC
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_URL" || { echo '::error::NEXT_PUBLIC_SUPABASE_URL is missing'; exit 1; }
+          test -n "$SUPABASE_SERVICE_ROLE_KEY" || { echo '::error::SUPABASE_SERVICE_ROLE_KEY is missing'; exit 1; }
+          echo "::add-mask::$SUPABASE_SERVICE_ROLE_KEY"
+          case "$SUPABASE_SERVICE_ROLE_KEY" in
+            sb_secret_*) ;;
+            *) echo '::error::Expected a new-format sb_secret_ replacement, not a legacy JWT'; exit 1 ;;
+          esac
+          code=$(curl -sS -o /tmp/rpc.json -w '%{http_code}' --max-time 30 \
+            -X POST "$SUPABASE_URL/rest/v1/rpc/zonewise_platform_stats" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H 'Content-Type: application/json' \
+            --data '{}')
+          echo "replacement RPC probe -> HTTP $code"
+          test "$code" = 200 || { head -c 300 /tmp/rpc.json | sed -E 's/(sb_secret_|eyJ)[A-Za-z0-9_.-]+/[REDACTED]/g'; exit 1; }
+
+  public-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Record current public route baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in / /api/stats /api/auctions/summary; do
+            code=$(curl -L -sS -o /tmp/response -w '%{http_code}' --max-time 30 "https://zonewise.ai$path")
+            echo "$path -> $code"
+            case "$code" in 2*|3*|401|403) ;; *) exit 1;; esac
+          done
