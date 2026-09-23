@@ -29,9 +29,9 @@ vi.mock('next/dynamic', () => ({
   default: () => () => <div data-testid="auction-detail-map">Map</div>,
 }))
 
-// Mock lib/zoning
-vi.mock('@/lib/zoning', () => ({
-  parseDimensionalStandards: vi.fn(() => null),
+// Mock lib/zone-standards (ZW-P0-003 — no regex DIMS on detail)
+vi.mock('@/lib/zone-standards', () => ({
+  hasDbBackedDimensionalStandards: vi.fn(() => false),
 }))
 
 const makeAuctionDetail = (overrides: Partial<AuctionDetailType> = {}): AuctionDetailType => ({
