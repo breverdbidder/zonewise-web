@@ -58,10 +58,42 @@ export interface Auction {
   auction_url?: string | null
 }
 
+/**
+ * Dimensional standards looked up by (jurisdiction, zoning_code) from
+ * public.zone_standards (ZW-P0-003). Never fabricate via regex for UI.
+ *
+ * `standards_verified` says whether numbers came from a cited land development
+ * code. The UI must never render an unverified blank as though it were a source.
+ */
+export interface ZoningStandards {
+  zoning_code: string | null
+  zoning_desc: string | null
+  jurisdiction: string | null
+  land_use: string | null
+  setbacks: Record<string, unknown> | null
+  parking: Record<string, unknown> | null
+  max_height_ft: number | null
+  max_stories: number | null
+  units_per_acre: number | null
+  far_max: number | null
+  permitted_uses: unknown[] | null
+  overlays: unknown[] | null
+  min_lot_sqft: number | null
+  source_url: string | null
+  source_citation: string | null
+  verified_at: string | null
+  standards_verified: boolean
+  /** Present when dims came from public.zone_standards (ZW-P0-003). */
+  confidence_score?: number | null
+  /** 'zone_standards' | 'zw_zoning_standards' — lets UI avoid regex fiction. */
+  standards_source?: 'zone_standards' | 'zw_zoning_standards' | null
+}
+
 /** Enriched auction detail (from /api/auctions/[id]) */
 export interface AuctionDetail extends Auction {
   bcpao_photo_url: string | null
   zoning: ZoningInfo | null
+  zoning_standards?: ZoningStandards | null
   recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN'
   recommendation_color: string
   max_bid: number | null

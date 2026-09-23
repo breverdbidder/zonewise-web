@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { formatCountyLabel } from '@/lib/counties'
 import type { AuctionDetail as AuctionDetailType } from '@/types/auctions'
-import { parseDimensionalStandards } from '@/lib/zoning'
+import { hasDbBackedDimensionalStandards } from '@/lib/zone-standards'
 
 const AuctionDetailMap = dynamic(() => import('./AuctionDetailMap'), { ssr: false })
 
@@ -283,19 +283,76 @@ export default function AuctionDetail({ auctionId }: Props) {
               )}
             </SectionCard>
 
-            {/* Dimensional Standards */}
+            {/* Dimensional Standards — ZW-P0-003 (#155).
+                Prefer public.zone_standards (API-joined). Never render regex
+                parseDimensionalStandards as ordinance; if no DB row, show
+                Unknown / standards not linked. */}
             {auction.zoning?.zone_code && (() => {
-              const dims = parseDimensionalStandards(auction.zoning?.zone_code ?? null, auction.zoning?.future_land_use ?? null)
-              if (!dims) return null
+              const std = auction.zoning_standards ?? null
+              const fromDb = hasDbBackedDimensionalStandards(std)
+              const verified = Boolean(std?.standards_verified)
+
+              const fmtFt = (v: number | null | undefined) => (v == null ? null : `${v} ft`)
+              const fmtSetbacks = (s: Record<string, unknown> | null | undefined) => {
+                if (!s) return null
+                const parts = (['front', 'side', 'side_street', 'rear'] as const)
+                  .filter((k) => s[k] != null)
+                  .map((k) => `${k.replace('_', ' ')}: ${String(s[k])} ft`)
+                return parts.length ? parts.join(' · ') : null
+              }
+              const fmtList = (v: unknown[] | null | undefined) =>
+                Array.isArray(v) && v.length ? v.map((x) => String(x)).join(', ') : null
+
+              const missing = fromDb
+                ? ([
+                    ['setbacks', fmtSetbacks(std?.setbacks)],
+                    ['parking', std?.parking ? 'set' : null],
+                    ['height', fmtFt(std?.max_height_ft)],
+                    ['land use', std?.land_use ?? null],
+                    ['units per acre', std?.units_per_acre ?? null],
+                    ['FAR', std?.far_max ?? null],
+                    ['permitted uses', fmtList(std?.permitted_uses)],
+                    ['overlays', fmtList(std?.overlays)],
+                  ] as const)
+                    .filter(([, v]) => v == null)
+                    .map(([k]) => k)
+                : []
+
               return (
                 <SectionCard title="Dimensional Standards" icon="📐">
-                  <InfoRow label="Min Lot Size" value={dims.minLotSize} />
-                  <InfoRow label="Max Height" value={dims.maxHeight} />
-                  <InfoRow label="Setbacks" value={dims.setbacks} />
-                  <InfoRow label="Density" value={dims.density} />
-                  <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-2">
-                    Estimates based on zone code pattern. Verify with local municipality.
-                  </p>
+                  {fromDb ? (
+                    <>
+                      <InfoRow label="Setbacks" value={fmtSetbacks(std?.setbacks)} />
+                      <InfoRow label="Max Height" value={fmtFt(std?.max_height_ft) ?? (std?.max_stories != null ? `${std.max_stories} stories` : null)} />
+                      <InfoRow label="Units / Acre" value={std?.units_per_acre != null ? String(std.units_per_acre) : null} />
+                      <InfoRow label="FAR" value={std?.far_max != null ? String(std.far_max) : null} />
+                      <InfoRow label="Min Lot Size" value={std?.min_lot_sqft != null ? `${Number(std.min_lot_sqft).toLocaleString('en-US')} sqft` : null} />
+                      <InfoRow label="Parking" value={std?.parking ? JSON.stringify(std.parking) : null} />
+                      <InfoRow label="Permitted Uses" value={fmtList(std?.permitted_uses)} />
+                      <InfoRow label="Overlays" value={fmtList(std?.overlays)} />
+                      <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-2">
+                        {verified ? 'Verified zone standards' : 'Linked zone standards (confirm with municipality)'}
+                        {std?.confidence_score != null ? ` · confidence ${std.confidence_score}` : ''}
+                        {std?.jurisdiction ? ` · ${std.jurisdiction}` : ''}
+                        {std?.zoning_code ? ` · zone ${std.zoning_code}` : ''}
+                        {std?.source_citation ? ` · ${std.source_citation}` : ''}
+                        {missing.length ? ` · not yet researched: ${missing.join(', ')}` : ''}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <InfoRow label="Setbacks" value="Unknown" />
+                      <InfoRow label="Max Height" value="Unknown" />
+                      <InfoRow label="Units / Acre" value="Unknown" />
+                      <InfoRow label="FAR" value="Unknown" />
+                      <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-2">
+                        Standards not linked for {auction.county} zone {auction.zoning.zone_code}
+                        {auction.zoning.municipality ? ` (${auction.zoning.municipality})` : ''}.
+                        We do not show zone-code pattern estimates as ordinance — verify with the municipality
+                        before you rely on dimensional limits.
+                      </p>
+                    </>
+                  )}
                 </SectionCard>
               )
             })()}

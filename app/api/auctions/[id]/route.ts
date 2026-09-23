@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { resolveBcpaoPhotoUrl } from '@/lib/bcpao'
+import { lookupZoneStandards } from '@/lib/zone-standards'
+import type { ZoningStandards } from '@/types/auctions'
 
 function getSupabase() {
   return createClient(
@@ -230,6 +232,81 @@ export async function GET(
     }
   }
 
+  // Dimensional standards — ZW-P0-003 (#155).
+  // Prefer public.zone_standards (joined through zoning_districts + jurisdictions)
+  // over regex parseDimensionalStandards. Secondary: zoning_standards_for_parcel RPC.
+  // Blank / "not linked" is intentional when no row matches — never dress a regex
+  // pattern estimate up as ordinance.
+  let zoningStandards: ZoningStandards | null = null
+
+  const zoneCodeForStandards =
+    (zoning?.zone_code as string | null) ||
+    (parcelData?.zone_code as string | null) ||
+    (auction.zone_code as string | null) ||
+    null
+  const jurisdictionHint =
+    (zoning?.municipality as string | null) ||
+    (parcelData?.municipality as string | null) ||
+    (auction.municipality as string | null) ||
+    null
+
+  let resolvedJurisdictionHint = jurisdictionHint
+  let resolvedZoneCode = zoneCodeForStandards
+  if (auction.parcel_id && (!resolvedJurisdictionHint || !resolvedZoneCode)) {
+    const { data: assignExact, error: assignError } = await supabase
+      .from('zoning_assignments')
+      .select('zone_code, jurisdiction')
+      .eq('parcel_id', auction.parcel_id)
+      .maybeSingle()
+    if (assignError) {
+      console.error('zoning_assignments hint failed', {
+        parcel_id: auction.parcel_id,
+        error: assignError.message,
+      })
+    } else if (assignExact) {
+      resolvedZoneCode = resolvedZoneCode || (assignExact.zone_code as string | null)
+      resolvedJurisdictionHint =
+        resolvedJurisdictionHint || (assignExact.jurisdiction as string | null)
+    }
+  }
+
+  if (resolvedZoneCode && auction.county) {
+    zoningStandards = await lookupZoneStandards(supabase, {
+      zoneCode: resolvedZoneCode,
+      county: auction.county as string,
+      jurisdictionHint: resolvedJurisdictionHint,
+    })
+  }
+
+  // Secondary: researched zw_zoning_standards RPC (only if zone_standards miss).
+  if (!zoningStandards && auction.parcel_id && auction.county) {
+    const { data: standards, error: standardsError } = await supabase.rpc('zoning_standards_for_parcel', {
+      p_county: auction.county,
+      p_parcel_id: auction.parcel_id,
+    })
+    if (standardsError) {
+      console.error('zoning_standards_for_parcel failed', {
+        parcel_id: auction.parcel_id,
+        county: auction.county,
+        error: standardsError.message,
+      })
+    } else if (standards && typeof standards === 'object') {
+      const row = standards as Record<string, unknown>
+      if (row.zoning_code) {
+        const source = row.standards_source
+        zoningStandards = {
+          ...(row as unknown as ZoningStandards),
+          standards_source:
+            source === 'zone_standards' || source === 'zw_zoning_standards'
+              ? source
+              : row.standards_verified
+                ? 'zone_standards'
+                : 'zw_zoning_standards',
+        }
+      }
+    }
+  }
+
   // Build enriched response — merge fl_parcels fallbacks for null KPIs
   const response = {
     ...auction,
@@ -242,6 +319,7 @@ export async function GET(
     photo_url: photoUrl,
     bcpao_photo_url: bcpaoPhotoUrl,
     zoning,
+    zoning_standards: zoningStandards,
     recommendation,
     recommendation_color: recommendationColor,
     max_bid: maxBid,
