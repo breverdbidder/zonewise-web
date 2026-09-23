@@ -47,6 +47,10 @@ const isPublicRoute = createRouteMatcher([
   '/api/massing(.*)', // public: 3D Massing Engine has no login gate, same as /massing page itself
   // Stripe webhooks MUST be public (Stripe sends without auth)
   '/api/stripe/webhook(.*)',
+  // ZoneWise MCP (Bearer ZONEWISE_MCP_SECRET). Must be reachable signed-out;
+  // the route itself enforces the shared secret. Without this allowlist,
+  // Clerk auth.protect() 404s GET/POST https://zonewise.ai/api/mcp.
+  '/api/mcp(.*)',
   // Next.js metadata routes. app/icon.tsx serves the favicon at /icon?<hash>;
   // it was not allowlisted, so Clerk's auth.protect() 404'd it on every page
   // load (non-navigational requests get 404, not a redirect) — one console
