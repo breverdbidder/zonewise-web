@@ -20,7 +20,7 @@ function getAnthropic() {
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    (() => { const k = process.env.SUPABASE_SERVICE_ROLE_KEY; if (!k) throw new Error('SUPABASE_SERVICE_ROLE_KEY required (no anon fallback on server routes)'); return k; })()
   );
 }
 
