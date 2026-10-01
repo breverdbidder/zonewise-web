@@ -16,8 +16,8 @@ description: BidDeed.AI auction intelligence pipeline operations. Use when trigg
 | 5 | Tax Certificates | RealTDM — outstanding tax certs |
 | 6 | Demographics | Census API — income, vacancy, population |
 | 7 | ML Score | XGBoost — third-party purchase probability |
-| 8 | Max Bid | Formula: (ARV×70%)−Repairs−$10K−MIN($25K,15%ARV) |
-| 9 | Decision Log | BID(≥75%) / REVIEW(60-74%) / SKIP(<60%) by bid/jdg ratio |
+| 8 | Max Bid | SIGNAL$ Max Bid from `public.signal_max_bid_v1` (see Max Bid below) |
+| 9 | Decision Log | BID / REVIEW / SKIP from the ML purchase-probability and clearing-price predictions |
 | 10 | Report | One-page DOCX with BCPAO photos + ML predictions |
 | 11 | Disposition | Track won bids, second sale, rehab, rental |
 | 12 | Archive | Supabase historical_auctions, master_index sync |
@@ -86,19 +86,28 @@ https://www.bcpao.us/photos/{prefix}/{account}011.jpg
 ```
 Retrieved from `api/v1/search` → `masterPhotoUrl` field.
 
-## Max Bid Formula
+## Max Bid (SIGNAL$ Max Bid)
 
-```python
-def max_bid(arv, repairs):
-    cushion = min(25000, 0.15 * arv)
-    return (arv * 0.70) - repairs - 10000 - cushion
+The old fixed 70%-of-value formula (less repairs, a flat fee and a capped reserve) and its
+BID / REVIEW / SKIP bid-to-judgment thresholds are retired (Ariel, 1 Oct 2026).
+Do not compute, suggest or teach them anywhere.
 
-def recommendation(bid, judgment):
-    ratio = bid / judgment
-    if ratio >= 0.75: return "BID"
-    if ratio >= 0.60: return "REVIEW"
-    return "SKIP"
-```
+The max bid is the SIGNAL$ Max Bid, computed in one place: Supabase
+`public.signal_max_bid_v1(county, sale_type, property_type, assessed_value, value_fallback, recorded_lien_deduction)`,
+which mirrors `computeShapiraCeiling` in cli-anything-biddeed `packages/biddeed-mcp/src/report/composer.js`:
+
+- parameters come from `shapira_formula_params` for the county, sale type and DOR use code
+  (or ALL), largest sample first, first coherent row;
+- basis = assessed value (else a value estimate);
+- ceiling = basis x the county's learned bid share x the plaintiff factor (the plaintiff's
+  record of sale price on the dollar against the final judgment);
+- effective ceiling = ceiling less recorded liens that survive the sale.
+
+The BID / REVIEW / SKIP call comes from the ML third-party-purchase probability and
+clearing-price predictions, not from a ratio. `bid_decisions.max_bid` is filled by the
+trigger `trg_bid_decisions_signal_max_bid`. Under report policy v1 the SIGNAL$ Max Bid, the
+third-party-purchase probability and the predicted sale price show only as
+"Withheld - validation in progress" until the models pass validation.
 
 ## Multi-County Scale
 

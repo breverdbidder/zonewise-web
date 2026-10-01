@@ -27,6 +27,8 @@ const FILES = [
   'lib/osint/parent-dispatch.ts',
   'lib/kpi-data.ts',
   'app/demo/page.tsx',
+  '.claude/skills/auction-pipeline/SKILL.md',
+  '.claude/skills/county-setup/SKILL.md',
 ]
 
 const BANNED = [
@@ -36,6 +38,8 @@ const BANNED = [
   /70% rule/i,
   /Shapira Formula/,
   /ARV\s*[×x*]\s*70%/,
+  /arv_multiplier:\s*0\.7/,
+  /max bid[^\n]{0,24}\$\d/i,
 ]
 
 describe('retired max-bid formula', () => {

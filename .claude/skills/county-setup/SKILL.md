@@ -101,15 +101,9 @@ data_sources:
     url: [detected URL]
     delinquent_search: [true/false]
 
-max_bid_formula:
-  arv_multiplier: 0.70
-  fixed_deduction: 10000
-  variable_deduction_pct: 0.15
-  variable_deduction_cap: 25000
-
-thresholds:
-  bid_ratio_bid: 0.75
-  bid_ratio_review: 0.60
+# No per-county max-bid formula here. The SIGNAL$ Max Bid comes from
+# public.signal_max_bid_v1 using shapira_formula_params learned from real auction
+# sales; the old 70% formula and its 75% / 60% ratio thresholds are retired (1 Oct 2026).
 ```
 
 ### Write data_sources.json

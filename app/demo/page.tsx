@@ -22,10 +22,10 @@ const AGENTS = [
 ]
 
 const PROPS = [
-  { addr: '2847 Harbor Blvd',    city: 'Cocoa Beach 32931',    arv: 387000, maxBid: 213000, judgment: 198500, tag: 'BID',    score: 84, liens: ['1st Mortgage: $198,500', 'HOA: $4,200'],         sqft: 1842, year: 1987 },
-  { addr: '519 Merritt Ave',     city: 'Merritt Island 32953', arv: 445000, maxBid: 233500, judgment: 302000, tag: 'REVIEW', score: 71, liens: ['1st Mortgage: $302,000', 'Tax Cert: $8,100'],    sqft: 2190, year: 1994 },
-  { addr: '1104 Atlantic Dr',    city: 'Satellite Beach 32937',arv: 512000, maxBid: 287400, judgment: 389000, tag: 'REVIEW', score: 68, liens: ['1st Mortgage: $389,000'],                        sqft: 2644, year: 2001 },
-  { addr: '3301 S Banana River', city: 'Cocoa Beach 32931',    arv: 298000, maxBid: 83600,  judgment: 271000, tag: 'SKIP',   score: 31, liens: ['1st Mortgage: $271,000', 'Code Liens: $22,400', 'HOA: $9,800'], sqft: 1520, year: 1973 },
+  { addr: '2847 Harbor Blvd',    city: 'Cocoa Beach 32931',    arv: 387000, judgment: 198500, tag: 'BID',    score: 84, liens: ['1st Mortgage: $198,500', 'HOA: $4,200'],         sqft: 1842, year: 1987 },
+  { addr: '519 Merritt Ave',     city: 'Merritt Island 32953', arv: 445000, judgment: 302000, tag: 'REVIEW', score: 71, liens: ['1st Mortgage: $302,000', 'Tax Cert: $8,100'],    sqft: 2190, year: 1994 },
+  { addr: '1104 Atlantic Dr',    city: 'Satellite Beach 32937',arv: 512000, judgment: 389000, tag: 'REVIEW', score: 68, liens: ['1st Mortgage: $389,000'],                        sqft: 2644, year: 2001 },
+  { addr: '3301 S Banana River', city: 'Cocoa Beach 32931',    arv: 298000, judgment: 271000, tag: 'SKIP',   score: 31, liens: ['1st Mortgage: $271,000', 'Code Liens: $22,400', 'HOA: $9,800'], sqft: 1520, year: 1973 },
 ]
 
 const LOGS = [
@@ -40,16 +40,16 @@ const LOGS = [
 const KPI_SECTIONS = [
   { id: 'fin',  label: 'BidWise Intelligence',      icon: '$', color: 'rgb(var(--zw-brand))', count: 74, kpis: [
     { l: 'After-Repair Value',     v: '$387,000', s: 'BCPAO + 6-comp CMA',       score: 88 },
-    { l: 'SIGNAL$ Max Bid',         v: 'Withheld', s: 'validation in progress',  score: 95, hi: true },
+    { l: 'SIGNAL$ Max Bid',         v: 'Withheld', s: 'validation in progress',  score: null },
     { l: 'Estimated Repairs',       v: '$42,000',  s: 'Contractor estimate',      score: 72 },
     { l: 'Judgment Amount',         v: '$198,500', s: 'Wells Fargo NA v. Torres', score: null },
-    { l: 'Bid/Judgment Ratio',      v: '107%',     s: 'Above threshold ≥75%',     score: 100, hi: true },
-    { l: 'Gross Profit Potential',  v: '$131,500', s: 'ARV − MaxBid − Repairs',   score: 90 },
-    { l: 'Projected ROI (Flip)',    v: '61.7%',    s: '12-month hold scenario',   score: 87 },
+    { l: 'Bid/Judgment Ratio',      v: 'Withheld', s: 'needs the SIGNAL$ Max Bid', score: null },
+    { l: 'Gross Profit Potential',  v: 'Withheld', s: 'needs the SIGNAL$ Max Bid', score: null },
+    { l: 'Projected ROI (Flip)',    v: 'Withheld', s: 'needs the SIGNAL$ Max Bid', score: null },
     { l: 'Monthly MTR Cash Flow',   v: '$2,840',   s: '32937 avg $3,200/mo',      score: 82 },
     { l: 'Cap Rate',                v: '8.8%',     s: 'Annual NOI / ARV',         score: 78 },
     { l: 'Break-Even Occupancy',    v: '64%',      s: 'MTR scenario',             score: 85 },
-    { l: 'Equity Capture Day 1',    v: '$131,500', s: 'ARV minus all-in cost',    score: 90 },
+    { l: 'Equity Capture Day 1',    v: 'Withheld', s: 'needs the SIGNAL$ Max Bid', score: null },
     { l: 'Price Per Sqft (ARV)',    v: '$210/sqft',s: 'Zip median: $228',         score: 83 },
   ]},
   { id: 'mkt',  label: 'NeighborWise Intelligence', icon: '◈', color: '#3B82F6', count: 68, kpis: [
@@ -259,7 +259,7 @@ function OverallScore({ vis }: { vis: boolean }) {
         <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-brand))', letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: 6 }}>◉ OVERALL AUCTION SCORE</div>
         <div style={{ fontSize: 22, fontWeight: 800, color: '#22C55E', marginBottom: 4 }}>⭐ BIDWISE: STRONG BID</div>
         <div style={{ fontSize: 12, color: 'rgb(var(--zw-ink2))', lineHeight: 1.65, marginBottom: 12 }}>
-          2847 Harbor Blvd clears all critical KPI thresholds. Clean title chain, junior HOA lien, 107% bid/judgment ratio, strong coastal MTR demand. Max bid $213,000.
+          2847 Harbor Blvd clears all critical KPI thresholds. Clean title chain, junior HOA lien, strong coastal MTR demand. SIGNAL$ Max Bid: withheld - validation in progress.
         </div>
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
           {[{ l: '298', d: 'KPIs Analyzed' }, { l: '4', d: 'Risk Flags' }, { l: '94%', d: 'Confidence' }, { l: '#1', d: 'Priority Bid' }].map(x => (
@@ -351,10 +351,10 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
         <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: t.bg, border: `1px solid ${t.bd}`, color: t.tx, fontSize: 11, fontWeight: 800, letterSpacing: '.08em' }}>{prop.tag}</div>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: '0.01)', border: '1px solid 0.03)' }}>
-            <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgb(var(--zw-brand))', fontWeight: 700 }}>MAX BID: $213,000</span>
+            <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgb(var(--zw-brand))', fontWeight: 700 }}>SIGNAL$ MAX BID: WITHHELD</span>
           </div>
           <div style={{ padding: '5px 12px', borderRadius: 18, background: 'rgba(34,197,94,.08)', border: '1px solid rgba(34,197,94,.3)' }}>
-            <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#22C55E', fontWeight: 700 }}>BID/JDG: 107%</span>
+            <span style={{ fontFamily: 'monospace', fontSize: 10, color: '#22C55E', fontWeight: 700 }}>JUDGMENT: $198,500</span>
           </div>
         </div>
       </div>
@@ -374,7 +374,7 @@ function ReportView({ sections, scoreVis, done }: { sections: number; scoreVis: 
         }}>
           <div style={{ width: 40, height: 40, borderRadius: 9, background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18, color: '#22C55E' }}>✓</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#22C55E' }}>BIDWISE RECOMMENDATION: BID — UP TO $213,000</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#22C55E' }}>BIDWISE RECOMMENDATION: BID — SIGNAL$ MAX BID WITHHELD (VALIDATION IN PROGRESS)</div>
             <div style={{ fontFamily: 'monospace', fontSize: 9, color: 'rgb(var(--zw-ink2))', marginTop: 3 }}>
               298/298 KPIs processed · 4 manageable risk flags · 94% data confidence · BidWise · Generated in 52 seconds
             </div>
