@@ -181,15 +181,6 @@ export default function AuctionDetail({ auctionId }: Props) {
               {typeLabel(auction.auction_type)}
             </span>
 
-            {auction.recommendation && auction.recommendation !== 'UNKNOWN' && (
-              <span
-                className="px-2.5 py-1 text-xs font-bold rounded-full text-[rgb(var(--zw-ink))] shrink-0"
-                style={{ backgroundColor: auction.recommendation_color }}
-              >
-                {auction.recommendation}
-              </span>
-            )}
-
             {daysUntilAuction != null && daysUntilAuction >= 0 && (
               <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 shrink-0">
                 {daysUntilAuction === 0 ? 'Today' : daysUntilAuction === 1 ? 'Tomorrow' : `${daysUntilAuction} days`}
@@ -394,37 +385,19 @@ export default function AuctionDetail({ auctionId }: Props) {
               )}
             </div>
 
-            {/* Shapira Formula Scoring */}
-            {auction.recommendation && auction.recommendation !== 'UNKNOWN' && (
-              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
-                <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-3">Investment Score</p>
-                <div className="text-center mb-3">
-                  <span
-                    className="inline-block px-4 py-2 rounded-lg text-xl font-bold text-[rgb(var(--zw-ink))]"
-                    style={{ backgroundColor: auction.recommendation_color }}
-                  >
-                    {auction.recommendation}
-                  </span>
-                </div>
-                {auction.max_bid != null && (
-                  <div className="text-center mb-2">
-                    <p className="text-xs text-gray-500 dark:text-slate-400">Max Bid</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(auction.max_bid)}
-                    </p>
-                  </div>
-                )}
-                {auction.bid_ratio != null && (
-                  <div className="text-center mb-3">
-                    <p className="text-xs text-gray-500 dark:text-slate-400">Bid-to-Value Ratio</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{auction.bid_ratio}%</p>
-                  </div>
-                )}
-                <p className="text-[10px] text-gray-400 dark:text-slate-600 text-center mt-2">
-                  Shapira Formula&trade; &middot; (ARV &times; 70%) - Repairs - $10K - MIN($25K, 15% ARV)
-                </p>
-              </div>
-            )}
+            {/* SIGNAL$ Max Bid. No max bid or verdict is computed for this page: the
+                old fixed formula ((value x 70%) less repairs, $10K and a 15% reserve)
+                is retired (Ariel, 29 Sep / 1 Oct 2026). The max bid is the SIGNAL$
+                model's, withheld until it passes validation; the API returns null. */}
+            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg p-4">
+              <p className="text-xs text-gray-500 dark:text-slate-400 uppercase mb-2">SIGNAL$ Max Bid</p>
+              <p className="text-base font-semibold text-gray-900 dark:text-white">Withheld - validation in progress</p>
+              <p className="mt-2 text-base leading-6 text-gray-600 dark:text-slate-400">
+                It comes from the SIGNAL$ model, not a fixed formula: assessed value times a county bid share learned
+                from real auction sales, the plaintiff&apos;s record of sale price on the dollar against the final
+                judgment, and the recorded liens that can survive the sale.
+              </p>
+            </div>
 
             {/* Mini Map */}
             {hasCoords && (

@@ -134,11 +134,9 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
 
     const risk: 'Low' | 'Medium' | 'High' =
       roi > 25 && legal >= 80 ? 'Low' : roi > 10 && legal >= 50 ? 'Medium' : 'High'
-
-    // Max bid formula: (ARV×70%)-Repairs-$10K-MIN($25K,15%ARV)
-    const arv = projectedValue * market.arvMultiplier
-    const repairs = parcel.yearBuilt < 1980 ? env.actualGFA * 35 : env.actualGFA * 15
-    const maxBid = Math.max(0, (arv * 0.7) - repairs - 10000 - Math.min(25000, arv * 0.15))
+    // No max bid here: the old fixed percentage-of-ARV formula is retired
+    // (Ariel, 29 Sep / 1 Oct 2026). The max bid is the SIGNAL$ Max Bid,
+    // withheld until its model validates.
 
     return {
       useType,
@@ -146,7 +144,7 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
       legal, physical, financial, maximal, score: overall,
       roi: Math.round(roi), risk, timeline: timelineMap[useType] || '12-18 mo',
       investReq: totalInvest, buildCost, projectedValue: Math.round(projectedValue),
-      annualNOI: Math.round(annualNOI), maxBid: Math.round(maxBid),
+      annualNOI: Math.round(annualNOI), maxBid: null,
       isConditional,
     }
   })
@@ -165,7 +163,7 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
     investReq: 0, buildCost: 0,
     projectedValue: parcel.landValue + parcel.improvValue,
     annualNOI: Math.round((parcel.landValue + parcel.improvValue) * 0.06),
-    maxBid: 0, isConditional: false,
+    maxBid: null, isConditional: false,
   })
 
   return scenarios.sort((a, b) => b.score - a.score)

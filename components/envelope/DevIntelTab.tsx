@@ -59,7 +59,7 @@ HBU Recommendation: ${best.use} (Score: ${best.score}/100)
   Legal: ${best.legal} | Physical: ${best.physical} | Financial: ${best.financial} | Maximal: ${best.maximal}
   ROI: ${best.roi}% | Risk: ${best.risk} | Timeline: ${best.timeline}
   Investment: $${best.investReq.toLocaleString()} | Projected Value: $${best.projectedValue.toLocaleString()}
-  Max Bid (70% rule): $${best.maxBid.toLocaleString()}
+  SIGNAL$ Max Bid: Withheld - validation in progress
 Generated: ${new Date().toISOString().split('T')[0]}`
   navigator.clipboard.writeText(text).catch(() => {})
   return text
@@ -140,7 +140,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
           <Stat label="Floors" value={env.floors} />
           <Stat label="Height" value={maxH} unit="ft" />
           <Stat label="FAR" value={far} />
-          <Stat label="Max Bid" value={fmt$(best.maxBid)} />
+          <Stat label="ROI" value={best.roi} unit="%" />
         </div>
 
         {/* Tabs */}
@@ -244,7 +244,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 <ScoreBar score={best.maximal} label="Maximal" />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                {[['Investment', fmt$(best.investReq), 'white'], ['Projected Value', fmt$(best.projectedValue), GREEN], ['Annual NOI', fmt$(best.annualNOI), 'white'], ['Max Bid (70%)', fmt$(best.maxBid), ORANGE]].map(([l, v, c]) => (
+                {[['Investment', fmt$(best.investReq), 'white'], ['Projected Value', fmt$(best.projectedValue), GREEN], ['Annual NOI', fmt$(best.annualNOI), 'white'], ['Build Cost', fmt$(best.buildCost), ORANGE]].map(([l, v, c]) => (
                   <div key={l} className="bg-gray-800/40 rounded p-1.5">
                     <div className="text-[9px] text-gray-400">{l}</div>
                     <div className="text-xs font-bold" style={{ color: c }}>{v}</div>
@@ -278,7 +278,7 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                     <div><span className="text-gray-400">Timeline</span><br /><span className="text-[rgb(var(--zw-ink))]">{s.timeline}</span></div>
                     <div><span className="text-gray-400">Invest</span><br /><span className="text-[rgb(var(--zw-ink))]">{fmt$(s.investReq)}</span></div>
                     <div><span className="text-gray-400">Value</span><br /><span className="text-[rgb(var(--zw-ink))]">{fmt$(s.projectedValue)}</span></div>
-                    <div><span className="text-gray-400">Max Bid</span><br /><span style={{ color: ORANGE }}>{fmt$(s.maxBid)}</span></div>
+                    <div><span className="text-gray-400">Build</span><br /><span style={{ color: ORANGE }}>{fmt$(s.buildCost)}</span></div>
                   </div>
                 </div>
               ))}
@@ -345,7 +345,6 @@ function ParcelDetail({ parcel, onBack, hbuSource = 'client' }: { parcel: Parcel
                 This {env.lotArea.toLocaleString()} sf {parcel.zone}-zoned lot supports {env.floors} floors / {env.actualGFA.toLocaleString()} sf GFA.
                 HBU recommends <span className="text-[rgb(var(--zw-ink))] font-semibold">{best.use}</span> (score {best.score}/100, {best.roi}% ROI).
                 {parcel.floodZone !== 'X' ? ` Flood zone ${parcel.floodZone} adds insurance cost and regulatory constraints.` : ''}
-                {' '}Max auction bid under 70% rule: <span style={{ color: ORANGE }} className="font-semibold">{fmt$(best.maxBid)}</span>.
               </p>
             </div>
           </div>

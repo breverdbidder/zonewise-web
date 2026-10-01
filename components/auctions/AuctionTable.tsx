@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { getRecommendation } from '@/lib/scoring'
 import ZoningBadge from './ZoningBadge'
 import { formatCountyLabel } from '@/lib/counties'
 import type { Auction, SortField, SortDirection } from '@/types/auctions'
@@ -108,12 +107,10 @@ export default function AuctionTable({ auctions, loading, onSelectAuction }: Pro
               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Plaintiff</th>
               <SortHeader field="just_value" label="Just Value" />
               <SortHeader field="auction_date" label="Date" />
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wider">Score</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-800/50">
             {sorted.map((auction) => {
-              const score = getRecommendation(auction.just_value, auction.opening_bid)
               return (
                 <tr
                   key={auction.id}
@@ -140,16 +137,6 @@ export default function AuctionTable({ auctions, loading, onSelectAuction }: Pro
                   <td className="px-3 py-2.5 text-sm text-gray-600 dark:text-slate-400 max-w-[160px] truncate">{auction.plaintiff || '—'}</td>
                   <td className="px-3 py-2.5 text-sm text-gray-900 dark:text-slate-200 whitespace-nowrap">{formatCurrency(auction.just_value)}</td>
                   <td className="px-3 py-2.5 text-sm text-gray-600 dark:text-slate-400 whitespace-nowrap">{formatDate(auction.auction_date)}</td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    {score.recommendation !== 'UNKNOWN' && (
-                      <span
-                        className="px-1.5 py-0.5 rounded text-[10px] font-bold text-[rgb(var(--zw-ink))]"
-                        style={{ backgroundColor: score.color }}
-                      >
-                        {score.recommendation}
-                      </span>
-                    )}
-                  </td>
                 </tr>
               )
             })}

@@ -40,7 +40,7 @@ const LOGS = [
 const KPI_SECTIONS = [
   { id: 'fin',  label: 'BidWise Intelligence',      icon: '$', color: 'rgb(var(--zw-brand))', count: 74, kpis: [
     { l: 'After-Repair Value',     v: '$387,000', s: 'BCPAO + 6-comp CMA',       score: 88 },
-    { l: 'Max Bid (Formula)',       v: '$213,000', s: '(ARV×70%)−Repairs−$10K',  score: 95, hi: true },
+    { l: 'SIGNAL$ Max Bid',         v: 'Withheld', s: 'validation in progress',  score: 95, hi: true },
     { l: 'Estimated Repairs',       v: '$42,000',  s: 'Contractor estimate',      score: 72 },
     { l: 'Judgment Amount',         v: '$198,500', s: 'Wells Fargo NA v. Torres', score: null },
     { l: 'Bid/Judgment Ratio',      v: '107%',     s: 'Above threshold ≥75%',     score: 100, hi: true },
@@ -298,7 +298,7 @@ function PropCard({ prop, highlightReport, index }: { prop: Prop; highlightRepor
         <div style={{ padding: '3px 10px', borderRadius: 18, fontSize: 10, fontWeight: 700, background: t.bg, border: `1px solid ${t.bd}`, color: t.tx, letterSpacing: '.06em', flexShrink: 0 }}>{prop.tag}</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7, marginTop: 11 }}>
-        {[{ l: 'ARV', v: fmt(prop.arv), c: '#F1F5F9' }, { l: 'Max Bid', v: fmt(prop.maxBid), c: 'rgb(var(--zw-brand))' }, { l: 'Judgment', v: fmt(prop.judgment), c: 'rgb(var(--zw-elev))' }].map(x => (
+        {[{ l: 'ARV', v: fmt(prop.arv), c: '#F1F5F9' }, { l: 'SIGNAL$ Max Bid', v: 'Withheld', c: 'rgb(var(--zw-brand))' }, { l: 'Judgment', v: fmt(prop.judgment), c: 'rgb(var(--zw-elev))' }].map(x => (
           <div key={x.l} style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 600, color: x.c }}>{x.v}</div>
             <div style={{ fontSize: 9, color: 'rgb(var(--zw-ink2))', marginTop: 1, textTransform: 'uppercase', letterSpacing: '.05em' }}>{x.l}</div>

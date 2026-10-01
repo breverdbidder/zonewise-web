@@ -1,55 +1,14 @@
 /**
- * Shapira Formula - Investment Scoring
+ * Display helpers for auction money values.
  *
- * MAX_BID = (JUST_VALUE x 0.70) - REPAIRS - $10,000 - MIN($25,000, JUST_VALUE x 0.15)
- *
- * Recommendation:
- *   BID    -> max_bid / opening_bid >= 75%  (green)
- *   REVIEW -> max_bid / opening_bid 60-74%  (amber)
- *   SKIP   -> max_bid / opening_bid < 60%   (red)
+ * The old fixed max-bid formula and its BID / REVIEW / SKIP ratio badges
+ * lived here. They are retired (Ariel, 29 Sep / 1 Oct 2026): the max bid is
+ * the SIGNAL$ Max Bid (assessed value x a county bid share learned from real
+ * auction sales x the plaintiff factor, less recorded liens that can survive
+ * the sale, alongside the ML third-party-purchase and clearing-price
+ * predictions), withheld under report policy v1 until it passes validation.
+ * Do not add a rule-of-thumb max bid or verdict back here.
  */
-
-export type Recommendation = 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN'
-
-export interface ScoringResult {
-  recommendation: Recommendation
-  color: string
-  maxBid: number | null
-  ratio: number | null
-}
-
-export function calculateMaxBid(justValue: number | null, repairs: number = 0): number | null {
-  if (!justValue || justValue <= 0) return null
-  const result = Math.round(
-    (justValue * 0.70) - repairs - 10000 - Math.min(25000, justValue * 0.15)
-  )
-  return Math.max(0, result)
-}
-
-export function getRecommendation(
-  justValue: number | null,
-  openingBid: number | null
-): ScoringResult {
-  const maxBid = calculateMaxBid(justValue)
-  if (maxBid === null) {
-    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2))', ratio: null, maxBid: null }
-  }
-
-  const bid = openingBid || justValue || 0
-  if (bid <= 0) {
-    return { recommendation: 'UNKNOWN', color: 'rgb(var(--zw-ink2))', ratio: null, maxBid }
-  }
-
-  const ratio = Math.round((maxBid / bid) * 100)
-
-  if (ratio >= 75) {
-    return { recommendation: 'BID', color: '#22C55E', ratio, maxBid }
-  }
-  if (ratio >= 60) {
-    return { recommendation: 'REVIEW', color: 'rgb(var(--zw-brand))', ratio, maxBid }
-  }
-  return { recommendation: 'SKIP', color: '#EF4444', ratio, maxBid }
-}
 
 export function formatCurrency(val: number | null | undefined): string {
   if (val == null) return '--'

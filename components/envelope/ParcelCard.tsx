@@ -80,7 +80,7 @@ export function ParcelCard({ parcel, onClick, selected, onToggleCompare }: Parce
       {/* Card body */}
       <div className="p-2" onClick={onClick}>
         <h3 className="text-xs font-bold text-[rgb(var(--zw-ink))] mb-0.5 truncate">{parcel.address}</h3>
-        <p className="text-[9px] text-gray-400 mb-1.5">{parcel.city} · {fmt$(best.maxBid)} max bid</p>
+        <p className="text-[9px] text-gray-400 mb-1.5">{parcel.city} · {best.use}</p>
         <div className="grid grid-cols-3 gap-1 text-center mb-1">
           <div className="bg-gray-800/60 rounded px-1 py-0.5">
             <div className="text-[8px] text-gray-500">GFA</div>

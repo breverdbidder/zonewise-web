@@ -172,7 +172,7 @@ PROPERTY DATA (fl_parcels): When parcel data is provided below, include these de
 - RISK: Risk Score (/100), Risk Level, Building Age Risk, Construction Quality
 - FEMA FLOOD: Flood Zone (X/AE/VE/etc), SFHA status, Base Flood Elevation, Insurance requirement, FIRM panel
 - NEIGHBORHOOD: Walkability Score (0-100), Education Score, Safety Score, Median Income, Median Rent, Poverty Rate, Walk/Transit/Bike commute %
-- SCORING: Investment Grade (A+/A/B/C/D), Opportunity Score, Max Bid (Shapira Formula), Exit Strategy
+- SCORING: Investment Grade (A+/A/B/C/D), Opportunity Score, Exit Strategy. SIGNAL$ Max Bid: always "Withheld - validation in progress" - never state, estimate or compute a max bid or a percentage-of-value rule (the SIGNAL$ Max Bid comes from BidDeed's model, which is withheld until validated)
 - MARKET: Area Median, Price Percentile, Value Tier, Recent Sales Count
 Format as a structured property intelligence card. Include the grade and key scores prominently.
 
@@ -926,7 +926,8 @@ async function computePropertyKPIs(
   oppScore = Math.min(100, Math.max(0, oppScore))
   const investGrade = oppScore >= 80 ? 'A+' : oppScore >= 70 ? 'A' : oppScore >= 60 ? 'B' : oppScore >= 40 ? 'C' : 'D'
   const arvEstimate = Math.round((areaMedianValue || p.jv) * 1.05)
-  const maxBid = Math.round(((areaMedianValue || p.jv) * 0.7) - 10000 - Math.min(25000, (areaMedianValue || p.jv) * 0.15))
+  // No max bid is computed here: the old fixed formula is retired (Ariel, 29 Sep /
+  // 1 Oct 2026) and the SIGNAL$ Max Bid is withheld until its model validates.
   const repairEst = (p.eff_yr_blt > 0 && p.eff_yr_blt < 1990) ? Math.round((p.tot_lvg_ar || 0) * 25) : Math.round((p.tot_lvg_ar || 0) * 10)
 
   // ── Build 128 KPI sections ──
@@ -1068,7 +1069,7 @@ async function computePropertyKPIs(
       KPI_118: { name: 'Investment Grade', value: investGrade, source: 'BidDeed.AI' },
       KPI_119: { name: 'Recommendation', value: oppScore >= 70 ? 'REVIEW' : oppScore >= 50 ? 'MONITOR' : 'PASS', source: 'BidDeed.AI' },
       KPI_120: { name: 'Estimated ARV', value: arvEstimate, unit: '$', source: 'BidDeed.AI' },
-      KPI_121: { name: 'Max Bid (Shapira Formula)', value: maxBid, unit: '$', source: 'Shapira Formula' },
+      KPI_121: { name: 'SIGNAL$ Max Bid', value: null, note: 'Withheld - validation in progress', source: 'BidDeed.AI' },
       KPI_122: { name: 'Estimated Repair Cost', value: repairEst, unit: '$', source: 'BidDeed.AI' },
       KPI_123: { name: 'Estimated Profit', value: null, note: 'Requires auction data', source: 'BidDeed.AI' },
       KPI_124: { name: 'Estimated ROI', value: null, note: 'Requires auction data', source: 'BidDeed.AI' },
@@ -1104,7 +1105,7 @@ async function computePropertyKPIs(
   MARKET: Area Median ${fmtDollar(areaMedianValue)} | vs Median ${valueVsMedian}% | ${pricePctile || 'N/A'}th percentile | ${areaStats.length} comps
   ZONING: ${zoneCode || 'N/A'} (${zoneName || 'Unknown'}) | Height ${d.max_height_ft || 'N/A'}ft | Coverage ${maxCoverage || 'N/A'}% | FAR ${maxFar || 'N/A'}
   INVESTMENT: Rent Est. $${monthlyRentEst}/mo | Cap Rate ${capRate.toFixed(1)}% | GRM ${grossRentMult} | NOI ${fmtDollar(noi)}/yr | CoC ${cocReturn}%
-  SCORING: Max Bid ${fmtDollar(maxBid)} (Shapira Formula) | ARV ${fmtDollar(arvEstimate)} | Repair ${fmtDollar(repairEst)} | Exit: ${monthlyRentEst > 2000 ? 'Rent' : 'Flip'}
+  SCORING: SIGNAL$ Max Bid Withheld - validation in progress | ARV ${fmtDollar(arvEstimate)} | Repair ${fmtDollar(repairEst)} | Exit: ${monthlyRentEst > 2000 ? 'Rent' : 'Flip'}
   FEMA FLOOD: Zone ${fema?.zone || 'N/A'} (${fema?.subtype || 'Unknown'}) | SFHA: ${fema?.sfha ? 'YES' : 'No'} | BFE: ${fema?.bfe || 'N/A'} ft | Risk: ${fema?.riskTier || 'N/A'} | Insurance: ${fema?.insuranceReq || 'N/A'} | FIRM: ${fema?.firmPanel || 'N/A'}
   NEIGHBORHOOD (Census ACS): Walkability ${census?.walkabilityScore ?? 'N/A'}/100 | Education ${census?.educationScore ?? 'N/A'}/100 | Safety ${census?.safetyScore ?? 'N/A'}/100 | Income $${census?.medianIncome?.toLocaleString() || 'N/A'} | Rent $${census?.medianRent || 'N/A'}/mo | Poverty ${census?.povertyRate || 'N/A'}% | Walk ${census?.walkPct || 'N/A'}% | Transit ${census?.transitPct || 'N/A'}%
   USES: ${permittedList.length} permitted | STR: ${isSTRAllowed ? 'Yes' : 'N/A'} | ADU: ${isADUAllowed ? 'Yes' : 'N/A'} | Mixed: ${isMixedUse ? 'Yes' : 'N/A'}

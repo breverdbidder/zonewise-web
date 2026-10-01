@@ -131,8 +131,11 @@ describe('AuctionDetail', () => {
     expect(screen.getByText('FC-2024-042')).toBeInTheDocument()
   })
 
-  it('renders BID recommendation badge when API returns BID', async () => {
-    const detail = makeAuctionDetail({ recommendation: 'BID' })
+  // The old fixed max-bid formula and its BID / REVIEW / SKIP badges are
+  // retired (1 Oct 2026). Even a stale payload carrying a verdict and a max
+  // bid must render only the withheld SIGNAL$ Max Bid label.
+  it('shows the SIGNAL$ Max Bid as withheld and no verdict, even if the API sent one', async () => {
+    const detail = makeAuctionDetail({ recommendation: 'BID', max_bid: 210000 })
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -141,8 +144,10 @@ describe('AuctionDetail', () => {
 
     render(<AuctionDetail auctionId="42" />)
     await waitFor(() => {
-      expect(screen.getAllByText('BID').length).toBeGreaterThan(0)
+      expect(screen.getByText('Withheld - validation in progress')).toBeInTheDocument()
     })
+    expect(screen.queryByText('BID')).not.toBeInTheDocument()
+    expect(screen.queryByText('$210,000')).not.toBeInTheDocument()
   })
 
   it('renders back-to-auctions button on error', async () => {

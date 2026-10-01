@@ -55,7 +55,8 @@ export default function AuctionSummaryCards({ summary, loading }: Props) {
       <StatCard label="Foreclosures" value={fcCount.toLocaleString()} sub={`${tdCount.toLocaleString()} tax deeds`} />
       <StatCard label="With Address" value={summary.with_address.toLocaleString()} sub={addressRate} />
       <StatCard label="Upcoming" value={upcoming.toLocaleString()} sub={`${upcomingCounties} counties`} />
-      <StatCard label="AI Scoring" value="Live" sub="Shapira Formula" />
+      {/* Not "AI Scoring: Live": the SIGNAL$ Max Bid is withheld until its model validates (1 Oct 2026). */}
+      <StatCard label="SIGNAL$ Max Bid" value="Withheld" sub="Validation in progress" />
     </div>
   )
 }

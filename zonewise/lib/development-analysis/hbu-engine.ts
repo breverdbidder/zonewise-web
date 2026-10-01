@@ -82,7 +82,6 @@ export function computeEnvelope(
 }
 
 // ─── 4-TEST HBU CALCULATOR ───────────────────────────────────
-// Max bid formula: (ARV×70%) - Repairs - $10K - MIN($25K, ARV×15%)
 export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
   const zone = parcel.zone
   const permitted = ZONE_PERMITTED[zone] || ZONE_PERMITTED['R-1']
@@ -150,11 +149,9 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
       multifamily: '12-18 mo', retail: '6-10 mo', office: '8-12 mo',
       mixed_use: '18-24 mo', hotel: '24-30 mo', coworking: '8-12 mo',
     }
-
-    // Max bid formula: (ARV×70%) - Repairs - $10K - MIN($25K, ARV×15%)
-    const arv = projectedValue * market.arvMultiplier
-    const repairs = parcel.yearBuilt < 1980 ? env.actualGFA * 35 : env.actualGFA * 15
-    const maxBid = Math.max(0, arv * 0.7 - repairs - 10000 - Math.min(25000, arv * 0.15))
+    // No max bid here: the old fixed percentage-of-ARV formula is retired
+    // (Ariel, 29 Sep / 1 Oct 2026). The max bid is the SIGNAL$ Max Bid,
+    // withheld until its model validates.
 
     return {
       useType,
@@ -171,7 +168,7 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
       buildCost,
       projectedValue: Math.round(projectedValue),
       annualNOI: Math.round(annualNOI),
-      maxBid: Math.round(maxBid),
+      maxBid: null,
       isConditional,
     }
   })
@@ -197,7 +194,7 @@ export function calculateHBU(parcel: Parcel, env: Envelope): HBUScenario[] {
     buildCost: 0,
     projectedValue: parcel.landValue + parcel.improvValue,
     annualNOI: Math.round((parcel.landValue + parcel.improvValue) * 0.06),
-    maxBid: 0,
+    maxBid: null,
     isConditional: false,
   })
 

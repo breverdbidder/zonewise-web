@@ -55,7 +55,7 @@ export function ComparePanel({ parcels, onClose }: ComparePanelProps) {
                 ['GFA', d.env.actualGFA.toLocaleString() + ' sf', null],
                 ['Floors', d.env.floors, null],
                 ['ROI', d.best.roi + '%', GREEN],
-                ['Max Bid', fmt$(d.best.maxBid), ORANGE],
+                ['Build Cost', fmt$(d.best.buildCost), ORANGE],
                 ['Best Use', d.best.use, null],
               ] as [string, string | number, string | null][]).map(([l, v, c], i) => (
                 <div key={i} className="flex justify-between">

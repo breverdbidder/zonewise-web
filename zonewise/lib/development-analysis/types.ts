@@ -55,7 +55,7 @@ export interface HBUScenario {
   buildCost: number;   // construction only $
   projectedValue: number; // income approach $
   annualNOI: number;
-  maxBid: number;      // (ARV×70%)-Repairs-$10K-MIN($25K,15%ARV)
+  maxBid: number | null; // retired formula; the SIGNAL$ Max Bid is withheld, so always null
   isConditional: boolean;
 }
 

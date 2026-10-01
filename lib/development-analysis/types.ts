@@ -55,7 +55,7 @@ export interface HBUScenario {
   buildCost: number
   projectedValue: number
   annualNOI: number
-  maxBid: number
+  maxBid: number | null // the SIGNAL$ Max Bid is withheld, so always null
   isConditional: boolean
 }
 

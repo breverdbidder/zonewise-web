@@ -12,7 +12,6 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { runSubAgent } from './sub-agent'
-import { calculateMaxBid, getRecommendation } from '../scoring'
 import type { ParentDispatchResult, SubAgentResult } from './types'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -68,60 +67,6 @@ async function batchUpdate(
 }
 
 /**
- * Re-run Shapira Formula V1 on enriched parcels
- * Recalculates max_bid and recommendation for all 197 auctions in scope
- */
-async function rerunShapiraFormula(scope: number = 197): Promise<{
-  scored: number
-  bid: number
-  review: number
-  skip: number
-}> {
-  const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
-
-  const { data: auctions, error } = await sb
-    .from('multi_county_auctions')
-    .select('id, parcel_id, opening_bid, final_judgment_amount')
-    .not('parcel_id', 'is', null)
-    .order('sale_date', { ascending: true })
-    .limit(scope)
-
-  if (error) throw new Error(`Fetch auctions for Shapira: ${error.message}`)
-  if (!auctions?.length) return { scored: 0, bid: 0, review: 0, skip: 0 }
-
-  const parcelIds = auctions.map((a) => a.parcel_id).filter(Boolean)
-
-  const { data: parcels } = await sb
-    .from('fl_parcels')
-    .select('parcel_id, jv')
-    .in('parcel_id', parcelIds)
-
-  const parcelMap = new Map(
-    (parcels || []).map((p) => [p.parcel_id, p.jv]),
-  )
-
-  let scored = 0
-  let bid = 0
-  let review = 0
-  let skip = 0
-
-  for (const auction of auctions) {
-    const jv = parcelMap.get(auction.parcel_id)
-    if (!jv) continue
-
-    const openingBid = auction.opening_bid || auction.final_judgment_amount
-    const result = getRecommendation(jv, openingBid)
-
-    scored++
-    if (result.recommendation === 'BID') bid++
-    else if (result.recommendation === 'REVIEW') review++
-    else if (result.recommendation === 'SKIP') skip++
-  }
-
-  return { scored, bid, review, skip }
-}
-
-/**
  * Main parent dispatch entry point
  */
 export async function runParentDispatch(): Promise<ParentDispatchResult> {
@@ -144,10 +89,9 @@ export async function runParentDispatch(): Promise<ParentDispatchResult> {
   const { updated, failed } = await batchUpdate(subAgentResults)
   console.log(`[osint-dispatch] Supabase update: ${updated} updated, ${failed} failed`)
 
-  // Phase 3: Re-run Shapira Formula V1 on enriched parcels
-  const shapiraResults = await rerunShapiraFormula(197)
-  console.log(`[osint-dispatch] Shapira V1 re-scored ${shapiraResults.scored} auctions`)
-  console.log(`[osint-dispatch]   BID: ${shapiraResults.bid} | REVIEW: ${shapiraResults.review} | SKIP: ${shapiraResults.skip}`)
+  // Phase 3 (re-scoring auctions with the fixed max-bid formula) is removed:
+  // that formula is retired (Ariel, 29 Sep / 1 Oct 2026) and the SIGNAL$ Max
+  // Bid is withheld until its model validates.
 
   const completedAt = new Date().toISOString()
   const wallClockMs = Date.now() - startMs

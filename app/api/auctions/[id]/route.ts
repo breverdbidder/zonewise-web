@@ -205,32 +205,11 @@ export async function GET(
   const flLotSize = parcelData ? (parcelData.lot_size as number | null) : null
   const flOwnerName = parcelData ? (parcelData.own_name as string | null) : null
 
-  // Shapira Formula scoring
-  const justValue = (auction.just_value as number | null) ?? flJustValue
-  const openingBid = auction.opening_bid as number | null
-  let recommendation: 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN' = 'UNKNOWN'
-  let maxBid: number | null = null
-  let bidRatio: number | null = null
-  let recommendationColor = 'rgb(var(--zw-elev))' // gray
-
-  if (justValue && justValue > 0) {
-    maxBid = Math.round((justValue * 0.70) - 10000 - Math.min(25000, justValue * 0.15))
-    if (maxBid < 0) maxBid = 0
-    const compareBid = openingBid || justValue
-    if (compareBid > 0) {
-      bidRatio = Math.round((maxBid / compareBid) * 100)
-      if (bidRatio >= 75) {
-        recommendation = 'BID'
-        recommendationColor = '#22C55E'
-      } else if (bidRatio >= 60) {
-        recommendation = 'REVIEW'
-        recommendationColor = 'rgb(var(--zw-brand))'
-      } else {
-        recommendation = 'SKIP'
-        recommendationColor = '#EF4444'
-      }
-    }
-  }
+  // No max bid and no verdict are computed here. The old fixed formula
+  // ((value x 70%) less $10,000 and a 15% reserve, with BID / REVIEW / SKIP by
+  // ratio to the opening bid) is retired (Ariel, 29 Sep / 1 Oct 2026). The max
+  // bid is the SIGNAL$ Max Bid, withheld under report policy v1 until its
+  // model passes validation, so these fields stay null / UNKNOWN.
 
   // Dimensional standards — ZW-P0-003 (#155).
   // Prefer public.zone_standards (joined through zoning_districts + jurisdictions)
@@ -320,10 +299,11 @@ export async function GET(
     bcpao_photo_url: bcpaoPhotoUrl,
     zoning,
     zoning_standards: zoningStandards,
-    recommendation,
-    recommendation_color: recommendationColor,
-    max_bid: maxBid,
-    bid_ratio: bidRatio,
+    recommendation: 'UNKNOWN' as 'BID' | 'REVIEW' | 'SKIP' | 'UNKNOWN',
+    recommendation_color: 'rgb(var(--zw-elev))',
+    max_bid: null as number | null,
+    bid_ratio: null as number | null,
+    max_bid_status: 'Withheld - validation in progress',
     source_url: auction.source_url,
   }
 
